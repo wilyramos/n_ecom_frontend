@@ -133,7 +133,7 @@ export default function LayoutMinimal({ banner }: Props) {
                             "mb-6 md:mb-8 px-6 py-2 rounded transition-colors duration-300 inline-flex",
                             isDark
                                 ? "bg-transparent border border-fg-secondary text-fg-inverse hover:bg-fg-secondary hover:text-fg-inverse"
-                                : "bg-brand-silver text-fg-secondary hover:bg-brand-charcoal"
+                                : "bg-brand-silver text-fg-primary hover:bg-brand-charcoal hover:text-fg-primary"
                         )}
                     >
                         Ver catalogo

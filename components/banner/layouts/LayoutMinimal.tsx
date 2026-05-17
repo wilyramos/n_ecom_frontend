@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import ImageBorder from "../ui/ImageBorder";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { cn } from "@/lib/utils";
 
 type Props = {
     banner: SliderBanner;
@@ -21,15 +22,6 @@ export default function LayoutMinimal({ banner }: Props) {
 
     const isDark = design.theme !== "light";
 
-    const colors = {
-        bg: design.bgColor ?? (isDark ? "#0a0a0f" : "#f8f8fc"),
-        text: design.textColor ?? (isDark ? "#f0f0f5" : "#0d0d14"),
-        muted: design.textMutedColor ?? (isDark ? "#f5f5f7" : "#5A5A5A"),
-        accent: design.accentColor ?? (isDark ? "#F97316" : "#F97316"),
-    };
-
-    
-
     const fadeUp = (delay: number): React.CSSProperties => ({
         opacity: loaded ? 1 : 0,
         transform: loaded ? "translateY(0px)" : "translateY(12px)",
@@ -45,10 +37,12 @@ export default function LayoutMinimal({ banner }: Props) {
         <Link
             href={destUrl}
             aria-label={title ?? "Ver oferta"}
-            className="banner-slot group relative overflow-hidden flex flex-col lg:flex-row items-center w-full"
-            style={{ backgroundColor: colors.bg }}
+            className={cn(
+                "banner-slot group relative overflow-hidden flex flex-col lg:flex-row items-center w-full",
+                isDark ? "bg-surface-inverse" : "bg-surface-primary"
+            )}
         >
-            {/* ── Columna Imagen (Orden 2 en LG para que aparezca a la derecha) ── */}
+            {/* ── Columna Imagen ── */}
             <div
                 className="
                     relative z-10
@@ -79,23 +73,17 @@ export default function LayoutMinimal({ banner }: Props) {
                         borderStyle={media.border ?? "none"}
                         priority
                         sizes="(max-width: 1024px) 75vw, 45vw"
-                        className="select-none drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-500"
+                        className="select-none"
                     />
                 </div>
             </div>
 
             {/* ── Columna Texto ── */}
             <div
-                className="
-                    relative z-10
-                    order-2 lg:order-1
-                    flex flex-col items-center justify-center
-                    w-full lg:w-[48%]
-                    px-8 sm:px-12 lg:px-16 xl:px-24
-                    pb-10 lg:pb-0
-                    text-center lg:text-left
-                "
-                style={{ color: colors.text }}
+                className={cn(
+                    "relative z-10 order-2 lg:order-1 flex flex-col items-center justify-center w-full lg:w-[48%] px-8 sm:px-12 lg:px-16 xl:px-24 pb-10 lg:pb-0 text-center lg:text-left",
+                    isDark ? "text-fg-inverse" : "text-fg-primary"
+                )}
             >
                 {/* Badges Minimalistas */}
                 <div
@@ -104,19 +92,20 @@ export default function LayoutMinimal({ banner }: Props) {
                 >
                     {subtitle && (
                         <span
-                            className="text-[10px] font-black uppercase tracking-[0.25em] py-1 border-b-2"
-                            style={{ borderColor: colors.accent }}
+                            className={cn(
+                                "text-[10px] font-black uppercase tracking-[0.25em] py-1 border-b-2",
+                                isDark ? "border-fg-secondary text-fg-inverse" : "border-action-primary text-fg-primary"
+                            )}
                         >
                             {subtitle}
                         </span>
                     )}
                     {discountPct && (
                         <span
-                            className="text-[10px] font-bold px-2 py-0.5 rounded"
-                            style={{
-                                backgroundColor: isDark ? "#ffffff20" : "#00000010",
-                                color: colors.text
-                            }}
+                            className={cn(
+                                "text-[10px] font-bold px-2 py-0.5 rounded",
+                                isDark ? "bg-brand-black text-fg-inverse" : "bg-surface-secondary text-fg-primary"
+                            )}
                         >
                             {discountPct}% OFF
                         </span>
@@ -126,7 +115,7 @@ export default function LayoutMinimal({ banner }: Props) {
                 {title && (
                     <h2
                         className="w-full text-[clamp(1.8rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.04em] mb-4 md:mb-6"
-                        style={{ color: colors.text, ...fadeUp(0.2) }}
+                        style={fadeUp(0.2)}
                     >
                         {title}
                     </h2>
@@ -134,8 +123,8 @@ export default function LayoutMinimal({ banner }: Props) {
 
                 {description && (
                     <p
-                        className="max-w-[40ch] text-[14px] sm:text-[15px] leading-relaxed mb-6 md:mb-8 font-light"
-                        style={{ color: colors.muted, ...fadeUp(0.3) }}
+                        className="max-w-[40ch] text-[14px] sm:text-[15px] leading-relaxed mb-6 md:mb-8 font-light text-fg-secondary"
+                        style={fadeUp(0.3)}
                     >
                         {description}
                     </p>
@@ -145,8 +134,8 @@ export default function LayoutMinimal({ banner }: Props) {
                     <div style={fadeUp(0.4)} className="flex-none lg:self-start">
                         <SliderPrice
                             price={price}
-                            color={colors.text}
-                            accentColor={colors.accent}
+                            color={isDark ? "var(--color-fg-inverse)" : "var(--color-fg-primary)"}
+                            accentColor={isDark ? "var(--color-fg-secondary)" : "var(--color-action-primary)"}
                             isDark={isDark}
                         />
                     </div>

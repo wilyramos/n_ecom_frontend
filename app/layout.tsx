@@ -2,13 +2,14 @@
 
 import type { Metadata } from "next";
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import { Toaster } from 'sonner';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import MercadoPagoProvider from "@/components/provider/MercadoPagoProvider";
 
-const inter = Inter({
+const poppins = Poppins({
     subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -87,7 +88,7 @@ export default function RootLayout({
     return (
         <html lang="es">
             <body
-                className={`${inter.className} bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]`}
+                className={`${poppins.className} bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]`}
             >
                 <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
                     <MercadoPagoProvider />

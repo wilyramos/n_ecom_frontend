@@ -6,27 +6,40 @@ import { redirect } from "next/navigation"
 import { UserSchema } from "../schemas"
 import { cache } from "react"
 
-export const verifySession = cache(async () => {
+// Obtiene la sesión de forma segura sin disparar redirecciones automáticas
+export const getSession = cache(async () => {
     const token = (await cookies()).get("ecommerce-token")?.value
-    if (!token) redirect("/auth/login")
+    if (!token) return null
 
-    const url = `${process.env.API_URL}/auth/user`;
-    const req = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    })
+    try {
+        const url = `${process.env.API_URL}/auth/user`;
+        const req = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
 
-    const Response = await req.json()
-    const ResponseValidation = UserSchema.safeParse(Response);
-    if (!ResponseValidation.success) redirect("/auth/login")
+        if (!req.ok) return null
 
-    return {
-        user: ResponseValidation.data,
-        token,
-        isAuth: true
+        const responseData = await req.json()
+        const ResponseValidation = UserSchema.safeParse(responseData);
+        
+        if (!ResponseValidation.success) return null
+
+        return {
+            user: ResponseValidation.data,
+            token,
+            isAuth: true
+        }
+    } catch (error) {
+        return null
     }
 })
 
-// Para rutas que NO requieren auth (checkout, profile público, etc.)
+export const verifySession = cache(async () => {
+    const session = await getSession()
+    if (!session) redirect("/auth/login")
+    return session
+})
+
 export const getTokenOptional = cache(async (): Promise<string | undefined> => {
     const token = (await cookies()).get("ecommerce-token")?.value
     return token

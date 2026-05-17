@@ -8,6 +8,14 @@ export default function MaintenanceNotice({
     message = "Estamos mejorando esta sección para brindarte una mejor experiencia.",
     showHomeButton = true,
 }) {
+
+
+
+    // LISTA DE TODOS:
+
+    // Clientes felices que confian en nosotros.
+    // 
+
     return (
         <div className="flex flex-col items-center px-6 py-12">
             <div className="bg-gray-100 text-gray-500 p-4 rounded-full mb-6">

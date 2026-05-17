@@ -1,4 +1,4 @@
-import "server-only"; // Asegura que esto solo corre en el servidor (Next.js)
+import "server-only"; // Asegura que esto solo corre en el servidor
 import { CatalogResponseSchema, type CatalogResponse } from "@/src/schemas/catalog";
 
 export const getCatalogData = async (
@@ -48,8 +48,6 @@ export const getCatalogData = async (
     }
 };
 
-// ... (tu código existente de getCatalogData)
-
 /**
  * Obtiene específicamente el catálogo de OFERTAS.
  * Apunta a un endpoint dedicado para mejor performance y lógica de negocio.
@@ -71,7 +69,6 @@ export const getCatalogDataOffers = async (
             }
         });
 
-        // 🔥 Petición a endpoint DEDICADO
         const url = `${process.env.API_URL}/products/offers/all?${params.toString()}`;
 
         const res = await fetch(url, {

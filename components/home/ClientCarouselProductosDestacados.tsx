@@ -3,7 +3,7 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import type { ButtonGroupProps } from "react-multi-carousel";
-import ProductCard from "@/components/home/product/ProductCard";
+import ProductCardHome from "./product/ProductCardHome";
 import type { ProductResponse } from "@/src/schemas";
 import HeaderConTituloConControles from "../ui/HeaderConTituloConControles";
 
@@ -16,14 +16,14 @@ const AbsoluteHeaderWrapper = (props: ButtonGroupProps) => {
         <div className="absolute top-0 left-0 right-0 z-20 px-4 md:px-8">
             <HeaderConTituloConControles
                 {...props}
-                title={<>Nuevos</>}
-                viewAllHref="/novedades"
+                title={<>Destacados del momento</>}
+                viewAllHref="/productos"
             />
         </div>
     );
 };
 
-export default function ClientCarouselProductosNuevos({ products }: Props) {
+export default function ClientCarouselProductosDestacados({ products }: Props) {
     const responsive = {
         desktop: { breakpoint: { max: 3000, min: 1280 }, items: 4 },
         laptop: { breakpoint: { max: 1280, min: 1024 }, items: 4 },
@@ -46,7 +46,7 @@ export default function ClientCarouselProductosNuevos({ products }: Props) {
             >
                 {products.map((product) => (
                     <div key={product._id} className="transition-transform duration-500 hover:scale-[1.02]">
-                        <ProductCard product={product} />
+                        <ProductCardHome product={product} />
                     </div>
                 ))}
             </Carousel>

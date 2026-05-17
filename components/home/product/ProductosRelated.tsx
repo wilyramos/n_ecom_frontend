@@ -6,11 +6,7 @@ export default async function ProductosRelated({ slug }: { slug: string }) {
 
     // console.log(productsRelate);
     if (!productsRelated || productsRelated.length === 0) {
-        return (
-            <p className="text-gray-200 text-center text-sm mt-6">
-                No hay productos relacionados
-            </p>
-        );
+        return null;
     }
 
     return (

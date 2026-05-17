@@ -12,9 +12,8 @@ const AbsoluteHeaderWrapper = (p: ButtonGroupProps) => (
     <div className="absolute inset-x-0 top-0 z-20 px-4 md:px-8">
         <HeaderConTituloConControles
             {...p}
-            label="Colecciones"
             viewAllHref="/categorias"
-            title={<>Categorías <span className="text-[var(--color-accent-warm)] font-light italic">destacadas.</span></>}
+            title={<>Categorías</>}
         />
     </div>
 );

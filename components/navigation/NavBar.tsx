@@ -2,7 +2,6 @@
 import Link from "next/link";
 import Logo from "../ui/Logo";
 import ButtonShowCart from "../ui/ButtonShowCart";
-import ButtonSearchFormStore from "../ui/ButtonSearchFormStore";
 import ServerCategorias from "./ServerCategorias";
 import NavBarClient from "./NavBarClient";
 import ServerSheetMobile from "./ServerSheetMobile";
@@ -12,58 +11,50 @@ import ButtonSearchMobile from "./ButtonSearchMobile";
 export default function NavBar() {
     return (
         <NavBarClient>
-            <header className="sticky top-0 z-50 h-12 flex flex-col justify-center text-[var(--color-text-primary)] bg-[var(--color-bg-primary)] border-b border-[var(--color-border-subtle)] transition-colors duration-300 ">
-                <div className="max-w-screen-2xl w-full mx-auto grid grid-cols-3 items-center px-4 md:px-6">
+            <header className="sticky top-0 z-50 h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300">
+                <div className="max-w-screen-2xl w-full mx-auto flex items-center justify-between px-4 md:px-6">
 
-                    {/* Left column */}
-                    <div className="flex items-center">
+                    {/* Left: Logo siempre a la izquierda alineado */}
+                    <div className="flex items-center gap-2 shrink-0">
                         <div className="md:hidden">
                             <ServerSheetMobile />
                         </div>
-
-                        <div className="hidden md:flex">
-                            <ButtonSearchFormStore />
-                        </div>
-                    </div>
-
-                    {/* Center column - LOGO SIEMPRE CENTRADO */}
-                    <div className="flex justify-center">
                         <Link href="/" className="flex items-center max-w-[140px]">
-                            <Logo color="black" />
+                            <Logo color="black" size={50} />
                         </Link>
                     </div>
 
-                    {/* Right column */}
-                    <div className="flex items-center justify-end gap-2">
-                        <div className="hidden md:flex items-center gap-1">
+                    {/* Right: Categorías integradas en el flujo principal + Iconos de Acción */}
+                    <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                        
+                        {/* Categorías de Escritorio integradas directamente al lado de las acciones */}
+                        <div className="hidden md:block">
+                            <ServerCategorias />
+                        </div>
+
+                        {/* Separador sutil visible en desktop */}
+                        <div className="hidden md:block h-5 w-px bg-border-default" />
+
+                        {/* Grupo de Iconos de Acción End-to-End */}
+                        <div className="flex items-center gap-1 md:gap-2">
+                            <ButtonSearchMobile />
+
                             <Link
                                 href="/auth/registro"
-                                className="flex items-center gap-1 text-[var(--color-text-primary)] rounded-full transition-colors duration-200 hover:text-[var(--color-action-primary)]"
+                                className="hidden md:flex items-center text-fg-primary rounded-full transition-colors duration-200 hover:text-action-primary"
                                 aria-label="Cuenta"
                             >
-                                <div className="hover:bg-[var(--color-surface-hover)] rounded-full p-2 transition-colors duration-200">
-                                    <AiOutlineUser className="h-6 w-6" />
+                                <div className="hover:bg-surface-secondary rounded-full p-2 transition-colors duration-200">
+                                    <AiOutlineUser className="h-5 w-5" />
                                 </div>
                             </Link>
 
-                            <ButtonShowCart />
-                        </div>
-
-                        <div className="md:hidden flex items-center gap-2">
-                            <ButtonSearchMobile />
                             <ButtonShowCart />
                         </div>
                     </div>
 
                 </div>
             </header>
-
-            <div className="hidden md:block sticky z-40 w-full border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] transition-colors duration-300">
-                <div className="max-w-screen-2xl mx-auto px-4 md:px-6 flex items-center">
-                    <ServerCategorias />
-                </div>
-            </div>
-
         </NavBarClient>
     );
 }

@@ -74,16 +74,20 @@ export function useCatalogNav() {
     const isBrandActive = (slug: string) => slugs.includes(slug);
     const isLineActive = (slug: string) => slugs.includes(slug);
 
-    // Filtros de atributos (Query Params) - Se mantiene igual
     const updateFilter = useCallback((key: string, value: string) => {
         const newParams = new URLSearchParams(searchParams.toString());
         newParams.delete('page'); // Reset página al filtrar
 
-        // Lógica de Toggle para checkbox
-        if (newParams.has(key, value)) {
-            newParams.delete(key, value);
+        // Si es ordenamiento, debe reemplazar por completo el valor anterior
+        if (key === 'sort') {
+            newParams.set(key, value);
         } else {
-            newParams.append(key, value);
+            // Lógica de Toggle para checkbox / atributos múltiples
+            if (newParams.has(key, value)) {
+                newParams.delete(key, value);
+            } else {
+                newParams.append(key, value);
+            }
         }
 
         const pathname = window.location.pathname;

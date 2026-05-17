@@ -9,7 +9,7 @@ import React from "react";
 interface Props {
     currentPage: number;
     totalPages: number;
-    siblingCount?: number; // Opcional: cuántos números mostrar a los lados
+    siblingCount?: number;
 }
 
 export default function CatalogPagination({

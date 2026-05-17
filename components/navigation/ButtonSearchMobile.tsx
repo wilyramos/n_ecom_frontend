@@ -1,3 +1,4 @@
+// frontend/components/navigation/ButtonSearchMobile.tsx
 "use client";
 
 import { Search, X } from "lucide-react";
@@ -9,7 +10,6 @@ export default function ButtonSearchMobile() {
     const [headerHeight, setHeaderHeight] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Detectar altura del navbar actual
     useEffect(() => {
         const updateHeight = () => {
             const nav = document.getElementById("navbar-fixed");
@@ -17,57 +17,52 @@ export default function ButtonSearchMobile() {
                 setHeaderHeight(nav.offsetHeight);
             }
         };
-
         updateHeight();
         window.addEventListener("resize", updateHeight);
         return () => window.removeEventListener("resize", updateHeight);
     }, []);
 
-    // Cerrar al hacer click fuera
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setOpenSearch(false);
             }
         };
-
         if (openSearch) document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [openSearch]);
 
     return (
         <>
-            {/* Toggle button */}
+            {/* Toggle button único para responsive */}
             <button
                 onClick={() => setOpenSearch(!openSearch)}
-                className="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2.5 rounded-full hover:bg-surface-secondary text-fg-primary transition-colors duration-200 active:scale-90"
                 aria-label="Buscar productos"
             >
                 {openSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
             </button>
 
-            {/* Caja del buscador */}
+            {/* Caja del buscador desplegable */}
             {openSearch && (
                 <div
                     ref={containerRef}
-                    className="
-                        fixed left-0 w-full bg-white border-b border-gray-200
-                        z-[45] px-4 py-3 md:hidden
-                        animate-in fade-in slide-in-from-top-2 duration-200
-                    "
+                    className="fixed left-0 w-full bg-surface-primary border-b border-border-default z-[45] px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-200"
                     style={{ top: headerHeight }}
                 >
-                    <ButtonSearchFormStore
-                        isMobile={true}
-                        onSearchComplete={() => setOpenSearch(false)}
-                    />
+                    <div className="max-w-3xl mx-auto w-full">
+                        <ButtonSearchFormStore
+                            isMobile={true}
+                            onSearchComplete={() => setOpenSearch(false)}
+                        />
+                    </div>
                 </div>
             )}
 
-            {/* Overlay solo debajo del navbar */}
+            {/* Overlay */}
             {openSearch && (
                 <div
-                    className="fixed inset-0 bg-black/40 z-[40] md:hidden"
+                    className="fixed inset-0 bg-brand-black/40 backdrop-blur-xs z-[40]"
                     style={{
                         top: headerHeight,
                         height: `calc(100vh - ${headerHeight}px)`

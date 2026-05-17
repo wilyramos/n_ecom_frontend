@@ -14,18 +14,21 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
     const discount = compare > price
 
     return (
-        <Link href={`/productos/${product.slug}`} className="group block p-2">
-
+        <Link 
+            href={`/productos/${product.slug}`} 
+            className="group block p-2 bg-surface-primary text-fg-primary rounded-lg transition-all  border border-border-default"
+        >
             {/* Imagen */}
-            <div className="relative aspect-square border overflow-hidden">
+            <div className="relative aspect-square overflow-hidden rounded-md">
                 {img1 ? (
                     <>
                         <Image
                             src={img1}
                             alt={product.nombre || "Producto"}
                             fill
-                            className={`object-contain p-4 transition ${img2 !== img1 ? "group-hover:opacity-0" : "group-hover:scale-105"
-                                }`}
+                            className={`object-contain p-4 transition ${
+                                img2 !== img1 ? "group-hover:opacity-0" : "group-hover:scale-105"
+                            }`}
                         />
 
                         {img2 !== img1 && (
@@ -38,7 +41,7 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
                         )}
                     </>
                 ) : (
-                    <div className="flex h-full items-center justify-center text-gray-400">
+                    <div className="flex h-full items-center justify-center text-fg-secondary bg-surface-secondary/30">
                         <MdOutlineImageNotSupported size={40} />
                     </div>
                 )}
@@ -46,11 +49,11 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
 
             {/* Info */}
             <div className="mt-3 space-y-1">
-                <h3 className="text-xs md:text-sm line-clamp-2 group-hover:text-[var(--color-text-secondary)] transition-colors">
+                <h3 className="text-xs md:text-sm font-medium line-clamp-2 group-hover:text-fg-secondary transition-colors">
                     {product.nombre}
                 </h3>
 
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-sm text-fg-primary font-semibold">
                     <span>
                         S/{" "}
                         {price.toLocaleString("es-PE", {
@@ -59,7 +62,7 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
                     </span>
 
                     {discount && (
-                        <span className="line-through text-gray-400 text-xs">
+                        <span className="line-through text-fg-secondary text-xs font-normal">
                             S/ {compare.toLocaleString("es-PE")}
                         </span>
                     )}

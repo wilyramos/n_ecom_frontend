@@ -1,13 +1,7 @@
+// frontend/components/ui/ButtonShowCart.tsx
 "use client";
 
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger
-} from "@/components/ui/sheet";
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingCart, ArrowRight, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/src/store/cartStore";
 import ItemCarrito from "../cart/ItemCarrito";
@@ -19,8 +13,8 @@ export default function ButtonShowCart() {
     const carrito = useCartStore((state) => state.cart);
     const isCartOpen = useCartStore((state) => state.isCartOpen);
     const setCartOpen = useCartStore((state) => state.setCartOpen);
-
     const router = useRouter();
+
     const total = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0).toLocaleString('es-PE', { minimumFractionDigits: 2 });
 
     const handleCheckout = () => {
@@ -30,67 +24,45 @@ export default function ButtonShowCart() {
         }
         setCartOpen(false);
         router.push("/carrito");
-    }
+    };
 
     return (
         <Sheet open={isCartOpen} onOpenChange={setCartOpen}>
             <SheetTrigger asChild>
-                <button className="relative p-2.5 rounded-full transition-all duration-300 hover:bg-[var(--color-bg-tertiary)] group cursor-pointer active:scale-90">
-                    <ShoppingCart
-                        size={20}
-                        strokeWidth={1.5}
-                        className="text-[var(--color-text-primary)]"
-                    />
+                <button className="relative p-2.5 rounded-full transition-all duration-200 hover:bg-surface-secondary text-fg-primary group cursor-pointer active:scale-90">
+                    <ShoppingCart size={20} strokeWidth={1.5} />
                     {carrito.length > 0 && (
-                        <span className="absolute top-1 right-1 bg-[var(--color-accent-warm)] text-[var(--color-text-inverse)] text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-md">
+                        <span className="absolute top-1 right-1 bg-action-primary text-fg-inverse text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-sm">
                             {carrito.length}
                         </span>
                     )}
                 </button>
             </SheetTrigger>
 
-            <SheetContent
-                side="right"
-                className="flex flex-col h-full  p-0 border-l border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] overflow-hidden"
-            >
-                {/* Header */}
-                <SheetHeader className="p-6 border-b border-[var(--color-border-subtle)]">
-                    <div className="flex flex-col gap-1">
-
-                        <div className="flex items-center justify-between">
-                            <SheetTitle className="text-xl font-semibold text-[var(--color-text-primary)]">
-                                Carrito
-                            </SheetTitle>
-                            <span className="bg-[var(--color-bg-tertiary)] px-2.5 py-0.5 rounded-full text-[10px] font-bold text-[var(--color-text-secondary)] uppercase">
-                                {carrito.length} {carrito.length === 1 ? 'Ítem' : 'Ítems'}
-                            </span>
-                        </div>
+            <SheetContent side="right" className="flex flex-col h-full p-0 border-l border-border-default bg-surface-primary overflow-hidden">
+                <SheetHeader className="p-4 border-b border-border-default">
+                    <div className="flex items-center justify-between">
+                        <SheetTitle className="text-lg font-semibold text-fg-primary">Bolsa de Compra</SheetTitle>
+                        <span className="bg-surface-secondary text-fg-primary px-2 py-0.5 rounded text-[10px] font-bold">
+                            {carrito.length} {carrito.length === 1 ? 'Ítem' : 'Ítems'}
+                        </span>
                     </div>
                 </SheetHeader>
 
-                {/* Lista de productos (Sin Scroll X) */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-2 scrollbar-hide">
+                <div className="flex-1 overflow-y-auto px-4 py-2">
                     {carrito.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center space-y-6">
-                            <div className="p-8 rounded-full bg-[var(--color-bg-secondary)] text-[var(--color-text-tertiary)]">
-                                <ShoppingBag size={48} strokeWidth={1} />
+                        <div className="h-full flex flex-col items-center justify-center space-y-4">
+                            <div className="p-6 rounded-full bg-surface-secondary text-fg-secondary">
+                                <ShoppingBag size={40} strokeWidth={1.5} />
                             </div>
                             <div className="text-center">
-                                <h3 className="text-lg font-bold text-[var(--color-text-primary)] tracking-tight">
-                                    Tu bolsa está vacía
-                                </h3>
-                                <p className="text-sm text-[var(--color-text-secondary)] max-w-[220px] mx-auto mt-2">
-                                    Explora nuestra tienda y añade los mejores productos.
-                                </p>
+                                <h3 className="text-sm font-bold text-fg-primary">Tu bolsa está vacía</h3>
                             </div>
                         </div>
                     ) : (
-                        <div className="">
+                        <div className="divide-y divide-border-default">
                             {carrito.map((item) => (
-                                <div
-                                    key={`${item._id}-${item.variant?._id ?? "no-variant"}`}
-                                    className="py-2 w-full overflow-hidden"
-                                >
+                                <div key={`${item._id}-${item.variant?._id ?? "no-variant"}`} className="py-2">
                                     <ItemCarrito item={item} />
                                 </div>
                             ))}
@@ -98,36 +70,25 @@ export default function ButtonShowCart() {
                     )}
                 </div>
 
-                {/* Footer y Acciones */}
                 {carrito.length > 0 && (
-                    <div className="p-6 bg-[var(--color-bg-primary)] border-t border-[var(--color-border-default)]">
-                        <div className="space-y-4 mb-6">
-
-
-                            <div className="flex justify-between items-baseline pt-4 border-t border-[var(--color-border-subtle)]">
-                                <span className="text-lg font-bold tracking-tight text-[var(--color-text-primary)]">Total</span>
-                                <div className="text-right">
-                                    <span className="text-xl text-[var(--color-text-primary)] tracking-tighter">
-                                        S/ {total}
-                                    </span>
-
-                                </div>
-                            </div>
+                    <div className="p-4 bg-surface-primary border-t border-border-default">
+                        <div className="flex justify-between items-baseline mb-4">
+                            <span className="text-sm font-bold text-fg-primary">Total</span>
+                            <span className="text-lg font-bold text-fg-primary">S/ {total}</span>
                         </div>
 
-                        <div className="grid gap-3">
+                        <div className="grid gap-2">
                             <Button
                                 onClick={handleCheckout}
-                                variant="accent"
+                                className="w-full bg-action-primary hover:bg-action-primary-hover text-fg-inverse font-bold py-2 rounded flex items-center justify-center gap-2"
                             >
-                                Finalizar Pedido <ArrowRight size={18} />
+                                Finalizar Pedido <ArrowRight size={16} />
                             </Button>
-
                             <button
                                 onClick={() => setCartOpen(false)}
-                                className="w-full py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
+                                className="w-full py-2 text-[10px] font-bold uppercase tracking-wider text-fg-secondary hover:text-fg-primary transition-colors"
                             >
-                                Continuar Explorando
+                                Continuar Comprando
                             </button>
                         </div>
                     </div>

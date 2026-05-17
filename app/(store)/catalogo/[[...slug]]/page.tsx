@@ -10,6 +10,7 @@ type Props = {
 };
 
 // =====================================================================
+// METADATA - SEO
 // =====================================================================
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
     const { slug } = await params;
@@ -84,6 +85,9 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     };
 }
 
+// =====================================================================
+// COMPONENT - PÁGINA PRINCIPAL
+// =====================================================================
 export default async function Page({ params, searchParams }: Props) {
     const { slug } = await params;
     const resolvedSearchParams = await searchParams;
@@ -107,6 +111,34 @@ export default async function Page({ params, searchParams }: Props) {
         ]
     };
 
+    // Agregar slugs al breadcrumb si existen
+    if (data.context.categoryName) {
+        breadcrumbList.itemListElement.push({
+            "@type": "ListItem",
+            "position": 3,
+            "name": data.context.categoryName,
+            "item": `${baseUrl}/catalogo/${slugs.join('/')}`
+        });
+    }
+
+    if (data.context.brandName) {
+        breadcrumbList.itemListElement.push({
+            "@type": "ListItem",
+            "position": breadcrumbList.itemListElement.length + 1,
+            "name": data.context.brandName,
+            "item": `${baseUrl}/catalogo/${slugs.join('/')}`
+        });
+    }
+
+    if (data.context.lineName) {
+        breadcrumbList.itemListElement.push({
+            "@type": "ListItem",
+            "position": breadcrumbList.itemListElement.length + 1,
+            "name": data.context.lineName,
+            "item": `${baseUrl}/catalogo/${slugs.join('/')}`
+        });
+    }
+
     // 2. Schema de Colección
     const collectionSchema = {
         "@context": "https://schema.org",
@@ -128,7 +160,7 @@ export default async function Page({ params, searchParams }: Props) {
 
     return (
         <>
-            {/* Inyección de Datos Estructurados */}
+            {/* Inyección de Datos Estructurados para SEO */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
@@ -138,6 +170,7 @@ export default async function Page({ params, searchParams }: Props) {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
             />
 
+            {/* Componente de Layout */}
             <CatalogLayout
                 products={data.products}
                 filters={data.filters}

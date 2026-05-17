@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ImageOff, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImageOff, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function ImagenesProductoCarousel({ images }: { images: string[] }) {
@@ -11,15 +11,8 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
     }, [images]);
 
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [canScrollUp, setCanScrollUp] = useState(false);
-    const [canScrollDown, setCanScrollDown] = useState(false);
-
-    useEffect(() => {
-        if (selectedIndex >= uniqueImages.length) {
-            setSelectedIndex(0);
-        }
-    }, [uniqueImages, selectedIndex]);
-
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(false);
     const [zoom, setZoom] = useState(false);
     const [position, setPosition] = useState({ x: 50, y: 50 });
 
@@ -27,11 +20,17 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
     const touchStartX = useRef<number | null>(null);
     const touchEndX = useRef<number | null>(null);
 
+    useEffect(() => {
+        if (selectedIndex >= uniqueImages.length) {
+            setSelectedIndex(0);
+        }
+    }, [uniqueImages, selectedIndex]);
+
     const updateScrollButtons = () => {
         const el = thumbnailsRef.current;
         if (!el) return;
-        setCanScrollUp(el.scrollTop > 0);
-        setCanScrollDown(el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+        setCanScrollLeft(el.scrollLeft > 0);
+        setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
     };
 
     useEffect(() => {
@@ -39,28 +38,32 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
         if (!el) return;
         updateScrollButtons();
         el.addEventListener("scroll", updateScrollButtons);
-        return () => el.removeEventListener("scroll", updateScrollButtons);
-    }, [uniqueImages]);
+        window.addEventListener("resize", updateScrollButtons);
+        return () => {
+            el.removeEventListener("scroll", updateScrollButtons);
+            window.removeEventListener("resize", updateScrollButtons);
+        };
+    }, [uniqueImages, selectedIndex]);
 
     useEffect(() => {
         if (thumbnailsRef.current) {
             const container = thumbnailsRef.current;
             const selectedThumb = container.children[selectedIndex] as HTMLElement;
             if (selectedThumb) {
-                const containerCenter = container.offsetHeight / 2;
-                const thumbCenter = selectedThumb.offsetTop + (selectedThumb.offsetHeight / 2);
+                const containerCenter = container.offsetWidth / 2;
+                const thumbCenter = selectedThumb.offsetLeft + (selectedThumb.offsetWidth / 2);
                 container.scrollTo({
-                    top: thumbCenter - containerCenter,
+                    left: thumbCenter - containerCenter,
                     behavior: "smooth"
                 });
             }
         }
     }, [selectedIndex]);
 
-    const scrollThumbs = (direction: "up" | "down") => {
+    const scrollThumbs = (direction: "left" | "right") => {
         const el = thumbnailsRef.current;
         if (!el) return;
-        el.scrollBy({ top: direction === "up" ? -120 : 120, behavior: "smooth" });
+        el.scrollBy({ left: direction === "left" ? -120 : 120, behavior: "smooth" });
     };
 
     const nextImage = () => {
@@ -107,7 +110,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
 
     if (!currentImgSrc || uniqueImages.length === 0) {
         return (
-            <div className="w-full aspect-square bg-[var(--color-bg-tertiary)] rounded-3xl flex flex-col items-center justify-center text-[var(--color-text-tertiary)] border border-[var(--color-border-subtle)]">
+            <div className="w-full aspect-square flex flex-col items-center justify-center text-fg-secondary ">
                 <ImageOff size={32} strokeWidth={1.2} />
                 <span className="text-xs mt-2 font-medium">Imagen no disponible</span>
             </div>
@@ -115,74 +118,15 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
     }
 
     return (
-        <div className="w-full flex flex-col md:flex-row gap-4 lg:gap-6 bg-[var(--color-bg-primary)] select-none rounded-lg sticky top-24">
-
-            {/* DESKTOP THUMBNAILS */}
-
-            {uniqueImages.length > 1 && (
-                <div className="hidden md:flex flex-col items-center w-[120px] shrink-0 gap-1">
-
-                    {/* Botón scroll arriba */}
-                    <button
-                        onClick={() => scrollThumbs("up")}
-                        className={cn(
-                            "w-full flex items-center justify-center py-0.5 transition-all duration-200 bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]",
-                            !canScrollUp && "opacity-0 pointer-events-none"
-                        )}
-                        aria-label="Desplazar miniaturas hacia arriba"
-                    >
-                        <ChevronUp size={14} strokeWidth={1.5} />
-                    </button>
-
-                    {/* Lista de miniaturas */}
-                    <div
-                        ref={thumbnailsRef}
-                        className="w-full flex flex-col gap-2 overflow-y-auto max-h-[600px] py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                    >
-                        {uniqueImages.map((img, idx) => (
-                            <button
-                                key={`${img}-${idx}`}
-                                onClick={() => setSelectedIndex(idx)}
-                                onMouseEnter={() => setSelectedIndex(idx)}
-                                className={cn(
-                                    "relative aspect-square w-full shrink-0 overflow-hidden border-r-[3px] transition-all duration-300 ease-in-out",
-                                    selectedIndex === idx
-                                        ? "border-[var(--color-accent-warm)] opacity-100"
-                                        : "border-[var(--color-border-default)] opacity-50 hover:opacity-100 hover:border-[var(--color-text-secondary)]"
-                                )}
-                            >
-                                <Image
-                                    src={img}
-                                    alt={`Miniatura ${idx + 1}`}
-                                    fill
-                                    className="object-contain"
-                                    sizes="72px"
-                                    quality={20}
-                                    unoptimized
-                                />
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Botón scroll abajo */}
-                    <button
-                        onClick={() => scrollThumbs("down")}
-                        className={cn(
-                            "w-full flex items-center justify-center py-0.5 transition-all duration-200 bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)]",
-                            !canScrollDown && "opacity-0 pointer-events-none"
-                        )}
-                        aria-label="Desplazar miniaturas hacia abajo"
-                    >
-                        <ChevronDown size={14} strokeWidth={1.5} />
-                    </button>
-                </div>
-            )}
-
+        <div className="w-full flex flex-col gap-4 bg-surface-primary select-none rounded-lg sticky top-24">
+            
             {/* MAIN IMAGE */}
-            <div className="flex-1 relative group">
+            <div className="flex-1 relative group w-full">
                 <div
-                    className={`relative aspect-square overflow-hidden bg-[var(--color-bg-primary)] transition-all duration-700 ease-in-out 
-                        ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+                    className={cn(
+                        "relative aspect-square overflow-hidden bg-surface-primary",
+                        zoom ? "cursor-zoom-out" : "cursor-zoom-in"
+                    )}
                     onMouseMove={handleMouseMove}
                     onClick={() => setZoom(!zoom)}
                     onTouchStart={handleTouchStart}
@@ -201,13 +145,12 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                                 zoom ? "scale-[2.5]" : "scale-100"
                             )}
                             style={zoom ? { transformOrigin: `${position.x}% ${position.y}%` } : undefined}
-                            quality={100}
                             unoptimized
                         />
                     )}
 
                     {/* Zoom Button (Desktop Only) */}
-                    <div className="absolute top-4 right-4 p-2.5 bg-[var(--color-bg-primary)]/60 backdrop-blur-lg rounded-full text-[var(--color-text-primary)] opacity-0 md:group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-4 right-4 p-2.5 bg-surface-primary/60 backdrop-blur-lg rounded-full text-fg-primary opacity-0 md:group-hover:opacity-100 transition-opacity">
                         {zoom ? <ZoomOut size={18} strokeWidth={1.5} /> : <ZoomIn size={18} strokeWidth={1.5} />}
                     </div>
 
@@ -216,14 +159,14 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                         <>
                             <button
                                 onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                                className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-[var(--color-bg-primary)]/70 md:bg-[var(--color-bg-primary)]/50 backdrop-blur-xs text-[var(--color-text-primary)]  opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-[var(--color-bg-primary)] active:scale-90 z-10"
+                                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-surface-primary/70 md:bg-surface-primary/50 backdrop-blur-xs text-fg-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-surface-primary active:scale-90 z-10 border border-border-default"
                                 aria-label="Anterior"
                             >
                                 <ChevronLeft size={20} strokeWidth={1.5} />
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                                className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-[var(--color-bg-primary)]/70 md:bg-[var(--color-bg-primary)]/50 backdrop-blur-xs text-[var(--color-text-primary)] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-[var(--color-bg-primary)] active:scale-90 z-10"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-surface-primary/70 md:bg-surface-primary/50 backdrop-blur-xs text-fg-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-surface-primary active:scale-90 z-10 border border-border-default"
                                 aria-label="Siguiente"
                             >
                                 <ChevronRight size={20} strokeWidth={1.5} />
@@ -231,25 +174,67 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                         </>
                     )}
                 </div>
+            </div>
 
-                {/* MOBILE PAGINATION */}
-                {uniqueImages.length > 1 && (
-                    <div className="flex md:hidden justify-center items-center gap-2 my-2">
-                        {uniqueImages.map((_, idx) => (
+            {/* HORIZONTAL THUMBNAILS UNDERNEATH */}
+            {uniqueImages.length > 1 && (
+                <div className="relative flex items-center w-full px-1">
+                    
+                    {/* Botón scroll izquierda */}
+                    <button
+                        onClick={() => scrollThumbs("left")}
+                        className={cn(
+                            "absolute left-0  z-10 p-1 rounded-full border border-border-default bg-surface-primary text-fg-secondary hover:text-fg-primary transition-all duration-200 shadow-sm shadow-black/5",
+                            !canScrollLeft && "opacity-0 pointer-events-none"
+                        )}
+                        aria-label="Desplazar miniaturas hacia la izquierda"
+                    >
+                        <ChevronLeft size={16} strokeWidth={2} />
+                    </button>
+
+                    {/* Lista de miniaturas horizontales */}
+                    <div
+                        ref={thumbnailsRef}
+                        className="w-full flex flex-row gap-2 overflow-x-auto py-1 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    >
+                        {uniqueImages.map((img, idx) => (
                             <button
-                                key={idx}
+                                key={`${img}-${idx}`}
                                 onClick={() => setSelectedIndex(idx)}
                                 onMouseEnter={() => setSelectedIndex(idx)}
-                                className={`transition-all duration-500 rounded-full
-                                    ${selectedIndex === idx
-                                        ? "w-8 h-1 bg-[var(--color-text-primary)]"
-                                        : "w-1.5 h-1.5 bg-[var(--color-border-default)]"}`}
-                                aria-label={`Imagen ${idx + 1}`}
-                            />
+                                className={cn(
+                                    "relative aspect-square w-20 h-20 shrink-0 overflow-hidden border-2 rounded-lg bg-surface-primary transition-all duration-200 ease-in-out",
+                                    selectedIndex === idx
+                                        ? "border-action-primary opacity-100 scale-95 shadow-sm"
+                                        : "border-border-default opacity-60 hover:opacity-100 hover:border-fg-secondary"
+                                )}
+                            >
+                                <Image
+                                    src={img}
+                                    alt={`Miniatura ${idx + 1}`}
+                                    fill
+                                    className="object-contain p-1"
+                                    sizes="80px"
+                                    quality={40}
+                                    unoptimized
+                                />
+                            </button>
                         ))}
                     </div>
-                )}
-            </div>
+
+                    {/* Botón scroll derecha */}
+                    <button
+                        onClick={() => scrollThumbs("right")}
+                        className={cn(
+                            "absolute right-0 z-10 p-1 rounded-full border border-border-default bg-surface-primary text-fg-secondary hover:text-fg-primary transition-all duration-200 shadow-sm shadow-black/5",
+                            !canScrollRight && "opacity-0 pointer-events-none"
+                        )}
+                        aria-label="Desplazar miniaturas hacia la derecha"
+                    >
+                        <ChevronRight size={16} strokeWidth={2} />
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

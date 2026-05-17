@@ -6,13 +6,13 @@ import ImagenesProductoCarousel from './ImagenesProductoCarousel';
 import type { ProductWithCategoryResponse, TApiVariant } from '@/src/schemas';
 import ShopNowButton from './ShopNowButton';
 import ProductExpandableSections from './ProductExpandableSections ';
-import { cn, getDeliveryRange } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import PaymentMethods from '../PaymentMethods';
 import ColorCircle from '@/components/ui/ColorCircle';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ChevronRight, CreditCard, MessageCircle, Truck } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import {
     Select,
     SelectTrigger,
@@ -129,319 +129,293 @@ export default function ProductDetails({ producto }: Props) {
 
     return (
         <>
-            <article className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-6 mx-auto">
-                <div className='md:col-span-7'>
+            <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 max-w-7xl mx-auto bg-surface-primary px-4 py-6 rounded-lg">
+                <div className="lg:col-span-7 w-full">
                     <ImagenesProductoCarousel images={variantImages} />
                 </div>
 
-                <section className='md:col-span-5 px-2 md:px-0'>
-                    <div className="space-y-0">
-                        <header className="pt-1 pb-4 border-b border-[var(--color-border-subtle)] space-y-3">
-
-                            {/* Breadcrumb marca / línea + SKU */}
-                            <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-1.5 flex-wrap">
+                <section className="lg:col-span-5 flex flex-col  space-y-6">
+                    <div className="space-y-6">
+                        <header className="space-y-3 pb-6 ">
+                            <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] tracking-wide uppercase font-medium">
+                                <div className="flex items-center gap-1 text-fg-secondary">
                                     {producto.brand && (
-                                        <Link
-                                            href={`/catalogo/${producto.brand.slug}`}
-                                            className="text-[11px] font-medium text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-warm)] transition-colors uppercase tracking-wide"
-                                        >
+                                        <Link href={`/catalogo/${producto.brand.slug}`} className="hover:text-fg-primary transition-colors">
                                             {producto.brand.nombre}
                                         </Link>
                                     )}
-                                    {producto.brand && producto.line && (
-                                        <span className="text-[11px] text-[var(--color-border-default)]">/</span>
-                                    )}
+                                    {producto.brand && producto.line && <span>/</span>}
                                     {producto.line && typeof producto.line === 'object' && (
-                                        <Link
-                                            href={`/catalogo/${producto.line.slug}`}
-                                            className="text-[11px] font-medium text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-warm)] transition-colors uppercase tracking-wide"
-                                        >
+                                        <Link href={`/catalogo/${producto.line.slug}`} className="hover:text-fg-primary transition-colors">
                                             {producto.line.nombre}
                                         </Link>
                                     )}
                                 </div>
 
                                 {(selectedVariant?.sku || producto.sku) && (
-                                    <span className="text-[10px] text-[var(--color-text-tertiary)]">
+                                    <span className="text-fg-secondary font-normal normal-case">
                                         SKU: {selectedVariant?.sku || producto.sku}
                                     </span>
                                 )}
                             </div>
 
-                            {/* Nombre */}
-                            <h1 className="text-[clamp(1.1rem,2vw,1.6rem)] font-normal text-[var(--color-text-primary)] tracking-tight leading-tight">
+                            <h1 className="text-2xl md:text-3xl font-normal text-fg-primary tracking-tight leading-tight">
                                 {producto.nombre}
                             </h1>
 
-                            {/* Color sin variantes */}
                             {!producto.variants?.length && colorAtributo && (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[11px] text-[var(--color-text-tertiary)]">Color</span>
+                                <div className="flex items-center gap-2 pt-1">
+                                    <span className="text-xs text-fg-secondary">Color:</span>
                                     <div className="flex items-center gap-1.5">
                                         {(Array.isArray(colorAtributo) ? colorAtributo : [colorAtributo]).map((c) => (
-                                            <ColorCircle key={c} color={c} size={18} />
+                                            <ColorCircle key={c} color={c} size={16} />
                                         ))}
                                     </div>
                                 </div>
                             )}
 
-                            {/* Precio */}
-                            <div className="flex items-baseline gap-3 flex-wrap">
-                                <div className="flex items-baseline gap-0.5 text-[var(--color-text-primary)]">
-                                    <span className="text-sm font-medium">S/</span>
-                                    <span className="text-xl md:text-2xl font-semibold tracking-tight">
+                            <div className="flex items-center gap-3 pt-2 flex-wrap">
+                                <div className="flex items-baseline text-fg-primary">
+                                    <span className="text-base font-medium mr-0.5">S/</span>
+                                    <span className="text-2xl md:text-3xl font-semibold tracking-tight">
                                         {precio.toFixed(2)}
                                     </span>
                                 </div>
 
                                 {hasDiscount && (
-                                    <>
-                                        <span className="text-sm text-[var(--color-text-tertiary)] line-through">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-fg-secondary line-through">
                                             S/ {precioComparativo!.toFixed(2)}
                                         </span>
-                                        <span className="text-[11px] font-semibold px-2 py-0.5 bg-[var(--color-accent-warm-light)] text-[var(--color-accent-warm)]">
+                                        <span className="text-[11px] font-semibold px-2 py-0.5 bg-surface-inverse text-fg-inverse rounded-sm">
                                             −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
                                         </span>
-                                    </>
+                                    </div>
+                                )}
+
+                                {stock === 0 && (
+                                    <span className="text-xs font-medium text-fg-primary bg-surface-secondary px-2.5 py-1 rounded-sm">
+                                        Sin stock
+                                    </span>
                                 )}
                             </div>
-
-                            {/* Stock agotado */}
-                            {stock === 0 && (
-                                <span className="inline-flex items-center text-xs font-medium text-[var(--color-error)] bg-[var(--color-error-light)] px-2.5 py-1">
-                                    Sin stock
-                                </span>
-                            )}
-
                         </header>
 
-                        {Object.entries(allAttributes).map(([key]) => {
-                            const availableValues = getAvailableValues(key);
-                            const isColor = key.toLowerCase() === "color";
-                            const useDropdown = !isColor && availableValues.length > MAX_VISIBLE_OPTIONS;
+                        <div className="space-y-5">
+                            {Object.entries(allAttributes).map(([key]) => {
+                                const availableValues = getAvailableValues(key);
+                                const isColor = key.toLowerCase() === "color";
+                                const useDropdown = !isColor && availableValues.length > MAX_VISIBLE_OPTIONS;
 
-                            return (
-                                <fieldset key={key} className="space-y-2 mt-4">
-                                    <legend className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">Selección de {key}:</legend>
+                                return (
+                                    <fieldset key={key} className="space-y-2.5">
+                                        <legend className="text-xs font-medium tracking-wide uppercase text-fg-secondary">
+                                            {key}: {selectedAttributes[key] && <span className="text-fg-primary font-semibold normal-case ml-1">{selectedAttributes[key]}</span>}
+                                        </legend>
 
-                                    {isColor ? (
-                                        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                                            {availableValues.map((val) => {
-                                                const outOfStock = isOptionOutOfStock(key, val);
-                                                const selected = selectedAttributes[key] === val;
-                                                const variantForValue = producto.variants?.find(v => v.atributos[key] === val);
-
-                                                return (
-                                                    <button
-                                                        key={val}
-                                                        onClick={() => !outOfStock && updateSelectedVariant(key, val)}
-                                                        disabled={outOfStock}
-                                                        className={cn(
-                                                            "relative group flex flex-col items-center justify-between gap-2 p-1 rounded border w-full transition-all duration-200",
-                                                            selected ? "border-[var(--color-text-secondary)] border-2" : "border-[var(--color-border-default)] bg-[var(--color-bg-primary)]/50",
-                                                            outOfStock && "opacity-60 cursor-not-allowed"
-                                                        )}
-                                                    >
-                                                        <div className={cn("relative w-10 h-10 overflow-hidden rounded-full border border-black/5 flex-shrink-0", outOfStock && "grayscale")}>
-                                                            {variantForValue?.imagenes?.[0] ? (
-                                                                <Image src={variantForValue.imagenes[0]} alt={val} fill className="object-cover" quality={30} unoptimized />
-                                                            ) : (
-                                                                <ColorCircle color={val} size={40} />
-                                                            )}
-
-                                                            {outOfStock && (
-                                                                <span className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                                                    <div className="w-[120%] border-t-[3px] border-[var(--color-error)]/80 -rotate-45" />
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <span className={cn("text-xs text-center truncate w-full", selected ? "font-semibold" : "font-medium", outOfStock && "line-through text-[var(--color-text-tertiary)]")}>
-                                                            {val}
-                                                        </span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    ) : useDropdown ? (
-                                        <Select
-                                            value={selectedAttributes[key] || ""}
-                                            onValueChange={(val) => updateSelectedVariant(key, val)}
-                                        >
-                                            <SelectTrigger className="w-fit">
-                                                <SelectValue placeholder={`Selecciona una opción`} />
-                                            </SelectTrigger>
-                                            <SelectContent>
+                                        {isColor ? (
+                                            <div className="flex flex-wrap gap-2">
                                                 {availableValues.map((val) => {
                                                     const outOfStock = isOptionOutOfStock(key, val);
+                                                    const selected = selectedAttributes[key] === val;
+                                                    const variantForValue = producto.variants?.find(v => v.atributos[key] === val);
+
                                                     return (
-                                                        <SelectItem
+                                                        <button
+                                                            type="button"
                                                             key={val}
-                                                            value={val}
+                                                            onClick={() => !outOfStock && updateSelectedVariant(key, val)}
                                                             disabled={outOfStock}
                                                             className={cn(
-                                                                "cursor-pointer",
-                                                                outOfStock && "opacity-50 cursor-not-allowed focus:bg-transparent"
+                                                                "relative flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-150 bg-surface-primary cursor-pointer",
+                                                                selected
+                                                                    ? "border-fg-primary ring-1 ring-fg-primary text-fg-primary"
+                                                                    : "border-border-default text-fg-primary hover:border-fg-primary",
+                                                                outOfStock && "opacity-40 cursor-not-allowed"
                                                             )}
                                                         >
-                                                            <div className="flex items-center justify-between w-full gap-4">
-                                                                <span className={cn(outOfStock && "line-through text-[var(--color-text-secondary)]")}>{val}</span>
+                                                            <div className={cn("relative w-4 h-4 rounded-full border border-border-default overflow-hidden shrink-0", outOfStock && "grayscale")}>
+                                                                <ColorCircle color={variantForValue?.atributos[key] || val} size={32} />
+                                                                {outOfStock && (
+                                                                    <span className="absolute inset-0 flex items-center justify-center z-10">
+                                                                        <div className="w-[120%] border-t border-fg-secondary -rotate-45" />
+                                                                    </span>
+                                                                )}
                                                             </div>
-                                                        </SelectItem>
+                                                            <span className={cn(outOfStock && "line-through text-fg-secondary")}>
+                                                                {val}
+                                                            </span>
+                                                        </button>
                                                     );
                                                 })}
-                                            </SelectContent>
-                                        </Select>
-                                    ) : (
-                                        <div className="flex flex-wrap gap-2.5">
-                                            {availableValues.map((val) => {
-                                                const outOfStock = isOptionOutOfStock(key, val);
-                                                const selected = selectedAttributes[key] === val;
-                                                return (
-                                                    <button
-                                                        key={val}
-                                                        onClick={() => !outOfStock && updateSelectedVariant(key, val)}
-                                                        disabled={outOfStock}
-                                                        className={cn(
-                                                            "h-10 px-4 relative overflow-hidden transition-all border",
-                                                            selected && "border-[var(--color-text-secondary)] border-2",
-                                                            outOfStock && "opacity-50 text-[var(--color-text-tertiary)] bg-[var(--color-bg-secondary)] border-[var(--color-border-default)] cursor-not-allowed"
-                                                        )}
-                                                    >
-                                                        <span className={cn(outOfStock && "line-through")}>{val}</span>
+                                            </div>
+                                        ) : useDropdown ? (
+                                            <Select
+                                                value={selectedAttributes[key] || ""}
+                                                onValueChange={(val) => updateSelectedVariant(key, val)}
+                                            >
+                                                <SelectTrigger className="w-full max-w-xs border-border-default bg-surface-primary text-fg-primary text-sm h-10 rounded-md">
+                                                    <SelectValue placeholder="Seleccionar opción" />
+                                                </SelectTrigger>
+                                                <SelectContent className="bg-surface-primary border-border-default text-fg-primary">
+                                                    {availableValues.map((val) => {
+                                                        const outOfStock = isOptionOutOfStock(key, val);
+                                                        return (
+                                                            <SelectItem
+                                                                key={val}
+                                                                value={val}
+                                                                disabled={outOfStock}
+                                                                className={cn(
+                                                                    "cursor-pointer text-sm",
+                                                                    outOfStock && "opacity-40 line-through text-fg-secondary"
+                                                                )}
+                                                            >
+                                                                {val}
+                                                            </SelectItem>
+                                                        );
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                        ) : (
+                                            <div className="flex flex-wrap gap-2">
+                                                {availableValues.map((val) => {
+                                                    const outOfStock = isOptionOutOfStock(key, val);
+                                                    const selected = selectedAttributes[key] === val;
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            key={val}
+                                                            onClick={() => !outOfStock && updateSelectedVariant(key, val)}
+                                                            disabled={outOfStock}
+                                                            className={cn(
+                                                                "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden bg-surface-primary text-fg-primary cursor-pointer",
+                                                                selected
+                                                                    ? "border-fg-primary ring-1 ring-fg-primary"
+                                                                    : "border-border-default hover:border-fg-primary",
+                                                                outOfStock && "opacity-40 text-fg-secondary bg-surface-secondary cursor-not-allowed"
+                                                            )}
+                                                        >
+                                                            <span className={cn(outOfStock && "line-through")}>{val}</span>
+                                                            {outOfStock && (
+                                                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                                    <div className="w-[110%]  -rotate-[15deg]" />
+                                                                </span>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </fieldset>
+                                );
+                            })}
+                        </div>
 
-                                                        {outOfStock && (
-                                                            <span className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                                                <div className="w-[110%] border-t-[1.5px] border-[var(--color-text-tertiary)]/60 -rotate-[15deg]" />
-                                                            </span>
-                                                        )}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </fieldset>
-                            );
-                        })}
-
-                        <section className="flex justify-between items-center gap-4 mt-8">
-                            <div className="hidden md:flex flex-1">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
+                            <div className="hidden md:block flex-1 w-full">
                                 <AddProductToCart
                                     product={producto}
                                     variant={selectedVariant ?? undefined}
                                 />
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                                 <ShopNowButton
                                     disabled={((producto.variants?.length ?? 0) > 0 && (!allAttributesSelected || !selectedVariant)) || stock <= 0}
                                     product={producto}
                                     variant={selectedVariant ?? undefined}
                                 />
                             </div>
-                        </section>
+                        </div>
                     </div>
-
-                    <div className="mt-4 ">
-
-                        {/* Envío */}
-                        <div className="flex items-center justify-between py-3">
-                            <div className="flex items-center gap-2 text-[var(--color-text-secondary)]">
-                                <Truck className="w-4 h-4 shrink-0 text-[var(--color-text-tertiary)]" />
-                                <span className="text-xs">Entrega estimada</span>
-                            </div>
-                            <div className="text-right">
-                                <span className="text-xs font-semibold text-[var(--color-text-primary)]">
+                    <div className="pt-6 ">
+                        {/* Entrega estimada */}
+                        {/* <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
+                            <span className="text-sm font-medium text-fg-primary">Entrega estimada</span>
+                            <div className="text-sm text-fg-secondary">
+                                <span className="font-semibold text-fg-primary mr-1.5">
                                     {getDeliveryRange(producto.diasEnvio || 1)}
                                 </span>
-                                <span className="text-xs text-[var(--color-text-tertiary)] ml-1.5">
-                                    ({producto.diasEnvio || 1} día{(producto.diasEnvio || 1) !== 1 ? "s" : ""})
-                                </span>
+                                ({producto.diasEnvio || 1} {(producto.diasEnvio || 1) !== 1 ? "días" : "día"})
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Medios de pago */}
-                        <div className="flex items-center justify-between py-3">
-                            <div className="flex items-center gap-2">
-                                <CreditCard className="w-4 h-4 text-[var(--color-text-tertiary)] shrink-0" />
-                                <span className="text-xs text-[var(--color-text-secondary)]">Medios de pago</span>
+                        <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
+                            <span className="text-sm font-medium text-fg-primary">Medios de pago</span>
+                            <div className="flex items-center justify-start">
+                                <PaymentMethods />
                             </div>
-                            <PaymentMethods />
                         </div>
 
                         {/* Consulta por WhatsApp */}
-                        <a
-                            href={`https://wa.me/51925054636?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-between py-3 hover:bg-[var(--color-bg-secondary)] transition-colors group"
-                        >
-                            <div className="flex items-center gap-2">
-                                <MessageCircle className="w-4 h-4 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-success)] transition-colors shrink-0" />
-                                <span className="text-xs text-[var(--color-text-secondary)]">¿Tienes dudas?</span>
-                            </div>
-                            <span className="text-xs font-semibold text-[var(--color-success)] flex items-center gap-1">
+                        <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
+                            <span className="text-sm font-medium text-fg-primary">¿Tienes dudas?</span>
+                            <a
+                                href={`https://wa.me/51925054636?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sm font-semibold text-fg-primary flex items-center gap-0.5 hover:underline w-fit group"
+                            >
                                 WhatsApp
-                                <ChevronRight className="w-3 h-3" />
-                            </span>
-                        </a>
-
+                                <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+                            </a>
+                        </div>
                     </div>
-
-
-                    {/* Cards simples de los productos complementarios */}
-                    <section className="md:col-span-12 mt-6 pt-4">
-                        {producto.complementarios && producto.complementarios.length > 0 && (
-                            <div className="space-y-2 border-t">
-                                <h3 className="text-md  tracking-tighter text-[var(--color-text-primary)]">
-                                    Completa tu compra:
-                                </h3>
-
-                                {/* Contenedor Flex que se expande */}
-                                <div className="flex flex-wrap gap-1">
-                                    {producto.complementarios.map((comp) => {
-                                        const isPopulated = typeof comp !== 'string';
-                                        if (!isPopulated) return null;
-
-                                        return (
-                                            <Link
-                                                key={comp._id}
-                                                href={`/productos/${comp.slug}`}
-                                                className="group flex-1 min-w-[160px] max-w-[280px] flex flex-col gap-3 p-3 transition-all border border-[var(--color-border-subtle)] rounded hover:shadow-lg"
-                                            >
-                                                <div className="relative aspect-square overflow-hidden bg-white">
-                                                    <Image
-                                                        src={comp.imagenes?.[0] || "/logo.png"}
-                                                        alt={comp.nombre}
-                                                        fill
-                                                        className="object-contain p-2 transition-transform duration-500 group-hover:scale-105"
-                                                        unoptimized
-                                                    />
-                                                </div>
-
-                                                <div className="space-y-1">
-                                                    <h4 className="text-xs font-medium text-[var(--color-text-primary)] leading-tight line-clamp-2 uppercase">
-                                                        {comp.nombre}
-                                                    </h4>
-                                                    <p className="text-sm font-bold text-[var(--color-text-primary)]">
-                                                        S/ {comp.precio.toFixed(2)}
-                                                    </p>
-                                                </div>
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
-                    </section>
                 </section>
-
-                {/* Cards simples de los productos complementarios */}
-
             </article>
 
-            <ProductExpandableSections producto={producto} />
+            <div className="mt-8">
+                <ProductExpandableSections producto={producto} />
+            </div>
 
-            <div className="md:hidden fixed bottom-0 left-0 w-full bg-[var(--color-bg-primary)] p-4 border-t border-[var(--color-border-default)] shadow-md z-50">
+            <section className="max-w-7xl mx-auto mt-12 px-4">
+                {producto.complementarios && producto.complementarios.length > 0 && (
+                    <div className="pt-8  space-y-4">
+                        <h3 className="text-lg font-normal tracking-tight text-fg-primary">
+                            Completa tu compra
+                        </h3>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {producto.complementarios.map((comp) => {
+                                const isPopulated = typeof comp !== 'string';
+                                if (!isPopulated) return null;
+
+                                return (
+                                    <Link
+                                        key={comp._id}
+                                        href={`/productos/${comp.slug}`}
+                                        className="group flex flex-col justify-between p-3 transition-all border border-border-default rounded-md hover:border-fg-primary bg-surface-primary"
+                                    >
+                                        <div className="space-y-3">
+                                            <div className="relative aspect-square overflow-hidden rounded bg-surface-primary w-full">
+                                                <Image
+                                                    src={comp.imagenes?.[0] || "/logo.png"}
+                                                    alt={comp.nombre}
+                                                    fill
+                                                    className="object-contain p-1 transition-transform duration-300 group-hover:scale-103"
+                                                    unoptimized
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <h4 className="text-xs font-medium text-fg-primary leading-tight line-clamp-2 uppercase tracking-tight">
+                                                    {comp.nombre}
+                                                </h4>
+                                            </div>
+                                        </div>
+
+                                        <p className="text-sm font-semibold text-fg-primary pt-2">
+                                            S/ {comp.precio.toFixed(2)}
+                                        </p>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+                )}
+            </section>
+
+            <div className="md:hidden fixed bottom-0 left-0 w-full bg-surface-primary p-4  shadow-lg z-50">
                 <AddProductToCart
                     product={producto}
                     variant={allAttributesSelected ? selectedVariant ?? undefined : undefined}

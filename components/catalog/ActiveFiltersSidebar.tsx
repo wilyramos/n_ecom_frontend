@@ -1,106 +1,128 @@
+// File: src/components/catalog/ActiveFiltersSidebar-COMPACT.tsx
 "use client";
 
 import { useCatalogNav } from "./hooks/useCatalogNav";
-import { X, RotateCcw } from "lucide-react";
+import { LuX } from "react-icons/lu";
+import { cn } from "@/lib/utils";
 
-export default function ActiveFiltersSidebar() {
-    const {
-        currentSlugs,
+interface Props {
+    compact?: boolean;
+}
+
+export default function ActiveFiltersSidebar({ compact = false }: Props) {
+    const { 
+        currentSlugs, 
+        hasFilters, 
         searchParams,
         setCategory,
         setBrand,
         setLine,
         updateFilter,
-        clearFilters,
-        hasFilters,
     } = useCatalogNav();
 
-    if (!hasFilters) return null;
+    if (!hasFilters) {
+        return null;
+    }
 
-    return (
-        <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-                <span
-                    className="text-[11px] uppercase tracking-[0.06em]"
-                    style={{ color: "var(--color-text-tertiary)" }}
-                >
-                    Filtros activos
-                </span>
+    // Obtener todos los filtros activos (tanto slugs como query params)
+    const getActiveFilters = () => {
+        const filters: Array<{ type: 'slug' | 'param'; key: string; value: string }> = [];
 
-                <button
-                    onClick={clearFilters}
-                    className="flex items-center gap-1 text-[12px] transition-colors duration-150"
-                    style={{ color: "var(--color-text-tertiary)" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = "var(--color-accent-warm)")}
-                    onMouseLeave={e => (e.currentTarget.style.color = "var(--color-text-tertiary)")}
-                >
-                    <RotateCcw className="w-[11px] h-[11px]" />
-                    Limpiar
-                </button>
-            </div>
+        // 1. Agregar slugs (categorías, marcas, líneas)
+        currentSlugs.forEach((slug) => {
+            filters.push({ 
+                type: 'slug', 
+                key: 'slug', 
+                value: slug 
+            });
+        });
 
-            <div className="flex flex-wrap gap-1.5">
-                {currentSlugs.map((slug) => (
-                    <Chip
-                        key={slug}
-                        label={slug.replace(/-/g, " ")}
-                        onRemove={() => {
-                            setCategory(slug);
-                            setBrand(slug);
-                            setLine(slug);
-                        }}
-                    />
+        // 2. Agregar query params (color, almacenamiento, etc)
+        for (const [key, value] of searchParams.entries()) {
+            if (key !== "page" && key !== "sort") {
+                filters.push({ 
+                    type: 'param', 
+                    key, 
+                    value 
+                });
+            }
+        }
+
+        return filters;
+    };
+
+    const activeFilters = getActiveFilters();
+
+    if (!activeFilters.length) {
+        return null;
+    }
+
+    // Remover un filtro (slug o param)
+    const removeFilter = (type: 'slug' | 'param', key: string, value: string) => {
+        if (type === 'slug') {
+            // Es un slug, determinar si es categoría, marca o línea
+            // El hook se encarga de hacerlo automáticamente
+            setCategory(value);  // Si es categoría
+            setBrand(value);     // Si es marca (toggle)
+            setLine(value);      // Si es línea (toggle)
+        } else if (type === 'param') {
+            // Es un query param (color, almacenamiento, etc)
+            updateFilter(key, value);
+        }
+    };
+
+    if (compact) {
+        return (
+            <div className="flex flex-wrap gap-2">
+                {activeFilters.map(({ type, key, value }) => (
+                    <div
+                        key={`${type}-${key}-${value}`}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-full bg-[var(--color-surface-secondary)] border border-[var(--color-border-default)] text-[var(--color-fg-primary)]"
+                    >
+                        <span className="font-medium capitalize">{value}</span>
+                        <button
+                            onClick={() => removeFilter(type, key, value)}
+                            className="flex items-center justify-center w-3 h-3 rounded-full hover:bg-[var(--color-fg-primary)] hover:bg-opacity-10 transition-colors"
+                            aria-label={`Remover filtro: ${value}`}
+                        >
+                            <LuX className="w-2.5 h-2.5" />
+                        </button>
+                    </div>
                 ))}
+            </div>
+        );
+    }
 
-                {Array.from(searchParams.entries()).map(([key, value]) => {
-                    if (["page", "limit", "sort"].includes(key)) return null;
-
-                    let label = `${key}: ${value}`;
-                    if (key === "priceRange") label = `S/ ${value.replace("-", " – S/ ")}`;
-                    if (key === "query") label = `"${value}"`;
-
-                    return (
-                        <Chip
-                            key={`${key}-${value}`}
-                            label={label}
-                            onRemove={() => updateFilter(key, value)}
-                        />
-                    );
-                })}
+    // Versión no-compacta (original)
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)]">
+                    Filtros Activos
+                </h3>
             </div>
 
-            <div
-                className="mt-5 border-t"
-                style={{ borderColor: "var(--color-border-subtle)" }}
-            />
+            <div className="space-y-2">
+                {activeFilters.map(({ type, key, value }) => (
+                    <div
+                        key={`${type}-${key}-${value}`}
+                        className={cn(
+                            "flex items-center justify-between px-3 py-2 rounded-lg bg-[var(--color-surface-secondary)] border border-[var(--color-border-default)]",
+                        )}
+                    >
+                        <span className="text-xs font-medium text-[var(--color-fg-primary)] capitalize">
+                            {value}
+                        </span>
+                        <button
+                            onClick={() => removeFilter(type, key, value)}
+                            className="p-1 rounded hover:bg-[var(--color-fg-primary)] hover:bg-opacity-10 transition-colors"
+                            aria-label={`Remover filtro: ${value}`}
+                        >
+                            <LuX className="w-3.5 h-3.5 text-[var(--color-fg-secondary)]" />
+                        </button>
+                    </div>
+                ))}
+            </div>
         </div>
-    );
-}
-
-function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
-    return (
-        <button
-            onClick={onRemove}
-            className="group inline-flex items-center gap-1.5 pl-3 pr-2.5 py-[5px] text-[12px] rounded transition-all duration-150"
-            style={{
-                color: "var(--color-text-primary)",
-                background: "var(--color-bg-primary)",
-                border: "1px solid var(--color-border-default)",
-            }}
-            onMouseEnter={e => {
-                (e.currentTarget.style.borderColor = "var(--color-border-strong)");
-            }}
-            onMouseLeave={e => {
-                (e.currentTarget.style.borderColor = "var(--color-border-default)");
-            }}
-        >
-            <span className="capitalize truncate max-w-[160px] leading-none">
-                {label}
-            </span>
-            <X
-                className="w-[10px] h-[10px] flex-shrink-0 transition-colors duration-150"
-                style={{ color: "var(--color-text-tertiary)" }}
-            />
-        </button>
     );
 }

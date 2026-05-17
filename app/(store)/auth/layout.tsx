@@ -1,18 +1,17 @@
+// File: frontend/app/(store)/auth/layout.tsx
 import ToastNotification from '@/components/ui/ToastNotification'
 import React from 'react'
-import { getCurrentUser } from '@/src/auth/currentUser'
 import { redirect } from 'next/navigation'
-
+import { getSession } from '@/src/auth/dal';
 
 export default async function layoutAuth({ children }: { children: React.ReactNode }) {
+    const session = await getSession();
 
-    // Verifica si el usuario está autenticado
-    const user = await getCurrentUser();
-    // console.log("Usuario actual:", user);
-
-    if (user) {
-        // Si el usuario está autenticado, redirige a la página de inicio
-        redirect('/profile')
+    if (session) {
+        if (session.user.rol === 'administrador') {
+            redirect('/admin');
+        }
+        redirect('/profile');
     }
 
     return (

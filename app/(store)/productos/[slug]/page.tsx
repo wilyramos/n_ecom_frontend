@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     if (!product) notFound();
 
     const categoryName = product.categoria?.nombre || 'General';
-    const image = product.imagenes?.[0] || 'https://www.gophone.pe/logobw.jpg';
+    const image = product.imagenes?.[0] || 'https://www.gophone.pe/logoapp.png';
     const url = `https://www.gophone.pe/productos/${product.slug}`;
 
     // ← Usar metaTitle/metaDescription si existen, sino fallback automático
@@ -76,8 +76,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             creator: '@GoPhone',
         },
         icons: {
-            icon: "/logobw.jpg",
-            apple: "/logobw.jpg",
+            icon: "/logoapp.png",
+            apple: "/logoapp.png",
         },
         alternates: {
             canonical: url,

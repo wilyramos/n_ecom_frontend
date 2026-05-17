@@ -13,15 +13,15 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://gophone.pe"),
+    metadataBase: new URL("https://Neoshop.pe"),
     title: {
-        default: "GoPhone - Calidad a tu alcance",
-        template: "%s | GoPhone"
+        default: "Neoshop",
+        template: "%s | Neoshop"
     },
     description:
-        "iPhones, accesorios, repuestos y tecnología con envío rápido en Perú. GoPhone: calidad, garantía y atención personalizada desde Cañete.",
+        "iPhones, accesorios, repuestos y tecnología con envío rápido en Perú. Neoshop: calidad, garantía y atención personalizada desde Cañete.",
     keywords: [
-        "GoPhone",
+        "Neoshop",
         "iPhone Perú",
         "Apple",
         "Accesorios iPhone",
@@ -41,39 +41,39 @@ export const metadata: Metadata = {
         "Envío rápido",
         "Garantía"
     ],
-    authors: [{ name: "GoPhone", url: "https://gophone.pe" }],
-    creator: "GoPhone",
+    authors: [{ name: "Neoshop", url: "https://Neoshop.pe" }],
+    creator: "Neoshop",
     openGraph: {
-        title: "GoPhone | Calidad a tu alcance",
+        title: "Neoshop | Calidad a tu alcance",
         description:
-            "Compra iPhones, accesorios y repuestos con garantía y envío rápido. GoPhone: tecnología confiable desde Cañete para todo el Perú.",
-        url: "https://gophone.pe",
-        siteName: "GoPhone",
+            "Compra iPhones, accesorios y repuestos con garantía y envío rápido. Neoshop: tecnología confiable desde Cañete para todo el Perú.",
+        url: "https://Neoshop.pe",
+        siteName: "Neoshop",
         locale: "es_PE",
         type: "website",
         images: [
             {
-                url: "https://gophone.pe/logob.svg",
+                url: "https://Neoshop.pe/logob.svg",
                 width: 1200,
                 height: 630,
-                alt: "GoPhone Perú - iPhones y Tecnología"
+                alt: "Neoshop Perú - iPhones y Tecnología"
             }
         ]
     },
     twitter: {
         card: "summary_large_image",
-        title: "GoPhone | Calidad a tu alcance",
+        title: "Neoshop | Calidad a tu alcance",
         description:
             "Tecnología con garantía, precios competitivos y atención personalizada. Compra iPhones y accesorios con envío rápido.",
-        images: ["https://gophone.pe/logomini.svg"]
+        images: ["https://Neoshop.pe/logomini.svg"]
     },
     icons: {
-        icon: "/logobw.jpg",
-        apple: "/logobw.jpg",
-        shortcut: "/logobw.jpg"
+        icon: "/logoapp.png",
+        apple: "/logoapp.png",
+        shortcut: "/logoapp.png"
     },
     alternates: {
-        canonical: "https://gophone.pe"
+        canonical: "https://Neoshop.pe"
     },
     category: "technology"
 };

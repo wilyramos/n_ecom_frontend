@@ -1,7 +1,7 @@
 // frontend/components/ui/ButtonSearchFormStore.tsx
 "use client";
 
-import { Search, History, Loader2, ArrowRight, X } from "lucide-react";
+import { Search, Loader2, ArrowRight, X } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -17,7 +17,7 @@ interface Props {
     onSearchComplete?: () => void;
 }
 
-export default function ButtonSearchFormStore({ isMobile = false, onSearchComplete }: Props) {
+export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const [query, setQuery] = useState("");
@@ -28,6 +28,7 @@ export default function ButtonSearchFormStore({ isMobile = false, onSearchComple
     const formRef = useRef<HTMLFormElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
 
     const [history, setHistory] = useState<string[]>([]);
     useEffect(() => setHistory(getSearchHistory()), []);
@@ -175,7 +176,7 @@ export default function ButtonSearchFormStore({ isMobile = false, onSearchComple
                         {!loading && query && results.length === 0 && (
                             <div className="text-center py-6 text-fg-secondary">
                                 <p className="text-sm font-medium text-fg-primary">
-                                    Sin resultados para <span className="italic">"{query}"</span>
+                                    Sin resultados para <span className="italic">{query}</span>
                                 </p>
                             </div>
                         )}

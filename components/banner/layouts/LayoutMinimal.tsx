@@ -81,26 +81,16 @@ export default function LayoutMinimal({ banner }: Props) {
             {/* ── Columna Texto ── */}
             <div
                 className={cn(
-                    "relative z-10 order-2 lg:order-1 flex flex-col items-center justify-center w-full lg:w-[48%] px-8 sm:px-12 lg:px-16 xl:px-24 pb-10 lg:pb-0 text-center lg:text-left",
+                    "relative z-10 order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center w-full lg:w-[48%] px-8 sm:px-12 lg:px-16 xl:px-24 pb-10 lg:pb-0 text-center lg:text-left",
                     isDark ? "text-fg-inverse" : "text-fg-primary"
                 )}
             >
                 {/* Badges Minimalistas */}
-                <div
-                    className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-5 md:mb-6"
-                    style={fadeUp(0.1)}
-                >
-                    {subtitle && (
-                        <span
-                            className={cn(
-                                "text-[10px] font-black uppercase tracking-[0.25em] py-1 border-b-2",
-                                isDark ? "border-fg-secondary text-fg-inverse" : "border-action-primary text-fg-primary"
-                            )}
-                        >
-                            {subtitle}
-                        </span>
-                    )}
-                    {discountPct && (
+                {discountPct && (
+                    <div
+                        className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-5 md:mb-6"
+                        style={fadeUp(0.1)}
+                    >
                         <span
                             className={cn(
                                 "text-[10px] font-bold px-2 py-0.5 rounded",
@@ -109,22 +99,51 @@ export default function LayoutMinimal({ banner }: Props) {
                         >
                             {discountPct}% OFF
                         </span>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {title && (
                     <h2
-                        className="w-full text-[clamp(1.8rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.04em] mb-4 md:mb-6"
+                        className="w-full text-[clamp(1.8rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.04em] mb-2"
                         style={fadeUp(0.2)}
                     >
                         {title}
                     </h2>
                 )}
 
+                {subtitle && (
+                    <div
+                        className="flex justify-center lg:justify-start mb-4 md:mb-6"
+                        style={fadeUp(0.25)}
+                    >
+                        <span
+                            className={cn(
+                                "text-md",
+                                isDark ? "border-fg-secondary text-fg-inverse" : "text-brand-silver"
+                            )}
+                        >
+                            {subtitle}
+                        </span>
+                    </div>
+                )}
+
+                <div className="flex justify-center lg:justify-start w-full" style={fadeUp(0.3)}>
+                    <span
+                        className={cn(
+                            "mb-6 md:mb-8 px-6 py-2 rounded transition-colors duration-300 inline-flex",
+                            isDark
+                                ? "bg-transparent border border-fg-secondary text-fg-inverse hover:bg-fg-secondary hover:text-fg-inverse"
+                                : "bg-brand-silver text-fg-secondary hover:bg-brand-charcoal"
+                        )}
+                    >
+                        Ver catalogo
+                    </span>
+                </div>
+
                 {description && (
                     <p
                         className="max-w-[40ch] text-[14px] sm:text-[15px] leading-relaxed mb-6 md:mb-8 font-light text-fg-secondary"
-                        style={fadeUp(0.3)}
+                        style={fadeUp(0.35)}
                     >
                         {description}
                     </p>

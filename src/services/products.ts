@@ -250,7 +250,7 @@ export const getNewProducts = async () => {
 
     const req = await fetch(url, {
         method: 'GET',
-        next: { revalidate: 86400 } // Revalida cada dia
+        // next: { revalidate: 86400 } // Revalida cada dia
     });
 
     if (!req.ok) {
@@ -269,7 +269,7 @@ export const getDestacadosProducts = async () => {
 
     const req = await fetch(url, {
         method: 'GET',
-        next: { revalidate: 86400 }
+        // next: { revalidate: 86400 }
     });
 
     if (!req.ok) {

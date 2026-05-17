@@ -10,7 +10,7 @@ interface Props extends ButtonGroupProps {
     viewAllHref?: string;
 }
 
-export default function HeaderConTituloConControles({ title, next, previous, viewAllHref }: Props) {
+export default function HeaderConTituloConControles({ title, viewAllHref }: Props) {
     return (
         <div className="w-full flex flex-col gap-1 mb-6 bg-surface-primary text-fg-primary select-none">
             <div className="flex items-center justify-between w-full">

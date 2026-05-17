@@ -12,13 +12,13 @@ import CarruselPrincipal from "@/components/home/CarruselPrincipal";
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "GoPhone - Calidad a tu alcance",
-        template: "%s | GoPhone",
+        default: "Neoshop",
+        template: "%s | Neoshop",
     },
     description:
-        "GoPhone es tu tienda de confianza en Cañete para la compra de celulares, accesorios y más. Ofrecemos productos de calidad, envío rápido y atención personalizada.",
+        "Neoshop es tu tienda de confianza en Cañete para la compra de celulares, accesorios y más. Ofrecemos productos de calidad, envío rápido y atención personalizada.",
     keywords: [
-        "GoPhone",
+        "Neoshop",
         "tienda iPhone Cañete",
         "venta de celulares Cañete",
         "accesorios para celulares",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         "comprar iPhone Cañete",
         "gadgets Cañete",
         "tienda online Cañete",
-        "GoPhone Perú",
+        "Neoshop Perú",
         "cases y fundas Cañete",
         "cargadores y cables Cañete",
         "auriculares y audífonos Cañete",
@@ -40,25 +40,25 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         ...globalMetadata.openGraph,
-        title: "GoPhone - Calidad a tu alcance",
+        title: "Neoshop - Calidad a tu alcance",
         description:
-            "En GoPhone encontrarás una amplia variedad de accesorios y productos tecnológicos en Cañete. ¡Visítanos y descubre nuestras ofertas!",
-        url: "https://gophone.pe",
+            "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en Cañete. ¡Visítanos y descubre nuestras ofertas!",
+        url: "https://Neoshop.pe",
         images: [
             {
-                url: "https://gophone.pe/favicon.ico",
+                url: "https://Neoshop.pe/favicon.ico",
                 width: 1200,
                 height: 630,
-                alt: "GoPhone Home - Accesorios y Tecnología",
+                alt: "Neoshop Home - Accesorios y Tecnología",
             },
         ],
     },
     twitter: {
         ...globalMetadata.twitter,
-        title: "GoPhone - Venta de accesorios y tecnología en Cañete",
+        title: "Neoshop - Venta de accesorios y tecnología en Cañete",
         description:
-            "Compra iPhones, accesorios y más en GoPhone, tu tienda online de confianza en Cañete.",
-        images: ["https://gophone.pe/favicon.ico"],
+            "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en Cañete.",
+        images: ["https://Neoshop.pe/favicon.ico"],
     }
 };
 

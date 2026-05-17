@@ -21,7 +21,7 @@ export const getSession = cache(async () => {
 
         const responseData = await req.json()
         const ResponseValidation = UserSchema.safeParse(responseData);
-        
+
         if (!ResponseValidation.success) return null
 
         return {
@@ -30,6 +30,7 @@ export const getSession = cache(async () => {
             isAuth: true
         }
     } catch (error) {
+        console.error("Error fetching user session:", error);
         return null
     }
 })

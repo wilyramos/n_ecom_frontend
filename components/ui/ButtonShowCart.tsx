@@ -42,7 +42,7 @@ export default function ButtonShowCart() {
             <SheetContent side="right" className="flex flex-col h-full p-0 border-l border-border-default bg-surface-primary overflow-hidden">
                 <SheetHeader className="p-4 border-b border-border-default">
                     <div className="flex items-center justify-between">
-                        <SheetTitle className="text-lg font-semibold text-fg-primary">Bolsa de Compra</SheetTitle>
+                        <SheetTitle className="text-lg font-semibold text-fg-primary">Carrito</SheetTitle>
                         <span className="bg-surface-secondary text-fg-primary px-2 py-0.5 rounded text-[10px] font-bold">
                             {carrito.length} {carrito.length === 1 ? 'Ítem' : 'Ítems'}
                         </span>
@@ -56,7 +56,7 @@ export default function ButtonShowCart() {
                                 <ShoppingBag size={40} strokeWidth={1.5} />
                             </div>
                             <div className="text-center">
-                                <h3 className="text-sm font-bold text-fg-primary">Tu bolsa está vacía</h3>
+                                <h3 className="text-sm font-bold text-fg-primary">Tu carrito está vacío</h3>
                             </div>
                         </div>
                     ) : (

@@ -12,7 +12,6 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
     const searchParams = useSearchParams();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [previewImages, setPreviewImages] = useState<string[]>(product.imagenes ?? []);
-    const [selectedColor, setSelectedColor] = useState<string | null>(null);
     const [startX, setStartX] = useState<number | null>(null);
 
     const precio = product.precio ?? 0;
@@ -45,7 +44,6 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
 
         if (!targetColor) return;
 
-        setSelectedColor(targetColor);
         setCurrentIndex(0);
 
         if (targetColor === mainColor && product.imagenes && product.imagenes.length > 0) {
@@ -64,31 +62,6 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
         }
     }, [searchParams, product, uniqueColors]);
 
-    // --- SELECCIÓN MANUAL DE COLOR ---
-    const handleColorSelect = (e: React.MouseEvent | React.TouchEvent, color: string) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        setSelectedColor(color);
-        setCurrentIndex(0);
-
-        const mainColor = product.atributos?.Color || product.atributos?.color;
-        if (mainColor === color && product.imagenes && product.imagenes.length > 0) {
-            setPreviewImages(product.imagenes);
-            return;
-        }
-
-        const foundVariant = product.variants?.find(v => {
-            const vAttrs = v.atributos as Record<string, string>;
-            return (vAttrs?.Color === color || vAttrs?.color === color);
-        });
-
-        if (foundVariant && foundVariant.imagenes && foundVariant.imagenes.length > 0) {
-            setPreviewImages(foundVariant.imagenes);
-        } else {
-            setPreviewImages(product.imagenes ?? []);
-        }
-    };
 
     // --- EVENTOS IMAGEN ---
     const handleMouseEnter = () => { if (previewImages.length > 1) setCurrentIndex(1); };

@@ -5,7 +5,6 @@ import AddProductToCart from './AddProductToCart';
 import ImagenesProductoCarousel from './ImagenesProductoCarousel';
 import type { ProductWithCategoryResponse, TApiVariant } from '@/src/schemas';
 import ShopNowButton from './ShopNowButton';
-import ProductExpandableSections from './ProductExpandableSections ';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import PaymentMethods from '../PaymentMethods';
@@ -108,7 +107,7 @@ export default function ProductDetails({ producto }: Props) {
 
         const cleaned = Array.from(new Set(images.filter(img => img && img.trim() !== "")));
 
-        return cleaned.length > 0 ? cleaned : ["/logoapp.svg"];
+        return cleaned.length > 0 ? cleaned : ["/logoapp.png"];
     }, [selectedVariant, producto.imagenes, producto.variants]);
 
     const precio = selectedVariant?.precio ?? producto.precio ?? 0;
@@ -349,7 +348,7 @@ export default function ProductDetails({ producto }: Props) {
 
                         {/* Consulta por WhatsApp */}
                         <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-primary">¿Tienes dudas?</span>
+                            <span className="text-sm font-medium text-fg-primary">Consultar sobre el producto</span>
                             <a
                                 href={`https://wa.me/51925054636?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                                 target="_blank"
@@ -365,7 +364,7 @@ export default function ProductDetails({ producto }: Props) {
             </article>
 
             <div className="mt-8">
-                <ProductExpandableSections producto={producto} />
+                {/* <ProductExpandableSections producto={producto} /> */}
             </div>
 
             <section className="max-w-7xl mx-auto mt-12 px-4">

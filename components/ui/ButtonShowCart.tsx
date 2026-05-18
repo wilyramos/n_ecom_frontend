@@ -2,12 +2,13 @@
 "use client";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, ArrowRight, ShoppingBag } from "lucide-react";
+import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/src/store/cartStore";
 import ItemCarrito from "../cart/ItemCarrito";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from '@/components/ui/button';
+import { HiOutlineShoppingBag } from "react-icons/hi2";
 
 export default function ButtonShowCart() {
     const carrito = useCartStore((state) => state.cart);
@@ -30,7 +31,7 @@ export default function ButtonShowCart() {
         <Sheet open={isCartOpen} onOpenChange={setCartOpen}>
             <SheetTrigger asChild>
                 <button className="relative p-2.5 rounded-full transition-all duration-200 hover:bg-surface-secondary text-fg-primary group cursor-pointer active:scale-90">
-                    <ShoppingCart size={20} strokeWidth={1.5} />
+                    <HiOutlineShoppingBag className="h-6 w-6" />
                     {carrito.length > 0 && (
                         <span className="absolute top-1 right-1 bg-action-primary text-fg-inverse text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-sm">
                             {carrito.length}
@@ -39,7 +40,7 @@ export default function ButtonShowCart() {
                 </button>
             </SheetTrigger>
 
-            <SheetContent side="right" className="flex flex-col h-full p-0 border-l border-border-default bg-surface-primary overflow-hidden">
+            <SheetContent side="right" className="flex flex-col h-full p-0  border-border-default bg-surface-primary overflow-hidden">
                 <SheetHeader className="p-4 border-b border-border-default">
                     <div className="flex items-center justify-between">
                         <SheetTitle className="text-lg font-semibold text-fg-primary">Carrito</SheetTitle>
@@ -52,7 +53,7 @@ export default function ButtonShowCart() {
                 <div className="flex-1 overflow-y-auto px-4 py-2">
                     {carrito.length === 0 ? (
                         <div className="h-full flex flex-col items-center justify-center space-y-4">
-                            <div className="p-6 rounded-full bg-surface-secondary text-fg-secondary">
+                            <div className="p-6 rounded-full text-fg-secondary">
                                 <ShoppingBag size={40} strokeWidth={1.5} />
                             </div>
                             <div className="text-center">

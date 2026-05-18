@@ -79,7 +79,7 @@ export default function HomePage() {
                 <FeatureCards />
             </section>
 
-            <section className="my-10">
+            <section className="">
                 <CategoriasDestacadasWrapper />
             </section>
 

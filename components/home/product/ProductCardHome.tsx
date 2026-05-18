@@ -14,9 +14,9 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
     const discount = compare > price
 
     return (
-        <Link 
-            href={`/productos/${product.slug}`} 
-            className="group block p-2 bg-surface-primary text-fg-primary rounded-lg transition-all  border border-border-default"
+        <Link
+            href={`/productos/${product.slug}`}
+            className="group block p-2 bg-surface-primary text-fg-primary transition-all  border border-border-default rounded-3xl shadow-sm"
         >
             {/* Imagen */}
             <div className="relative aspect-square overflow-hidden rounded-md">
@@ -26,9 +26,8 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
                             src={img1}
                             alt={product.nombre || "Producto"}
                             fill
-                            className={`object-contain p-4 transition ${
-                                img2 !== img1 ? "group-hover:opacity-0" : "group-hover:scale-105"
-                            }`}
+                            className={`object-contain p-4 transition ${img2 !== img1 ? "group-hover:opacity-0" : "group-hover:scale-105"
+                                }`}
                         />
 
                         {img2 !== img1 && (

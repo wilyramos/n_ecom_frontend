@@ -22,7 +22,7 @@ const responsive = {
 
 export default function SliderBannerCarousel({
     banners,
-    height = { mobile: "600px", desktop: "640px" },
+    height = { mobile: "500px", desktop: "540px" },
 }: Props) {
     if (!banners.length) return null;
 
@@ -30,8 +30,8 @@ export default function SliderBannerCarousel({
 
     return (
         <div
-            className="relative w-full max-w-7xl mx-auto"
-             style={{
+            className="relative w-full max-w-7xl mx-auto "
+            style={{
                 "--banner-h-mobile": height.mobile,
                 "--banner-h": height.desktop,
             } as React.CSSProperties}
@@ -46,8 +46,8 @@ export default function SliderBannerCarousel({
                 containerClass="w-full"
                 dotListClass="!bottom-4 md:!bottom-6"
                 customDot={<CarouselDot autoPlaySpeed={autoPlaySpeed} />}
-                // customLeftArrow={<CarouselArrow direction="left" />}
-                // customRightArrow={<CarouselArrow direction="right" />}
+            // customLeftArrow={<CarouselArrow direction="left" />}
+            // customRightArrow={<CarouselArrow direction="right" />}
             >
                 {banners.map((banner) => (
                     <SliderBannerSlide key={banner._id} banner={banner} />

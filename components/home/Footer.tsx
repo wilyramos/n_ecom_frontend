@@ -34,7 +34,7 @@ const social = [
 
 export default function Footer() {
     return (
-        <footer className="relative overflow-hidden border-t border-border-default bg-surface-primary text-fg-primary">
+        <footer className="relative overflow-hidden border-t border-border-default bg-surface-secondary text-fg-primary">
             <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
                 <div className="grid gap-16 lg:grid-cols-[1.2fr_1fr]">
                     <div className="flex flex-col justify-between gap-12">

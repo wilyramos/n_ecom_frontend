@@ -47,7 +47,7 @@ export default function CatalogSidebar({ filters }: Props) {
     }), [filters]);
 
     return (
-        <div className="w-full pb-12 select-none">
+        <div className="w-full pb-12 select-none bg-gray-200 px-4 py-6 rounded-3xl">
             {/* HEADER CON LIMPIAR FILTROS */}
             <div className="mb-6 pb-4 border-b border-[var(--color-border-default)]">
                 <div className="flex items-center justify-between mb-3">

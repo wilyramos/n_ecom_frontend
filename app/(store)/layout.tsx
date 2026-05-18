@@ -51,7 +51,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
                     <NavBar />
                 </header>
 
-                <main className="flex-1 pt-12 md:pt-20">
+                <main className="flex-1 pt-24 md:pt-28">
                     {children}
                 </main>
 

@@ -27,7 +27,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
     };
 
     return (
-        <section className="relative max-w-7xl mx-auto px-4 md:px-8 pt-20 md:pt-24 pb-12">
+        <section className="relative max-w-7xl mx-auto px-4 md:px-8 py-8 my-4">
             <Carousel
                 responsive={responsive} 
                 infinite 
@@ -45,7 +45,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                         className="group flex flex-col transition-all duration-500"
                     >
                         {/* Contenedor de Imagen: Sin bordes pesados, fondo muy suave */}
-                        <div className="relative aspect-square overflow-hidden rounded-2xl bg-[var(--color-bg-tertiary)] transition-all duration-500 group-hover:shadow-lg group-hover:shadow-[var(--color-action-primary)]/5 group-hover:-translate-y-1">
+                        <div className="relative aspect-square overflow-hidden rounded-2xl bg-[var(--color-bg-tertiary)] transition-all duration-500 ">
                             {c.image ? (
                                 <Image 
                                     src={c.image} 

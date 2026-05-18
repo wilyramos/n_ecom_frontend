@@ -5,29 +5,38 @@ import ButtonShowCart from "../ui/ButtonShowCart";
 import ServerCategorias from "./ServerCategorias";
 import NavBarClient from "./NavBarClient";
 import ServerSheetMobile from "./ServerSheetMobile";
-import { AiOutlineUser } from "react-icons/ai";
 import ButtonSearchMobile from "./ButtonSearchMobile";
+import { HiOutlineUserCircle } from "react-icons/hi2";
 
 export default function NavBar() {
     return (
         <NavBarClient>
             <header className="sticky top-0 z-50 h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300">
-                <div className="max-w-screen-2xl w-full mx-auto flex items-center justify-between px-4 md:px-6">
+                <div className="max-w-screen-2xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative">
 
-                    {/* Left: Logo siempre a la izquierda alineado */}
-                    <div className="flex items-center gap-2 shrink-0">
-                        <div className="md:hidden">
-                            <ServerSheetMobile />
-                        </div>
+                    {/* Mobile: Logo centrado */}
+                    <div className="md:hidden absolute left-1/2 -translate-x-1/2">
+                        <Link href="/" className="flex items-center">
+                            <Logo color="black" size={50} />
+                        </Link>
+                    </div>
+
+                    {/* Mobile: Menú a la izquierda */}
+                    <div className="md:hidden">
+                        <ServerSheetMobile />
+                    </div>
+
+                    {/* Desktop: Logo a la izquierda con gap */}
+                    <div className="hidden md:flex items-center gap-2 shrink-0">
                         <Link href="/" className="flex items-center max-w-[140px]">
                             <Logo color="black" size={50} />
                         </Link>
                     </div>
 
-                    {/* Right: Categorías integradas en el flujo principal + Iconos de Acción */}
-                    <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                        
-                        {/* Categorías de Escritorio integradas directamente al lado de las acciones */}
+                    {/* Right: Categorías integradas + Iconos de Acción */}
+                    <div className="flex items-center gap-2 md:gap-4 shrink-0 md:ml-auto">
+
+                        {/* Categorías de Escritorio */}
                         <div className="hidden md:block">
                             <ServerCategorias />
                         </div>
@@ -35,7 +44,7 @@ export default function NavBar() {
                         {/* Separador sutil visible en desktop */}
                         <div className="hidden md:block h-5 w-px bg-border-default" />
 
-                        {/* Grupo de Iconos de Acción End-to-End */}
+                        {/* Grupo de Iconos de Acción */}
                         <div className="flex items-center gap-1 md:gap-2">
                             <ButtonSearchMobile />
 
@@ -45,7 +54,7 @@ export default function NavBar() {
                                 aria-label="Cuenta"
                             >
                                 <div className="hover:bg-surface-secondary rounded-full p-2 transition-colors duration-200">
-                                    <AiOutlineUser className="h-5 w-5" />
+                                    <HiOutlineUserCircle className="h-6 w-6" />
                                 </div>
                             </Link>
 

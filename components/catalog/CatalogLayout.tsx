@@ -61,14 +61,14 @@ export default function CatalogLayout({
                 className="
         lg:hidden
         sticky
-        top-[72px]
-        z-40
+        top-[70px]
+        z-20
         bg-surface-primary/95
         backdrop-blur-md
         border-b border-border-default
     "
             >
-                <div className="container mx-auto px-4 md:px-6 py-3">
+                <div className="container mx-auto px-4 md:px-6 py-2">
                     <CatalogMobileFilters filters={filters} />
                 </div>
             </div>
@@ -79,7 +79,7 @@ export default function CatalogLayout({
 
                     {/* DESKTOP SIDEBAR */}
                     <aside className="hidden lg:block lg:w-44 xl:w-64 flex-shrink-0">
-                        <div className="sticky top-40">
+                        <div className="sticky top-36">
                             <CatalogSidebar filters={filters} />
                         </div>
                     </aside>

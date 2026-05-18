@@ -37,11 +37,11 @@
 /* para el carrusel principal */
 
 .banner-slot {
-    height: var(--banner-h-mobile, 600px);
+    height: var(--banner-h-mobile, 500px);
 }
 
 @media (min-width: 1024px) {
     .banner-slot {
-        height: var(--banner-h, 640px);
+        height: var(--banner-h, 540px);
     }
 }

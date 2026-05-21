@@ -128,14 +128,14 @@ export default function ProductDetails({ producto }: Props) {
 
     return (
         <>
-            <article className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 max-w-7xl mx-auto bg-surface-primary px-4 py-6 rounded-lg">
+            <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 max-w-7xl mx-auto bg-surface-primary px-4 py-6 rounded-lg">
                 <div className="lg:col-span-7 w-full">
                     <ImagenesProductoCarousel images={variantImages} />
                 </div>
 
-                <section className="lg:col-span-5 flex flex-col  space-y-6">
-                    <div className="space-y-6">
-                        <header className="space-y-3 pb-6 ">
+                <section className="lg:col-span-5 flex flex-col  space-y-2">
+                    <div className="space-y-1">
+                        <header className="space-y-1 pb-2 ">
                             <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] tracking-wide uppercase font-medium">
                                 <div className="flex items-center gap-1 text-fg-secondary">
                                     {producto.brand && (
@@ -158,7 +158,7 @@ export default function ProductDetails({ producto }: Props) {
                                 )}
                             </div>
 
-                            <h1 className="text-2xl md:text-3xl font-normal text-fg-primary tracking-tight leading-tight">
+                            <h1 className="text-xl md:text-2xl font-normal text-fg-primary tracking-tight leading-tight">
                                 {producto.nombre}
                             </h1>
 
@@ -371,7 +371,7 @@ export default function ProductDetails({ producto }: Props) {
             <div className="mt-8">
             </div>
 
-        
+
 
             <div className="md:hidden fixed bottom-0 left-0 w-full bg-surface-primary p-4  shadow-lg z-50">
                 <AddProductToCart

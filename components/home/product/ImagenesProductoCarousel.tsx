@@ -110,7 +110,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
 
     if (!currentImgSrc || uniqueImages.length === 0) {
         return (
-            <div className="w-full aspect-square flex flex-col items-center justify-center text-fg-secondary ">
+            <div className="w-full aspect-square flex flex-col items-center justify-center text-fg-secondary">
                 <ImageOff size={32} strokeWidth={1.2} />
                 <span className="text-xs mt-2 font-medium">Imagen no disponible</span>
             </div>
@@ -184,7 +184,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                     <button
                         onClick={() => scrollThumbs("left")}
                         className={cn(
-                            "absolute left-0  z-10 p-1 rounded-full border border-border-default bg-surface-primary text-fg-secondary hover:text-fg-primary transition-all duration-200 shadow-sm shadow-black/5",
+                            "absolute left-0 z-10 p-1 rounded-full border border-border-default bg-surface-primary text-fg-secondary hover:text-fg-primary transition-all duration-200 shadow-sm shadow-black/5",
                             !canScrollLeft && "opacity-0 pointer-events-none"
                         )}
                         aria-label="Desplazar miniaturas hacia la izquierda"
@@ -203,7 +203,8 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                                 onClick={() => setSelectedIndex(idx)}
                                 onMouseEnter={() => setSelectedIndex(idx)}
                                 className={cn(
-                                    "relative aspect-square w-20 h-20 shrink-0 overflow-hidden border-2 rounded-lg bg-surface-primary transition-all duration-200 ease-in-out",
+                                    "relative aspect-square shrink-0 overflow-hidden border-2 rounded-lg bg-surface-primary transition-all duration-200 ease-in-out",
+                                    "w-12 h-12 md:w-20 md:h-20", // ← Miniaturas reducidas en móviles
                                     selectedIndex === idx
                                         ? "border-action-primary opacity-100 scale-95 shadow-sm"
                                         : "border-border-default opacity-60 hover:opacity-100 hover:border-fg-secondary"
@@ -214,7 +215,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                                     alt={`Miniatura ${idx + 1}`}
                                     fill
                                     className="object-contain p-1"
-                                    sizes="80px"
+                                    sizes="(max-width: 768px) 48px, 80px"
                                     quality={40}
                                     unoptimized
                                 />

@@ -36,10 +36,38 @@
 
   /* Bordes y Divisores */
   --color-border-default: var(--color-brand-silver);
+
+  /* --- MAPPING SHADCN UI PARA INTEGRACIÓN NATIVA --- */
+  --color-background: var(--color-surface-primary);
+  --color-foreground: var(--color-fg-primary);
+  
+  --color-card: var(--color-surface-primary);
+  --color-card-foreground: var(--color-fg-primary);
+  
+  --color-popover: var(--color-surface-primary);
+  --color-popover-foreground: var(--color-fg-primary);
+  
+  --color-primary: var(--color-action-primary);
+  --color-primary-foreground: var(--color-fg-inverse);
+  
+  --color-secondary: var(--color-action-secondary);
+  --color-secondary-foreground: var(--color-fg-primary);
+  
+  --color-muted: var(--color-surface-secondary);
+  --color-muted-foreground: var(--color-fg-muted);
+  
+  --color-accent: var(--color-surface-secondary);
+  --color-accent-foreground: var(--color-fg-primary);
+  
+  --color-destructive: #ef4444; /* Rojo estándar para errores */
+  --color-destructive-foreground: #ffffff;
+  
+  --color-border: var(--color-border-default);
+  --color-input: var(--color-border-default);
+  --color-ring: var(--color-brand-charcoal);
 }
 
 /* para el carrusel principal */
-
 .banner-slot {
     height: var(--banner-h-mobile, 500px);
 }

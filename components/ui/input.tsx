@@ -8,12 +8,13 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       type={type}
       data-slot="input"
       className={cn(
-        "file:text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] selection:bg-[var(--color-action-primary)] selection:text-[var(--color-text-inverse)]",
-        "h-9 w-full min-w-0 border bg-[var(--color-bg-primary)] border-[var(--color-border-default)] px-3 py-1 text-base transition-[color,box-shadow] outline-none",
-        "file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
-        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-        "focus-visible:border-[var(--color-surface-active)] focus-visible:ring-[var(--color-surface-hover)] focus-visible:ring-[2px]",
-        "aria-invalid:ring-[var(--color-error)]/20 aria-invalid:border-[var(--color-error)]",
+        "flex h-9 w-full min-w-0 rounded border border-border-default bg-surface-primary px-3 py-1 text-base transition-[color,box-shadow] outline-none",
+        "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-fg-primary",
+        "placeholder:text-fg-muted",
+        "selection:bg-action-primary selection:text-fg-inverse",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "focus-visible:border-action-primary-hover focus-visible:ring-[3px] focus-visible:ring-action-primary/20",
+        "aria-invalid:border-brand-gris aria-invalid:ring-brand-gris/20",
         "md:text-sm",
         className
       )}

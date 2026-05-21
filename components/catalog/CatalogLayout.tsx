@@ -45,7 +45,7 @@ export default function CatalogLayout({
     if (context.lineName) breadcrumbs.push({ label: context.lineName, href: "#" });
 
     return (
-        <section className="min-h-screen bg-surface-primary max-w-screen-2xl mx-auto">
+        <section className="min-h-screen bg-surface-primary max-w-screen-2xl mx-auto pt-4">
             {/* HEADER SECTION */}
             <div className="container mx-auto px-4 md:px-6">
                 <CatalogHeader

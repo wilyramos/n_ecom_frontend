@@ -118,7 +118,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
     }
 
     return (
-        <div className="w-full flex flex-col gap-4 bg-surface-primary select-none rounded-lg sticky top-24">
+        <div className="w-full flex flex-col gap-2 bg-surface-primary select-none rounded-lg md:sticky md:top-24">
             
             {/* MAIN IMAGE */}
             <div className="flex-1 relative group w-full">
@@ -141,7 +141,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                             fill
                             priority
                             className={cn(
-                                "object-contain transition-transform duration-500 ease-out p-4 md:p-8",
+                                "object-contain transition-transform duration-500 ease-out ",
                                 zoom ? "scale-[2.5]" : "scale-100"
                             )}
                             style={zoom ? { transformOrigin: `${position.x}% ${position.y}%` } : undefined}
@@ -184,12 +184,12 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                     <button
                         onClick={() => scrollThumbs("left")}
                         className={cn(
-                            "absolute left-0 z-10 p-1 rounded-full border border-border-default bg-surface-primary text-fg-secondary hover:text-fg-primary transition-all duration-200 shadow-sm shadow-black/5",
+                            "absolute left-0 z-10  rounded-full border border-border-default bg-surface-primary text-fg-secondary hover:text-fg-primary transition-all duration-200 shadow-sm shadow-black/5",
                             !canScrollLeft && "opacity-0 pointer-events-none"
                         )}
                         aria-label="Desplazar miniaturas hacia la izquierda"
                     >
-                        <ChevronLeft size={16} strokeWidth={2} />
+                        <ChevronLeft size={14} strokeWidth={1} />
                     </button>
 
                     {/* Lista de miniaturas horizontales */}
@@ -204,7 +204,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                                 onMouseEnter={() => setSelectedIndex(idx)}
                                 className={cn(
                                     "relative aspect-square shrink-0 overflow-hidden border-2 rounded-lg bg-surface-primary transition-all duration-200 ease-in-out",
-                                    "w-12 h-12 md:w-20 md:h-20", // ← Miniaturas reducidas en móviles
+                                    "w-8 h-8 md:w-20 md:h-20",
                                     selectedIndex === idx
                                         ? "border-action-primary opacity-100 scale-95 shadow-sm"
                                         : "border-border-default opacity-60 hover:opacity-100 hover:border-fg-secondary"
@@ -232,7 +232,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                         )}
                         aria-label="Desplazar miniaturas hacia la derecha"
                     >
-                        <ChevronRight size={16} strokeWidth={2} />
+                        <ChevronRight size={14} strokeWidth={1} />
                     </button>
                 </div>
             )}

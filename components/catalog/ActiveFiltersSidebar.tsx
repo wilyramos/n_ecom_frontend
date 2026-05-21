@@ -8,9 +8,9 @@ interface Props {
 }
 
 export default function ActiveFiltersSidebar({ compact = false }: Props) {
-    const { 
-        currentSlugs, 
-        hasFilters, 
+    const {
+        currentSlugs,
+        hasFilters,
         searchParams,
         setCategory,
         setBrand,
@@ -27,9 +27,9 @@ export default function ActiveFiltersSidebar({ compact = false }: Props) {
         const filters: Array<{ type: 'slug' | 'param' | 'price'; key: string; value: string; displayValue: string }> = [];
 
         currentSlugs.forEach((slug) => {
-            filters.push({ 
-                type: 'slug', 
-                key: 'slug', 
+            filters.push({
+                type: 'slug',
+                key: 'slug',
                 value: slug,
                 displayValue: slug
             });
@@ -46,9 +46,9 @@ export default function ActiveFiltersSidebar({ compact = false }: Props) {
                         displayValue: `S/. ${min} - S/. ${max}`
                     });
                 } else {
-                    filters.push({ 
-                        type: 'param', 
-                        key, 
+                    filters.push({
+                        type: 'param',
+                        key,
                         value,
                         displayValue: value
                     });
@@ -83,7 +83,7 @@ export default function ActiveFiltersSidebar({ compact = false }: Props) {
                 {activeFilters.map(({ type, key, value, displayValue }) => (
                     <div
                         key={`${type}-${key}-${value}`}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-full bg-[var(--color-surface-secondary)] border border-[var(--color-border-default)] text-[var(--color-fg-primary)]"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 text-xs rounded-full bg-fg-secondary border border-[var(--color-border-default)] text-[var(--color-fg-primary)]"
                     >
                         <span className="font-medium capitalize text-[11px]">{displayValue}</span>
                         <button

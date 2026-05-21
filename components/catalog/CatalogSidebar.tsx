@@ -38,7 +38,6 @@ export default function CatalogSidebar({ filters }: Props) {
         clearFilters,
     } = useCatalogNav();
 
-    // Límites absolutos calculados por el backend
     const limitPrices = useMemo(() => {
         const fallback = { min: 0, max: 5000 };
         if (!filters.price || filters.price.length === 0) return fallback;
@@ -49,7 +48,6 @@ export default function CatalogSidebar({ filters }: Props) {
         };
     }, [filters.price]);
 
-    // Rango actual extraído de la URL
     const currentPriceRange = useMemo(() => {
         const raw = searchParams.get("priceRange");
         if (!raw) return null;
@@ -57,11 +55,9 @@ export default function CatalogSidebar({ filters }: Props) {
         return isNaN(min) || isNaN(max) ? null : { min, max };
     }, [searchParams]);
 
-    // Estados locales independientes para el tipeo manual del usuario
     const [minInput, setMinInput] = useState<string>("");
     const [maxInput, setMaxInput] = useState<string>("");
 
-    // Sincronizar inputs locales cuando la URL cambie externamente (ej: al limpiar filtros)
     useEffect(() => {
         if (currentPriceRange) {
             setMinInput(currentPriceRange.min.toString());
@@ -72,7 +68,6 @@ export default function CatalogSidebar({ filters }: Props) {
         }
     }, [currentPriceRange]);
 
-    // Debounce automático controlado por entrada de texto
     useEffect(() => {
         const urlMin = currentPriceRange?.min;
         const urlMax = currentPriceRange?.max;
@@ -114,24 +109,23 @@ export default function CatalogSidebar({ filters }: Props) {
     }), [filters]);
 
     return (
-        <div className="w-full pb-12 select-none bg-fg-muted px-4 py-6 rounded-3xl">
-            {/* HEADER CON LIMPIAR FILTROS */}
-            <div className="mb-6 pb-4 border-b border-[var(--color-border-default)]">
+        <div className="w-full pb-12 select-none px-4  py-6 rounded-3xl">
+            <div className="mb-6 pb-4 border-b border-border-default">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--color-fg-primary)]">
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-fg-primary">
                         Filtros
                     </h2>
                     {hasFilters && (
                         <button
                             onClick={clearFilters}
-                            className="text-[11px] font-semibold text-[var(--color-fg-secondary)] hover:text-[var(--color-fg-primary)] transition-colors flex items-center gap-1"
+                            className="text-[11px] font-semibold text-fg-muted hover:text-fg-primary transition-colors flex items-center gap-1"
                         >
                             <LuX className="w-3 h-3" />
                             Limpiar
                         </button>
                     )}
                 </div>
-                
+
                 {hasFilters && (
                     <div className="mb-0">
                         <ActiveFiltersSidebar compact />
@@ -139,21 +133,19 @@ export default function CatalogSidebar({ filters }: Props) {
                 )}
             </div>
 
-            {/* ACCORDION DE FILTROS */}
             <Accordion
                 type="multiple"
                 className="w-full space-y-3"
                 defaultValue={["item-price", "item-categories", "item-brands", "item-lines"]}
             >
-                {/* RANGO DE PRECIO - INPUTS CON SHADCN UI */}
                 <AccordionItem value="item-price" className="border-0">
-                    <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
+                    <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                         Precio
                     </AccordionTrigger>
                     <AccordionContent className="pt-2 pb-2 px-0">
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <Label htmlFor="min-price" className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
+                                <Label htmlFor="min-price" className="text-[10px] uppercase font-bold text-fg-muted tracking-wider">
                                     Desde (S/.)
                                 </Label>
                                 <Input
@@ -164,9 +156,8 @@ export default function CatalogSidebar({ filters }: Props) {
                                     onChange={(e) => setMinInput(e.target.value)}
                                 />
                             </div>
-
                             <div className="space-y-1.5">
-                                <Label htmlFor="max-price" className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
+                                <Label htmlFor="max-price" className="text-[10px] uppercase font-bold text-fg-muted tracking-wider">
                                     Hasta (S/.)
                                 </Label>
                                 <Input
@@ -181,10 +172,9 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionContent>
                 </AccordionItem>
 
-                {/* CATEGORÍAS */}
                 {sortedFilters.categories.length > 0 && (
                     <AccordionItem value="item-categories" className="border-0">
-                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
+                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                             Categorías
                         </AccordionTrigger>
                         <AccordionContent className="pt-3 pb-0 px-0">
@@ -198,8 +188,8 @@ export default function CatalogSidebar({ filters }: Props) {
                                             className={cn(
                                                 "px-3 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
                                                 active
-                                                    ? "bg-[var(--color-action-primary)] border-[var(--color-action-primary)] text-[var(--color-fg-inverse)] shadow-sm"
-                                                    : "border-[var(--color-border-default)] bg-[var(--color-surface-primary)] text-[var(--color-fg-primary)] hover:border-[var(--color-brand-charcoal)]"
+                                                    ? "bg-action-primary border-action-primary text-surface-primary shadow-sm"
+                                                    : "border-border-default bg-surface-primary text-fg-primary hover:border-brand-charcoal"
                                             )}
                                         >
                                             {cat.nombre}
@@ -211,10 +201,9 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionItem>
                 )}
 
-                {/* MARCAS */}
                 {sortedFilters.brands.length > 0 && (
                     <AccordionItem value="item-brands" className="border-0">
-                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
+                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                             Marcas
                         </AccordionTrigger>
                         <AccordionContent className="pt-3 pb-0 px-0">
@@ -228,19 +217,16 @@ export default function CatalogSidebar({ filters }: Props) {
                                             className={cn(
                                                 "flex items-center justify-between px-3 py-2 rounded-3xl border cursor-pointer transition-all duration-150",
                                                 active
-                                                    ? "border-[var(--color-brand-charcoal)] bg-[var(--color-surface-secondary)]"
-                                                    : "border-[var(--color-border-default)] bg-[var(--color-surface-primary)] hover:border-[var(--color-brand-charcoal)]"
+                                                    ? "border-brand-charcoal bg-surface-secondary"
+                                                    : "border-border-default bg-surface-primary hover:border-brand-charcoal"
                                             )}
                                         >
-                                            <span className={cn(
-                                                "text-xs font-medium transition-colors",
-                                                active ? "text-[var(--color-fg-primary)] font-bold" : "text-[var(--color-fg-primary)]"
-                                            )}>
+                                            <span className="text-xs font-medium text-fg-primary">
                                                 {brand.nombre}
                                             </span>
                                             <Checkbox
                                                 checked={active}
-                                                className="w-4 h-4 rounded border-[var(--color-border-default)] data-[state=checked]:bg-[var(--color-action-primary)] data-[state=checked]:border-[var(--color-action-primary)] transition-colors duration-150"
+                                                className="w-4 h-4 rounded border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
                                             />
                                         </div>
                                     );
@@ -250,10 +236,9 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionItem>
                 )}
 
-                {/* MODELOS/LÍNEAS */}
                 {sortedFilters.lines.length > 0 && (
                     <AccordionItem value="item-lines" className="border-0">
-                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
+                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                             Modelos
                         </AccordionTrigger>
                         <AccordionContent className="pt-3 pb-0 px-0">
@@ -266,18 +251,14 @@ export default function CatalogSidebar({ filters }: Props) {
                                             onClick={() => setLine(line.slug)}
                                             className={cn(
                                                 "flex items-center gap-3 px-3 py-2 rounded-3xl cursor-pointer transition-colors duration-150",
-                                                active 
-                                                    ? "bg-[var(--color-surface-secondary)] text-[var(--color-fg-primary)] font-semibold" 
-                                                    : "hover:bg-[var(--color-surface-secondary)] hover:bg-opacity-40 text-[var(--color-fg-primary)]"
+                                                active ? "bg-surface-secondary text-fg-primary" : "hover:bg-surface-secondary text-fg-primary"
                                             )}
                                         >
                                             <Checkbox
                                                 checked={active}
-                                                className="w-3.5 h-3.5 rounded-sm border-[var(--color-border-default)] data-[state=checked]:bg-[var(--color-action-primary)] data-[state=checked]:border-[var(--color-action-primary)]"
+                                                className="w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
                                             />
-                                            <span className="text-xs tracking-tight">
-                                                {line.nombre}
-                                            </span>
+                                            <span className="text-xs tracking-tight">{line.nombre}</span>
                                         </div>
                                     );
                                 })}
@@ -286,69 +267,46 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionItem>
                 )}
 
-                {/* ATRIBUTOS DINÁMICOS */}
                 {sortedFilters.atributos.map((attr, idx) => {
                     const isColorAttr = attr.name.toLowerCase().includes("color");
-
                     return (
                         <AccordionItem key={idx} value={`attr-${idx}`} className="border-0">
-                            <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
+                            <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                                 {attr.name}
                             </AccordionTrigger>
                             <AccordionContent className="pt-3 pb-0 px-0">
-                                {isColorAttr ? (
-                                    <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1">
-                                        {attr.values.map((val) => {
-                                            const isChecked = searchParams.getAll(attr.name).includes(val);
-                                            return (
-                                                <div
-                                                    key={val}
-                                                    onClick={() => updateFilter(attr.name, val)}
-                                                    className={cn(
-                                                        "flex items-center gap-2.5 p-2 rounded-3xl border cursor-pointer transition-all duration-150",
-                                                        isChecked
-                                                            ? " bg-[var(--color-surface-secondary)]  "
-                                                            : "border-[var(--color-border-default)] hover:border-[var(--color-brand-charcoal)] bg-[var(--color-surface-primary)]"
-                                                    )}
-                                                >
-                                                    <div className="relative flex-shrink-0 border border-[var(--color-brand-black)]/10 rounded-full overflow-hidden">
+                                <div className={cn(isColorAttr ? "grid grid-cols-2 gap-2" : "flex flex-col gap-1", "max-h-[300px] overflow-y-auto pr-1")}>
+                                    {attr.values.map((val) => {
+                                        const isChecked = searchParams.getAll(attr.name).includes(val);
+                                        return (
+                                            <div
+                                                key={val}
+                                                onClick={() => updateFilter(attr.name, val)}
+                                                className={cn(
+                                                    "flex items-center gap-2.5 p-2 rounded-3xl border cursor-pointer transition-all duration-150",
+                                                    isChecked 
+                                                        ? "bg-surface-secondary border-transparent" 
+                                                        : "border-border-default hover:border-brand-charcoal bg-surface-primary"
+                                                )}
+                                            >
+                                                {isColorAttr && (
+                                                    <div className="relative flex-shrink-0 border border-brand-charcoal/10 rounded-full overflow-hidden">
                                                         <ColorCircle color={val} size={16} />
                                                     </div>
-                                                    <span className={cn(
-                                                        "text-[11px] capitalize truncate font-medium",
-                                                        isChecked ? "text-[var(--color-fg-primary)] font-bold" : "text-[var(--color-fg-primary)]"
-                                                    )}>
-                                                        {val}
-                                                    </span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto pr-1">
-                                        {attr.values.map((val) => {
-                                            const isChecked = searchParams.getAll(attr.name).includes(val);
-                                            return (
-                                                <div
-                                                    key={val}
-                                                    onClick={() => updateFilter(attr.name, val)}
-                                                    className={cn(
-                                                        "flex items-center justify-between px-3 py-2 rounded-3xl cursor-pointer transition-colors duration-150",
-                                                        isChecked ? "bg-[var(--color-surface-secondary)] text-[var(--color-fg-primary)]" : "hover:bg-[var(--color-surface-secondary)] hover:bg-opacity-40"
-                                                    )}
-                                                >
-                                                    <span className="text-xs font-medium capitalize">
-                                                        {val}
-                                                    </span>
+                                                )}
+                                                <span className="text-[11px] capitalize truncate font-medium text-fg-primary">
+                                                    {val}
+                                                </span>
+                                                {!isColorAttr && (
                                                     <Checkbox
                                                         checked={isChecked}
-                                                        className="w-3.5 h-3.5 rounded-sm border-[var(--color-border-default)] data-[state=checked]:bg-[var(--color-action-primary)] data-[state=checked]:border-[var(--color-action-primary)]"
+                                                        className="ml-auto w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
                                                     />
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </AccordionContent>
                         </AccordionItem>
                     );

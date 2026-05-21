@@ -23,13 +23,12 @@ export default function RecentViewed({ currentProduct }: { currentProduct: Produ
     return (
         <section className=" bg-[var(--color-bg-primary)]">
             <header className="mb-8 px-2">
-                
-                <p className="text-md  tracking-tighter text-[var(--color-text-primary)] ">
+
+                <p className="text-lg  font-semibold tracking-tighter text-[var(--color-text-primary)] ">
                     Vistos recientemente
                 </p>
                 <div>
-                <div className="border-b border-2 border-black w-14 md:w-20 mb-4"></div>
-            </div>
+                </div>
             </header>
 
             {/* Premium Grid using ProductCard */}

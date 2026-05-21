@@ -21,8 +21,9 @@ const MESSAGES = [
 ];
 
 const social = [
+        { label: "Facebook", href: "https://facebook.com/neoshop", icon: <FaFacebookF size={13} /> },
+
     { label: "Instagram", href: "https://instagram.com/neoshop", icon: <FaInstagram size={14} /> },
-    { label: "Facebook", href: "https://facebook.com/neoshop", icon: <FaFacebookF size={13} /> },
     { label: "WhatsApp", href: "https://wa.me/51902900653", icon: <FaWhatsapp size={14} /> },
 ];
 
@@ -58,7 +59,7 @@ export default function TopBanner() {
                         href={item.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-fg-inverse/70 rounded-xl border bg-fg-muted h-6 w-6 transition-colors hover:text-fg-inverse flex items-center justify-center"
+                        className="text-fg-inverse/70  border h-6 w-6 transition-colors hover:text-fg-inverse flex items-center justify-center rounded-2xl"
                         aria-label={item.label}
                     >
                         {item.icon}

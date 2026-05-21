@@ -128,12 +128,12 @@ export default function ProductDetails({ producto }: Props) {
 
     return (
         <>
-            <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-12 max-w-7xl mx-auto bg-surface-primary px-4 py-6 rounded-lg">
-                <div className="lg:col-span-7 w-full">
+            <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto bg-surface-primary px-4 py-6 rounded-lg">
+                <div className="lg:col-span-6 w-full">
                     <ImagenesProductoCarousel images={variantImages} />
                 </div>
 
-                <section className="lg:col-span-5 flex flex-col  space-y-2">
+                <section className="lg:col-span-6 flex flex-col  space-y-2">
                     <div className="space-y-1">
                         <header className="space-y-1 pb-2 ">
                             <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] tracking-wide uppercase font-medium">
@@ -229,7 +229,7 @@ export default function ProductDetails({ producto }: Props) {
                                                             disabled={outOfStock}
                                                             title={val}
                                                             className={cn(
-                                                                "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-surface-primary cursor-pointer",
+                                                                "relative flex  items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-surface-primary cursor-pointer",
                                                                 selected
                                                                     ? "border-fg-primary ring-1 ring-fg-primary"
                                                                     : "border-border-default hover:border-fg-primary",
@@ -256,7 +256,7 @@ export default function ProductDetails({ producto }: Props) {
                                                 <SelectTrigger className="w-full max-w-xs border-border-default bg-surface-primary text-fg-primary text-sm h-10 rounded-md">
                                                     <SelectValue placeholder="Seleccionar opción" />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-surface-primary border-border-default text-fg-primary">
+                                                <SelectContent className="bg-surface-primary border-border-default text-fg-primary rounded-2xl">
                                                     {availableValues.map((val) => {
                                                         const outOfStock = isOptionOutOfStock(key, val);
                                                         return (
@@ -287,7 +287,7 @@ export default function ProductDetails({ producto }: Props) {
                                                             onClick={() => !outOfStock && updateSelectedVariant(key, val)}
                                                             disabled={outOfStock}
                                                             className={cn(
-                                                                "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden bg-surface-primary text-fg-primary cursor-pointer",
+                                                                "h-9 px-4 text-xs font-medium border rounded-2xl transition-all relative overflow-hidden bg-surface-primary text-fg-primary cursor-pointer",
                                                                 selected
                                                                     ? "border-fg-primary ring-1 ring-fg-primary"
                                                                     : "border-border-default hover:border-fg-primary",

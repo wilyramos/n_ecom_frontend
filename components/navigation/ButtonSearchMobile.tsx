@@ -37,7 +37,7 @@ export default function ButtonSearchMobile() {
             {/* Toggle button único para responsive */}
             <button
                 onClick={() => setOpenSearch(!openSearch)}
-                className="p-2.5 rounded-full hover:bg-surface-secondary text-fg-primary transition-colors duration-200 active:scale-90"
+                className="p-2.5 rounded-full hover:bg-surface-secondary text-fg-muted  transition-colors duration-200 active:scale-90"
                 aria-label="Buscar productos"
             >
                 {openSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}

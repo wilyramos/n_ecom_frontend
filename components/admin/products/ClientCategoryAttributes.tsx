@@ -89,6 +89,7 @@ export default function ClientCategoryAttributes({
         <div className="space-y-4 p-5 border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] rounded-xl">
 
             {/* --- SELECCIÓN DE CATEGORÍA --- */}
+            {/* --- SELECCIÓN DE CATEGORÍA --- */}
             <div className="space-y-2">
                 <label className="text-sm font-semibold text-[var(--color-text-primary)]">
                     Categoría <span className="text-[var(--color-error)]">*</span>
@@ -102,15 +103,22 @@ export default function ClientCategoryAttributes({
                         <SelectValue placeholder="Seleccionar categoría..." />
                     </SelectTrigger>
                     <SelectContent className="bg-[var(--color-bg-primary)] border-[var(--color-border-default)]">
-                        {categorias.map((cat) => (
-                            <SelectItem
-                                key={cat._id}
-                                value={cat._id}
-                                className="focus:bg-[var(--color-surface-hover)] focus:text-[var(--color-text-primary)] cursor-pointer"
-                            >
-                                {cat.nombre}
-                            </SelectItem>
-                        ))}
+                        {categorias.map((cat) => {
+                            // Verificar si tiene un padre poblado para formatear el nombre expuesto
+                            const nombreFormateado = cat.parent && typeof cat.parent === 'object' && 'nombre' in cat.parent
+                                ? `${(cat.parent as { nombre: string }).nombre} > ${cat.nombre}`
+                                : cat.nombre;
+
+                            return (
+                                <SelectItem
+                                    key={cat._id}
+                                    value={cat._id}
+                                    className="focus:bg-[var(--color-surface-hover)] focus:text-[var(--color-text-primary)] cursor-pointer"
+                                >
+                                    {nombreFormateado}
+                                </SelectItem>
+                            );
+                        })}
                     </SelectContent>
                 </Select>
             </div>

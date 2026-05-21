@@ -1,8 +1,9 @@
-// frontend/components/navigation/TopBanner.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Truck, CreditCard, ShieldCheck } from "lucide-react";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 
 const MESSAGES = [
     {
@@ -19,6 +20,12 @@ const MESSAGES = [
     },
 ];
 
+const social = [
+    { label: "Instagram", href: "https://instagram.com/neoshop", icon: <FaInstagram size={14} /> },
+    { label: "Facebook", href: "https://facebook.com/neoshop", icon: <FaFacebookF size={13} /> },
+    { label: "WhatsApp", href: "https://wa.me/51902900653", icon: <FaWhatsapp size={14} /> },
+];
+
 export default function TopBanner() {
     const [index, setIndex] = useState(0);
 
@@ -31,17 +38,32 @@ export default function TopBanner() {
     }, []);
 
     return (
-        <div className="w-full h-8 bg-surface-secondary text-fg-primary flex items-center justify-center overflow-hidden border-b border-border-default select-none">
-            <div 
-                key={index} 
-                className="flex items-center justify-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest text-center px-4 animate-in fade-in slide-in-from-bottom-1 duration-300"
+        <div className="relative w-full h-8 bg-surface-secondary text-fg-inverse flex items-center justify-center overflow-hidden border-b border-border-default select-none px-4 md:px-8">
+            <div
+                key={index}
+                className="flex items-center justify-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest text-center px-12 animate-in fade-in slide-in-from-bottom-1 duration-300"
             >
-                <span className="shrink-0 text-fg-primary">
+                <span className="shrink-0 text-fg-inverse">
                     {MESSAGES[index].icon}
                 </span>
-                <span>
+                <span className="text-fg-inverse">
                     {MESSAGES[index].text}
                 </span>
+            </div>
+
+            <div className="absolute right-4 md:right-8 hidden sm:flex items-center gap-4">
+                {social.map((item) => (
+                    <Link
+                        key={item.label}
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-fg-inverse/70 rounded-xl border bg-fg-muted h-6 w-6 transition-colors hover:text-fg-inverse flex items-center justify-center"
+                        aria-label={item.label}
+                    >
+                        {item.icon}
+                    </Link>
+                ))}
             </div>
         </div>
     );

@@ -45,7 +45,7 @@ export default function ClientCarouselProductosDestacados({ products }: Props) {
                 partialVisible
             >
                 {products.map((product) => (
-                    <div key={product._id} className="transition-transform duration-500 hover:scale-[1.02]">
+                    <div key={product._id} >
                         <ProductCardHome product={product} />
                     </div>
                 ))}

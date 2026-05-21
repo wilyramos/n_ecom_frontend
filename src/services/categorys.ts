@@ -4,7 +4,6 @@ import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import { apiCategorySchema, apiCategoryListSchema } from "@/src/schemas";
 
-
 export const getCategory = cache(async (id: string) => {
 
     const url = `${process.env.API_URL}/category/${id}`;

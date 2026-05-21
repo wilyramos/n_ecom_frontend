@@ -48,7 +48,7 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
 
             {/* Info */}
             <div className="mt-3 space-y-1">
-                <h3 className="text-xs md:text-sm font-medium line-clamp-2 group-hover:text-fg-secondary transition-colors">
+                <h3 className="text-xs md:text-sm font-medium line-clamp-2 group-hover:text-fg-muted transition-colors">
                     {product.nombre}
                 </h3>
 
@@ -61,7 +61,7 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
                     </span>
 
                     {discount && (
-                        <span className="line-through text-fg-secondary text-xs font-normal">
+                        <span className="line-through text-fg-muted text-xs font-normal">
                             S/ {compare.toLocaleString("es-PE")}
                         </span>
                     )}

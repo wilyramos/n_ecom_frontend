@@ -30,7 +30,7 @@ export default function ButtonShowCart() {
     return (
         <Sheet open={isCartOpen} onOpenChange={setCartOpen}>
             <SheetTrigger asChild>
-                <button className="relative p-2.5 rounded-full transition-all duration-200 hover:bg-surface-secondary text-fg-primary group cursor-pointer active:scale-90">
+                <button className="relative p-2.5 rounded-full transition-all duration-200 hover:bg-surface-secondary text-fg-muted group cursor-pointer active:scale-90">
                     <HiOutlineShoppingBag className="h-6 w-6" />
                     {carrito.length > 0 && (
                         <span className="absolute top-1 right-1 bg-action-primary text-fg-inverse text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center shadow-sm">

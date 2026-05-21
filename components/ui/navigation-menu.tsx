@@ -57,7 +57,7 @@ function NavigationMenuItem({
 }
 
 const navigationMenuTriggerStyle = cva(
-    "group inline-flex h-10 w-max items-center justify-center bg-transparent px-4 text-md font-semibold capitalize text-fg-primary relative transition-colors duration-150 outline-none select-none hover:text-action-primary-hover focus:text-action-primary-hover disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-action-primary-hover after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-transparent data-[state=open]:after:bg-brand-charcoal hover:after:bg-surface-secondary focus-visible:ring-2 focus-visible:ring-action-primary"
+    "group inline-flex h-10 w-max items-center justify-center bg-transparent px-4 text-md font-semibold capitalize text-fg-muted relative transition-colors duration-150 outline-none select-none hover:text-action-primary-hover focus:text-action-primary-hover disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-action-primary-hover after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:bg-transparent data-[state=open]:after:bg-brand-charcoal hover:after:bg-surface-secondary focus-visible:ring-2 focus-visible:ring-action-primary"
 );
 
 function NavigationMenuTrigger({
@@ -86,7 +86,7 @@ function NavigationMenuContent({
             className={cn(
                 "left-0 top-0 w-full p-6 md:absolute md:w-auto min-w-[400px]",
                 "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-10 data-[motion=from-start]:slide-in-from-left-10 data-[motion=to-end]:slide-out-to-right-10 data-[motion=to-start]:slide-out-to-left-10 duration-200",
-                "group-data-[viewport=false]/navigation-menu:bg-surface-primary group-data-[viewport=false]/navigation-menu:text-fg-primary group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:border-border-default group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-2 group-data-[viewport=false]/navigation-menu:shadow-lg **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
+                "group-data-[viewport=false]/navigation-menu:bg-surface-primary group-data-[viewport=false]/navigation-menu:text-fg-muted group-data-[viewport=false]/navigation-menu:border group-data-[viewport=false]/navigation-menu:border-border-default group-data-[viewport=false]/navigation-menu:top-full group-data-[viewport=false]/navigation-menu:mt-2 group-data-[viewport=false]/navigation-menu:shadow-lg **:data-[slot=navigation-menu-link]:focus:ring-0 **:data-[slot=navigation-menu-link]:focus:outline-none",
                 className
             )}
             {...props}
@@ -103,7 +103,7 @@ function NavigationMenuViewport({
             <NavigationMenuPrimitive.Viewport
                 data-slot="navigation-menu-viewport"
                 className={cn(
-                    "origin-top-left bg-surface-primary text-fg-primary border-x border-b border-border-default shadow-xl relative h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden md:w-[var(--radix-navigation-menu-viewport-width)] transition-[width,height] duration-200",
+                    "origin-top-left bg-surface-primary text-fg-muted border-x border-b border-border-default shadow-xl relative h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden md:w-[var(--radix-navigation-menu-viewport-width)] transition-[width,height] duration-200",
                     "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-100 data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                     className
                 )}
@@ -121,7 +121,7 @@ function NavigationMenuLink({
         <NavigationMenuPrimitive.Link
             data-slot="navigation-menu-link"
             className={cn(
-                "outline-none focus-visible:ring-2 focus-visible:ring-action-primary",
+                "outline-none focus-visible:ring-2 ",
                 className
             )}
             {...props}

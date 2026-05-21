@@ -10,7 +10,6 @@ import { useSearchParams } from 'next/navigation';
 import PaymentMethods from '../PaymentMethods';
 import ColorCircle from '@/components/ui/ColorCircle';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ChevronRight } from 'lucide-react';
 import {
     Select,
@@ -19,6 +18,7 @@ import {
     SelectItem,
     SelectValue,
 } from "@/components/ui/select";
+import ProductExpandableSections from './ProductExpandableSections ';
 
 type Props = {
     producto: ProductWithCategoryResponse;
@@ -174,6 +174,18 @@ export default function ProductDetails({ producto }: Props) {
                             )}
 
                             <div className="flex items-center gap-3 pt-2 flex-wrap">
+
+                                {hasDiscount && (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl text-fg-muted line-through">
+                                            S/ {precioComparativo!.toFixed(2)}
+
+                                        </span>
+                                        <span className=" font-semibold px-2 py-0.5 bg-surface-inverse text-fg-inverse rounded-sm">
+                                            −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="flex items-baseline text-fg-primary">
                                     <span className="text-base font-medium mr-0.5">S/</span>
                                     <span className="text-2xl md:text-3xl font-semibold tracking-tight">
@@ -181,16 +193,7 @@ export default function ProductDetails({ producto }: Props) {
                                     </span>
                                 </div>
 
-                                {hasDiscount && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm text-fg-secondary line-through">
-                                            S/ {precioComparativo!.toFixed(2)}
-                                        </span>
-                                        <span className="text-[11px] font-semibold px-2 py-0.5 bg-surface-inverse text-fg-inverse rounded-sm">
-                                            −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
-                                        </span>
-                                    </div>
-                                )}
+
 
                                 {stock === 0 && (
                                     <span className="text-xs font-medium text-fg-primary bg-surface-secondary px-2.5 py-1 rounded-sm">
@@ -199,7 +202,6 @@ export default function ProductDetails({ producto }: Props) {
                                 )}
                             </div>
                         </header>
-
                         <div className="space-y-5">
                             {Object.entries(allAttributes).map(([key]) => {
                                 const availableValues = getAvailableValues(key);
@@ -208,12 +210,12 @@ export default function ProductDetails({ producto }: Props) {
 
                                 return (
                                     <fieldset key={key} className="space-y-2.5">
-                                        <legend className="text-xs font-medium tracking-wide uppercase text-fg-secondary">
-                                            {key}: {selectedAttributes[key] && <span className="text-fg-primary font-semibold normal-case ml-1">{selectedAttributes[key]}</span>}
+                                        <legend className="text-md tracking-wide text-fg-muted font-bold capitalize">
+                                            {key}: {selectedAttributes[key] && <span className="text-fg-muted capitalize font-semibold  ml-1">{selectedAttributes[key]}</span>}
                                         </legend>
 
                                         {isColor ? (
-                                            <div className="flex flex-wrap gap-2">
+                                            <div className="flex flex-wrap gap-3">
                                                 {availableValues.map((val) => {
                                                     const outOfStock = isOptionOutOfStock(key, val);
                                                     const selected = selectedAttributes[key] === val;
@@ -225,25 +227,23 @@ export default function ProductDetails({ producto }: Props) {
                                                             key={val}
                                                             onClick={() => !outOfStock && updateSelectedVariant(key, val)}
                                                             disabled={outOfStock}
+                                                            title={val}
                                                             className={cn(
-                                                                "relative flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-150 bg-surface-primary cursor-pointer",
+                                                                "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-surface-primary cursor-pointer",
                                                                 selected
-                                                                    ? "border-fg-primary ring-1 ring-fg-primary text-fg-primary"
-                                                                    : "border-border-default text-fg-primary hover:border-fg-primary",
+                                                                    ? "border-fg-primary ring-1 ring-fg-primary"
+                                                                    : "border-border-default hover:border-fg-primary",
                                                                 outOfStock && "opacity-40 cursor-not-allowed"
                                                             )}
                                                         >
-                                                            <div className={cn("relative w-4 h-4 rounded-full border border-border-default overflow-hidden shrink-0", outOfStock && "grayscale")}>
-                                                                <ColorCircle color={variantForValue?.atributos[key] || val} size={32} />
+                                                            <div className={cn("relative w-7 h-7 rounded-full border border-border-default overflow-hidden shrink-0", outOfStock && "grayscale")}>
+                                                                <ColorCircle color={variantForValue?.atributos[key] || val} size={28} />
                                                                 {outOfStock && (
                                                                     <span className="absolute inset-0 flex items-center justify-center z-10">
                                                                         <div className="w-[120%] border-t border-fg-secondary -rotate-45" />
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <span className={cn(outOfStock && "line-through text-fg-secondary")}>
-                                                                {val}
-                                                            </span>
                                                         </button>
                                                     );
                                                 })}
@@ -297,7 +297,7 @@ export default function ProductDetails({ producto }: Props) {
                                                             <span className={cn(outOfStock && "line-through")}>{val}</span>
                                                             {outOfStock && (
                                                                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                                                    <div className="w-[110%]  -rotate-[15deg]" />
+                                                                    <div className="w-[110%] -rotate-[15deg]" />
                                                                 </span>
                                                             )}
                                                         </button>
@@ -359,60 +359,19 @@ export default function ProductDetails({ producto }: Props) {
                                 <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
                             </a>
                         </div>
+
+                        <div>
+                            <ProductExpandableSections producto={producto} />
+
+                        </div>
                     </div>
                 </section>
             </article>
 
             <div className="mt-8">
-                {/* <ProductExpandableSections producto={producto} /> */}
             </div>
 
-            <section className="max-w-7xl mx-auto mt-12 px-4">
-                {producto.complementarios && producto.complementarios.length > 0 && (
-                    <div className="pt-8  space-y-4">
-                        <h3 className="text-lg font-normal tracking-tight text-fg-primary">
-                            Completa tu compra
-                        </h3>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {producto.complementarios.map((comp) => {
-                                const isPopulated = typeof comp !== 'string';
-                                if (!isPopulated) return null;
-
-                                return (
-                                    <Link
-                                        key={comp._id}
-                                        href={`/productos/${comp.slug}`}
-                                        className="group flex flex-col justify-between p-3 transition-all border border-border-default rounded-md hover:border-fg-primary bg-surface-primary"
-                                    >
-                                        <div className="space-y-3">
-                                            <div className="relative aspect-square overflow-hidden rounded bg-surface-primary w-full">
-                                                <Image
-                                                    src={comp.imagenes?.[0] || "/logo.png"}
-                                                    alt={comp.nombre}
-                                                    fill
-                                                    className="object-contain p-1 transition-transform duration-300 group-hover:scale-103"
-                                                    unoptimized
-                                                />
-                                            </div>
-
-                                            <div className="space-y-1">
-                                                <h4 className="text-xs font-medium text-fg-primary leading-tight line-clamp-2 uppercase tracking-tight">
-                                                    {comp.nombre}
-                                                </h4>
-                                            </div>
-                                        </div>
-
-                                        <p className="text-sm font-semibold text-fg-primary pt-2">
-                                            S/ {comp.precio.toFixed(2)}
-                                        </p>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
-            </section>
+        
 
             <div className="md:hidden fixed bottom-0 left-0 w-full bg-surface-primary p-4  shadow-lg z-50">
                 <AddProductToCart

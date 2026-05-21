@@ -1,5 +1,5 @@
 import CreateProductForm from "@/components/admin/products/CreateProductForm";
-import { getAllSubcategories } from "@/src/services/categorys";
+import { getCategories } from "@/src/services/categorys";
 import { getActiveBrands } from "@/src/services/brands";
 import { linesService } from "@/src/services/lines.service"; // Importamos el servicio
 import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
@@ -18,7 +18,7 @@ export default async function NewProductPage({ searchParams }: { searchParams: S
 
     // Parallel Data Fetching
     const [categorias, brands, lines, duplicateProduct] = await Promise.all([
-        getAllSubcategories(),
+        getCategories(),
         getActiveBrands(),
         linesService.getAllActive(), // Obtenemos líneas activas
         duplicateId ? getProduct(duplicateId as string) : Promise.resolve(null), // Si hay ID de duplicado, obtenemos ese producto

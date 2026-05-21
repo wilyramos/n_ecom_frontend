@@ -69,6 +69,7 @@
     "next": "15.3.6",
     "next-auth": "^4.24.11",
     "or": "^0.2.0",
+    "radix-ui": "^1.4.3",
     "react": "^19.0.1",
     "react-date-range": "^2.0.1",
     "react-datepicker": "^8.7.0",

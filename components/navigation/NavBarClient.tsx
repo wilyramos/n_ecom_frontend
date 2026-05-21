@@ -25,7 +25,7 @@ export default function NavBarClient({ children }: { children: ReactNode }) {
             }}
         >
             <TopBanner />
-            <div className="text-fg-primary bg-surface-primary">
+            <div className="text-fg-inverse ">
                 {children}
             </div>
         </div>

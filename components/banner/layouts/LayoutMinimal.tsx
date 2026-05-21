@@ -82,7 +82,7 @@ export default function LayoutMinimal({ banner }: Props) {
             <div
                 className={cn(
                     "relative z-10 order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center w-full lg:w-[48%] px-8 sm:px-12 lg:px-16 xl:px-24 pb-10 lg:pb-0 text-center lg:text-left",
-                    isDark ? "text-fg-inverse" : "text-fg-primary"
+                    isDark ? "text-fg-inverse" : "text-fg-muted"
                 )}
             >
                 {/* Badges Minimalistas */}
@@ -133,7 +133,7 @@ export default function LayoutMinimal({ banner }: Props) {
                             "mb-6 md:mb-8 px-6 py-2 text-sm font-medium rounded transition-colors duration-600 inline-flex",
                             isDark
                                 ? "bg-transparent border border-fg-secondary text-fg-inverse hover:bg-fg-secondary hover:text-fg-inverse"
-                                : "bg-brand-silver text-fg-primary hover:bg-brand-charcoal hover:text-fg-inverse"
+                                : "bg-brand-silver text-fg-inverse hover:bg-brand-muted hover:text-fg-inverse"
                         )}
                     >
                         Ver catalogo

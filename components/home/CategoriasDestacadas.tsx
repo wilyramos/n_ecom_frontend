@@ -20,9 +20,9 @@ const AbsoluteHeaderWrapper = (p: ButtonGroupProps) => (
 
 export default function ClientCarouselCategorias({ categorias }: { categorias: CategoryListResponse }) {
     const responsive = {
-        desktop: { breakpoint: { max: 3000, min: 1280 }, items: 5 },
+        desktop: { breakpoint: { max: 3000, min: 1280 }, items: 4 },
         laptop: { breakpoint: { max: 1280, min: 1024 }, items: 4 },
-        tablet: { breakpoint: { max: 1024, min: 640 }, items: 3 },
+        tablet: { breakpoint: { max: 1024, min: 640 }, items: 4 },
         mobile: { breakpoint: { max: 640, min: 0 }, items: 2, partialVisibilityGutter: 20 }
     };
 
@@ -51,7 +51,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                                     src={c.image} 
                                     alt={c.nombre} 
                                     fill 
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                                    className="object-cover transition-transform duration-700 group-hover:scale-102" 
                                 
                                 />
                             ) : (

@@ -50,7 +50,7 @@ export default function NavBar() {
 
                             <Link
                                 href="/auth/registro"
-                                className="hidden md:flex items-center text-fg-primary rounded-full transition-colors duration-200 hover:text-action-primary"
+                                className="hidden md:flex items-center text-fg-muted  rounded-full transition-colors duration-200 "
                                 aria-label="Cuenta"
                             >
                                 <div className="hover:bg-surface-secondary rounded-full p-2 transition-colors duration-200">

@@ -1,8 +1,8 @@
 // components/home/CategoriasDestacadasWrapper.tsx
-import { getAllSubcategories } from "@/src/services/categorys"
+import { getCategories } from "@/src/services/categorys"
 import CategoriasDestacadas from "./CategoriasDestacadas"
 
 export default async function CategoriasDestacadasWrapper() {
-  const categories = await getAllSubcategories()
+  const categories = await getCategories()
   return <CategoriasDestacadas categorias={categories} />
 }

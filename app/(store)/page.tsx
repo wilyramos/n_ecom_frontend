@@ -7,6 +7,7 @@ import ProductosDestacados from "@/components/home/ProductosDestacados";
 import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasWrapper";
 import FeatureCards from "@/components/home/FeatureCards";
 import CarruselPrincipal from "@/components/home/CarruselPrincipal";
+import StoreLocation from "@/components/home/StoreLocation";
 
 // Metadata for SEO and social sharing
 export const metadata: Metadata = {
@@ -90,6 +91,7 @@ export default function HomePage() {
             <section>
                 <ProductosNuevos />
             </section>
+            
 
             <section className="my-5">
                 {/* <BrandsList /> */}
@@ -97,6 +99,10 @@ export default function HomePage() {
 
             <section>
                 {/* <FeaturesList /> */}
+            </section>
+
+            <section>
+                <StoreLocation />
             </section>
         </>
     );

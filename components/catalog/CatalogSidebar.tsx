@@ -1,7 +1,7 @@
-// File: src/components/catalog/CatalogSidebar-NEW.tsx
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCatalogNav } from "./hooks/useCatalogNav";
 import type { CatalogFilters } from "@/src/schemas/catalog";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,8 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import ActiveFiltersSidebar from "./ActiveFiltersSidebar";
 import ColorCircle from "../ui/ColorCircle";
 import { LuX } from "react-icons/lu";
@@ -21,6 +23,9 @@ interface Props {
 }
 
 export default function CatalogSidebar({ filters }: Props) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const {
         setCategory,
         setBrand,
@@ -29,10 +34,72 @@ export default function CatalogSidebar({ filters }: Props) {
         isCategoryActive,
         isBrandActive,
         isLineActive,
-        searchParams,
         hasFilters,
         clearFilters,
     } = useCatalogNav();
+
+    // Límites absolutos calculados por el backend
+    const limitPrices = useMemo(() => {
+        const fallback = { min: 0, max: 5000 };
+        if (!filters.price || filters.price.length === 0) return fallback;
+        const record = filters.price[0];
+        return {
+            min: record.min ?? fallback.min,
+            max: record.max ?? fallback.max
+        };
+    }, [filters.price]);
+
+    // Rango actual extraído de la URL
+    const currentPriceRange = useMemo(() => {
+        const raw = searchParams.get("priceRange");
+        if (!raw) return null;
+        const [min, max] = raw.split("-").map(Number);
+        return isNaN(min) || isNaN(max) ? null : { min, max };
+    }, [searchParams]);
+
+    // Estados locales independientes para el tipeo manual del usuario
+    const [minInput, setMinInput] = useState<string>("");
+    const [maxInput, setMaxInput] = useState<string>("");
+
+    // Sincronizar inputs locales cuando la URL cambie externamente (ej: al limpiar filtros)
+    useEffect(() => {
+        if (currentPriceRange) {
+            setMinInput(currentPriceRange.min.toString());
+            setMaxInput(currentPriceRange.max.toString());
+        } else {
+            setMinInput("");
+            setMaxInput("");
+        }
+    }, [currentPriceRange]);
+
+    // Debounce automático controlado por entrada de texto
+    useEffect(() => {
+        const urlMin = currentPriceRange?.min;
+        const urlMax = currentPriceRange?.max;
+
+        const parsedMin = minInput === "" ? undefined : parseFloat(minInput);
+        const parsedMax = maxInput === "" ? undefined : parseFloat(maxInput);
+
+        if (parsedMin === urlMin && parsedMax === urlMax) return;
+        if (parsedMin !== undefined && parsedMax !== undefined && parsedMin > parsedMax) return;
+
+        const delayDebounce = setTimeout(() => {
+            const newParams = new URLSearchParams(searchParams.toString());
+            newParams.delete("page");
+
+            if (minInput === "" && maxInput === "") {
+                newParams.delete("priceRange");
+            } else {
+                const finalMin = parsedMin ?? limitPrices.min;
+                const finalMax = parsedMax ?? limitPrices.max;
+                newParams.set("priceRange", `${finalMin}-${finalMax}`);
+            }
+
+            router.push(`${window.location.pathname}?${newParams.toString()}`, { scroll: false });
+        }, 600);
+
+        return () => clearTimeout(delayDebounce);
+    }, [minInput, maxInput, limitPrices, currentPriceRange, searchParams, router]);
 
     const sortedFilters = useMemo(() => ({
         categories: [...filters.categories].sort((a, b) => a.nombre.localeCompare(b.nombre)),
@@ -47,7 +114,7 @@ export default function CatalogSidebar({ filters }: Props) {
     }), [filters]);
 
     return (
-        <div className="w-full pb-12 select-none bg-gray-200 px-4 py-6 rounded-3xl">
+        <div className="w-full pb-12 select-none bg-fg-muted px-4 py-6 rounded-3xl">
             {/* HEADER CON LIMPIAR FILTROS */}
             <div className="mb-6 pb-4 border-b border-[var(--color-border-default)]">
                 <div className="flex items-center justify-between mb-3">
@@ -65,7 +132,6 @@ export default function CatalogSidebar({ filters }: Props) {
                     )}
                 </div>
                 
-                {/* FILTROS ACTIVOS */}
                 {hasFilters && (
                     <div className="mb-0">
                         <ActiveFiltersSidebar compact />
@@ -77,9 +143,45 @@ export default function CatalogSidebar({ filters }: Props) {
             <Accordion
                 type="multiple"
                 className="w-full space-y-3"
-                defaultValue={["item-categories", "item-brands", "item-lines"]}
+                defaultValue={["item-price", "item-categories", "item-brands", "item-lines"]}
             >
-                {/* CATEGORÍAS - Pills */}
+                {/* RANGO DE PRECIO - INPUTS CON SHADCN UI */}
+                <AccordionItem value="item-price" className="border-0">
+                    <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
+                        Precio
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-2 pb-2 px-0">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                                <Label htmlFor="min-price" className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
+                                    Desde (S/.)
+                                </Label>
+                                <Input
+                                    id="min-price"
+                                    type="number"
+                                    placeholder={limitPrices.min.toString()}
+                                    value={minInput}
+                                    onChange={(e) => setMinInput(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="max-price" className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider">
+                                    Hasta (S/.)
+                                </Label>
+                                <Input
+                                    id="max-price"
+                                    type="number"
+                                    placeholder={limitPrices.max.toString()}
+                                    value={maxInput}
+                                    onChange={(e) => setMaxInput(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+
+                {/* CATEGORÍAS */}
                 {sortedFilters.categories.length > 0 && (
                     <AccordionItem value="item-categories" className="border-0">
                         <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-[var(--color-fg-primary)] hover:no-underline py-2 px-0">
@@ -195,7 +297,6 @@ export default function CatalogSidebar({ filters }: Props) {
                             </AccordionTrigger>
                             <AccordionContent className="pt-3 pb-0 px-0">
                                 {isColorAttr ? (
-                                    /* MATRIZ DE COLORES */
                                     <div className="grid grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-1">
                                         {attr.values.map((val) => {
                                             const isChecked = searchParams.getAll(attr.name).includes(val);
@@ -224,7 +325,6 @@ export default function CatalogSidebar({ filters }: Props) {
                                         })}
                                     </div>
                                 ) : (
-                                    /* LISTA DE ATRIBUTOS */
                                     <div className="flex flex-col gap-1 max-h-[300px] overflow-y-auto pr-1">
                                         {attr.values.map((val) => {
                                             const isChecked = searchParams.getAll(attr.name).includes(val);

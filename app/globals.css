@@ -69,11 +69,11 @@
 
 /* para el carrusel principal */
 .banner-slot {
-    height: var(--banner-h-mobile, 500px);
+    height: var(--banner-h-mobile, 450px);
 }
 
 @media (min-width: 1024px) {
     .banner-slot {
-        height: var(--banner-h, 540px);
+        height: var(--banner-h, 490px);
     }
 }

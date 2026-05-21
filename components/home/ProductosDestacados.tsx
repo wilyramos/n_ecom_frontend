@@ -8,7 +8,7 @@ export default async function ProductosDestacados() {
     if (!productos.length) return null;
 
     return (
-        <section className="bg-fg-secondary py-5">
+        <section className="bg-fg-muted/20 py-5">
             <div className="mx-auto space-y-2">
                 <ClientCarouselProductosDestacados products={productos} />
             </div>

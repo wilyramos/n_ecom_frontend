@@ -2,7 +2,6 @@
 
 import { Metadata } from "next";
 import { metadata as globalMetadata } from "@/app/layout";
-import ProductosNuevos from "@/components/home/ProductosNuevos";
 import ProductosDestacados from "@/components/home/ProductosDestacados";
 import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasWrapper";
 import FeatureCards from "@/components/home/FeatureCards";
@@ -47,7 +46,7 @@ export const metadata: Metadata = {
         url: "https://Neoshop.pe",
         images: [
             {
-                url: "https://Neoshop.pe/favicon.ico",
+                url: "https://Neoshop.pe/miniaturagris.png",
                 width: 1200,
                 height: 630,
                 alt: "Neoshop Home - Accesorios y Tecnología",
@@ -59,7 +58,7 @@ export const metadata: Metadata = {
         title: "Neoshop - Venta de accesorios y tecnología en Cañete",
         description:
             "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en Cañete.",
-        images: ["https://Neoshop.pe/favicon.ico"],
+        images: ["https://Neoshop.pe/miniaturagris.png"],
     }
 };
 
@@ -89,9 +88,9 @@ export default function HomePage() {
             </section>
 
             <section>
-                <ProductosNuevos />
+                {/* <ProductosNuevos /> */}
             </section>
-            
+
 
             <section className="my-5">
                 {/* <BrandsList /> */}

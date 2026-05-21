@@ -6,7 +6,7 @@ import { ChevronRight } from "lucide-react";
 import type { ButtonGroupProps } from "react-multi-carousel";
 
 interface Props extends ButtonGroupProps {
-    title: React.ReactNode;
+    title?: React.ReactNode;
     viewAllHref?: string;
 }
 

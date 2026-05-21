@@ -45,13 +45,13 @@ export default function LayoutMinimal({ banner }: Props) {
             {/* ── Columna Imagen ── */}
             <div
                 className="
-                    relative z-10
-                    order-1 lg:order-2
-                    w-full lg:w-[52%]
-                    h-[50%] lg:h-full
-                    flex items-center justify-center
-                    overflow-hidden
-                "
+        relative z-10
+        order-1 lg:order-2
+        w-full lg:w-[66.666667%]  {/* Ajustado a 2/3 */}
+        h-[50%] lg:h-full
+        flex items-center justify-center
+        overflow-hidden
+    "
             >
                 <div
                     className="
@@ -81,7 +81,7 @@ export default function LayoutMinimal({ banner }: Props) {
             {/* ── Columna Texto ── */}
             <div
                 className={cn(
-                    "relative z-10 order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center w-full lg:w-[48%] px-8 sm:px-12 lg:px-16 xl:px-24 pb-10 lg:pb-0 text-center lg:text-left",
+                    "relative z-10 order-2 lg:order-1 flex flex-col items-center lg:items-start justify-center w-full lg:w-[33.333333%] px-4 sm:px-8 pb-10 lg:pb-0 text-center lg:text-left",
                     isDark ? "text-fg-inverse" : "text-fg-muted"
                 )}
             >
@@ -104,7 +104,7 @@ export default function LayoutMinimal({ banner }: Props) {
 
                 {title && (
                     <h2
-                        className="w-full text-[clamp(1.8rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.04em] mb-2"
+                        className="w-full text-[clamp(1.6rem,4.5vw,3rem)] font-bold leading-[1.05] tracking-[-0.04em] mb-2"
                         style={fadeUp(0.2)}
                     >
                         {title}

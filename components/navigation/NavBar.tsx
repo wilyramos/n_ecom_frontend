@@ -12,7 +12,7 @@ export default function NavBar() {
     return (
         <NavBarClient>
             <header className="sticky top-0 z-50 h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300">
-                <div className="max-w-screen-2xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative">
+                <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative">
 
                     {/* Mobile: Logo centrado */}
                     <div className="md:hidden absolute left-1/2 -translate-x-1/2">

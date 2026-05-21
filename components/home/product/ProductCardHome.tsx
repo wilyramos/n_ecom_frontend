@@ -16,7 +16,7 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
     return (
         <Link
             href={`/productos/${product.slug}`}
-            className="group block p-2 bg-surface-primary text-fg-primary transition-all  border border-border-default rounded-3xl shadow-sm"
+            className="group block p-2 md:p-4 bg-surface-primary text-fg-primary transition-all  rounded-2xl "
         >
             {/* Imagen */}
             <div className="relative aspect-square overflow-hidden rounded-md">
@@ -47,24 +47,24 @@ export default function ProductCardHome({ product }: { product: ProductResponse 
             </div>
 
             {/* Info */}
+            {/* Info */}
             <div className="mt-3 space-y-1">
                 <h3 className="text-xs md:text-sm font-medium line-clamp-2 group-hover:text-fg-muted transition-colors">
                     {product.nombre}
                 </h3>
 
-                <div className="flex items-center gap-2 text-sm text-fg-primary font-semibold">
-                    <span>
-                        S/{" "}
-                        {price.toLocaleString("es-PE", {
-                            minimumFractionDigits: 2,
-                        })}
-                    </span>
-
+                <div className="flex items-baseline gap-2 text-sm text-fg-primary font-semibold">
+                    {/* Precio comparativo (tachado) primero */}
                     {discount && (
                         <span className="line-through text-fg-muted text-xs font-normal">
-                            S/ {compare.toLocaleString("es-PE")}
+                            S/ {compare.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
                         </span>
                     )}
+
+                    {/* Precio actual después */}
+                    <span>
+                        S/ {price.toLocaleString("es-PE", { minimumFractionDigits: 2 })}
+                    </span>
                 </div>
             </div>
         </Link>

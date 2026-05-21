@@ -22,7 +22,7 @@ const responsive = {
 
 export default function SliderBannerCarousel({
     banners,
-    height = { mobile: "500px", desktop: "540px" },
+    height = { mobile: "450px", desktop: "490px" },
 }: Props) {
     if (!banners.length) return null;
 

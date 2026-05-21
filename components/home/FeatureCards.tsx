@@ -38,28 +38,32 @@ const features: Feature[] = [
   },
 ];
 
+
 export default function FeatureCards() {
   return (
-    <section className="py-5">
+    <section className="py-2">
       <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {features.map(({ title, description, icon: Icon, url }) => (
             <Link
               key={title}
               href={url}
-              className="group block h-full"
+              className="group block"
             >
-              <Card className="h-full min-h-[140px] flex flex-col items-start justify-center gap-4 p-5 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-lg">
-                <div className="flex-shrink-0 inline-flex p-1 group-hover:text-fg-inverse">
-                  <Icon size={36} strokeWidth={1.5} />
+              {/* Reducción de p-5 a p-3 y min-h-[140px] a min-h-[90px] */}
+              <Card className="h-full min-h-[60px] flex flex-row items-center gap-3 p-2 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-lg shadow-none">
+
+                {/* Icono más pequeño: de 36 a 24 */}
+                <div className="flex-shrink-0 inline-flex text-fg-primary/80 group-hover:text-action-primary transition-colors">
+                  <Icon size={24} strokeWidth={1.5} />
                 </div>
 
-                <div className="flex flex-col gap-1">
-                  <CardTitle className="text-xs md:text-sm font-bold uppercase leading-tight tracking-normal text-fg-primary">
+                <div className="flex flex-col gap-0.5 overflow-hidden">
+                  <CardTitle className="text-[10px] md:text-[14px] font-bold uppercase leading-none tracking-tight text-fg-primary">
                     {title}
                   </CardTitle>
 
-                  <CardDescription className="text-xs text-fg-primary/70 font-medium leading-relaxed">
+                  <CardDescription className="text-[10px] md:text-[12px] text-fg-primary/60 font-medium leading-tight line-clamp-2">
                     {description}
                   </CardDescription>
                 </div>

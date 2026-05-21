@@ -7,7 +7,6 @@ import type { ProductWithCategoryResponse, TApiVariant } from '@/src/schemas';
 import ShopNowButton from './ShopNowButton';
 import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
-import PaymentMethods from '../PaymentMethods';
 import ColorCircle from '@/components/ui/ColorCircle';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
@@ -19,6 +18,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import ProductExpandableSections from './ProductExpandableSections ';
+import InstallmentInfo from './InstallmentInfo';
 
 type Props = {
     producto: ProductWithCategoryResponse;
@@ -128,12 +128,12 @@ export default function ProductDetails({ producto }: Props) {
 
     return (
         <>
-            <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto bg-surface-primary px-4 py-6 rounded-lg">
+            <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto bg-surface-primary px-4 py-4 rounded-lg">
                 <div className="lg:col-span-6 w-full">
                     <ImagenesProductoCarousel images={variantImages} />
                 </div>
 
-                <section className="lg:col-span-6 flex flex-col  space-y-2">
+                <section className="lg:col-span-6 flex flex-col  space-y-1">
                     <div className="space-y-1">
                         <header className="space-y-1 pb-2 ">
                             <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] tracking-wide uppercase font-medium">
@@ -195,6 +195,8 @@ export default function ProductDetails({ producto }: Props) {
 
 
 
+
+
                                 {stock === 0 && (
                                     <span className="text-xs font-medium text-fg-primary bg-surface-secondary px-2.5 py-1 rounded-sm">
                                         Sin stock
@@ -202,6 +204,10 @@ export default function ProductDetails({ producto }: Props) {
                                 )}
                             </div>
                         </header>
+
+                        <div className="py-4">
+                            <InstallmentInfo price={precio} installments={12} />
+                        </div>
                         <div className="space-y-5">
                             {Object.entries(allAttributes).map(([key]) => {
                                 const availableValues = getAvailableValues(key);
@@ -209,7 +215,7 @@ export default function ProductDetails({ producto }: Props) {
                                 const useDropdown = !isColor && availableValues.length > MAX_VISIBLE_OPTIONS;
 
                                 return (
-                                    <fieldset key={key} className="space-y-2.5">
+                                    <fieldset key={key} className="space-y-2">
                                         <legend className="text-md tracking-wide text-fg-muted font-bold capitalize">
                                             {key}: {selectedAttributes[key] && <span className="text-fg-muted capitalize font-semibold  ml-1">{selectedAttributes[key]}</span>}
                                         </legend>
@@ -310,7 +316,7 @@ export default function ProductDetails({ producto }: Props) {
                             })}
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                             <div className="hidden md:block flex-1 w-full">
                                 <AddProductToCart
                                     product={producto}
@@ -326,36 +332,22 @@ export default function ProductDetails({ producto }: Props) {
                             </div>
                         </div>
                     </div>
-                    <div className="pt-6 ">
-                        {/* Entrega estimada */}
-                        {/* <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-primary">Entrega estimada</span>
-                            <div className="text-sm text-fg-secondary">
-                                <span className="font-semibold text-fg-primary mr-1.5">
-                                    {getDeliveryRange(producto.diasEnvio || 1)}
-                                </span>
-                                ({producto.diasEnvio || 1} {(producto.diasEnvio || 1) !== 1 ? "días" : "día"})
-                            </div>
-                        </div> */}
+                    <div className="pt-4 ">
 
-                        {/* Medios de pago */}
-                        <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-primary">Medios de pago</span>
-                            <div className="flex items-center justify-start">
-                                <PaymentMethods />
-                            </div>
-                        </div>
 
                         {/* Consulta por WhatsApp */}
-                        <div className="grid grid-cols-[130px_1fr] items-center py-3.5 bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-primary">Consultar sobre el producto</span>
+                        <div className="grid grid-cols-[180px_1fr] items-center  bg-surface-primary gap-4">
+                            <span className="text-sm font-medium text-fg-muted">
+                                ¿Tienes dudas?
+                            </span>
+
                             <a
                                 href={`https://wa.me/51925054636?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm font-semibold text-fg-primary flex items-center gap-0.5 hover:underline w-fit group"
+                                className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"
                             >
-                                WhatsApp
+                                Consultar por WhatsApp
                                 <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
                             </a>
                         </div>

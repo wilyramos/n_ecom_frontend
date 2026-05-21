@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-import Logo from "../ui/Logo";
 import PaymentMethods from "./PaymentMethods";
 import { routes } from "@/lib/routes";
 
@@ -32,7 +31,7 @@ export default function Footer() {
                 <div className="grid gap-10 lg:grid-cols-[1fr_1.5fr]">
                     <div className="flex flex-col gap-6">
                         <div className="w-32">
-                            <Logo color="black" />
+                            {/* <Logo color="white" /> */}
                         </div>
                         <p className="max-w-xs text-xs leading-5 text-fg-primary">
                             Smartphones, accesorios y dispositivos cuidadosamente seleccionados para quienes valoran diseño, rendimiento y autenticidad.

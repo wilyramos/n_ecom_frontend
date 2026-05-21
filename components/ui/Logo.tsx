@@ -7,14 +7,13 @@ type LogoProps = {
 };
 
 export default function Logo({ color = "black", size = 28 }: LogoProps) {
-    const logoSrc = color === "black" ? "/logo_neo_largo.svg" : "/logo_blanco_completo.png";
-    
-    // Mantiene la relación de aspecto exacta 3:1 (120/40 = 3) de forma dinámica sin importar la escala
+    const logoSrc = color === "black" ? "/logo_fondo_blanco.svg" : "/logo_fondo_blanco.svg";
+
     const logoHeight = size;
-    const logoWidth = size * 3; 
+    const logoWidth = size * 3;
 
     return (
-        <div 
+        <div
             className="flex items-center justify-start select-none shrink-0"
             style={{ height: logoHeight, width: logoWidth }}
         >
@@ -23,7 +22,7 @@ export default function Logo({ color = "black", size = 28 }: LogoProps) {
                 alt="GoPhone Distribuidor Oficial"
                 width={logoWidth}
                 height={logoHeight}
-                quality={85} // Optimizado para evitar pixelación en tamaños grandes
+                quality={50} // Optimizado para evitar pixelación en tamaños grandes
                 priority
                 className="w-full h-full object-contain"
             />

@@ -60,7 +60,7 @@ export const metadata: Metadata = {
         type: "website",
         images: [
             {
-                url: "https://Neoshop.pe/logob.svg",
+                url: "https://Neoshop.pe/miniaturagris.png",
                 width: 1200,
                 height: 630,
                 alt: "Neoshop Perú - iPhones y Tecnología"
@@ -72,12 +72,12 @@ export const metadata: Metadata = {
         title: "Neoshop | Calidad a tu alcance",
         description:
             "Tecnología con garantía, precios competitivos y atención personalizada. Compra iPhones y accesorios con envío rápido.",
-        images: ["https://Neoshop.pe/logomini.svg"]
+        images: ["https://Neoshop.pe/miniaturagris.png"]
     },
     icons: {
-        icon: "/logoapp.png",
-        apple: "/logoapp.png",
-        shortcut: "/logoapp.png"
+        icon: "/miniaturagris.png",
+        apple: "/miniaturagris.png",
+        shortcut: "/miniaturagris.png"
     },
     alternates: {
         canonical: "https://Neoshop.pe"

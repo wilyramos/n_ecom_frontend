@@ -42,7 +42,7 @@ const features: Feature[] = [
 export default function FeatureCards() {
   return (
     <section className="py-2">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {features.map(({ title, description, icon: Icon, url }) => (
             <Link
@@ -51,7 +51,7 @@ export default function FeatureCards() {
               className="group block"
             >
               {/* Reducción de p-5 a p-3 y min-h-[140px] a min-h-[90px] */}
-              <Card className="h-full min-h-[60px] flex flex-row items-center gap-3 p-2 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-lg shadow-none">
+              <Card className="h-full min-h-[60px] flex flex-row items-center justify-center gap-3 p-2 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-lg shadow-none item">
 
                 {/* Icono más pequeño: de 36 a 24 */}
                 <div className="flex-shrink-0 inline-flex text-fg-primary/80 group-hover:text-action-primary transition-colors">

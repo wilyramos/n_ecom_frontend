@@ -25,7 +25,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
     };
 
     return (
-        <section className="relative max-w-7xl mx-auto px-4 md:px-8 py-4">
+        <section className="relative max-w-7xl mx-auto px-4 py-4">
             <Carousel
                 responsive={responsive}
                 infinite
@@ -33,7 +33,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                 arrows={false}
                 renderButtonGroupOutside
                 // customButtonGroup={<AbsoluteHeaderWrapper />}
-                itemClass="px-2 md:px-3 py-4"
+                itemClass="px-1 py-4"
                 partialVisible
             >
                 {categorias.map(c => (

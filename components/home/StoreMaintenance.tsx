@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link"; // 1. Importar Link
 import {
     Dialog,
     DialogContent,
     DialogTitle,
 } from "@/components/ui/dialog";
-import Logo from "../ui/Logo";
 import { Button } from "../ui/button";
 
 export default function StoreMaintenance() {
@@ -18,54 +18,49 @@ export default function StoreMaintenance() {
             <DialogTitle className="sr-only">Promoción de Envíos</DialogTitle>
 
             <DialogContent
-                className="w-[92vw] sm:w-full max-w-sm sm:max-w-md p-0 overflow-hidden  border-0 rounded-2xl"
+                className="w-[90vw] max-w-[340px] aspect-square p-0 overflow-hidden border-0 rounded-2xl flex flex-col z-9999"
                 showCloseButton
             >
-                <div className="relative flex flex-col items-center text-center px-6 pt-8 pb-6 bg-surface-primary">
-                    {/* Título */}
-                    <div className="mb-1 leading-none text-fg-muted">
+                <div className="flex-grow flex flex-col items-center justify-center text-center px-4 pt-8 pb-4 bg-surface-primary overflow-hidden">
+
+                    <div className="mb-1 leading-none text-fg-muted shrink-0">
                         <p
-                            className="text-[2.6rem] font-extrabold tracking-tighter"
+                            className="text-[1.7rem] font-extrabold tracking-tighter"
                             style={{ fontFamily: "'Inter', sans-serif" }}
                         >
                             Envío a domicilio
                         </p>
                         <p
-                            className="text-[3.2rem] font-extrabold tracking-tighter -mt-2"
+                            className="text-[2.1rem] font-extrabold tracking-tighter mt-1"
                             style={{ fontFamily: "'Inter', sans-serif" }}
                         >
-                            SIN COSTO <span className="text-2xl">🚚</span>
+                            SIN COSTO <span className="text-lg">🚚</span>
                         </p>
                     </div>
 
-                    {/* Imagen */}
-                    <div className="relative w-full aspect-[4/3] my-2">
+                    <div className="relative w-full flex-grow min-h-0 ">
                         <Image
                             src="/envio-gratis.webp"
-                            alt="iPhone, iPad y AirPods"
+                            alt="Envío gratis"
                             fill
                             className="object-contain"
                             priority
                         />
                     </div>
 
-
-
-                    {/* CTA */}
-                    <Button
-                        onClick={() => setOpen(false)}
-                        className="mt-1 w-full max-w-[180px]"
-                        variant="secondary"
-                    >
-                        Ver productos
-                    </Button>
-
+                    <div className="w-full">
+                        {/* 2. Envolver el botón en Link */}
+                        <Button
+                            asChild
+                            className=" w-fit text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                            variant="secondary"
+                        >
+                            <Link href="/catalogo">Ver productos</Link>
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-center gap-4 px-5 py-3 bg-surface-primary">
-                    <Logo />
-                </div>
+
             </DialogContent>
         </Dialog>
     );

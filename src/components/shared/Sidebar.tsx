@@ -1,29 +1,15 @@
-/* File: src/components/shared/Sidebar.tsx 
-    @Author: whramos 
-    @Description: Sidebar minimalista optimizado para Tailwind v4 con consumo semántico estricto.
-*/
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    ShoppingCart,
-    FileText,
-    History,
-    DollarSign,
-    Users,
-    Package,
-    BarChart3,
-    Settings,
-    LogOut,
-    LucideIcon
+    ShoppingBag, LayoutDashboard, ShoppingCart, FileText, History,
+    DollarSign, Users, Package, BarChart3, Settings, LogOut, LucideIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCashStore } from "@/src/store/useCashStore";
 import { logoutAction } from "@/src/actions/auth-actions";
 import type { User } from "@/src/schemas";
-import Logo from "@/components/ui/Logo";
 
 interface NavItem {
     label: string;
@@ -60,17 +46,18 @@ export const Sidebar = ({ user }: { user: User }) => {
     );
 
     return (
-        <aside className="hidden lg:flex h-screen w-20 flex-col items-center border-r py-6 bg-text-inverse border-accent-warm-light">
+        // Usamos h-dvh para asegurar que no se desborde en móviles y overflow-y-auto para scroll interno
+        <aside className="hidden lg:flex h-dvh w-20 flex-col items-center border-r py-4 bg-[var(--color-surface-inverse)] border-[var(--color-border-default)] overflow-y-auto">
 
-            {/* Brand Logo Container */}
-            <div className="mb-6 flex h-10 w-10 items-center justify-center">
-                <Logo size={20} />
+            {/* Brand Logo */}
+            <div className="mb-4 flex h-10 w-10 items-center justify-center font-black text-white text-[10px]">
+                NEO
             </div>
 
-            <div className="mb-6 w-10 h-px bg-accent-warm-light" />
+            <div className="mb-4 w-10 h-px bg-[var(--color-border-default)]" />
 
-            {/* Navigation Flow */}
-            <nav className="flex flex-1 flex-col gap-3">
+            {/* Navigation Flow: flex-1 permite que el scroll ocurra aquí si es necesario */}
+            <nav className="flex flex-col gap-2 w-full items-center">
                 {filteredRoutes.map((route) => {
                     const isActive = pathname.startsWith(route.href);
                     return (
@@ -78,33 +65,48 @@ export const Sidebar = ({ user }: { user: User }) => {
                             key={route.href}
                             href={route.href}
                             className={cn(
-                                "group flex flex-col items-center justify-center gap-1 w-14 h-14 rounded-sm transition-all",
+                                "group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm transition-all",
                                 isActive
-                                    ? "bg-accent-warm text-text-inverse"
-                                    : "text-text-tertiary hover:bg-accent-warm-light hover:text-accent-warm"
+                                    ? "bg-[var(--color-accent-vivid)] text-white"
+                                    : "text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)]"
                             )}
                             title={route.label}
                         >
-                            <route.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                            <route.icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                             <span className="text-[8px] font-black uppercase tracking-tighter leading-none">
                                 {route.label}
                             </span>
                         </Link>
                     );
                 })}
+
+                {/* --- SECCIÓN ADMINISTRATIVA Y EXTERNA --- */}
+                <div className="flex flex-col gap-2 w-full items-center border-t border-[var(--color-border-default)] pt-2 mt-2">
+                    {user.rol === "administrador" && (
+                        <Link href="/admin" className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all">
+                            <LayoutDashboard size={18} />
+                            <span className="text-[8px] font-black uppercase tracking-tighter">Admin</span>
+                        </Link>
+                    )}
+
+                    <Link href="/" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all">
+                        <ShoppingBag size={18} />
+                        <span className="text-[8px] font-black uppercase tracking-tighter">Tienda</span>
+                    </Link>
+                </div>
             </nav>
 
-            <div className="mt-auto w-10 h-px bg-accent-warm-light mb-6" />
-
-            {/* System Termination Action */}
-            <button
-                onClick={handleLogout}
-                className="group flex flex-col items-center justify-center gap-1 w-14 h-14 rounded-sm text-text-tertiary hover:bg-accent-warm-light hover:text-accent-warm-hover transition-colors cursor-pointer"
-                title="Cerrar sesión"
-            >
-                <LogOut size={20} />
-                <span className="text-[8px] font-black uppercase">Salir</span>
-            </button>
+            {/* Logout */}
+            <div className="mt-auto w-full flex flex-col items-center border-t border-[var(--color-border-default)] pt-2">
+                <button
+                    onClick={handleLogout}
+                    className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-red-500/10 hover:text-red-500 transition-colors cursor-pointer"
+                    title="Cerrar sesión"
+                >
+                    <LogOut size={18} />
+                    <span className="text-[8px] font-black uppercase">Salir</span>
+                </button>
+            </div>
         </aside>
     );
 };

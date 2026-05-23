@@ -1,4 +1,3 @@
-// components/admin/AdminPageWrapper.tsx
 import React from "react";
 import BackButton from "@/components/ui/BackButton";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
@@ -11,8 +10,8 @@ type BreadcrumbItem = {
 type AdminPageWrapperProps = {
     title: string;
     children: React.ReactNode;
-    breadcrumbItems?: BreadcrumbItem[];  // items intermedios (sin Home, sin current)
-    breadcrumbCurrent?: string;          // página actual (no linkeable)
+    breadcrumbItems?: BreadcrumbItem[];
+    breadcrumbCurrent?: string;
     showBackButton?: boolean;
     actions?: React.ReactNode;
 };
@@ -28,11 +27,13 @@ export default function AdminPageWrapper({
     const hasBreadcrumb = breadcrumbItems.length > 0 || breadcrumbCurrent;
 
     return (
-        <div className="flex flex-col min-h-screen bg-[var(--color-bg-primary)]">
+        // bg-stone-50 proporciona un fondo neutro y limpio para separar las tarjetas
+        <div className="flex flex-col min-h-screen bg-stone-50">
             {/* ── HEADER ── */}
-            <header className="shrink-0 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-6 py-6 md:px-8">
+            {/* Borde inferior naranja para delimitar el área de trabajo administrativa */}
+            <header className="shrink-0 border-b-2 border-[var(--color-accent-vivid)] bg-[var(--color-surface-primary)] px-6 py-6 md:px-8 shadow-sm">
                 <div className="max-w-[1400px] mx-auto space-y-4">
-
+                    
                     {/* Breadcrumb */}
                     {hasBreadcrumb && (
                         <Breadcrumbs
@@ -43,9 +44,13 @@ export default function AdminPageWrapper({
 
                     {/* Title & Actions */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
-                            {title}
-                        </h1>
+                        <div className="flex items-center gap-3">
+                            {/* Marcador vertical naranja para dar vivacidad al título */}
+                            <div className="w-1.5 h-8 bg-[var(--color-accent-vivid)] rounded-full shrink-0" />
+                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-fg-primary)]">
+                                {title}
+                            </h1>
+                        </div>
 
                         <div className="flex items-center gap-3">
                             {actions && (

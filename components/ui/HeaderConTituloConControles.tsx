@@ -15,7 +15,7 @@ export default function HeaderConTituloConControles({ title, viewAllHref }: Prop
         <div className="w-full mb-4 text-fg-primary select-none flex items-center justify-between gap-2">
 
             {/* Título */}
-            <h2 className="text-lg md:text-xl font-semibold tracking-tight text-fg-primary">
+            <h2 className="text-lg md:text-xl font-semibold tracking-tight text-fg-muted">
                 {title}
             </h2>
 

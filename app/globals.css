@@ -65,6 +65,10 @@
   --color-border: var(--color-border-default);
   --color-input: var(--color-border-default);
   --color-ring: var(--color-brand-charcoal);
+
+  /* Color de acento vivo (Naranja claro) */
+  --color-accent-vivid: #fb923c; 
+  --color-accent-vivid-muted: #fff7ed;
 }
 
 /* para el carrusel principal */

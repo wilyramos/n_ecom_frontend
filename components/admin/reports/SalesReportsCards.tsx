@@ -1,4 +1,3 @@
-import renderSummaryItem from './renderSummaryItem';
 import { getSummarySales } from '@/src/services/sales';
 import { FiDollarSign, FiPackage, FiShoppingCart, FiTrendingUp } from 'react-icons/fi';
 import { GoLinkExternal } from "react-icons/go";
@@ -6,45 +5,45 @@ import Link from 'next/link';
 import { HeadingH3 } from '@/components/ui/Heading';
 
 export default async function SalesReportsCards() {
-    // Fechas: último mes
-    const startDate: string = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString();
-    const endDate: string = new Date().toISOString();
-
-    const startDateFormatted = startDate.split("T")[0];
-    const endDateFormatted = endDate.split("T")[0];
-
-    const salesSummary = await getSummarySales({
-        fechaInicio: startDateFormatted,
-        fechaFin: endDateFormatted,
-    });
+    const salesSummary = await getSummarySales({});
 
     return (
-        <section className="p-2">
-            {/* Header */}
-            <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-2">
-                <HeadingH3>Resumen de Ventas</HeadingH3>
+        <section className="bg-white border border-zinc-200 rounded-xl p-6 ">
+            {/* Header más limpio */}
+            <header className="flex items-center justify-between mb-6">
+                <HeadingH3 className="text-base font-semibold text-zinc-900 tracking-tight">
+                    Resumen de ventas
+                </HeadingH3>
 
-                <div className="relative group self-start sm:self-auto">
-                    <Link
-                        href="/admin/reports/sales"
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                        <GoLinkExternal size={18} />
-                    </Link>
-
-                    {/* Tooltip */}
-                    <span className="absolute right-0 top-full mt-1 w-max px-2 py-1 text-sm text-white bg-gray-800 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
-                        Ir a la vista general de ventas
-                    </span>
-                </div>
+                <Link
+                    href="/admin/reports/sales"
+                    className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-400 hover:text-[var(--color-accent-vivid)] transition-colors"
+                >
+                    Detalles <GoLinkExternal size={12} />
+                </Link>
             </header>
 
-            {/* Cards */}
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                {renderSummaryItem("Ingresos totales", salesSummary?.totalSales || 0, <FiDollarSign />)}
-                {renderSummaryItem("Ventas realizadas", salesSummary?.numberSales || 0, <FiPackage />)}
-                {renderSummaryItem("Margen de ganancia", salesSummary?.margin || 0, <FiTrendingUp />)}
-                {renderSummaryItem("Unidades vendidas", salesSummary?.totalUnitsSold || 0, <FiShoppingCart />)}
+            {/* Grid minimalista con diseño de tarjetas "borde-suave" */}
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                    { label: "Ingresos", val: salesSummary?.totalSales || 0, icon: <FiDollarSign /> },
+                    { label: "Ventas", val: salesSummary?.numberSales || 0, icon: <FiPackage /> },
+                    { label: "Margen", val: salesSummary?.margin || 0, icon: <FiTrendingUp /> },
+                    { label: "Unidades", val: salesSummary?.totalUnitsSold || 0, icon: <FiShoppingCart /> }
+                ].map((item) => (
+                    <div 
+                        key={item.label}
+                        className="group flex flex-col gap-2 p-4 rounded-lg border border-zinc-100 bg-zinc-50/50 hover:bg-white hover:border-[var(--color-accent-vivid)]/30 transition-all duration-200"
+                    >
+                        <div className="flex items-center gap-2 text-[var(--color-accent-vivid)] text-lg">
+                            {item.icon}
+                        </div>
+                        <div>
+                            <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">{item.label}</p>
+                            <p className="text-lg font-bold text-zinc-900">{item.val.toLocaleString()}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
         </section>
     );

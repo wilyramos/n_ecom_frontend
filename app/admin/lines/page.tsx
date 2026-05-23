@@ -2,7 +2,7 @@
 import { LinesClient } from "./components/lines-client";
 import { linesService } from "@/src/services/lines.service";
 import { getBrands } from "@/src/services/brands";
-import { getAllSubcategories } from "@/src/services/categorys";
+import { getCategories } from "@/src/services/categorys";
 
 export default async function LinesPage() {
     const [linesData, brandsData, categoriesData] = await Promise.all([
@@ -14,7 +14,7 @@ export default async function LinesPage() {
             console.error("Error fetching brands:", err);
             return [];
         }),
-        getAllSubcategories().catch((err) => {
+        getCategories().catch((err) => {
             console.error("Error fetching categories:", err);
             return [];
         }),

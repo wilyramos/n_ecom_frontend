@@ -22,7 +22,6 @@ interface LinesClientProps {
 
 export function LinesClient({ initialData, brands, categories }: LinesClientProps) {
 
-    // --- DELETE SERVER ACTION SETUP ---
     const [deleteState, deleteAction, isDeleting] = useActionState(deleteLineAction, initialState);
 
     // Estados UI

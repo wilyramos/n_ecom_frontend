@@ -5,6 +5,8 @@ import { metadata as globalMetadata } from "@/app/layout";
 import ProductosDestacados from "@/components/home/ProductosDestacados";
 import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasWrapper";
 import FeatureCards from "@/components/home/FeatureCards";
+import GoogleReviews from "@/components/home/GoogleReviews";
+
 import CarruselPrincipal from "@/components/home/CarruselPrincipal";
 import StoreLocation from "@/components/home/StoreLocation";
 import StoreMaintenance from "@/components/home/StoreMaintenance";
@@ -102,7 +104,7 @@ export default function HomePage() {
             </section>
 
             <section>
-                {/* <FeaturesList /> */}
+                <GoogleReviews />
             </section>
 
             <section>

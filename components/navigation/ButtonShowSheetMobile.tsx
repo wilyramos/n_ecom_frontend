@@ -24,7 +24,7 @@ export default function ButtonShowSheetMobile({ categories }: Props) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <button className="p-2 text-fg-primary active:scale-95 transition-transform outline-none cursor-pointer">
+                <button className="p-2 text-fg-muted active:scale-95 transition-transform outline-none cursor-pointer">
                     <Menu size={24} strokeWidth={1.5} />
                 </button>
             </SheetTrigger>

@@ -18,8 +18,7 @@ export default function StoreMaintenance() {
             <DialogTitle className="sr-only">Promoción de Envíos</DialogTitle>
 
             <DialogContent
-                className="w-[90vw] max-w-[340px] aspect-square p-0 overflow-hidden border-0 rounded-2xl flex flex-col z-9999"
-                showCloseButton
+                className="w-[90vw] max-w-[340px] aspect-square p-0 overflow-hidden border-0 rounded-2xl flex flex-col z-9999 [&>button]:focus:ring-0 [&>button]:focus:ring-offset-0 [&>button]:focus:outline-none" showCloseButton
             >
                 <div className="flex-grow flex flex-col items-center justify-center text-center px-4 pt-8 pb-4 bg-surface-primary overflow-hidden">
 

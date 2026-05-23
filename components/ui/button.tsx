@@ -16,7 +16,7 @@ const buttonVariants = cva(
                 accent:
                     "bg-surface-inverse text-fg-inverse shadow-sm hover:bg-brand-black",
                 secondary:
-                    "bg-surface-secondary text-fg-primary border border-border-default shadow-sm hover:bg-brand-charcoal hover:text-fg-inverse",
+                    "bg-surface-secondary text-fg-primary border border-border-default shadow-sm hover:bg-brand-inverse over:text-fg-secondary",
                 outline:
                     "bg-transparent text-fg-primary border border-border-default hover:bg-surface-secondary",
                 ghost:

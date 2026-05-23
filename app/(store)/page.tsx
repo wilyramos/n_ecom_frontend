@@ -7,6 +7,7 @@ import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasW
 import FeatureCards from "@/components/home/FeatureCards";
 import CarruselPrincipal from "@/components/home/CarruselPrincipal";
 import StoreLocation from "@/components/home/StoreLocation";
+import StoreMaintenance from "@/components/home/StoreMaintenance";
 
 // Metadata for SEO and social sharing
 export const metadata: Metadata = {
@@ -65,6 +66,10 @@ export const metadata: Metadata = {
 export default function HomePage() {
     return (
         <>
+
+            <div>
+                <StoreMaintenance />
+            </div>
 
             <section>
                 <CarruselPrincipal />

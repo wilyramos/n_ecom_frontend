@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { TApiProduct } from "@/src/schemas";
 import { MdOutlineImageNotSupported } from "react-icons/md";
+import AddToCartButton from "./AddToCartButton";
 
 export default function ProductCard({ product }: { product: TApiProduct }) {
     const searchParams = useSearchParams();
@@ -169,7 +170,7 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
 
                     </div>
 
-                    <div className="flex items-end justify-between mt-auto pt-2 group-hover:border-border-default transition-colors">
+                    <div className="flex items-end justify-between mt-auto pt-2 gap-2pt-2 group-hover:border-border-default transition-colors">
                         <div className="flex flex-col w-full">
                             {stock > 0 ? (
                                 <div className="flex flex-row items-baseline gap-2">
@@ -190,8 +191,14 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
                                     Agotado
                                 </span>
                             )}
+
+                            <div className="mt-3">
+                                <AddToCartButton product={product} />
+                            </div>
                         </div>
                     </div>
+
+
                 </div>
             </Link>
         </div>

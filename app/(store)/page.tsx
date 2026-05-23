@@ -16,24 +16,24 @@ export const metadata: Metadata = {
         template: "%s | Neoshop",
     },
     description:
-        "Neoshop es tu tienda de confianza en Cañete para la compra de celulares, accesorios y más. Ofrecemos productos de calidad, envío rápido y atención personalizada.",
+        "Neoshop es tu tienda de confianza en  para la compra de celulares, accesorios y más. Ofrecemos productos de calidad, envío rápido y atención personalizada.",
     keywords: [
         "Neoshop",
-        "tienda iPhone Cañete",
-        "venta de celulares Cañete",
+        "tienda iPhone ",
+        "venta de celulares ",
         "accesorios para celulares",
-        "tecnología en Cañete",
-        "comprar iPhone Cañete",
-        "gadgets Cañete",
-        "tienda online Cañete",
+        "tecnología en ",
+        "comprar iPhone ",
+        "gadgets ",
+        "tienda online ",
         "Neoshop Perú",
-        "cases y fundas Cañete",
-        "cargadores y cables Cañete",
-        "auriculares y audífonos Cañete",
+        "cases y fundas ",
+        "cargadores y cables ",
+        "auriculares y audífonos ",
         "repuestos y reparación de celulares",
-        "ofertas de tecnología Cañete",
-        "smartphones en Cañete",
-        "tienda de tecnología en Cañete",
+        "ofertas de tecnología ",
+        "smartphones en ",
+        "tienda de tecnología en ",
         "iPhone",
         "audífonos",
         "cases"
@@ -42,11 +42,11 @@ export const metadata: Metadata = {
         ...globalMetadata.openGraph,
         title: "Neoshop - Calidad a tu alcance",
         description:
-            "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en Cañete. ¡Visítanos y descubre nuestras ofertas!",
+            "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en . ¡Visítanos y descubre nuestras ofertas!",
         url: "https://Neoshop.pe",
         images: [
             {
-                url: "https://Neoshop.pe/miniaturagris.png",
+                url: "https://Neoshop.pe/favicon.ico",
                 width: 1200,
                 height: 630,
                 alt: "Neoshop Home - Accesorios y Tecnología",
@@ -55,10 +55,10 @@ export const metadata: Metadata = {
     },
     twitter: {
         ...globalMetadata.twitter,
-        title: "Neoshop - Venta de accesorios y tecnología en Cañete",
+        title: "Neoshop - Venta de accesorios y tecnología en ",
         description:
-            "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en Cañete.",
-        images: ["https://Neoshop.pe/miniaturagris.png"],
+            "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en .",
+        images: ["https://Neoshop.pe/favicon.ico"],
     }
 };
 

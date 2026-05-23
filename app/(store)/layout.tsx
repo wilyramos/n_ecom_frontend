@@ -10,35 +10,35 @@ import WhatsappButton from "@/components/home/WhatsappButton";
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "GoPhone | Calidad a tu alcance",
-        template: "%s | GoPhone"
+        default: "NeoShop | Calidad a tu alcance",
+        template: "%s | NeoShop"
     },
     description:
-        "Sección principal de la tienda GoPhone: productos, compras, cuenta y soporte.",
+        "Sección principal de la tienda NeoShop: productos, compras, cuenta y soporte.",
     openGraph: {
         ...globalMetadata.openGraph,
-        title: "GoPhone",
+        title: "NeoShop",
         description:
-            "Productos, compras, cuenta y soporte dentro de la tienda GoPhone.",
-        url: "https://gophone.pe/productos",
+            "Productos, compras, cuenta y soporte dentro de la tienda NeoShop.",
+        url: "https://neoshop.pe/productos",
         images: [
             {
-                url: "https://gophone.pe/favicon.ico",
+                url: "https://neoshop.pe/favicon.ico",
                 width: 1200,
                 height: 630,
-                alt: "GoPhone Tienda"
+                alt: "NeoShop Tienda"
             }
         ]
     },
     twitter: {
         ...globalMetadata.twitter,
-        title: "GoPhone | Tienda",
+        title: "NeoShop | Tienda",
         description:
-            "Explora productos, compras y soporte en la tienda GoPhone.",
-        images: ["https://gophone.pe/favicon.ico"]
+            "Explora productos, compras y soporte en la tienda NeoShop.",
+        images: ["https://neoshop.pe/favicon.ico"]
     },
     alternates: {
-        canonical: "https://gophone.pe/catalogo"
+        canonical: "https://neoshop.pe/catalogo"
     }
 };
 

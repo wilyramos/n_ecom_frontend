@@ -3,11 +3,10 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import {
-    CartItem,
-    ProductWithCategoryResponse,
-    VariantCart,
+    CartItem, VariantCart,
     TReceiptType,
     receiptTypeSchema,
+    type ProductResponse
 } from '@/src/schemas';
 import { saveCartToDB } from '@/lib/api/cart';
 
@@ -28,8 +27,7 @@ interface Store {
     comprobante: TReceiptType;
     setComprobante: (comprobante: TReceiptType) => void;
 
-    addToCart: (item: ProductWithCategoryResponse, variant?: VariantCart) => void;
-    updateQuantity: (id: string, quantity: number, variantId?: string) => void;
+addToCart: (item: ProductResponse, variant?: VariantCart) => void;    updateQuantity: (id: string, quantity: number, variantId?: string) => void;
     removeFromCart: (id: string, variantId?: string) => void;
 
     clearCart: () => void;

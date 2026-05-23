@@ -22,10 +22,9 @@ const responsive = {
 };
 
 const storeImages = [
-    "/logo_blanco_completo.png",
-    "/logo_gris_app.png",
-    "/logoapp.png",
-    "/logo_fondo_negro_cuadrado.svg",
+    "/locacion1.webp",
+    "/locacion2.webp",
+    "/location3.webp",
 ];
 
 export default function StoreLocation() {
@@ -39,7 +38,7 @@ export default function StoreLocation() {
 
                         {/* Header */}
                         <div className="py-5">
-                            <Logo color="black" size={40} />
+                            <Logo color="black" size={100} />
                         </div>
 
                         {/* Info */}
@@ -48,14 +47,13 @@ export default function StoreLocation() {
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-fg-muted text-fg-inverse">
                                     <MapPin size={18} />
                                 </div>
-
                                 <div className="leading-tight">
                                     <p className="text-sm font-semibold text-fg-primary/70">
-                                        Piso 3
+                                        Av caminos del inca 257-Surco
                                     </p>
 
                                     <p className="text-sm font-bold text-fg-primary">
-                                        Av. Caminos del Inca 257 · Surco
+                                        Piso 3 - Tda 326
                                     </p>
                                 </div>
                             </div>
@@ -115,6 +113,31 @@ export default function StoreLocation() {
                                 </div>
                             ))}
                         </Carousel>
+                    </div>
+                </div>
+
+                <div className="  mt-4 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <p className="text-xl md:text-2xl font-bold text-fg-primary/60 text-center md:text-left">
+                        Autorizado por:
+                    </p>
+
+                    <div className="flex items-center gap-10">
+                        <div className="relative h-10 w-24 md:w-32">
+                            <Image
+                                src="/osiptel.png"
+                                alt="Osiptel"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
+                        <div className="relative h-10 w-24 md:w-32">
+                            <Image
+                                src="/mtc.png"
+                                alt="MTC"
+                                fill
+                                className="object-contain"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

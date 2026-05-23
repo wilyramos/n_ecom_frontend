@@ -32,7 +32,7 @@ export default function ClientCarouselProductosDestacados({ products }: Props) {
     };
 
     return (
-        <section className="w-full max-w-7xl mx-auto relative pt-16 md:pt-20 px-4 md:px-8">
+        <section className="w-full max-w-7xl mx-auto relative pt-8 px-4 md:px-8">
             <Carousel
                 responsive={responsive}
                 infinite

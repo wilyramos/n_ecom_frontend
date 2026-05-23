@@ -16,7 +16,6 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
     const [startX, setStartX] = useState<number | null>(null);
 
     const precio = product.precio ?? 0;
-    const stock = product.stock ?? 0;
 
     // --- LÓGICA DE COLORES ---
     const uniqueColors = useMemo(() => {
@@ -93,7 +92,7 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
 
     return (
         <div
-            className="group relative flex flex-col bg-surface-primary rounded border border-transparent "
+            className="group relative flex flex-col bg-surface-primary  rounded-2xl overflow-hidden"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onTouchStart={handleTouchStart}
@@ -118,7 +117,7 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
                                             src={img}
                                             alt={`${product.nombre} - vista ${idx + 1}`}
                                             fill
-                                            sizes="(max-width: 900px) 80w, 50vw"
+                                            sizes="(max-width: 900px) 80vw, 50vw"
                                             className="object-contain mix-blend-multiply"
                                             quality={80}
                                             unoptimized
@@ -150,8 +149,15 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
                         </div>
                     )}
 
+                    {/* Badge Entrega Inmediata */}
+                    <div className="absolute bottom-1 left-1 z-10">
+                        <span className="px-1.5 py-0.5 bg-fg-primary text-white text-[8px] md:text-[9px] font-bold uppercase tracking-wider ">
+                            Entrega inmediata
+                        </span>
+                    </div>
+
                     {/* Badges: Descuento */}
-                    <div className="absolute top-2 left-2 pointer-events-none flex flex-col gap-1">
+                    <div className="absolute top-2 right-2 pointer-events-none flex flex-col gap-1">
                         {(product.precioComparativo ?? 0) > 0 && (
                             <span className="px-1.5 py-0.5 bg-red-600 text-fg-inverse text-[10px] font-bold uppercase tracking-wider">
                                 -{Math.round(discountedPrice)}%
@@ -170,27 +176,22 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
 
                     </div>
 
-                    <div className="flex items-end justify-between mt-auto pt-2 gap-2pt-2 group-hover:border-border-default transition-colors">
+                    <div className="flex items-end justify-between mt-auto pt-2 group-hover:border-border-default transition-colors">
                         <div className="flex flex-col w-full">
-                            {stock > 0 ? (
-                                <div className="flex flex-row items-baseline gap-2">
-                                    {/* Precio anterior (tachado) */}
-                                    {(product.precioComparativo ?? 0) > 0 && (
-                                        <span className="text-[10px] md:text-[15px] text-fg-muted line-through">
-                                            S/ {product.precioComparativo!.toFixed(2)}
-                                        </span>
-                                    )}
-
-                                    {/* Precio Actual */}
-                                    <span className="text-sm md:text-[16px] font-bold text-fg-primary">
-                                        S/ {precio.toFixed(2)}
+                            <div className="flex flex-row items-baseline gap-2">
+                                {/* Precio anterior (tachado) */}
+                                {(product.precioComparativo ?? 0) > 0 && (
+                                    <span className="text-[10px] md:text-[15px] text-fg-muted line-through">
+                                        S/ {product.precioComparativo!.toFixed(2)}
                                     </span>
-                                </div>
-                            ) : (
-                                <span className="text-[10px] font-bold px-2 py-1 bg-surface-secondary text-fg-primary rounded self-start">
-                                    Agotado
+                                )}
+
+                                {/* Precio Actual */}
+                                <span className="text-sm md:text-[16px] font-bold text-fg-primary">
+                                    S/ {precio.toFixed(2)}
                                 </span>
-                            )}
+                            </div>
+
 
                             <div className="mt-3">
                                 <AddToCartButton product={product} />

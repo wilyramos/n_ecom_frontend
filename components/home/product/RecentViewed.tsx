@@ -32,7 +32,7 @@ export default function RecentViewed({ currentProduct }: { currentProduct: Produ
             </header>
 
             {/* Premium Grid using ProductCard */}
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 {displayProducts.map((product) => (
                     <div key={product.slug} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <ProductCard product={product} />

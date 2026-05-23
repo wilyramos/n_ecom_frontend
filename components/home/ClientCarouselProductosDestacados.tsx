@@ -3,7 +3,7 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import type { ButtonGroupProps } from "react-multi-carousel";
-import ProductCardHome from "./product/ProductCardHome";
+import ProductCard from "../home/product/ProductCard";
 import type { ProductResponse } from "@/src/schemas";
 import HeaderConTituloConControles from "../ui/HeaderConTituloConControles";
 
@@ -46,7 +46,7 @@ export default function ClientCarouselProductosDestacados({ products }: Props) {
             >
                 {products.map((product) => (
                     <div key={product._id} >
-                        <ProductCardHome product={product} />
+                        <ProductCard product={product} />
                     </div>
                 ))}
             </Carousel>

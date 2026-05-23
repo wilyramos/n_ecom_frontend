@@ -4,10 +4,10 @@ import { useCartStore } from "@/src/store/cartStore";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
-import type { ProductResponse } from "@/src/schemas";
+import type { TApiProduct } from "@/src/schemas";
 
 interface Props {
-    product: ProductResponse;
+    product: TApiProduct;
 }
 
 export default function AddToCartButton({ product }: Props) {
@@ -26,8 +26,7 @@ export default function AddToCartButton({ product }: Props) {
             return;
         }
 
-        // Ahora addToCart acepta product directamente sin necesidad de 'as any'
-        addToCart(product);
+        addToCart(product as TApiProduct);
         toast.success("Producto añadido al carrito");
         setCartOpen(true);
     };

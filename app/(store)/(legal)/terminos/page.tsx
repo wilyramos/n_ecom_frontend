@@ -9,7 +9,7 @@ export default function TerminosPage() {
     return (
         <>
             <h1 className="text-3xl md:text-4xl mb-4">Términos y Condiciones</h1>
-            <p className="text-sm mb-12">Última actualización: 1 de febrero de 2026</p>
+            <p className="text-sm mb-12">Última actualización: {new Date().toLocaleDateString('es-PE')}</p>
 
             <section className="mb-8">
                 <h2 className="text-xl mb-4">1. Generalidades</h2>

@@ -15,8 +15,8 @@ import StoreMaintenance from "@/components/home/StoreMaintenance";
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "Neoshop",
-        template: "%s | Neoshop",
+        default: "Neoshop importaciones",
+        template: "%s / home",
     },
     description:
         "Neoshop es tu tienda de confianza en  para la compra de celulares, accesorios y más. Ofrecemos productos de calidad, envío rápido y atención personalizada.",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         ...globalMetadata.openGraph,
-        title: "Neoshop - Calidad a tu alcance",
+        title: "Neoshop - ",
         description:
             "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en . ¡Visítanos y descubre nuestras ofertas!",
         url: "https://Neoshop.pe",

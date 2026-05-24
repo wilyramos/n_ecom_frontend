@@ -10,8 +10,8 @@ import WhatsappButton from "@/components/home/WhatsappButton";
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "NeoShop | Calidad a tu alcance",
-        template: "%s | NeoShop"
+        default: "NeoShop",
+        template: "%s",
     },
     description:
         "Sección principal de la tienda NeoShop: productos, compras, cuenta y soporte.",

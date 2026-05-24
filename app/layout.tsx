@@ -36,7 +36,6 @@ export const metadata: Metadata = {
         "Repuestos iPhone",
         "Tienda online",
         "Lima - Perú",
-        "San Vicente",
         "Imperial",
         "Asia",
         "Lunahuana",
@@ -51,7 +50,7 @@ export const metadata: Metadata = {
     authors: [{ name: "Neoshop", url: "https://Neoshop.pe" }],
     creator: "Neoshop",
     openGraph: {
-        title: "Neoshop | Calidad a tu alcance",
+        title: "Neoshop | ",
         description:
             "Compra iPhones, accesorios y repuestos con garantía y envío rápido. Neoshop: tecnología confiable desde Lima - Perú para todo el Perú.",
         url: "https://Neoshop.pe",
@@ -69,7 +68,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Neoshop | Calidad a tu alcance",
+        title: "Neoshop",
         description:
             "Tecnología con garantía, precios competitivos y atención personalizada. Compra iPhones y accesorios con envío rápido.",
         images: ["https://Neoshop.pe/favicon.ico"]

@@ -17,12 +17,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     if (!product) notFound();
 
     const categoryName = product.categoria?.nombre || 'General';
-    const image = product.imagenes?.[0] || 'https://www.neoshopimportaciones.com/logoapp.png';
+    const image = product.imagenes?.[0] || 'https://www.neoshopimportaciones.com/favicon.ico';
     const url = `https://www.neoshopimportaciones.com/productos/${product.slug}`;
 
     // ← Usar metaTitle/metaDescription si existen, sino fallback automático
-    const title = product.metaTitle?.trim()
-        || product.nombre;
+
+    // concatene el nombre y siempre añadir al final del title " | Neoshop" para mantener la marca consistente
+    const title = product.metaTitle?.trim()        ? `${product.metaTitle.trim()} | Neoshop`
+        : `${product.nombre} | Neoshop`;
+
 
     const description = product.metaDescription?.trim()
         || (product.descripcion
@@ -39,7 +42,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         'Lima - Perú',
         'Productos',
         'Tienda Online',
-        'San Vicente de Lima - Perú',
         'Perú',
         'iPhone',
         'Celulares',

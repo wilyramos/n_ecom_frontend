@@ -4,7 +4,7 @@ export default function ContactoSoportePage() {
     const contactMethods = [
         { title: "WhatsApp", value: "+51 902 900 653 636", description: "Respuesta inmediata.", href: "https://wa.me/519" },
         { title: "Email", value: "contacto@neoshop.com", description: "Consultas técnicas.", href: "mailto:contacto@neoshop.com" },
-        { title: "Ubicación", value: "Av caminos del inca 257-Surco Piso 3 - Tda 326", description: "San Vicente de Lima - Perú.", href: "#" },
+        { title: "Ubicación", value: "Av caminos del inca 257-Surco Piso 3 - Tda 326", description: "Lima.", href: "#" },
         { title: "Horario", value: "Lun–Sáb 10am – 7pm", description: "Atención personalizada.", href: "#" }
     ];
 

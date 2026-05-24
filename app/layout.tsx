@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         template: "%s | Neoshop"
     },
     description:
-        "iPhones, accesorios, repuestos y tecnología con envío rápido en Perú. Neoshop: calidad, garantía y atención personalizada desde Cañete.",
+        "iPhones, accesorios, repuestos y tecnología con envío rápido en Perú. Neoshop: calidad, garantía y atención personalizada desde Lima - Perú.",
     keywords: [
         "Neoshop",
         "iPhone Perú",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
         "Tecnología",
         "Repuestos iPhone",
         "Tienda online",
-        "Cañete",
+        "Lima - Perú",
         "San Vicente",
         "Imperial",
         "Asia",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Neoshop | Calidad a tu alcance",
         description:
-            "Compra iPhones, accesorios y repuestos con garantía y envío rápido. Neoshop: tecnología confiable desde Cañete para todo el Perú.",
+            "Compra iPhones, accesorios y repuestos con garantía y envío rápido. Neoshop: tecnología confiable desde Lima - Perú para todo el Perú.",
         url: "https://Neoshop.pe",
         siteName: "Neoshop",
         locale: "es_PE",

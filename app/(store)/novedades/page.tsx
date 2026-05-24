@@ -12,7 +12,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
     console.log("Generando metadata para Novedades con searchParams:", await searchParams);
     return {
-        title: "Novedades | GoPhone",
+        title: "Novedades | neoshop",
         description: "Lo último en tecnología premium.",
     };
 }

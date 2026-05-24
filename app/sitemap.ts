@@ -8,7 +8,7 @@ import type { MetadataRoute } from "next";
 type ChangeFreq = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.gophone.pe";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.neoshopimportaciones.com";
 
     // 1. Obtener Datos en Paralelo (Eficiencia máxima)
     const [products, categories, brands] = await Promise.all([

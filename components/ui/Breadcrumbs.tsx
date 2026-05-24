@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function Breadcrumbs({ items, current, className }: Props) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://gophone.pe";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neoshopimportaciones.com";
     
     // Lógica de colapso: si hay más de 3 items, mostramos el primero, ... y el último
     const shouldCollapse = items.length > 4;

@@ -30,7 +30,7 @@ export default function NotFound() {
 
                         <header className="border-b pb-4 space-y-2">
                             <div className="flex justify-between text-xs uppercase">
-                                <span className="font-bold text-gray-600">GOPHONE</span>
+                                <span className="font-bold text-gray-600">neoshop</span>
                                 <span className="text-gray-400">ERROR: 404</span>
                             </div>
 

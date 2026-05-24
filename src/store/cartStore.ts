@@ -178,7 +178,7 @@ export const useCartStore = create<Store>()(
                 clearDni: () => set({ dni: undefined }),
                 clearComprobante: () => set({ comprobante: 'TICKET' }),
             }),
-            { name: 'cart-storage-gophone' }
+            { name: 'cart-storage-neoshop' }
         )
     )
 );

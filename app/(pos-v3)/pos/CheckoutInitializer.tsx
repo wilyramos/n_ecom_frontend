@@ -23,7 +23,7 @@ export const CheckoutInitializer = ({ userId, shiftId }: Props) => {
             
             // Log de auditoría en desarrollo
             if (process.env.NODE_ENV === 'development') {
-                console.log(`[GOPHONE-v3] Sesión de Checkout Vinculada:`);
+                console.log(`[neoshop-v3] Sesión de Checkout Vinculada:`);
                 console.table({ Empleado: userId, Turno: shiftId });
             }
         }

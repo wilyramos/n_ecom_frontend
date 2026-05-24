@@ -103,7 +103,7 @@ export default function ComponentScriptCulqiCustom() {
         }
 
         Culqi.settings({
-            title: "GOPHONE",
+            title: "neoshop",
             currency: "PEN",
             amount: 1000,
             description: "Pago de prueba",

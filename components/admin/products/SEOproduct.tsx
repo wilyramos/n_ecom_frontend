@@ -85,10 +85,10 @@ export default function SEOProduct({ product }: SEOProductProps) {
                                     Vista previa en buscadores
                                 </p>
                                 <p className="text-[#1a0dab] text-xl font-medium truncate leading-tight">
-                                    {metaTitle || product?.nombre || "Título del producto | GoPhone"}
+                                    {metaTitle || product?.nombre || "Título del producto | neoshop"}
                                 </p>
                                 <p className="text-[#006621] text-[14px] flex items-center gap-1">
-                                    https://gophone.pe <ChevronRight className="w-3 h-3 text-[var(--color-text-tertiary)]" /> {product?.slug ?? "producto"}
+                                    https://neoshopimportaciones.com <ChevronRight className="w-3 h-3 text-[var(--color-text-tertiary)]" /> {product?.slug ?? "producto"}
                                 </p>
                                 <p className="text-[14px] text-[var(--color-text-secondary)] line-clamp-2 leading-relaxed pt-1">
                                     {metaDescription || plainDescription || "Optimiza tu presencia en Google con una descripción atractiva..."}
@@ -111,7 +111,7 @@ export default function SEOProduct({ product }: SEOProductProps) {
                                     <Input 
                                         value={metaTitle}
                                         onChange={(e) => setMetaTitle(e.target.value)}
-                                        placeholder="Ej: iPhone 15 Pro Max Titanium | GoPhone"
+                                        placeholder="Ej: iPhone 15 Pro Max Titanium | neoshop"
                                         className="bg-[var(--color-bg-primary)] border-[var(--color-border-strong)]"
                                     />
                                 </div>

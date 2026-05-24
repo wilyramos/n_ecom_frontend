@@ -62,7 +62,7 @@ export default async function ProductPageServer({ producto }: Props) {
         <>
             {/* Título oculto para SEO (H1 debe ser único y descriptivo) */}
             <h1 className="sr-only">
-                {producto.nombre} - GOPHONE
+                {producto.nombre} - neoshop
             </h1>
 
             <section className="container mx-auto px-2 md:px-6 pt-4">

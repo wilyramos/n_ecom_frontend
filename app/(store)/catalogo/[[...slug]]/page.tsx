@@ -21,7 +21,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     // Obtenemos los datos (deduplicado automáticamente por Next.js)
     const data = await getCatalogData(slugs, resolvedSearchParams);
 
-    if (!data) return { title: "Catálogo | GoPhone" };
+    if (!data) return { title: "Catálogo | neoshop" };
 
     const { categoryName, brandName, lineName, searchQuery } = data.context;
 
@@ -43,11 +43,11 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         }
     }
 
-    const fullTitle = `${title} | GoPhone`;
+    const fullTitle = `${title} | neoshop`;
     const description = `Compra ${title} al mejor precio en Perú. Envíos a todo el país y garantía oficial. Descubre ofertas en ${brandName || 'tecnología'} y más.`;
 
     // 2. URL Canónica
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://gophone.pe";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neoshopimportaciones.com";
     const canonicalPath = slugs.length > 0 ? `/catalogo/${slugs.join("/")}` : "/catalogo";
 
     return {
@@ -60,7 +60,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
             title: fullTitle,
             description: description,
             url: `${baseUrl}${canonicalPath}`,
-            siteName: "GoPhone",
+            siteName: "neoshop",
             images: [
                 {
                     url: `${baseUrl}/images/og-catalog.jpg`,
@@ -99,7 +99,7 @@ export default async function Page({ params, searchParams }: Props) {
 
     if (!data) return notFound();
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://gophone.pe";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neoshopimportaciones.com";
 
     // 1. Schema de Migas de Pan (Breadcrumbs)
     const breadcrumbList = {

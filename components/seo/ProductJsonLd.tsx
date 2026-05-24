@@ -3,9 +3,9 @@ import type { ProductWithCategoryResponse } from "@/src/schemas"
 export default function ProductJsonLd({ producto }: { producto: ProductWithCategoryResponse }) {
     if (!producto) return null
 
-    const firstImage = producto.imagenes?.[0] || 'https://www.gophone.pe/logomini.svg'
-    const url = `https://www.gophone.pe/productos/${producto.slug}`
-    const brand = producto.atributos?.Marca || 'GoPhone'
+    const firstImage = producto.imagenes?.[0] || 'https://www.neoshopimportaciones.com/logomini.svg'
+    const url = `https://www.neoshopimportaciones.com/productos/${producto.slug}`
+    const brand = producto.atributos?.Marca || 'neoshop'
 
     // Price siempre como string con 2 decimales
     const price = (producto.precio ?? 0).toFixed(2)
@@ -38,7 +38,7 @@ export default function ProductJsonLd({ producto }: { producto: ProductWithCateg
             availability,
             seller: {
                 '@type': 'Organization',
-                name: 'GoPhone',
+                name: 'neoshop',
             },
             shippingDetails: {
                 '@type': 'OfferShippingDetails',

@@ -4,9 +4,9 @@ import RegisterForm from "@/components/auth/RegisterForm";
 
 
 export const metadata: Metadata = {
-    title: "GoPhone  - Registro de cuenta",
-    description: "GoPhone  - Registro de cuenta",
-    keywords: "registro, GoPhone , cuenta",
+    title: "neoshop  - Registro de cuenta",
+    description: "neoshop  - Registro de cuenta",
+    keywords: "registro, neoshop , cuenta",
 };
 
 export default function PageRegistro() {

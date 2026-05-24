@@ -21,7 +21,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     const page = params.page ? ` - Página ${params.page}` : "";
 
     return {
-        title: `${query}${category}${page} | GoPhone`,
+        title: `${query}${category}${page} | neoshop`,
         description: `Encuentra los mejores productos de ${query}${category}. Calidad, garantía oficial y envíos a todo el país.`,
         alternates: {
             canonical: `${baseUrl}/search`, // Agrupa la autoridad de todas las páginas de búsqueda en la principal
@@ -32,7 +32,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
             follow: true,
         },
         openGraph: {
-            title: `${query} | GoPhone`,
+            title: `${query} | neoshop`,
             description: `Explora nuestra selección de productos.`,
             url: `${baseUrl}/search`,
             type: "website",

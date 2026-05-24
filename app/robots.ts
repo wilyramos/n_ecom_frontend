@@ -35,6 +35,6 @@ export default function robots(): MetadataRoute.Robots {
             },
         ],
 
-        sitemap: "https://www.gophone.pe/sitemap.xml",
+        sitemap: "https://www.neoshopimportaciones.com/sitemap.xml",
     };
 }

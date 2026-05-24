@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import LoginForm from '@/components/auth/LoginForm'
 
 export const metadata: Metadata = {
-    title: 'GoPhone - Iniciar Sesión',
-    description: 'Inicia sesión en tu cuenta de GoPhone para acceder a tus pedidos, favoritos y más.',
-    keywords: 'iniciar sesión, GoPhone , cuenta',
+    title: 'neoshop - Iniciar Sesión',
+    description: 'Inicia sesión en tu cuenta de neoshop para acceder a tus pedidos, favoritos y más.',
+    keywords: 'iniciar sesión, neoshop , cuenta',
 }
 
 export default function PageLogin() {

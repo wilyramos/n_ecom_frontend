@@ -1,4 +1,3 @@
-"use client";
 
 import Link from "next/link";
 import {
@@ -56,7 +55,7 @@ export default function PageCentroAyuda() {
                     Centro de Ayuda
                 </h1>
                 <p className="text-sm text-gray-500">
-                    Estamos aquí para ayudarte con tus compras en GoPhone.
+                    Estamos aquí para ayudarte con tus compras en neoshop.
                 </p>
             </header>
 

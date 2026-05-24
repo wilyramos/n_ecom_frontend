@@ -7,7 +7,7 @@ import React from "react";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = {
-    title: "Categorías | GoPhone",
+    title: "Categorías | neoshop",
     description:
         "Explora todas nuestras subcategorías y encuentra productos específicos organizados para ti.",
     alternates: {

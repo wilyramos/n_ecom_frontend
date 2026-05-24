@@ -17,13 +17,13 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     console.log("Search params en metadata de ofertas: ", resolvedSearchParams);
 
     return {
-        title: "Ofertas y Liquidación | GoPhone",
-        description: "Aprovecha descuentos exclusivos en celulares, audio y accesorios. Precios rebajados por tiempo limitado en GoPhone Perú.",
+        title: "Ofertas y Liquidación | neoshop",
+        description: "Aprovecha descuentos exclusivos en celulares, audio y accesorios. Precios rebajados por tiempo limitado en neoshop Perú.",
         alternates: {
             canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/ofertas`,
         },
         openGraph: {
-            title: "Ofertas Exclusivas | GoPhone",
+            title: "Ofertas Exclusivas | neoshop",
             description: "Tecnología premium a precios de oportunidad.",
             url: `${process.env.NEXT_PUBLIC_BASE_URL}/ofertas`,
             type: "website",

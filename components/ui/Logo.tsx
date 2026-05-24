@@ -19,7 +19,7 @@ export default function Logo({ color = "black", size = 28 }: LogoProps) {
         >
             <Image
                 src={logoSrc}
-                alt="GoPhone Distribuidor Oficial"
+                alt="NEOSHOP Distribuidor Oficial"
                 width={logoWidth}
                 height={logoHeight}
                 quality={50} // Optimizado para evitar pixelación en tamaños grandes

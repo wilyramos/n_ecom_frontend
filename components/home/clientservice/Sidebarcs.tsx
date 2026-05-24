@@ -2,109 +2,76 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-    RiHeadphoneLine, RiHeadphoneFill,
-    RiShoppingBag3Line, RiShoppingBag3Fill,
-    RiShieldCheckLine, RiShieldCheckFill,
-    RiChat1Line, RiChat1Fill,
-    RiFileShieldLine, RiFileShieldFill,
-    RiServiceLine, RiServiceFill,
-    RiExternalLinkLine
-} from "react-icons/ri";
 
 export default function Sidebarcs() {
     const pathname = usePathname();
 
     const navItems = [
-        { name: "Centro de ayuda", href: "/hc", icon: RiServiceLine, iconFill: RiServiceFill },
-        { name: "Contacto y soporte", href: "/hc/contacto-y-soporte", icon: RiHeadphoneLine, iconFill: RiHeadphoneFill },
-        { name: "Proceso de compra", href: "/hc/proceso-de-compra", icon: RiShoppingBag3Line, iconFill: RiShoppingBag3Fill },
-        { name: "Garantías y devoluciones", href: "/hc/garantias-y-devoluciones", icon: RiShieldCheckLine, iconFill: RiShieldCheckFill },
-        { name: "Preguntas frecuentes", href: "/hc/preguntas-frecuentes", icon: RiChat1Line, iconFill: RiChat1Fill },
-        { name: "Políticas de privacidad", href: "/hc/politicas-de-privacidad", icon: RiFileShieldLine, iconFill: RiFileShieldFill },
+        { name: "Centro de ayuda", href: "/hc" },
+        { name: "Contacto y soporte", href: "/hc/contacto-y-soporte" },
+        { name: "Proceso de compra", href: "/hc/proceso-de-compra" },
+        { name: "Garantías y devoluciones", href: "/hc/garantias-y-devoluciones" },
+        { name: "Preguntas frecuentes", href: "/hc/preguntas-frecuentes" },
+        { name: "Políticas de privacidad", href: "/hc/politicas-de-privacidad" },
     ];
 
     return (
         <>
-            {/* 📌 Desktop sidebar */}
+            {/* 📌 Desktop sidebar: Lista simple, sin iconos, sin bordes */}
             <aside className="sticky top-24 hidden md:flex md:flex-col w-72 h-fit">
-                <nav className="flex-1 pr-8 border-r border-[var(--store-border)] space-y-8">
-
-                    {/* Sección Principal */}
+                <nav className="flex-1 space-y-8">
                     <div>
-                        <h2 className="px-4 mb-5 text-[11px] uppercase tracking-[0.25em] font-bold text-[var(--store-text)]">
+                        <h2 className="px-2 mb-4 text-[10px] uppercase tracking-widest font-bold text-gray-400">
                             Soporte
                         </h2>
-                        <div className="space-y-1.5">
+                        <div className="space-y-0.5">
                             {navItems.map((item) => {
                                 const isActive = pathname === item.href;
-                                const Icon = isActive ? item.iconFill : item.icon;
-
                                 return (
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all duration-300 group
-                                            ${isActive
-                                                ? "font-semibold text-[var(--store-primary)] bg-[var(--store-primary)]/5"
-                                                : "text-[var(--store-text-muted)] hover:bg-[var(--store-surface-hover)] hover:text-[var(--store-text)]"}
-                                        `}
+                                        className={`block px-2 py-2 text-sm transition-colors ${
+                                            isActive 
+                                                ? "font-bold text-black" 
+                                                : "text-gray-600 hover:text-black"
+                                        }`}
                                     >
-                                        <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? "text-[var(--store-primary)]" : "opacity-70"}`} />
-                                        <span>{item.name}</span>
+                                        {item.name}
                                     </Link>
                                 );
                             })}
                         </div>
                     </div>
 
-                    {/* Sección de Enlace a Legal (Redirección) */}
-                    <div className="pt-4">
-                        <h2 className="px-4 mb-4 text-[11px] uppercase tracking-[0.25em] font-bold text-[var(--store-text-muted)]">
-                            Legal
-                        </h2>
+                    <div>
                         <Link
                             href="/terminos"
-                            className="flex items-center justify-between px-4 py-4 rounded-2xl bg-[var(--store-bg)] border border-[var(--store-border)] group hover:border-[var(--store-primary)] transition-all duration-300"
+                            className="block px-2 py-2 text-sm font-bold text-gray-600 hover:text-black"
                         >
-                            <div className="flex items-center gap-3">
-                                <RiFileShieldLine className="w-5 h-5 text-[var(--store-text)]" />
-                                <span className="text-xs font-bold text-[var(--store-text)]">Información Legal</span>
-                            </div>
-                            <RiExternalLinkLine className="w-4 h-4 text-[var(--store-text-muted)] group-hover:text-[var(--store-primary)] group-hover:translate-x-0.5 transition-all" />
+                            Información Legal
                         </Link>
                     </div>
                 </nav>
             </aside>
 
-            {/* 📌 Mobile bottom nav */}
-            <aside className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--store-surface)]/80 backdrop-blur-xl border-t border-[var(--store-border)] z-50 pb-safe">
-                <nav className="flex justify-around items-center h-16 px-2">
+            {/* 📌 Mobile bottom nav: Texto simple */}
+            <aside className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50">
+                <nav className="flex justify-around items-center h-16">
                     {navItems.slice(0, 4).map((item) => {
                         const isActive = pathname === item.href;
-                        const Icon = isActive ? item.iconFill : item.icon;
-
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex flex-col items-center justify-center gap-1 w-full h-full
-                                    ${isActive ? "text-[var(--store-primary)]" : "text-[var(--store-text-muted)]"}
-                                `}
+                                className={`text-[10px] font-bold uppercase tracking-wide ${
+                                    isActive ? "text-black" : "text-gray-400"
+                                }`}
                             >
-                                <Icon className={`w-5 h-5 ${isActive ? "scale-110" : ""}`} />
-                                <span className="text-[9px] font-bold tracking-tight">{item.name.split(" ")[0]}</span>
+                                {item.name.split(" ")[0]}
                             </Link>
                         );
                     })}
-                    {/* Botón Legal en móvil para saltar de layout */}
-                    <Link
-                        href="/terminos"
-                        className="flex flex-col items-center justify-center gap-1 w-full h-full text-[var(--store-text-muted)]"
-                    >
-                        <RiFileShieldLine className="w-5 h-5" />
-                        <span className="text-[9px] font-bold tracking-tight">Legal</span>
-                    </Link>
                 </nav>
             </aside>
         </>

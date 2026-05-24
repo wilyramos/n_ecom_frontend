@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "www.gophone.pe",
+        hostname: "www.neoshopimportaciones.com",
       }
     ]
   },
@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // A) Migración de listado general antiguo
-      // Si alguien entra a gophone.pe/productos -> lo manda a /catalogo
+      // Si alguien entra a neoshopimportaciones.com/productos -> lo manda a /catalogo
       {
         source: '/productos',
         destination: '/catalogo',

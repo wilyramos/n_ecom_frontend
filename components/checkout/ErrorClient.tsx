@@ -48,7 +48,7 @@ export default function ErrorClient({ errorMessage, orderId }: ErrorClientProps)
 
                 <div className="mt-10 pt-6 border-t border-[var(--color-border-subtle)] text-xs text-[var(--color-text-tertiary)]">
                     Si el problema persiste, por favor,{" "}
-                    <a href="mailto:soporte@gophone.pe" className="text-[var(--color-action-primary)] hover:underline">
+                    <a href="mailto:soporte@neoshopimportaciones.com" className="text-[var(--color-action-primary)] hover:underline">
                         contacta a soporte
                     </a>.
                     <br className="mb-2" />

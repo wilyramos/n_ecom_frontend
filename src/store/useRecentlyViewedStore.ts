@@ -20,6 +20,6 @@ export const useRecentlyViewedStore = create<RecentlyViewedState>()(
             }),
             clearHistory: () => set({ history: [] }),
         }),
-        { name: 'gophone-recent-v3' } // LocalStorage Key
+        { name: 'neoshop-recent-v3' } // LocalStorage Key
     )
 );

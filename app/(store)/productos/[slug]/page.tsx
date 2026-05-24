@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     if (!product) notFound();
 
     const categoryName = product.categoria?.nombre || 'General';
-    const image = product.imagenes?.[0] || 'https://www.gophone.pe/logoapp.png';
-    const url = `https://www.gophone.pe/productos/${product.slug}`;
+    const image = product.imagenes?.[0] || 'https://www.neoshopimportaciones.com/logoapp.png';
+    const url = `https://www.neoshopimportaciones.com/productos/${product.slug}`;
 
     // ← Usar metaTitle/metaDescription si existen, sino fallback automático
     const title = product.metaTitle?.trim()
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     const description = product.metaDescription?.trim()
         || (product.descripcion
             ? product.descripcion.replace(/<[^>]+>/g, '').slice(0, 160)
-            : 'Descubre nuestros productos en GoPhone. Calidad y tecnología a tu alcance.');
+            : 'Descubre nuestros productos en neoshop. Calidad y tecnología a tu alcance.');
 
     // Fusionar tags del producto con keywords base
     const productTags = product.tags ?? [];
@@ -35,11 +35,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         product.nombre,
         categoryName,
         ...productTags,
-        'GoPhone',
-        'Cañete',
+        'neoshop',
+        'Lima - Perú',
         'Productos',
         'Tienda Online',
-        'San Vicente de Cañete',
+        'San Vicente de Lima - Perú',
         'Perú',
         'iPhone',
         'Celulares',
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             title,
             description,
             url,
-            siteName: 'GoPhone',
+            siteName: 'neoshop',
             type: 'website',
             images: [
                 {
@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             title,
             description,
             images: [image],
-            creator: '@GoPhone',
+            creator: '@neoshop',
         },
         icons: {
             icon: "/logoapp.png",

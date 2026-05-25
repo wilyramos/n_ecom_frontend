@@ -13,17 +13,10 @@ interface Props {
 }
 
 const LAYOUT_LABELS: Record<string, string> = {
-    default: "Default",
-    "image-left": "Imagen Izquierda",
-    "image-center": "Imagen Centro",
-    "image-center-split": "Centro Dividido",
+    "image-only": "Solo Imagen",
+    "default": "Default (Media Derecha)",
+    "media-left": "Media Izquierda",
     "background-media": "Fondo con Media",
-    "promo-box": "Caja Promocional",
-    fullbleed: "Full Bleed",
-    "split-diagonal": "Diagonal",
-    minimal: "Minimal",
-    countdown: "Countdown",
-    video: "Video",
 };
 
 export default async function SliderBannerPreviewPage({ params }: Props) {
@@ -107,6 +100,13 @@ export default async function SliderBannerPreviewPage({ params }: Props) {
                                     color={banner.design.accentColor}
                                 />
                             )}
+
+                            {banner.design.textColor && (
+                                <ColorRow
+                                    label="Color Texto"
+                                    color={banner.design.textColor}
+                                />
+                            )}
                         </div>
                     </Card>
 
@@ -114,9 +114,16 @@ export default async function SliderBannerPreviewPage({ params }: Props) {
                     <Card title="Contenido">
                         <div className="space-y-2">
                             <Row
-                                label="Tipo"
-                                value={banner.contentType.toUpperCase()}
+                                label="Nombre Interno"
+                                value={banner.name}
                             />
+
+                            {banner.tags && banner.tags.length > 0 && (
+                                <Row
+                                    label="Etiquetas"
+                                    value={banner.tags.join(", ")}
+                                />
+                            )}
 
                             {banner.title && (
                                 <Row
@@ -140,28 +147,38 @@ export default async function SliderBannerPreviewPage({ params }: Props) {
                                 />
                             )}
 
-                            <Row
-                                label="Destino"
-                                value={banner.destUrl}
-                                mono
-                                truncate
-                            />
+                            {banner.terms && (
+                                <Row
+                                    label="Términos"
+                                    value={banner.terms}
+                                    truncate
+                                />
+                            )}
+
+                            {banner.destUrl && (
+                                <Row
+                                    label="Destino"
+                                    value={banner.destUrl}
+                                    mono
+                                    truncate
+                                />
+                            )}
                         </div>
                     </Card>
 
                     {/* Precio */}
-                    {banner.price?.current !== undefined && (
+                    {banner.price?.current !== undefined && banner.price.current !== null && (
                         <Card title="Precio">
                             <div className="space-y-2">
                                 <Row
                                     label="Actual"
-                                    value={`${banner.price.currency} ${banner.price.current.toFixed(2)}`}
+                                    value={`${banner.price.currency ?? "S/"} ${banner.price.current.toFixed(2)}`}
                                 />
 
-                                {banner.price.compare !== undefined && (
+                                {banner.price.compare !== undefined && banner.price.compare !== null && (
                                     <Row
                                         label="Antes"
-                                        value={`${banner.price.currency} ${banner.price.compare.toFixed(2)}`}
+                                        value={`${banner.price.currency ?? "S/"} ${banner.price.compare.toFixed(2)}`}
                                     />
                                 )}
 
@@ -178,21 +195,14 @@ export default async function SliderBannerPreviewPage({ params }: Props) {
                                         value={banner.price.suffix}
                                     />
                                 )}
-
-                                {banner.price.note && (
-                                    <Row
-                                        label="Nota"
-                                        value={banner.price.note}
-                                    />
-                                )}
                             </div>
                         </Card>
                     )}
 
                     {/* Programación */}
-                    {(banner.schedule?.startsAt ??
-                        banner.schedule?.endsAt ??
-                        banner.countdown?.endsAt) && (
+                    {(banner.schedule?.startsAt ||
+                        banner.schedule?.endsAt ||
+                        banner.countdown?.endsAt) ? (
                         <Card title="Programación">
                             <div className="space-y-2">
 
@@ -224,7 +234,7 @@ export default async function SliderBannerPreviewPage({ params }: Props) {
                                 )}
                             </div>
                         </Card>
-                    )}
+                    ) : null}
                 </section>
             </div>
         </AdminPageWrapper>
@@ -289,13 +299,13 @@ function Row({
 }) {
     return (
         <div className="flex items-start justify-between gap-4">
-            <span className="text-xs shrink-0">
+            <span className="text-xs shrink-0 text-zinc-500">
                 {label}
             </span>
 
             <span
                 className={[
-                    "text-xs  text-right",
+                    "text-xs  text-right text-zinc-300",
                     mono ? "font-mono" : "",
                     truncate ? "truncate max-w-[220px]" : "",
                 ].join(" ")}

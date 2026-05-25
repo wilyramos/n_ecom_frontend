@@ -5,17 +5,12 @@ import getToken from "../auth/token";
 import {
     SliderBanner,
     SliderBannerResponseSchema,
-    SliderContentTypeEnum,
 } from "@/src/schemas/slider.schema";
-import { z } from "zod";
-
-export type SliderContentType = z.infer<typeof SliderContentTypeEnum>;
 
 export interface AdminFilters {
     page?: number;
     limit?: number;
     isActive?: boolean;
-    contentType?: SliderContentType;
     search?: string;
 }
 
@@ -72,11 +67,10 @@ export const SliderService = {
 
     getAllAdmin: async (filters: AdminFilters = {}): Promise<PaginatedResult> => {
         const params = new URLSearchParams();
-        if (filters.page) params.append("page", filters.page.toString());
-        if (filters.limit) params.append("limit", filters.limit.toString());
+        if (filters.page)                params.append("page",     filters.page.toString());
+        if (filters.limit)               params.append("limit",    filters.limit.toString());
         if (filters.isActive !== undefined) params.append("isActive", filters.isActive.toString());
-        if (filters.contentType) params.append("contentType", filters.contentType);
-        if (filters.search) params.append("search", filters.search);
+        if (filters.search)              params.append("search",   filters.search);
 
         const res = await fetch(`${BASE_URL}?${params.toString()}`, {
             headers: await authHeaders(),
@@ -92,9 +86,9 @@ export const SliderService = {
         if (!res.ok) throw new Error(body.message ?? "Error al obtener banners.");
 
         return {
-            data: parseList(body.data ?? []),
+            data:  parseList(body.data ?? []),
             total: body.meta?.total ?? 0,
-            page: body.meta?.page ?? 1,
+            page:  body.meta?.page  ?? 1,
             limit: body.meta?.limit ?? 10,
             pages: body.meta?.pages ?? 1,
         };

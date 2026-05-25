@@ -6,21 +6,18 @@ import {
     SliderBannerSchema,
     type SliderBannerFormValues,
     type SliderBanner,
-    type SliderPrice,    // ← agregar
-    type SliderDesign,   // ← agregar
+    type SliderPrice,
+    type SliderDesign,
+    type SliderMedia,
 } from "@/src/schemas/slider.schema";
 import getToken from "@/src/auth/token";
 
-// ─────────────────────────────────────────────────────────────
-// CONSTANTS
-// ─────────────────────────────────────────────────────────────
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
 const ADMIN_BANNERS_PATH = "/admin/slider";
 const BASE_URL = `${process.env.API_URL}/slider-banners`;
 
-// ─────────────────────────────────────────────────────────────
-// TYPES
-// ─────────────────────────────────────────────────────────────
+// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 export type ReorderItem = { id: string; order: number };
 
@@ -40,9 +37,7 @@ export type ActionFailure = {
 
 export type ActionState<T = null> = ActionSuccess<T> | ActionFailure;
 
-// ─────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 async function getAuthHeaders(): Promise<HeadersInit> {
     const token = await getToken();
@@ -61,7 +56,8 @@ function getErrorMessage(error: unknown): string {
 function formString(formData: FormData, key: string): string | undefined {
     const val = formData.get(key);
     if (val === null) return undefined;
-    return typeof val === "string" ? val.trim() : undefined;
+    const str = typeof val === "string" ? val.trim() : undefined;
+    return str === "" ? undefined : str;
 }
 
 function formNumber(formData: FormData, key: string): number | undefined {
@@ -76,100 +72,85 @@ function formBool(formData: FormData, key: string): boolean {
 }
 
 /**
- * Mapea FormData a la estructura tipada de SliderBannerFormValues.
- * Todos los campos opcionales se omiten si están vacíos,
- * alineado exactamente con el modelo del backend.
+ * Mapea FormData a SliderBannerFormValues.
+ * Campos opcionales se omiten si están vacíos.
  */
 function mapFormDataToBanner(formData: FormData): SliderBannerFormValues {
-    const contentType = (formData.get("contentType") as SliderBannerFormValues["contentType"]) ?? "product";
-    const referenceId = formString(formData, "referenceId");
 
-    // ── Price ──────────────────────────────────────────────
     // ── Price ──────────────────────────────────────────────
     const priceCurrent = formNumber(formData, "price.current");
     const price: SliderPrice | undefined = priceCurrent !== undefined
         ? {
-            current: priceCurrent,
-            compare: formNumber(formData, "price.compare"),
-            label: formString(formData, "price.label"),
-            suffix: formString(formData, "price.suffix"),
-            note: formString(formData, "price.note"),
+            current:  priceCurrent,
+            compare:  formNumber(formData, "price.compare"),
+            label:    formString(formData, "price.label"),
+            suffix:   formString(formData, "price.suffix"),
             currency: formString(formData, "price.currency") ?? "S/",
-            border: (formString(formData, "price.border") as SliderPrice["border"]) ?? "none",
         }
         : undefined;
 
     // ── Media ──────────────────────────────────────────────
-    const media: SliderBannerFormValues["media"] = {
-        imageUrl: formData.get("media.imageUrl") as string,
-        videoUrl: formString(formData, "media.videoUrl"),
-        videoPoster: formString(formData, "media.videoPoster"),
-        altText: formString(formData, "media.altText") ?? (formString(formData, "title") ?? ""),
-        objectFit: (formString(formData, "media.objectFit") as SliderBannerFormValues["media"]["objectFit"]) ?? "cover",
-        border: (formString(formData, "media.border") as SliderBannerFormValues["media"]["border"]) ?? "none",
-    };
+    const imageUrl   = formString(formData, "media.imageUrl");
+    const videoUrl   = formString(formData, "media.videoUrl");
+    const media: SliderMedia | undefined = imageUrl || videoUrl
+        ? {
+            imageUrl,
+            videoUrl,
+            videoPoster: formString(formData, "media.videoPoster"),
+            altText:     formString(formData, "media.altText"),
+            objectFit:   (formString(formData, "media.objectFit") as SliderMedia["objectFit"]) ?? "cover",
+        }
+        : undefined;
 
     // ── Design ─────────────────────────────────────────────
-    // ── Design ─────────────────────────────────────────────
-    type ContentDistribution = NonNullable<SliderDesign["contentDistribution"]>;
-
-    const leftSide = formData.getAll("design.leftSide") as ContentDistribution["leftSide"];
-    const rightSide = formData.getAll("design.rightSide") as ContentDistribution["rightSide"];
-
     const design: SliderDesign = {
-        layout: (formString(formData, "design.layout") as SliderDesign["layout"]) ?? "default",
-        theme: (formString(formData, "design.theme") as SliderDesign["theme"]) ?? "dark",
-        bgColor: formString(formData, "design.bgColor"),
+        layout:      (formString(formData, "design.layout")      as SliderDesign["layout"])  ?? "default",
+        theme:       (formString(formData, "design.theme")       as SliderDesign["theme"])   ?? "dark",
+        bgColor:     formString(formData, "design.bgColor"),
         accentColor: formString(formData, "design.accentColor"),
-        textColor: formString(formData, "design.textColor"),
-        textMutedColor: formString(formData, "design.textMutedColor"),
-        contentDistribution: leftSide.length > 0 || rightSide.length > 0
-            ? { leftSide, rightSide }
-            : undefined,
+        textColor:   formString(formData, "design.textColor"),
     };
 
     // ── Countdown ──────────────────────────────────────────
     const countdownEndsAt = formString(formData, "countdown.endsAt");
     const countdown: SliderBannerFormValues["countdown"] = countdownEndsAt
         ? {
-            endsAt: new Date(countdownEndsAt),
-            label: formString(formData, "countdown.label"),
+            endsAt:   new Date(countdownEndsAt),
+            label:    formString(formData, "countdown.label"),
             showDays: formBool(formData, "countdown.showDays"),
         }
         : undefined;
 
     // ── Schedule ───────────────────────────────────────────
     const scheduleStartsAt = formString(formData, "schedule.startsAt");
-    const scheduleEndsAt = formString(formData, "schedule.endsAt");
+    const scheduleEndsAt   = formString(formData, "schedule.endsAt");
     const schedule: SliderBannerFormValues["schedule"] = scheduleStartsAt || scheduleEndsAt
         ? {
             startsAt: scheduleStartsAt ? new Date(scheduleStartsAt) : undefined,
-            endsAt: scheduleEndsAt ? new Date(scheduleEndsAt) : undefined,
+            endsAt:   scheduleEndsAt   ? new Date(scheduleEndsAt)   : undefined,
         }
         : undefined;
 
     return {
-        contentType,
-        product: contentType === "product" ? referenceId : undefined,
-        brand: contentType === "brand" ? referenceId : undefined,
-        category: contentType === "category" ? referenceId : undefined,
-        title: formString(formData, "title"),
-        subtitle: formString(formData, "subtitle"),
+        name:        formString(formData, "name") ?? "",
+        tags:        formData.getAll("tags").map(String).filter(Boolean),
+        title:       formString(formData, "title"),
+        subtitle:    formString(formData, "subtitle"),
         description: formString(formData, "description"),
-        destUrl: formData.get("destUrl") as string,
-        isActive: formBool(formData, "isActive"),
+        terms:       formString(formData, "terms"),
+        destUrl:     formString(formData, "destUrl"),
+        openInNewTab: formBool(formData, "openInNewTab"),
+        isActive:    formBool(formData, "isActive"),
+        order:       formNumber(formData, "order"),
         price,
         media,
         design,
         countdown,
         schedule,
-        order: formNumber(formData, "order"),
     };
 }
 
-// ─────────────────────────────────────────────────────────────
-// ACTIONS
-// ─────────────────────────────────────────────────────────────
+// ─── ACTIONS ──────────────────────────────────────────────────────────────────
 
 export async function createSliderBannerAction(
     _prev: ActionState<SliderBanner>,

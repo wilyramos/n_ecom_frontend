@@ -18,7 +18,7 @@ interface SliderTableProps {
     banners: SliderBanner[];
 }
 
-const HEADERS = ["", "Banner", "Tipo", "Layout", "Orden", "Estado", ""] as const;
+const HEADERS = ["", "Banner", "Layout", "Orden", "Estado", ""] as const;
 
 export default function SliderTable({ banners }: SliderTableProps) {
     const [items, setItems]               = useState<SliderBanner[]>(banners);
@@ -28,8 +28,6 @@ export default function SliderTable({ banners }: SliderTableProps) {
     const [isPending, startTransition]    = useTransition();
     const debounceRef                     = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Sincronizar cuando cambian los banners desde el servidor (ej: tras revalidación)
-    // pero solo si no hay un drag activo para no interrumpir la interacción
     useEffect(() => {
         if (!dragSourceId) setItems(banners);
     }, [banners, dragSourceId]);

@@ -1,35 +1,33 @@
-// File: src/components/admin/slider/BannerRow.tsx
 "use client";
 
-import { useOptimistic, useTransition }    from "react";
-import Image                               from "next/image";
-import Link                                from "next/link";
+import { useOptimistic, useTransition } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
     GripVertical, Pencil, Eye, Layers,
     ToggleLeft, ToggleRight,
 } from "lucide-react";
-import { toggleSliderBannerAction }        from "@/actions/slider-actions";
-import type { SliderBanner }               from "@/src/schemas/slider.schema";
-import DeleteSliderButton                  from "./DeleteSliderButton";
-import { TableRow, TableCell }             from "@/components/ui/table";
+import { toggleSliderBannerAction } from "@/actions/slider-actions";
+import type { SliderBanner } from "@/src/schemas/slider.schema";
+import DeleteSliderButton from "./DeleteSliderButton";
+import { TableRow, TableCell } from "@/components/ui/table";
 
-const CONTENT_TYPE_LABEL: Record<string, string> = {
-    product:  "Producto",
-    brand:    "Marca",
-    category: "Categoría",
-    campaign: "Campaña",
-    custom:   "Custom",
+const LAYOUT_LABEL: Record<string, string> = {
+    "image-only": "Solo imagen",
+    "default": "Texto + imagen",
+    "media-left": "Imagen izquierda",
+    "background-media": "Fondo",
 };
 
 interface BannerRowProps {
-    banner:      SliderBanner;
-    isDragging:  boolean;
-    isDragOver:  boolean;
+    banner: SliderBanner;
+    isDragging: boolean;
+    isDragOver: boolean;
     onDragStart: (id: string) => void;
-    onDragOver:  (e: React.DragEvent, id: string) => void;
-    onDragEnd:   () => void;
-    onDrop:      (targetId: string) => void;
-    onError:     (msg: string) => void;
+    onDragOver: (e: React.DragEvent, id: string) => void;
+    onDragEnd: () => void;
+    onDrop: (targetId: string) => void;
+    onError: (msg: string) => void;
 }
 
 export default function BannerRow({
@@ -38,8 +36,8 @@ export default function BannerRow({
     onDragStart, onDragOver, onDragEnd, onDrop,
     onError,
 }: BannerRowProps) {
-    const [isPending, startTransition]        = useTransition();
-    const [optimisticActive, setOptimistic]   = useOptimistic(banner.isActive);
+    const [isPending, startTransition] = useTransition();
+    const [optimisticActive, setOptimistic] = useOptimistic(banner.isActive);
 
     const handleToggle = () => {
         startTransition(async () => {
@@ -58,8 +56,8 @@ export default function BannerRow({
             onDrop={() => onDrop(banner._id)}
             className={[
                 "group select-none transition-colors",
-                isDragging ? "opacity-40"                                    : "",
-                isDragOver ? "bg-[var(--color-action-primary-light)]"        : "",
+                isDragging ? "opacity-40" : "",
+                isDragOver ? "bg-[var(--color-action-primary-light)]" : "",
             ].join(" ")}
         >
             {/* Handle */}
@@ -70,7 +68,7 @@ export default function BannerRow({
                 />
             </TableCell>
 
-            {/* Thumbnail + título */}
+            {/* Thumbnail + nombre interno + título */}
             <TableCell>
                 <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -80,7 +78,7 @@ export default function BannerRow({
                         {banner.media?.imageUrl ? (
                             <Image
                                 src={banner.media.imageUrl}
-                                alt={banner.media.altText ?? banner.title ?? ""}
+                                alt={banner.media.altText ?? banner.name}
                                 fill
                                 className="object-cover"
                                 sizes="56px"
@@ -98,44 +96,45 @@ export default function BannerRow({
                         )}
                     </div>
                     <div className="min-w-0">
-                        <p className="text-sm font-medium truncate"
-                            style={{ color: "var(--color-text-primary)" }}>
-                            {banner.title ?? "Sin título"}
+                        {/* name es el identificador interno, siempre presente */}
+                        <p
+                            className="text-sm font-medium truncate"
+                            style={{ color: "var(--color-text-primary)" }}
+                        >
+                            {banner.name}
                         </p>
-                        {banner.subtitle && (
-                            <p className="text-xs truncate mt-0.5"
-                                style={{ color: "var(--color-text-tertiary)" }}>
-                                {banner.subtitle}
+                        {/* título es el texto visible en el banner, opcional */}
+                        {banner.title && (
+                            <p
+                                className="text-xs truncate mt-0.5"
+                                style={{ color: "var(--color-text-tertiary)" }}
+                            >
+                                {banner.title}
                             </p>
                         )}
                     </div>
                 </div>
             </TableCell>
 
-            {/* Tipo */}
+            {/* Layout */}
             <TableCell>
                 <span
                     className="text-xs px-2 py-0.5 rounded-full"
                     style={{
                         background: "var(--color-bg-tertiary)",
-                        color:      "var(--color-text-secondary)",
+                        color: "var(--color-text-secondary)",
                     }}
                 >
-                    {CONTENT_TYPE_LABEL[banner.contentType] ?? banner.contentType}
-                </span>
-            </TableCell>
-
-            {/* Layout */}
-            <TableCell>
-                <span className="text-xs" style={{ color: "var(--color-text-secondary)" }}>
-                    {banner.design.layout}
+                    {LAYOUT_LABEL[banner.design.layout] ?? banner.design.layout}
                 </span>
             </TableCell>
 
             {/* Orden */}
             <TableCell>
-                <span className="text-sm tabular-nums"
-                    style={{ color: "var(--color-text-tertiary)" }}>
+                <span
+                    className="text-sm tabular-nums"
+                    style={{ color: "var(--color-text-tertiary)" }}
+                >
                     #{banner.order}
                 </span>
             </TableCell>
@@ -146,7 +145,7 @@ export default function BannerRow({
                     className="text-xs px-2 py-0.5 rounded-full font-medium"
                     style={optimisticActive
                         ? { background: "var(--color-success-light)", color: "var(--color-success)" }
-                        : { background: "var(--color-bg-tertiary)",   color: "var(--color-text-tertiary)" }
+                        : { background: "var(--color-bg-tertiary)", color: "var(--color-text-tertiary)" }
                     }
                 >
                     {optimisticActive ? "Activo" : "Inactivo"}
@@ -155,7 +154,7 @@ export default function BannerRow({
 
             {/* Acciones */}
             <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-0.5 ">
+                <div className="flex items-center justify-end gap-0.5">
                     <ActionIcon href={`/admin/slider/${banner._id}/preview`} label="Preview">
                         <Eye className="h-3.5 w-3.5" />
                     </ActionIcon>
@@ -166,19 +165,21 @@ export default function BannerRow({
                         onClick={handleToggle}
                         disabled={isPending}
                         className="flex h-7 w-7 items-center justify-center rounded-lg transition-colors disabled:opacity-40"
-                        style={{ color: optimisticActive
-                            ? "var(--color-success)"
-                            : "var(--color-text-tertiary)" }}
+                        style={{
+                            color: optimisticActive
+                                ? "var(--color-success)"
+                                : "var(--color-text-tertiary)"
+                        }}
                         aria-label={optimisticActive ? "Desactivar" : "Activar"}
                     >
                         {optimisticActive
                             ? <ToggleRight className="h-4 w-4" />
-                            : <ToggleLeft  className="h-4 w-4" />
+                            : <ToggleLeft className="h-4 w-4" />
                         }
                     </button>
                     <DeleteSliderButton
                         bannerId={banner._id}
-                        bannerName={banner.title ?? "Sin título"}
+                        bannerName={banner.name}
                     />
                 </div>
             </TableCell>
@@ -186,11 +187,9 @@ export default function BannerRow({
     );
 }
 
-function ActionIcon({
-    href, label, children,
-}: {
-    href:     string;
-    label:    string;
+function ActionIcon({ href, label, children }: {
+    href: string;
+    label: string;
     children: React.ReactNode;
 }) {
     return (

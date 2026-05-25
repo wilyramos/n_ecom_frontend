@@ -1,6 +1,7 @@
 import { Calendar } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { type SliderBanner } from "@/src/schemas/slider.schema";
 
 interface SectionProps {
@@ -18,30 +19,58 @@ export default function ScheduleSection({ initialData, fieldErrors }: SectionPro
     };
 
     return (
-        <div className="p-4 border rounded-lg bg-white space-y-4 shadow-sm">
-            <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-purple-500" />
-                <h2 className="text-[11px] font-bold uppercase">Publicación y Orden</h2>
-            </div>
+        <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+                <Calendar className="w-3.5 h-3.5 text-muted-foreground/80" />
+                <CardTitle>Publicación</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
 
-            {/* NUEVO: Campo de Orden */}
-            <div className="space-y-2">
-                <Label className="text-xs">Orden de aparición</Label>
-                <Input name="order" type="number" defaultValue={initialData?.order ?? 0} />
-            </div>
+                <div className="space-y-1">
+                    <Label className="text-xs font-bold">Orden de aparición</Label>
+                    <Input
+                        name="order"
+                        type="number"
+                        min="0"
+                        defaultValue={initialData?.order ?? 0}
+                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                    />
+                </div>
 
-            <div className="space-y-2">
-                <Label className="text-xs">Inicia</Label>
-                <Input name="schedule.startsAt" type="datetime-local" defaultValue={toDatetimeLocal(initialData?.schedule?.startsAt)} />
-            </div>
-            <div className="space-y-2">
-                <Label className="text-xs">Finaliza</Label>
-                <Input name="schedule.endsAt" type="datetime-local" defaultValue={toDatetimeLocal(initialData?.schedule?.endsAt)} className={err("schedule.endsAt") ? "border-red-500" : ""} />
-            </div>
-            <div className="flex items-center justify-between pt-4 border-t">
-                <Label>Activo</Label>
-                <input type="checkbox" name="isActive" value="true" className="w-5 h-5 accent-blue-600" defaultChecked={initialData?.isActive ?? true} />
-            </div>
-        </div>
+                <div className="space-y-1">
+                    <Label className="text-xs font-bold">Publicar desde</Label>
+                    <Input
+                        name="schedule.startsAt"
+                        type="datetime-local"
+                        defaultValue={toDatetimeLocal(initialData?.schedule?.startsAt)}
+                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                    />
+                </div>
+
+                <div className="space-y-1">
+                    <Label className="text-xs font-bold">Publicar hasta</Label>
+                    <Input
+                        name="schedule.endsAt"
+                        type="datetime-local"
+                        defaultValue={toDatetimeLocal(initialData?.schedule?.endsAt)}
+                        className={`h-10 text-xs bg-background-secondary border rounded-sm ${err("schedule.endsAt") ? "border-destructive" : "border-border/40"}`}
+                    />
+                    {err("schedule.endsAt") && (
+                        <p className="text-[10px] text-destructive">{err("schedule.endsAt")}</p>
+                    )}
+                </div>
+
+                <div className="flex items-center justify-between pt-3 border-t border-border/40">
+                    <Label className="text-xs font-bold">Activo</Label>
+                    <input
+                        type="checkbox"
+                        name="isActive"
+                        value="true"
+                        defaultChecked={initialData?.isActive ?? true}
+                        className="w-4 h-4 accent-blue-600"
+                    />
+                </div>
+            </CardContent>
+        </Card>
     );
 }

@@ -2,19 +2,19 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useState, useTransition }     from "react";
-import { useDebouncedCallback }                     from "use-debounce";
-import { Search, X }                               from "lucide-react";
-import { Input }                                   from "@/components/ui/input";
+import { useCallback, useState, useTransition }    from "react";
+import { useDebouncedCallback }                    from "use-debounce";
+import { Search, X }                              from "lucide-react";
+import { Input }                                  from "@/components/ui/input";
 import {
     Select, SelectTrigger, SelectValue,
     SelectContent, SelectItem,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface Filters {
-    search?:      string;
-    isActive?:    string;
-    contentType?: string;
+    search?:   string;
+    isActive?: string;
 }
 
 interface SliderFiltersProps {
@@ -74,13 +74,13 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
                     className="pl-9 pr-8"
                 />
                 {searchValue && (
-                    <button
+                    <Button
                         onClick={handleSearchClear}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        variant="ghost"
                         aria-label="Limpiar búsqueda"
                     >
                         <X className="h-3.5 w-3.5" />
-                    </button>
+                    </Button>
                 )}
             </div>
 
@@ -96,24 +96,6 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
                     <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="true">Activos</SelectItem>
                     <SelectItem value="false">Inactivos</SelectItem>
-                </SelectContent>
-            </Select>
-
-            {/* Tipo de contenido */}
-            <Select
-                value={filters.contentType ?? "all"}
-                onValueChange={(v) => setParam("contentType", v === "all" ? undefined : v)}
-            >
-                <SelectTrigger className="w-44">
-                    <SelectValue placeholder="Tipo" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">Todos los tipos</SelectItem>
-                    <SelectItem value="product">Producto</SelectItem>
-                    <SelectItem value="brand">Marca</SelectItem>
-                    <SelectItem value="category">Categoría</SelectItem>
-                    <SelectItem value="campaign">Campaña</SelectItem>
-                    <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
             </Select>
         </div>

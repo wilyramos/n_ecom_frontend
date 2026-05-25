@@ -1,3 +1,4 @@
+// File: src/components/banner/layouts/LayoutMediaLeft.tsx
 "use client";
 
 import Link from "next/link";
@@ -6,7 +7,7 @@ import { useEffect, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
 
-export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
+export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
     const { design, media, title, subtitle, description, terms, price, destUrl, openInNewTab } = banner;
     const [loaded, setLoaded] = useState(false);
 
@@ -15,11 +16,11 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
         return () => clearTimeout(t);
     }, []);
 
+    // Lógica de colores actualizada
     const isDark = design.theme !== "light";
     const bg = design.bgColor ?? (isDark ? "#000000" : "#ffffff");
-    const text = design.textColor ?? (isDark ? "#a8a8a8" : "#0f0f0f");
+    const text = design.textColor ?? (isDark ? "#a0a0a0" : "#0f0f0f");
     const accent = design.accentColor ?? "#a0a0a0";
-
     const fadeUp = (delay: number): React.CSSProperties => ({
         opacity: loaded ? 1 : 0,
         transform: loaded ? "translateY(0px)" : "translateY(14px)",
@@ -28,14 +29,40 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
 
     const content = (
         <div
-            className="banner-slot group relative w-full overflow-hidden flex items-center "
+            className="banner-slot group relative w-full overflow-hidden flex items-center"
             style={{ backgroundColor: bg }}
         >
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-row items-center px-4 sm:px-8">
 
-                {/* ── Texto (izquierda) ─────────────────────────────── */}
+                {/* ── Media (izquierda) ─────────────────────────────── */}
+                {media?.imageUrl && (
+                    <div
+                        className="w-1/2 h-full pointer-events-none"
+                        style={{
+                            opacity: loaded ? 1 : 0,
+                            transform: loaded ? "translateX(0) scale(1)" : "translateX(-20px) scale(0.95)",
+                            transition: "opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1)",
+                        }}
+                    >
+                        {/* Contenedor relativo al 100% para que la imagen ocupe todo el espacio */}
+                        <div className="relative w-full h-full">
+                            <Image
+                                src={media.imageUrl}
+                                alt={media.altText ?? title ?? ""}
+                                fill
+                                className={`transition-transform duration-[2000ms] group-hover:scale-105
+                           ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
+                                sizes="(max-width: 640px) 50vw, 40vw"
+                                priority
+                                unoptimized
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* ── Texto (derecha) ───────────────────────────────── */}
                 <div
-                    className="flex flex-col justify-center items-start w-1/2 h-full pr-2 sm:pr-4 gap-2 sm:gap-4 overflow-hidden"
+                    className="flex flex-col justify-center items-center w-1/2 h-full pl-2 sm:pl-4 gap-2 sm:gap-4 overflow-hidden"
                     style={{ color: text }}
                 >
                     {subtitle && (
@@ -53,7 +80,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                         <div style={fadeUp(0.2)}>
                             <h2
                                 className="font-bold leading-[1.1] tracking-[-0.03em]
-                                           text-[clamp(1.2rem,2.8vw,3rem)] line-clamp-3"
+                                           text-[clamp(1rem,2.5vw,2.8rem)] line-clamp-3"
                             >
                                 {title}
                             </h2>
@@ -64,7 +91,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                         <div style={fadeUp(0.3)}>
                             <p
                                 className="text-[10px] sm:text-[13px] md:text-sm
-                                           leading-relaxed line-clamp-3 sm:line-clamp-4 max-w-[32ch]"
+                                           leading-relaxed line-clamp-2 sm:line-clamp-4 max-w-[32ch]"
                                 style={{ opacity: 0.75 }}
                             >
                                 {description}
@@ -83,51 +110,14 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                         </div>
                     )}
 
-                    {/* Botón Ver Catálogo */}
-                    {destUrl && (
-                        <div style={fadeUp(0.5)}>
-                            <span
-                                className="inline-block px-6 py-2.5 text-[10px] md:text-sm font-bold uppercase tracking-wide transition-opacity hover:opacity-90"
-                                style={{ backgroundColor: accent, color: isDark ? "#000" : "#fff" }}
-                            >
-                                Ver catálogo
-                            </span>
-                        </div>
-                    )}
-
                     {terms && (
-                        <div style={fadeUp(0.55)} className="mt-1 sm:mt-2">
+                        <div style={fadeUp(0.50)} className="mt-1 sm:mt-2">
                             <p className="text-[8px] sm:text-[9px] font-medium tracking-wide uppercase" style={{ opacity: 0.45 }}>
                                 {terms}
                             </p>
                         </div>
                     )}
                 </div>
-
-                {/* ── Media (derecha) ───────────────────────────────── */}
-                {media?.imageUrl && (
-                    <div
-                        className="w-1/2 h-full pointer-events-none"
-                        style={{
-                            opacity: loaded ? 1 : 0,
-                            transform: loaded ? "translateX(0) scale(1)" : "translateX(20px) scale(0.95)",
-                            transition: "opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1)",
-                        }}
-                    >
-                        <div className="relative w-full h-full">
-                            <Image
-                                src={media.imageUrl}
-                                alt={media.altText ?? title ?? ""}
-                                fill
-                                className={`transition-transform duration-[2000ms] group-hover:scale-105
-                             ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                                sizes="(max-width: 640px) 50vw, 40vw"
-                                priority
-                                unoptimized
-                            />
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );
@@ -140,7 +130,6 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
             aria-label={title ?? banner.name}
-            className="block"
         >
             {content}
         </Link>

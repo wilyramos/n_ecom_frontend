@@ -51,7 +51,7 @@ export default function CheckoutSelector() {
                             <div className="flex items-center gap-3 mt-1">
                                 <FaCcVisa size={28} className="text-blue-600" />
                                 <FaCcMastercard size={28} className="text-red-600" />
-                                <Image src="/yape.png" alt="Yape" width={26} height={26} className="rounded-md" />
+                                <Image src="/yape.svg" alt="Yape" width={26} height={26} className="rounded-md" />
                             </div>
                         </div>
                     </div>

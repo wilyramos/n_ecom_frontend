@@ -1,3 +1,5 @@
+//File: frontend/actions/order/create-order-action.ts
+
 "use server";
 
 import type { TCreateOrder, TOrder } from "@/src/schemas";
@@ -8,16 +10,22 @@ type CreateOrderResponse =
     | { ok: false; message: string };
 
 export async function createOrderAction(order: TCreateOrder): Promise<CreateOrderResponse> {
+    // Si no hay sesión, getToken() retornará null, lo cual es correcto para compras como invitado
     const token = await getToken();
     const url = `${process.env.API_URL}/orders`;
 
     try {
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+
         const res = await fetch(url, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
+            headers,
             body: JSON.stringify(order),
         });
 

@@ -76,7 +76,7 @@
 .banner-slot {
   width: 100%;
   /* 24/9 o 3/1 lo hará más delgado  es el ratio original del banner */
-  aspect-ratio: var(--banner-ratio, 15 / 9);
+  aspect-ratio: var(--banner-ratio, 27 / 9);
   
   /* Reducido de 180px a 140px para que no se estire de más en celulares pequeños */
   min-height: 140px; 

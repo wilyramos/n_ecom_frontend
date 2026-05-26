@@ -72,8 +72,8 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
                 {/* Cliente */}
                 <div className="bg-white border rounded p-4">
                     <h2 className="text-sm font-semibold text-gray-700 mb-2">Cliente</h2>
-                    <p className="text-sm"><strong>Nombre:</strong> {order.user.nombre} {order.user.apellidos}</p>
-                    <p className="text-sm"><strong>Email:</strong> {order.user.email}</p>
+                    <p className="text-sm"><strong>Nombre:</strong> {order.customerProfile.nombre} {order.customerProfile.apellidos}</p>
+                    <p className="text-sm"><strong>Email:</strong> {order.customerProfile.email}</p>
                 </div>
 
                 {/* Pago */}

@@ -21,8 +21,8 @@ const MESSAGES = [
 ];
 
 const social = [
-    { label: "Facebook", href: "https://facebook.com/neoshop", icon: <FaFacebookF size={13} /> },
-    { label: "Instagram", href: "https://instagram.com/neoshop", icon: <FaInstagram size={14} /> },
+    { label: "Facebook", href: "https://www.facebook.com/people/Neoshop-Importaciones/61574230740862/", icon: <FaFacebookF size={13} /> },
+    { label: "Instagram", href: "https://www.instagram.com/neoshopimportaciones", icon: <FaInstagram size={14} /> },
     { label: "WhatsApp", href: "https://wa.me/51902900653", icon: <FaWhatsapp size={14} /> },
 ];
 

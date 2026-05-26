@@ -3,84 +3,83 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react"; // Opcional: para pasos completados
+import { Check } from "lucide-react";
 
 const steps = [
-    { label: "Identificación", path: "/checkout/profile" },
-    { label: "Entrega", path: "/checkout/shipping" },
-    { label: "Pago", path: "/checkout/payment" },
+    { label: "Datos y Envío", path: "/checkout" },
+    { label: "Pago",          path: "/checkout/payment" },
 ];
 
 export default function CheckoutSteps() {
     const pathname = usePathname();
-
-    // Encontrar el índice actual para determinar qué pasos están completados
     const currentStepIndex = steps.findIndex((s) => s.path === pathname);
 
     return (
-        <nav className="flex items-center justify-between mx-auto w-full max-w-2xl py-6 px-4">
-            {steps.map((step, index) => {
-                const isActive = pathname === step.path;
-                const isCompleted = currentStepIndex > index;
+        <nav className="w-full max-w-xl mx-auto px-4 py-3">
+            <div className="relative flex items-center justify-between w-full">
+                
+                {/* Línea conectora de fondo fija */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] bg-surface-secondary z-0" />
 
-                const StepContent = (
-                    <div className="flex items-center gap-3 relative group">
-                        {/* Círculo indicador */}
-                        <div
-                            className={cn(
-                                "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-500 border-2",
-                                isCompleted
-                                    ? "bg-[var(--color-bg-inverse)] border-[var(--color-bg-inverse)] text-[var(--color-text-inverse)]"
-                                    : isActive
-                                        ? "bg-[var(--color-bg-primary)] border-[var(--color-action-primary)] text-[var(--color-action-primary)] scale-110 shadow-sm"
-                                        : "bg-[var(--color-bg-tertiary)] border-[var(--color-border-default)] text-[var(--color-text-tertiary)]"
-                            )}
-                        >
-                            {isCompleted ? <Check size={14} strokeWidth={3} /> : index + 1}
-                        </div>
+                {/* Línea conectora de progreso activa */}
+                <div 
+                    className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-action-primary transition-all duration-500 ease-in-out z-0"
+                    style={{ 
+                        width: `${currentStepIndex > 0 ? (currentStepIndex / (steps.length - 1)) * 100 : 0}%` 
+                    }}
+                />
 
-                        {/* Etiqueta de texto - Minimalista */}
-                        <div className="flex flex-col">
+                {steps.map((step, index) => {
+                    const isActive = pathname === step.path;
+                    const isCompleted = currentStepIndex > index;
+
+                    const StepIndicator = (
+                        <div className="flex flex-col items-center relative z-10 group">
+                            {/* Círculo */}
+                            <div
+                                className={cn(
+                                    "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 border-2",
+                                    isCompleted
+                                        ? "bg-surface-inverse border-surface-inverse text-fg-inverse"
+                                        : isActive
+                                            ? "bg-surface-primary border-action-primary text-action-primary shadow-[0_0_0_4px_var(--color-surface-secondary)]"
+                                            : "bg-surface-primary border-border-default text-fg-muted"
+                                )}
+                            >
+                                {isCompleted ? <Check size={14} strokeWidth={3} /> : index + 1}
+                            </div>
+
+                            {/* Etiqueta */}
                             <span
                                 className={cn(
-                                    "text-[9px] uppercase tracking-[0.15em] font-bold transition-colors hidden md:block",
+                                    "absolute top-10 text-[10px] uppercase tracking-wider font-bold whitespace-nowrap transition-colors hidden sm:block",
                                     isActive || isCompleted
-                                        ? "text-[var(--color-text-primary)]"
-                                        : "text-[var(--color-text-tertiary)]"
+                                        ? "text-fg-primary"
+                                        : "text-fg-muted"
                                 )}
                             >
                                 {step.label}
                             </span>
                         </div>
+                    );
 
-                        {/* Línea divisoria (Conector) */}
-                        {index < steps.length - 1 && (
-                            <div
-                                className={cn(
-                                    "hidden md:block w-12 lg:w-20 h-[2px] mx-2 transition-all duration-700",
-                                    isCompleted
-                                        ? "bg-[var(--color-bg-inverse)]"
-                                        : "bg-[var(--color-border-subtle)]"
-                                )}
-                            />
-                        )}
-                    </div>
-                );
-
-                return (
-                    <div key={step.path} className="flex items-center">
-                        {isCompleted ? (
-                            <Link href={step.path} className="cursor-pointer hover:opacity-80 transition-opacity">
-                                {StepContent}
-                            </Link>
-                        ) : (
-                            <div className="cursor-default">
-                                {StepContent}
-                            </div>
-                        )}
-                    </div>
-                );
-            })}
+                    return (
+                        <div key={step.path}>
+                            {isCompleted ? (
+                                <Link href={step.path} className="cursor-pointer hover:opacity-80 transition-opacity block">
+                                    {StepIndicator}
+                                </Link>
+                            ) : (
+                                <div className="cursor-default block">
+                                    {StepIndicator}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+            {/* Espaciador exclusivo para diseño móvil ya que las etiquetas absolutas se ocultan */}
+            <div className="h-2 sm:hidden" />
         </nav>
     );
 }

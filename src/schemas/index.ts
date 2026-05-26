@@ -925,7 +925,7 @@ export interface Window {
 // ======= ORDER ======= //
 
 /* ============================
-   ENUMS (igual que backend)
+    ENUMS (igual que backend)
 ============================ */
 export const OrderStatus = z.enum([
     "awaiting_payment",
@@ -944,8 +944,18 @@ export const PaymentStatus = z.enum([
 ]);
 
 /* ============================
-   SUBSCHEMAS
+    SUBSCHEMAS
 ============================ */
+
+// Datos de Identificación y Contacto del Comprador (Siempre requerido)
+export const CustomerProfileSchema = z.object({
+    nombre: z.string().min(1, "El nombre es requerido"),
+    apellidos: z.string().min(1, "Los apellidos son requeridos"),
+    email: z.string().email("Ingresa un correo electrónico válido"),
+    telefono: z.string().regex(/^[0-9]{9}$/, "El teléfono debe tener 9 dígitos numéricos"),
+    tipoDocumento: z.enum(["DNI", "Pasaporte", "CE", "RUC"]),
+    numeroDocumento: z.string().min(8, "Documento de identidad inválido"),
+});
 
 // Dirección de envío
 export const ShippingAddressSchema = z.object({
@@ -955,7 +965,7 @@ export const ShippingAddressSchema = z.object({
     direccion: z.string().min(1, "La dirección es requerida"),
     numero: z.string().optional(),
     pisoDpto: z.string().optional(),
-    referencia: z.string().optional(),
+    referencia: z.string().min(1, "La referencia es requerida"),
 });
 
 // Item de la orden
@@ -970,7 +980,6 @@ export const OrderItemSchema = z.object({
 });
 
 // Product for order populated
-
 export const ProductForOrderSchema = z.object({
     _id: z.string(),
     nombre: z.string().optional(),
@@ -978,7 +987,6 @@ export const ProductForOrderSchema = z.object({
     barcode: z.string().optional(),
     imagenes: z.array(z.string().url()).optional(),
 });
-
 
 export const OrderItemPopulatedSchema = z.object({
     productId: ProductForOrderSchema.nullable(),
@@ -1003,14 +1011,14 @@ export const StatusHistorySchema = z.object({
 });
 
 /* ============================
-   ORDEN PRINCIPAL
+    ORDEN PRINCIPAL
 ============================ */
-
 
 export const OrderSchema = z.object({
     _id: z.string(),
     orderNumber: z.string(),
-    user: z.string(), // ID del usuario
+    user: z.string().optional(), // ID del usuario, ahora opcional para invitados
+    customerProfile: CustomerProfileSchema, // Agregado estáticamente
     items: z.array(OrderItemSchema),
     subtotal: z.number().nonnegative(),
     shippingCost: z.number().nonnegative(),
@@ -1025,11 +1033,11 @@ export const OrderSchema = z.object({
 });
 
 // Order populate
-
 export const OrderPopulatedSchema = z.object({
     _id: z.string(),
     orderNumber: z.string(),
-    user: UserSchema, // ID del usuario
+    user: z.lazy(() => UserSchema).nullable().optional(), // Opcional o null si es invitado
+    customerProfile: CustomerProfileSchema, // Agregado estáticamente
     items: z.array(OrderItemSchema),
     subtotal: z.number().nonnegative(),
     shippingCost: z.number().nonnegative(),
@@ -1044,7 +1052,7 @@ export const OrderPopulatedSchema = z.object({
 });
 
 /* ============================
-   REQUEST SCHEMAS
+    REQUEST SCHEMAS
 ============================ */
 
 // Crear orden
@@ -1055,6 +1063,7 @@ export const CreateOrderSchema = z.object({
     totalPrice: z.number().nonnegative(),
     currency: z.string().default("PEN"),
     shippingAddress: ShippingAddressSchema,
+    customerProfile: CustomerProfileSchema, // Se requiere pasar los datos personales del checkout unificado
     payment: PaymentInfoSchema,
 });
 
@@ -1064,7 +1073,7 @@ export const UpdateOrderStatusSchema = z.object({
 });
 
 /* ============================
-   RESPONSES DEL BACKEND
+    RESPONSES DEL BACKEND
 ============================ */
 
 // Respuesta de lista de órdenes (con paginación)
@@ -1083,10 +1092,11 @@ export const OrdersListResponseSchemaPopulate = z.object({
 });
 
 /* ============================
-   TYPESCRIPT TYPES
+    TYPESCRIPT TYPES
 ============================ */
 export type TOrderStatus = z.infer<typeof OrderStatus>;
 export type TPaymentStatus = z.infer<typeof PaymentStatus>;
+export type TCustomerProfile = z.infer<typeof CustomerProfileSchema>;
 export type TShippingAddress = z.infer<typeof ShippingAddressSchema>;
 export type TOrderItem = z.infer<typeof OrderItemSchema>;
 export type TPaymentInfo = z.infer<typeof PaymentInfoSchema>;
@@ -1096,7 +1106,6 @@ export type TCreateOrder = z.infer<typeof CreateOrderSchema>;
 export type TOrdersListResponse = z.infer<typeof OrdersListResponseSchema>;
 export type TOrderPopulated = z.infer<typeof OrderPopulatedSchema>;
 export type TOrdersListResponsePopulate = z.infer<typeof OrdersListResponseSchemaPopulate>;
-
 // ======= SALES ======= //
 
 export const SaleSourceSchema = z.enum(["ONLINE", "POS"])

@@ -1,3 +1,5 @@
+//File: frontend/components/home/product/ProductCard.tsx
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";

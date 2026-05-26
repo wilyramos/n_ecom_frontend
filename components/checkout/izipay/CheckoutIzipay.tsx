@@ -39,21 +39,21 @@ export default function CheckoutIzipay({ order }: { order: TOrderPopulated }) {
                     currency: order.currency || "PEN",
                     orderId: order._id,
                     customer: {
-                        email: order.user.email || "",
-                        reference: order.user._id || "",
+                        email: order.customerProfile.email || "",
+                        reference: order.customerProfile.numeroDocumento || "",
                         billingDetails: {
                             address: order.shippingAddress.direccion || "",
                             city: order.shippingAddress.distrito || "",
                             country: order.shippingAddress.departamento || "",
                             district: order.shippingAddress.distrito || "",
-                            phoneNumber: order.user.telefono || "",
+                            phoneNumber: order.customerProfile.telefono || "",
                         },
                         shippingDetails: {
                             address: order.shippingAddress.direccion || "",
                             city: order.shippingAddress.distrito || "",
                             country: order.shippingAddress.departamento || "",
                             district: order.shippingAddress.distrito || "",
-                            phoneNumber: order.user.telefono || "",
+                            phoneNumber: order.customerProfile.telefono || "",
                         },
                         shoppingCart: order.items.map((item) => ({
                             productId: item.productId || "",

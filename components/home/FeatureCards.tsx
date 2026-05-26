@@ -35,7 +35,7 @@ const features: Feature[] = [
 export default function FeatureCards() {
   return (
     <section className="py-2">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className=" mx-auto px-4 ">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {features.map(({ title, description, icon: Icon }) => (
             <div key={title} className="group block">

@@ -5,15 +5,16 @@ import type { TCreateOrder } from "../schemas";
 
 import type { TShippingAddress } from '../schemas';
 
+// TODO: REVISARLO URGENTEMENTE EL PROFILE CUSTOMER PROFIEL 26/05/2026
 
 
 export interface PaymentResponse extends Record<string, unknown> {
-  transaction_amount: number;
-  payment_method_id: string;
-  status: string;
-  shippingMethod?: string;
+    transaction_amount: number;
+    payment_method_id: string;
+    status: string;
+    shippingMethod?: string;
 }
- 
+
 
 export async function handlePaymentSuccess(paymentResponse: PaymentResponse, shipping?: TShippingAddress) {
 
@@ -24,7 +25,8 @@ export async function handlePaymentSuccess(paymentResponse: PaymentResponse, shi
         const { cart, clearCart } = useCartStore.getState();
 
         // 2. Preparar datos para la orden
-        const orderData : TCreateOrder = {
+        const orderData: TCreateOrder = {
+
             items: cart.map(item => ({
                 productId: item._id,
                 quantity: item.cantidad,
@@ -47,12 +49,20 @@ export async function handlePaymentSuccess(paymentResponse: PaymentResponse, shi
                 pisoDpto: shipping?.pisoDpto || '',
                 referencia: shipping?.referencia || '',
             },
-            currency: "PEN"
+            currency: "PEN",
+            customerProfile: {
+                nombre: "test",
+                email: "test@example.com",
+                apellidos: "test",
+                telefono: "123456789",
+                tipoDocumento: "DNI",
+                numeroDocumento: "12345678"
+            }
 
         };
 
         console.log("Datos de la orden:", orderData);
-    
+
 
         // 3. Crear orden en backend
         // const { order } = await createOrderAction(orderData);

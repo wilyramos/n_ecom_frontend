@@ -2,11 +2,11 @@ import Image from "next/image";
 
 export default function PaymentMethods() {
     const methods = [
-        { src: "/payments/visa.png",       alt: "Visa" },
+        { src: "/payments/visa.png", alt: "Visa" },
         { src: "/payments/mastercard.png", alt: "Mastercard" },
-        { src: "/payments/amex.png",       alt: "American Express" },
-        { src: "/payments/mp.png",         alt: "Mercado Pago" },
-        { src: "/payments/yape.png",       alt: "Yape" },
+        { src: "/payments/amex.png", alt: "American Express" },
+        { src: "/payments/mp.png", alt: "Mercado Pago" },
+        { src: "/payments/yape.svg", alt: "Yape" },
     ];
 
     return (

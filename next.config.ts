@@ -11,8 +11,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "www.neoshopimportaciones.com",
-      }
-    ]
+      },
+      {
+        protocol: "https",
+        hostname: "*.googleusercontent.com", // Acepta todos los subdominios de avatares de Google (lh3, lh4, etc.)
+      },
+    ],
   },
 
   // 2. Redirecciones SEO (Vitales para no perder tráfico)
@@ -25,7 +29,7 @@ const nextConfig: NextConfig = {
         destination: '/catalogo',
         permanent: true,
       },
-      
+
     ];
   },
 };

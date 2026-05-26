@@ -1,7 +1,6 @@
-// components/ui/ErrorMessage.tsx
-import { ExclamationTriangleIcon, InformationCircleIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { X } from "lucide-react";
+import { XCircle, AlertTriangle, CheckCircle, Info, X } from "lucide-react";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type Variant = "error" | "warning" | "success" | "info";
 type Mode    = "inline" | "banner";
@@ -11,37 +10,29 @@ interface ErrorMessageProps {
     variant?: Variant;
     mode?: Mode;
     onDismiss?: () => void;
+    className?: string;
 }
 
-const CONFIG: Record<Variant, {
-    icon: React.ElementType;
-    bg: string;
-    border: string;
-    color: string;
-}> = {
+const CONFIG = {
     error: {
-        icon:   XCircleIcon,
-        bg:     "var(--color-error-light)",
-        border: "var(--color-error)",
-        color:  "var(--color-error)",
+        icon: XCircle,
+        inline: "text-destructive",
+        banner: "bg-destructive/10 border-destructive text-destructive",
     },
     warning: {
-        icon:   ExclamationTriangleIcon,
-        bg:     "var(--color-warning-light)",
-        border: "var(--color-warning)",
-        color:  "var(--color-warning)",
+        icon: AlertTriangle,
+        inline: "text-accent-vivid",
+        banner: "bg-accent-vivid-muted border-accent-vivid text-accent-vivid",
     },
     success: {
-        icon:   CheckCircleIcon,
-        bg:     "var(--color-success-light)",
-        border: "var(--color-success)",
-        color:  "var(--color-success)",
+        icon: CheckCircle,
+        inline: "text-brand-gris",
+        banner: "bg-surface-secondary border-brand-gris text-brand-charcoal",
     },
     info: {
-        icon:   InformationCircleIcon,
-        bg:     "var(--color-action-primary-light)",
-        border: "var(--color-action-primary)",
-        color:  "var(--color-action-primary)",
+        icon: Info,
+        inline: "text-brand-charcoal",
+        banner: "bg-surface-secondary border-border-default text-brand-charcoal",
     },
 };
 
@@ -50,38 +41,40 @@ export default function ErrorMessage({
     variant  = "error",
     mode     = "inline",
     onDismiss,
+    className,
 }: ErrorMessageProps) {
-    const { icon: Icon, bg, border, color } = CONFIG[variant];
+    const config = CONFIG[variant];
+    const Icon = config.icon;
 
-    // ── Inline: pequeño, debajo de un campo ──────────────────
     if (mode === "inline") {
         return (
-            <div className="flex items-center gap-1.5 text-sm mt-1" style={{ color }}>
-                <Icon className="w-4 h-4 flex-shrink-0" />
+            <div className={cn("flex items-center gap-1 text-[11px] font-medium leading-none", config.inline, className)}>
+                <Icon className="w-3.5 h-3.5 shrink-0" />
                 <span>{children}</span>
             </div>
         );
     }
 
-    // ── Banner: bloque completo con dismiss opcional ──────────
     return (
         <div
             role="alert"
-            className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-sm"
-            style={{ background: bg, border: `1px solid ${border}`, color }}
+            className={cn(
+                "flex items-center justify-between gap-3 px-3 py-2 rounded-md border text-xs font-medium transition-all",
+                config.banner,
+                className
+            )}
         >
             <div className="flex items-center gap-2">
-                <Icon className="w-4 h-4 flex-shrink-0" />
+                <Icon className="w-4 h-4 shrink-0" />
                 <span>{children}</span>
             </div>
             {onDismiss && (
                 <button
                     onClick={onDismiss}
                     aria-label="Cerrar"
-                    className="flex-shrink-0 transition-opacity hover:opacity-60"
-                    style={{ color }}
+                    className="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
                 >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                 </button>
             )}
         </div>

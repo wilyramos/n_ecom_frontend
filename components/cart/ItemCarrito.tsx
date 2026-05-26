@@ -4,6 +4,7 @@ import { useCartStore } from "@/src/store/cartStore";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 
+
 export default function ItemCarrito({ item }: { item: CartItem }) {
     const updateQuantity = useCartStore((state) => state.updateQuantity);
     const removeFromCart = useCartStore((state) => state.removeFromCart);
@@ -20,15 +21,15 @@ export default function ItemCarrito({ item }: { item: CartItem }) {
         : null;
 
     return (
-        <div className="flex flex-col py-2 gap-2 ">
+        <div className="flex flex-col py-2 gap-2">
             {/* Nombre ocupa todo el ancho superior */}
-            <p className="text-[13px] font-medium leading-tight text-[var(--color-text-primary)]">
+            <p className="text-[13px] font-medium leading-tight text-fg-muted">
                 {item.nombre}
             </p>
 
             <div className="flex gap-3 items-center">
                 {/* Imagen */}
-                <div className="relative w-14 h-14 flex-shrink-0 overflow-hidden bg-[var(--color-bg-secondary)]">
+                <div className="relative w-14 h-14 flex-shrink-0 overflow-hidden bg-secondary rounded-sm">
                     {imageSrc ? (
                         <Image
                             src={imageSrc}
@@ -39,7 +40,7 @@ export default function ItemCarrito({ item }: { item: CartItem }) {
                             unoptimized
                         />
                     ) : (
-                        <div className="flex items-center justify-center w-full h-full text-[var(--color-text-tertiary)]">
+                        <div className="flex items-center justify-center w-full h-full text-muted-foreground">
                             <MdOutlineImageNotSupported size={16} />
                         </div>
                     )}
@@ -49,7 +50,7 @@ export default function ItemCarrito({ item }: { item: CartItem }) {
                 <div className="flex flex-col flex-1 min-w-0 gap-2">
                     {/* Atributos */}
                     {atributos && (
-                        <p className="text-[11px] text-[var(--color-text-tertiary)] -mt-1">
+                        <p className="text-[11px] text-muted-foreground -mt-1">
                             {atributos}
                         </p>
                     )}
@@ -61,24 +62,24 @@ export default function ItemCarrito({ item }: { item: CartItem }) {
                                 <button
                                     onClick={() => updateQuantity(productId, item.cantidad - 1, variantId)}
                                     disabled={item.cantidad <= 1}
-                                    className="w-5 h-5 flex items-center justify-center border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed hover:border-[var(--color-border-strong)] transition-colors"
+                                    className="w-5 h-5 flex items-center justify-center border border-border bg-background text-fg-muted disabled:opacity-30 disabled:cursor-not-allowed hover:bg-secondary transition-colors cursor-pointer rounded-2xl"
                                 >
                                     <Minus size={8} strokeWidth={2.5} />
                                 </button>
-                                <span className="text-[12px] font-medium text-[var(--color-text-primary)] tabular-nums min-w-[12px] text-center">
+                                <span className="text-[12px] font-medium text-fg-muted tabular-nums min-w-[12px] text-center">
                                     {item.cantidad}
                                 </span>
                                 <button
                                     onClick={() => updateQuantity(productId, item.cantidad + 1, variantId)}
                                     disabled={item.cantidad >= stockMax}
-                                    className="w-5 h-5 flex items-center justify-center border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] text-[var(--color-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed hover:border-[var(--color-border-strong)] transition-colors"
+                                    className="w-5 h-5 flex items-center justify-center border border-border bg-background text-fg-muted disabled:opacity-30 disabled:cursor-not-allowed hover:bg-secondary transition-colors cursor-pointer rounded-2xl"
                                 >
                                     <Plus size={8} strokeWidth={2.5} />
                                 </button>
                             </div>
                             
                             {/* Precio al costado de las cantidades */}
-                            <span className="text-[12px] font-semibold text-[var(--color-text-primary)]">
+                            <span className="text-[12px] font-semibold text-fg-muted">
                                 S/ {subtotal.toFixed(2)}
                             </span>
                         </div>
@@ -86,7 +87,7 @@ export default function ItemCarrito({ item }: { item: CartItem }) {
                         <button
                             onClick={() => removeFromCart(productId, variantId)}
                             aria-label={`Eliminar ${item.nombre}`}
-                            className="p-1 text-[var(--color-text-tertiary)] hover:text-red-500 transition-colors"
+                            className="p-1 text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                         >
                             <Trash2 size={14} strokeWidth={1.5} />
                         </button>

@@ -12,8 +12,7 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import ActiveFiltersSidebar from "./ActiveFiltersSidebar";
 import ColorCircle from "../ui/ColorCircle";
 import { LuX } from "react-icons/lu";
@@ -55,46 +54,41 @@ export default function CatalogSidebar({ filters }: Props) {
         return isNaN(min) || isNaN(max) ? null : { min, max };
     }, [searchParams]);
 
-    const [minInput, setMinInput] = useState<string>("");
-    const [maxInput, setMaxInput] = useState<string>("");
+    const [priceRangeValue, setPriceRangeValue] = useState<[number, number]>([
+        limitPrices.min,
+        limitPrices.max,
+    ]);
 
     useEffect(() => {
         if (currentPriceRange) {
-            setMinInput(currentPriceRange.min.toString());
-            setMaxInput(currentPriceRange.max.toString());
+            setPriceRangeValue([currentPriceRange.min, currentPriceRange.max]);
         } else {
-            setMinInput("");
-            setMaxInput("");
+            setPriceRangeValue([limitPrices.min, limitPrices.max]);
         }
-    }, [currentPriceRange]);
+    }, [currentPriceRange, limitPrices]);
 
     useEffect(() => {
-        const urlMin = currentPriceRange?.min;
-        const urlMax = currentPriceRange?.max;
+        const urlMin = currentPriceRange?.min ?? limitPrices.min;
+        const urlMax = currentPriceRange?.max ?? limitPrices.max;
+        const [currentMin, currentMax] = priceRangeValue;
 
-        const parsedMin = minInput === "" ? undefined : parseFloat(minInput);
-        const parsedMax = maxInput === "" ? undefined : parseFloat(maxInput);
-
-        if (parsedMin === urlMin && parsedMax === urlMax) return;
-        if (parsedMin !== undefined && parsedMax !== undefined && parsedMin > parsedMax) return;
+        if (currentMin === urlMin && currentMax === urlMax) return;
 
         const delayDebounce = setTimeout(() => {
             const newParams = new URLSearchParams(searchParams.toString());
             newParams.delete("page");
 
-            if (minInput === "" && maxInput === "") {
+            if (currentMin === limitPrices.min && currentMax === limitPrices.max) {
                 newParams.delete("priceRange");
             } else {
-                const finalMin = parsedMin ?? limitPrices.min;
-                const finalMax = parsedMax ?? limitPrices.max;
-                newParams.set("priceRange", `${finalMin}-${finalMax}`);
+                newParams.set("priceRange", `${currentMin}-${currentMax}`);
             }
 
             router.push(`${window.location.pathname}?${newParams.toString()}`, { scroll: false });
-        }, 600);
+        }, 400);
 
         return () => clearTimeout(delayDebounce);
-    }, [minInput, maxInput, limitPrices, currentPriceRange, searchParams, router]);
+    }, [priceRangeValue, limitPrices, currentPriceRange, searchParams, router]);
 
     const sortedFilters = useMemo(() => ({
         categories: [...filters.categories].sort((a, b) => a.nombre.localeCompare(b.nombre)),
@@ -104,12 +98,12 @@ export default function CatalogSidebar({ filters }: Props) {
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((attr) => ({
                 ...attr,
-                values: [...attr.values].sort((a, b) => a.localeCompare(b)),
+                values: [...attr.values].sort((a, b) => a.value.localeCompare(b.value)),
             })),
     }), [filters]);
 
     return (
-        <div className="w-full pb-12 select-none px-4  py-6 rounded-3xl">
+        <div className="w-full pb-12 select-none px-4 py-6 rounded-3xl">
             <div className="mb-6 pb-4 border-b border-border-default">
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="text-sm font-bold uppercase tracking-widest text-fg-primary">
@@ -142,31 +136,19 @@ export default function CatalogSidebar({ filters }: Props) {
                     <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                         Precio
                     </AccordionTrigger>
-                    <AccordionContent className="pt-2 pb-2 px-0">
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="space-y-1.5">
-                                <Label htmlFor="min-price" className="text-[10px] uppercase font-bold text-fg-muted tracking-wider">
-                                    Desde (S/.)
-                                </Label>
-                                <Input
-                                    id="min-price"
-                                    type="number"
-                                    placeholder={limitPrices.min.toString()}
-                                    value={minInput}
-                                    onChange={(e) => setMinInput(e.target.value)}
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <Label htmlFor="max-price" className="text-[10px] uppercase font-bold text-fg-muted tracking-wider">
-                                    Hasta (S/.)
-                                </Label>
-                                <Input
-                                    id="max-price"
-                                    type="number"
-                                    placeholder={limitPrices.max.toString()}
-                                    value={maxInput}
-                                    onChange={(e) => setMaxInput(e.target.value)}
-                                />
+                    <AccordionContent className="pt-4 pb-2 px-1">
+                        <div className="space-y-5">
+                            <Slider
+                                min={limitPrices.min}
+                                max={limitPrices.max}
+                                step={10}
+                                value={priceRangeValue}
+                                onValueChange={(val) => setPriceRangeValue(val as [number, number])}
+                                className="w-full"
+                            />
+                            <div className="flex items-center justify-between text-xs font-medium text-fg-primary">
+                                <span>S/. {priceRangeValue[0]}</span>
+                                <span>S/. {priceRangeValue[1]}</span>
                             </div>
                         </div>
                     </AccordionContent>
@@ -186,13 +168,16 @@ export default function CatalogSidebar({ filters }: Props) {
                                             key={cat.id}
                                             onClick={() => setCategory(cat.slug)}
                                             className={cn(
-                                                "px-3 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
+                                                "flex items-center justify-between px-3 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
                                                 active
                                                     ? "bg-action-primary border-action-primary text-surface-primary shadow-sm"
                                                     : "border-border-default bg-surface-primary text-fg-primary hover:border-brand-charcoal"
                                             )}
                                         >
-                                            {cat.nombre}
+                                            <span>{cat.nombre}</span>
+                                            <span className={cn("text-[10px]", active ? "text-surface-secondary opacity-90" : "text-fg-muted")}>
+                                                ({cat.count})
+                                            </span>
                                         </button>
                                     );
                                 })}
@@ -221,13 +206,18 @@ export default function CatalogSidebar({ filters }: Props) {
                                                     : "border-border-default bg-surface-primary hover:border-brand-charcoal"
                                             )}
                                         >
-                                            <span className="text-xs font-medium text-fg-primary">
-                                                {brand.nombre}
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <Checkbox
+                                                    checked={active}
+                                                    className="w-4 h-4 rounded border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
+                                                />
+                                                <span className="text-xs font-medium text-fg-primary truncate">
+                                                    {brand.nombre}
+                                                </span>
+                                            </div>
+                                            <span className="text-fg-muted text-[10px] ml-2 shrink-0">
+                                                ({brand.count})
                                             </span>
-                                            <Checkbox
-                                                checked={active}
-                                                className="w-4 h-4 rounded border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
-                                            />
                                         </div>
                                     );
                                 })}
@@ -250,15 +240,22 @@ export default function CatalogSidebar({ filters }: Props) {
                                             key={line.id}
                                             onClick={() => setLine(line.slug)}
                                             className={cn(
-                                                "flex items-center gap-3 px-3 py-2 rounded-3xl cursor-pointer transition-colors duration-150",
+                                                "flex items-center justify-between px-3 py-2 rounded-3xl cursor-pointer transition-colors duration-150",
                                                 active ? "bg-surface-secondary text-fg-primary" : "hover:bg-surface-secondary text-fg-primary"
                                             )}
                                         >
-                                            <Checkbox
-                                                checked={active}
-                                                className="w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
-                                            />
-                                            <span className="text-xs tracking-tight">{line.nombre}</span>
+                                            <div className="flex items-center gap-3 flex-1">
+                                                <Checkbox
+                                                    checked={active}
+                                                    className="w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
+                                                />
+                                                <span className="text-xs tracking-tight truncate">
+                                                    {line.nombre}
+                                                </span>
+                                            </div>
+                                            <span className="text-fg-muted text-[10px] ml-2 shrink-0">
+                                                ({line.count})
+                                            </span>
                                         </div>
                                     );
                                 })}
@@ -276,33 +273,40 @@ export default function CatalogSidebar({ filters }: Props) {
                             </AccordionTrigger>
                             <AccordionContent className="pt-3 pb-0 px-0">
                                 <div className={cn(isColorAttr ? "grid grid-cols-2 gap-2" : "flex flex-col gap-1", "max-h-[300px] overflow-y-auto pr-1")}>
-                                    {attr.values.map((val) => {
+                                    {attr.values.map((valObj) => {
+                                        const val = valObj.value;
+                                        const count = valObj.count;
                                         const isChecked = searchParams.getAll(attr.name).includes(val);
                                         return (
                                             <div
                                                 key={val}
                                                 onClick={() => updateFilter(attr.name, val)}
                                                 className={cn(
-                                                    "flex items-center gap-2.5 p-2 rounded-3xl border cursor-pointer transition-all duration-150",
-                                                    isChecked 
-                                                        ? "bg-surface-secondary border-transparent" 
+                                                    "flex items-center justify-between p-2 rounded-3xl border cursor-pointer transition-all duration-150",
+                                                    isChecked
+                                                        ? "bg-surface-secondary border-transparent"
                                                         : "border-border-default hover:border-brand-charcoal bg-surface-primary"
                                                 )}
                                             >
-                                                {isColorAttr && (
-                                                    <div className="relative flex-shrink-0 border border-brand-charcoal/10 rounded-full overflow-hidden">
-                                                        <ColorCircle color={val} size={16} />
-                                                    </div>
-                                                )}
-                                                <span className="text-[11px] capitalize truncate font-medium text-fg-primary">
-                                                    {val}
+                                                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                                    {isColorAttr && (
+                                                        <div className="relative flex-shrink-0 border border-brand-charcoal/10 rounded-full overflow-hidden">
+                                                            <ColorCircle color={val} size={16} />
+                                                        </div>
+                                                    )}
+                                                    {!isColorAttr && (
+                                                        <Checkbox
+                                                            checked={isChecked}
+                                                            className="w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
+                                                        />
+                                                    )}
+                                                    <span className="text-[11px] capitalize truncate font-medium text-fg-primary">
+                                                        {val}
+                                                    </span>
+                                                </div>
+                                                <span className="text-fg-muted text-[10px] ml-2 shrink-0">
+                                                    ({count})
                                                 </span>
-                                                {!isColorAttr && (
-                                                    <Checkbox
-                                                        checked={isChecked}
-                                                        className="ml-auto w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
-                                                    />
-                                                )}
                                             </div>
                                         );
                                     })}

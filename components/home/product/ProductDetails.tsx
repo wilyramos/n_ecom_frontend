@@ -336,7 +336,7 @@ export default function ProductDetails({ producto }: Props) {
 
 
                         {/* Consulta por WhatsApp */}
-                        <div className="grid grid-cols-[180px_1fr] items-center  bg-surface-primary gap-4">
+                        <div className="flex items-center  bg-surface-primary gap-4">
                             <span className="text-sm font-medium text-fg-muted">
                                 ¿Tienes dudas?
                             </span>

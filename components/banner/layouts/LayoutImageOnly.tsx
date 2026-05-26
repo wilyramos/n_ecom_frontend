@@ -28,15 +28,14 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
                     loop
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover
-                               transition-transform duration-[1800ms]
-                               group-hover:scale-[1.03]"
+                               transition-transform "
                 />
             ) : media?.imageUrl ? (
                 <Image
                     src={media.imageUrl}
                     alt={media.altText ?? title ?? ""}
                     fill
-                    className={`transition-transform duration-[1800ms] group-hover:scale-[1.03]
+                    className={`
                                ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                     sizes="100vw"
                     priority

@@ -1,43 +1,56 @@
-// src/store/checkoutStore.ts
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { TShippingAddress } from '../schemas';
 
+type TipoDocumento = 'DNI' | 'Pasaporte' | 'CE' | 'RUC';
 
-type tipoDocumento = 'DNI' | 'RUC' | 'CE';
-
-export type ProfileFormData = {
-    userId?: string; // Optional, will be set when the user is logged in
+export type CheckoutData = {
+    // Contacto
     nombre: string;
     apellidos: string;
-    tipoDocumento: tipoDocumento;
-    numeroDocumento: string;
     email: string;
     telefono: string;
+    tipoDocumento: TipoDocumento;
+    numeroDocumento: string;
+    // Envío
+    departamento: string;
+    provincia: string;
+    distrito: string;
+    direccion: string;
+    numero?: string;
+    pisoDpto?: string;
+    referencia: string;
 }
-
 
 interface CheckoutState {
-    profile: ProfileFormData | null;
-    shipping: TShippingAddress | null;
-
-    setProfile: (data: ProfileFormData) => void;
-    setShipping: (data: TShippingAddress) => void;
-
+    data: CheckoutData | null;
+    setData: (data: CheckoutData) => void;
     clearCheckout: () => void;
+    // Compatibilidad con código existente
+    profile: CheckoutData | null;
+    shipping: TShippingAddress | null;
 }
 
-export const useCheckoutStore = create<CheckoutState>()(devtools(persist((set) => ({
+export const useCheckoutStore = create<CheckoutState>()(devtools(persist((set, ) => ({
+    data: null,
     profile: null,
     shipping: null,
 
-    setProfile: (data) => set({ profile: data }),
-    setShipping: (data) => set({ shipping: data }),
+    setData: (data) => set({
+        data,
+        profile: data,
+        shipping: {
+            departamento: data.departamento,
+            provincia: data.provincia,
+            distrito: data.distrito,
+            direccion: data.direccion,
+            numero: data.numero,
+            pisoDpto: data.pisoDpto,
+            referencia: data.referencia,
+        }
+    }),
 
-    clearCheckout: () => set({ profile: null, shipping: null }),
-
-}),
-    {
-        name: 'checkout-storage_ecom', // unique store in localStorage
-    }
-)));
+    clearCheckout: () => set({ data: null, profile: null, shipping: null }),
+}), {
+    name: 'checkout-storage_ecom',
+})));

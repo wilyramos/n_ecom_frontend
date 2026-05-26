@@ -1,3 +1,5 @@
+//File: frontend/components/checkout/mercadopago/CheckoutYape.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -39,7 +41,7 @@ export default function CheckoutYape({ order }: { order: TOrderPopulated }) {
 
     const orderId = order._id;
     const totalAmount = order.totalPrice;
-    const payerEmail = order.user.email;
+    const payerEmail = order.customerProfile.email;
 
     const publicKey = process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY;
 

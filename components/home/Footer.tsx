@@ -8,19 +8,17 @@ import { routes } from "@/lib/routes";
 const navigation = {
     tienda: [
         { label: "Explorar catálogo", href: routes.catalog() },
-        { label: "Novedades", href: "/novedades" },
-        { label: "Ofertas exclusivas", href: "/ofertas" },
         { label: "Iphones", href: "/catalogo/iphone" },
     ],
     soporte: [
         { label: "Centro de ayuda", href: "/hc/contacto-y-soporte" },
         { label: "Garantías", href: "/hc/garantias-y-devoluciones" },
-        { label: "Soporte técnico", href: "/hc/soporte-tecnico" },
         { label: "Preguntas frecuentes", href: "/hc/preguntas-frecuentes" },
     ],
     legal: [
         { label: "Política de privacidad", href: "/hc/politicas-de-privacidad" },
         { label: "Términos y condiciones", href: "/terminos" },
+        { label: "Política de cambios y devoluciones", href: "/cambios-devoluciones" },
     ],
 };
 

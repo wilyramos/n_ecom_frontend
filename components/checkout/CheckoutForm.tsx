@@ -454,13 +454,13 @@ export default function CheckoutForm({ user }: Props) {
                     /* CAMPO INFORMATIVO FIJO - RECOJO EN TIENDA */
                     <div className="p-4 rounded-xl border border-border-default bg-surface-secondary/40 space-y-2">
                         <div className="flex justify-between items-center">
-                            <p className="text-sm font-bold text-fg-primary">Lima - Jockey Plaza Hall</p>
+                            <p className="text-sm font-bold text-fg-primary">Lima - Santiago de surco</p>
                             <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-vivid-muted  border border-accent-vivid/20">
                                 Entrega Gratis
                             </span>
                         </div>
                         <p className="text-xs font-medium text-fg-muted leading-relaxed max-w-md">
-                            Jockey Plaza Nuevo Hall, Lima 15023, PE-LMA, Perú
+                            Av caminos del inca 257, piso 3, Tda 326. Horario de atención: Lun-Dom 10am-10pm.
                         </p>
                         <p className="text-[11px]  font-semibold pt-1">
                             &bull; Listo para recoger despues de realizar el pago.

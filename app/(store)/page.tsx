@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     ...globalMetadata,
     title: {
         default: "Neoshop importaciones",
-        template: "%s / home",
+        template: "%s / Neoshop importaciones",
     },
     description:
         "Neoshop es tu tienda de productos apple en Perú. Encuentra iPhones, accesorios y tecnología de calidad a precios competitivos. ¡Visítanos y descubre lo mejor!",

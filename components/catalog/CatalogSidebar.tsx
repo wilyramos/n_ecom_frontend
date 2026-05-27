@@ -130,7 +130,7 @@ export default function CatalogSidebar({ filters }: Props) {
             <Accordion
                 type="multiple"
                 className="w-full space-y-3"
-                defaultValue={["item-price", "item-categories", "item-brands", "item-lines"]}
+                defaultValue={["item-price", "item-categories", "item-brands", "item-lines", "item-atributos"]} //abrir todos por defecto, se puede ajustar según preferencias
             >
                 <AccordionItem value="item-price" className="border-0">
                     <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">

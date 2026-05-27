@@ -90,17 +90,65 @@ export default function CatalogSidebar({ filters }: Props) {
         return () => clearTimeout(delayDebounce);
     }, [priceRangeValue, limitPrices, currentPriceRange, searchParams, router]);
 
-    const sortedFilters = useMemo(() => ({
-        categories: [...filters.categories].sort((a, b) => a.nombre.localeCompare(b.nombre)),
-        brands: [...filters.brands].sort((a, b) => a.nombre.localeCompare(b.nombre)),
-        lines: [...filters.lines].sort((a, b) => a.nombre.localeCompare(b.nombre)),
-        atributos: [...filters.atributos]
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((attr) => ({
-                ...attr,
-                values: [...attr.values].sort((a, b) => a.value.localeCompare(b.value)),
-            })),
-    }), [filters]);
+    // Función helper para convertir strings de almacenamiento a valores numéricos comparables (en GB)
+    const sortedFilters = useMemo(() => {
+        // Helper interno para estandarizar y convertir a GB numéricos
+        const parseStorageToValue = (valueStr: string): number => {
+            const cleanStr = valueStr.toLowerCase().replace(/\s+/g, "");
+            const match = cleanStr.match(/^(\d+(?:\.\d+)?)(gb|tb|mb)$/);
+
+            if (!match) return 0;
+
+            const num = parseFloat(match[1]);
+            const unit = match[2];
+
+            switch (unit) {
+                case "tb": return num * 1024;
+                case "gb": return num;
+                case "mb": return num / 1024;
+                default: return num;
+            }
+        };
+
+        return {
+            categories: [...filters.categories].sort((a, b) => a.nombre.localeCompare(b.nombre)),
+            brands: [...filters.brands].sort((a, b) => a.nombre.localeCompare(b.nombre)),
+            lines: [...filters.lines].sort((a, b) => a.nombre.localeCompare(b.nombre)),
+            atributos: [...filters.atributos]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((attr) => {
+                    const isStorageAttribute =
+                        attr.name.toLowerCase().includes("almacenamiento") ||
+                        attr.name.toLowerCase().includes("capacidad") ||
+                        attr.name.toLowerCase().includes("memoria");
+
+                    const sortedValues = [...attr.values].sort((a, b) => {
+                        if (isStorageAttribute) {
+                            const valA = parseStorageToValue(a.value);
+                            const valB = parseStorageToValue(b.value);
+
+                            if (valA !== 0 || valB !== 0) {
+                                return valA - valB; // Orden numérico real basado en GB
+                            }
+                        }
+                        return a.value.localeCompare(b.value);
+                    });
+
+                    return {
+                        ...attr,
+                        values: sortedValues,
+                    };
+                }),
+        };
+    }, [filters]);
+
+    const defaultExpanded = useMemo(() => [
+        "item-price",
+        "item-categories",
+        "item-brands",
+        "item-lines",
+        ...sortedFilters.atributos.map((_, idx) => `attr-${idx}`)
+    ], [sortedFilters]);
 
     return (
         <div className="w-full pb-12 select-none px-4 py-6 rounded-3xl">
@@ -130,7 +178,7 @@ export default function CatalogSidebar({ filters }: Props) {
             <Accordion
                 type="multiple"
                 className="w-full space-y-3"
-                defaultValue={["item-price", "item-categories", "item-brands", "item-lines", "item-atributos"]} //abrir todos por defecto, se puede ajustar según preferencias
+                defaultValue={defaultExpanded}
             >
                 <AccordionItem value="item-price" className="border-0">
                     <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
@@ -209,7 +257,6 @@ export default function CatalogSidebar({ filters }: Props) {
                                             <div className="flex items-center gap-2 flex-1">
                                                 <Checkbox
                                                     checked={active}
-                                                    className="w-4 h-4 rounded border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
                                                 />
                                                 <span className="text-xs font-medium text-fg-primary truncate">
                                                     {brand.nombre}
@@ -247,7 +294,6 @@ export default function CatalogSidebar({ filters }: Props) {
                                             <div className="flex items-center gap-3 flex-1">
                                                 <Checkbox
                                                     checked={active}
-                                                    className="w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
                                                 />
                                                 <span className="text-xs tracking-tight truncate">
                                                     {line.nombre}
@@ -297,7 +343,6 @@ export default function CatalogSidebar({ filters }: Props) {
                                                     {!isColorAttr && (
                                                         <Checkbox
                                                             checked={isChecked}
-                                                            className="w-3.5 h-3.5 rounded-sm border-border-default data-[state=checked]:bg-action-primary data-[state=checked]:border-action-primary"
                                                         />
                                                     )}
                                                     <span className="text-[11px] capitalize truncate font-medium text-fg-primary">

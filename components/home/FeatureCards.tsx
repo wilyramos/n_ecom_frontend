@@ -34,22 +34,22 @@ const features: Feature[] = [
 
 export default function FeatureCards() {
   return (
-    <section className="py-2">
-      <div className=" mx-auto px-4 ">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <section className="py-2 w-full">
+      <div className="w-full px-2 md:px-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3 w-full">
           {features.map(({ title, description, icon: Icon }) => (
-            <div key={title} className="group block">
-              <Card className="h-full min-h-[60px] flex flex-row items-center justify-center gap-2 p-1 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-lg shadow-none item">
-                <div className="flex-shrink-0 inline-flex text-fg-primary/80 group-hover:text-action-primary transition-colors">
+            <div key={title} className="group block w-full">
+              <Card className="w-full h-full flex flex-row items-center justify-center gap-3 px-2 py-3 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-lg shadow-none">
+                <div className="flex-shrink-0 text-fg-primary/80 group-hover:text-action-primary transition-colors">
                   <Icon size={24} strokeWidth={1.5} />
                 </div>
 
-                <div className="flex flex-col gap-0.5 overflow-hidden">
-                  <CardTitle className="text-[10px] md:text-[14px] font-bold uppercase  text-fg-primary">
+                <div className="flex flex-col gap-0.5 overflow-hidden text-left">
+                  <CardTitle className="text-[10px] md:text-[12px] font-bold uppercase text-fg-primary truncate">
                     {title}
                   </CardTitle>
 
-                  <CardDescription className="text-[10px] md:text-[12px] text-fg-primary/60 font-medium leading-tight line-clamp-2">
+                  <CardDescription className="text-[10px] md:text-[11px] text-fg-primary/60 font-medium leading-tight truncate md:whitespace-normal md:line-clamp-2">
                     {description}
                   </CardDescription>
                 </div>

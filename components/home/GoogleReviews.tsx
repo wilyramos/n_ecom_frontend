@@ -204,7 +204,7 @@ function ReviewCard({
                             className="text-fg-muted hover:text-fg-primary transition-colors"
                             aria-label={`Ver reseña de ${review.name} en Google`}
                         >
-                            <ExternalLink size={13} />
+                            <ExternalLink size={13}  className="text-gray-200"/>
                         </a>
                     )}
                 </div>
@@ -229,7 +229,7 @@ export default function GoogleReviews() {
     };
 
     return (
-        <section className="w-full max-w-7xl mx-auto relative pt-16 pb-8 px-4 md:px-8 bg-surface-primary">
+        <section className="w-full max-w-7xl mx-auto relative pt-12 pb-6 px-4 md:px-8 ">
             <Carousel
                 responsive={responsive}
                 infinite

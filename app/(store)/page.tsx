@@ -88,17 +88,17 @@ export default function HomePage() {
             <section>
                 <ProductosDestacados />
             </section>
-
+ {/* 
             <section>
-                {/* <ProductosNuevos /> */}
+               <ProductosNuevos /> 
             </section>
 
 
             <section className="my-5">
-                {/* <BrandsList /> */}
-            </section>
+                {/* <BrandsList /> 
+            </section>*/}
 
-            <section>
+            <section className= "py-5">
                 <GoogleReviews />
             </section>
 

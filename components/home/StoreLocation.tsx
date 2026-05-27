@@ -116,13 +116,13 @@ export default function StoreLocation() {
                     </div>
                 </div>
 
-                <div className="  mt-4 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-xl md:text-2xl font-bold text-fg-primary/60 text-center md:text-left">
+                <div className="  mt-4 flex flex-row items-center justify-between gap-6">
+                    <p className="text-base md:text-2xl font-bold text-fg-primary/60 text-center md:text-left">
                         Autorizado por:
                     </p>
 
                     <div className="flex items-center gap-10">
-                        <div className="relative h-10 w-24 md:w-32">
+                        <div className="relative h-10 w-18 md:w-32">
                             <Image
                                 src="/osiptel.png"
                                 alt="Osiptel"
@@ -130,7 +130,7 @@ export default function StoreLocation() {
                                 className="object-contain"
                             />
                         </div>
-                        <div className="relative h-10 w-24 md:w-32">
+                        <div className="relative h-10 w-18 md:w-32">
                             <Image
                                 src="/mtc.png"
                                 alt="MTC"

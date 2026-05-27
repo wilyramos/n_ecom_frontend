@@ -1,3 +1,4 @@
+/* File: frontend/app/(pos-v3)/cash-shift/CashOpeningModal.tsx */
 "use client";
 
 import React, { useState, useActionState, useEffect } from "react";
@@ -24,13 +25,20 @@ interface Props {
 
 export const CashOpeningModal = ({ userId, onClose }: Props) => {
     const [balance, setBalance] = useState<string>("0");
-    const { setOpen, toggleModal } = useCashStore();
+    const { setOpen, toggleModal, isModalOpen } = useCashStore();
     const router = useRouter();
 
     const [state, formAction, isPending] = useActionState(openCashAction, {
         success: false,
         message: "",
     });
+
+    // Sincronizar el modal con el store al montar si la terminal está bloqueada
+    useEffect(() => {
+        if (userId) {
+            toggleModal(true);
+        }
+    }, [userId, toggleModal]);
 
     useEffect(() => {
         if (state.success && state.data) {
@@ -45,8 +53,15 @@ export const CashOpeningModal = ({ userId, onClose }: Props) => {
 
     if (!userId) return null;
 
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            toggleModal(false);
+            onClose?.();
+        }
+    };
+
     return (
-        <Dialog open={true} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
+        <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
             <DialogContent className="bg-[var(--color-surface-primary)] border-[var(--color-border-default)] shadow-xl">
                 <DialogHeader className="text-left mb-4">
                     <DialogTitle className="text-xl font-black uppercase tracking-tighter text-[var(--color-fg-primary)]">

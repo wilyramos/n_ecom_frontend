@@ -1,3 +1,5 @@
+//File: src/store/useCashStore.ts
+
 import { create } from 'zustand';
 
 interface CashState {

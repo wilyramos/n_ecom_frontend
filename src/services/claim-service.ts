@@ -1,110 +1,118 @@
-// File: src/services/claim.service.ts
+// File: frontend/src/services/claim-service.ts
+import { Claim, ClaimFormValues, ClaimTrackingValues } from "../schemas/claim.schema";
+import { getTokenOptional, verifySession } from "../auth/dal";
 
-import {
-    CreateClaimInput,
-    CreateClaimResponseSchema,
-    GetAllClaimsResponseSchema,
-    GetClaimByCorrelativoResponseSchema,
-    UpdateResolutionInput,
-    UpdateResolutionResponseSchema,
-    type Claim,
-} from "@/src/schemas/claim.schema";
+const API_URL = process.env.API_URL;
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+export class ClaimService {
+    /**
+     * Envío público de un reclamo/queja
+     */
+    static async createPublicClaim(data: ClaimFormValues): Promise<{ success: boolean; data?: Claim; error?: string }> {
+        try {
+            const res = await fetch(`${API_URL}/claims`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+            });
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+            const json = await res.json();
+            if (!res.ok) return { success: false, error: json.message || "Error al registrar el reclamo" };
 
-type ServiceResult<T> =
-    | { success: true;  data: T }
-    | { success: false; error: string };
-
-function extractErrorMessage(json: unknown, status: number): string {
-    if (
-        json !== null &&
-        typeof json === "object" &&
-        "message" in json &&
-        typeof (json as { message: unknown }).message === "string"
-    ) {
-        return (json as { message: string }).message;
-    }
-    return `Error ${status}`;
-}
-
-async function parseResponse<T>(
-    res: Response,
-    parse: (json: unknown) => T
-): Promise<ServiceResult<T>> {
-    const json: unknown = await res.json().catch(() => null);
-
-    if (!res.ok) {
-        return { success: false, error: extractErrorMessage(json, res.status) };
-    }
-
-    try {
-        return { success: true, data: parse(json) };
-    } catch {
-        return { success: false, error: "Respuesta inesperada del servidor." };
-    }
-}
-
-// ── Métodos públicos ───────────────────────────────────────────────────────────
-
-export async function createClaim(input: CreateClaimInput) {
-    const res = await fetch(`${API_URL}/claims`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(input),
-    });
-
-    return parseResponse(res, (json) =>
-        CreateClaimResponseSchema.parse(json).data
-    );
-}
-
-export async function getClaimByCorrelativo(
-    correlativo: string
-): Promise<ServiceResult<Claim>> {
-    const res = await fetch(
-        `${API_URL}/claims/track/${encodeURIComponent(correlativo)}`,
-        { cache: "no-store" }
-    );
-
-    return parseResponse(res, (json) =>
-        GetClaimByCorrelativoResponseSchema.parse(json).data
-    );
-}
-
-// ── Métodos administrativos (requieren token) ──────────────────────────────────
-
-export async function getAllClaims(token: string): Promise<ServiceResult<Claim[]>> {
-    const res = await fetch(`${API_URL}/claims`, {
-        headers: { Authorization: `Bearer ${token}` },
-        cache:   "no-store",
-    });
-
-    return parseResponse(res, (json) =>
-        GetAllClaimsResponseSchema.parse(json).data
-    );
-}
-
-export async function updateClaimResolution(
-    correlativo: string,
-    input: UpdateResolutionInput,
-    token: string
-) {
-    const res = await fetch(
-        `${API_URL}/claims/${encodeURIComponent(correlativo)}/resolution`,
-        {
-            method:  "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization:  `Bearer ${token}`,
-            },
-            body: JSON.stringify(input),
+            return { success: true, data: json.data };
+        } catch (error) {
+            console.error("Error en createPublicClaim:", error);
+            return { success: false, error: "Error de red o servidor no disponible" };
         }
-    );
+    }
 
-    return parseResponse(res, (json) =>
-        UpdateResolutionResponseSchema.parse(json).data
-    );
+    /**
+     * Consulta pública del estado de un reclamo mediante credenciales
+     */
+    static async trackClaim(credentials: ClaimTrackingValues): Promise<{ success: boolean; data?: Partial<Claim>; error?: string }> {
+        try {
+            const params = new URLSearchParams({
+                correlativo: credentials.correlativo,
+                numeroDocumento: credentials.numeroDocumento
+            });
+
+            const res = await fetch(`${API_URL}/claims/track?${params.toString()}`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+                next: { revalidate: 0 } // No almacenar en caché consultas de tracking dinámicas
+            });
+
+            const json = await res.json();
+            if (!res.ok) return { success: false, error: json.message || "No se encontró el reclamo" };
+
+            return { success: true, data: json.data };
+        } catch (error) {
+            console.error("Error en trackClaim:", error);
+            return { success: false, error: "Error de comunicación con el servidor" };
+        }
+    }
+
+    /**
+     * [ADMIN] Obtiene todos los reclamos con paginación y filtros
+     */
+    static async getAllAdminClaims(filters: { estado?: string; search?: string; page?: number; limit?: number } = {}) {
+        const session = await verifySession(); // Protege a nivel de servicio de datos
+        
+        const params = new URLSearchParams();
+        if (filters.estado) params.append("estado", filters.estado);
+        if (filters.search) params.append("search", filters.search);
+        if (filters.page) params.append("page", String(filters.page));
+        if (filters.limit) params.append("limit", String(filters.limit));
+
+        const res = await fetch(`${API_URL}/claims?${params.toString()}`, {
+            headers: { "Authorization": `Bearer ${session.token}` },
+            next: { tags: ["admin-claims"] } // Tag para revalidación bajo demanda
+        });
+
+        if (!res.ok) throw new Error("Error al recuperar las reclamaciones del servidor");
+        return res.json();
+    }
+
+    /**
+     * [ADMIN] Obtiene el detalle exhaustivo por ID
+     */
+    static async getClaimById(id: string): Promise<Claim> {
+        const session = await verifySession();
+        
+        const res = await fetch(`${API_URL}/claims/${id}`, {
+            headers: { "Authorization": `Bearer ${session.token}` },
+            next: { tags: [`claim-${id}`] }
+        });
+
+        if (!res.ok) throw new Error("No se pudo obtener el detalle del reclamo");
+        const json = await res.json();
+        return json.data;
+    }
+
+    /**
+     * [ADMIN] Resuelve o cambia de estado una incidencia
+     */
+    static async resolveClaim(id: string, update: { respuestaProveedor: string; estado: "En Proceso" | "Resuelto" }) {
+        const token = await getTokenOptional();
+        if (!token) return { success: false, error: "Sesión administrativa inválida o expirada" };
+
+        try {
+            const res = await fetch(`${API_URL}/claims/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(update)
+            });
+
+            const json = await res.json();
+            if (!res.ok) return { success: false, error: json.message || "Error al actualizar la resolución" };
+
+            return { success: true, data: json.data };
+        } catch (error) {
+            console.error("Error en resolveClaim:", error);
+            return { success: false, error: "Error de red crítico" };
+        }
+    }
 }

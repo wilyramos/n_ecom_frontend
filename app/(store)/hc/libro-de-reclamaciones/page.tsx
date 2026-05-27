@@ -1,54 +1,67 @@
-// File: frontend/app/(store)/hc/libro-de-reclamaciones/page.tsx
-
+// File: app/%28store%29/hc/libro-de-reclamaciones/page.tsx
 import { Metadata } from "next";
-import Link from "next/link";
-import ClaimForm from "@/components/claim/claimform";
+import ClaimForm from "@/components/claim/ClaimForm";
 
 export const metadata: Metadata = {
-    title: "Libro de Reclamaciones | neoshop",
-    description: "Formulario de Libro de Reclamaciones virtual de neoshop.",
+    title: "Libro de Reclamaciones Virtual",
+    description:
+        "Conforme a lo establecido en la Ley N.° 29571 - Código de Protección y Defensa del Consumidor y el D.S. N.° 011-2011-PCM, ponemos a su disposición nuestro Libro de Reclamaciones Virtual.",
 };
 
 export default function LibroReclamacionesPage() {
     return (
-        <div className="max-w-4xl mx-auto py-8 px-4">
-            <nav className="text-sm text-gray-500 mb-6">
-                <Link href="/" className="hover:underline">Home</Link>
-                {" > "}
-                <span>Libro de reclamaciones</span>
-            </nav>
+        <main className="container mx-auto max-w-4xl px-4 py-8">
+            <header className="mb-8 border-b pb-4 text-center">
+                <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                    Libro de Reclamaciones Virtual
+                </h1>
 
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                Libro de Reclamaciones
-            </h1>
+                <p className="mt-2 text-sm text-gray-600">
+                    Conforme a la Ley N.° 29571 – Código de Protección y Defensa
+                    del Consumidor y al Reglamento del Libro de Reclamaciones
+                    aprobado mediante D.S. N.° 011-2011-PCM.
+                </p>
 
-            <p className="text-gray-700 mb-8">
-                Ponemos a su disposición el presente formulario, a través del cual podrá
-                expresar su INSATISFACCIÓN O DISCONFORMIDAD RESPECTO DE LA ATENCIÓN RECIBIDA
-                EN <strong>neoshop</strong> en el ejercicio de su función administrativa:
-            </p>
+                <div className="mt-6 rounded-lg border bg-gray-50 p-4 text-left text-sm text-gray-700 space-y-3">
+                    <p>
+                        Este establecimiento cuenta con un Libro de
+                        Reclamaciones Virtual a disposición de los consumidores,
+                        donde podrá registrar sus reclamos o quejas respecto a
+                        los productos o servicios ofrecidos.
+                    </p>
 
-            {/* Client Component: maneja useActionState internamente */}
+                    <p>
+                        <strong>Reclamo:</strong> Disconformidad relacionada con
+                        los productos o servicios.
+                    </p>
+
+                    <p>
+                        <strong>Queja:</strong> Disconformidad no relacionada a
+                        los productos o servicios; o malestar respecto a la
+                        atención al público.
+                    </p>
+
+                    <p>
+                        La formulación del reclamo o queja no impide acudir a
+                        otras vías de solución de controversias ni constituye
+                        una denuncia ante el INDECOPI.
+                    </p>
+
+                    <p>
+                        El proveedor deberá brindar respuesta al reclamo o
+                        queja en un plazo máximo de quince (15) días hábiles,
+                        improrrogables, conforme a la normativa vigente.
+                    </p>
+
+                    <p>
+                        El tratamiento de los datos personales proporcionados se
+                        realizará conforme a la Ley N.° 29733 – Ley de
+                        Protección de Datos Personales.
+                    </p>
+                </div>
+            </header>
+
             <ClaimForm />
-
-            <div className="mt-12 text-sm text-gray-600 space-y-4 border-t pt-6">
-                <p>
-                    <strong>RECLAMO:</strong> Disconformidad relacionada con los productos o servicios.
-                </p>
-                <p>
-                    <strong>QUEJA:</strong> Disconformidad no relacionada a los productos o servicios;
-                    o, malestar o descontento respecto a la atención al público.
-                </p>
-                <p>
-                    La formulación del reclamo no impide acudir a otras vías de solución de
-                    controversias ni es requisito previo para interponer una denuncia ante INDECOPI.
-                </p>
-                <p>
-                    El proveedor deberá dar respuesta al reclamo en un plazo no mayor a{" "}
-                    <strong>quince (15) días hábiles</strong> improrrogables, conforme a la
-                    normativa vigente de INDECOPI (Ley N° 31435).
-                </p>
-            </div>
-        </div>
+        </main>
     );
 }

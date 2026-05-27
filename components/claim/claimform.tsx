@@ -1,320 +1,299 @@
+// File: app/%28store%29/hc/libro-de-reclamaciones/components/ClaimForm.tsx
 "use client";
 
-// File: frontend/components/claim/claimform.tsx
+import { useActionState, useEffect, useRef } from "react";
+import { createClaimAction, ActionState } from "@/actions/claim-action";
+import { Claim } from "@/src/schemas/claim.schema";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import { Textarea } from "@/components/ui/textarea";
 
-import { useActionState } from "react";
-import { submitClaimAction, type ActionResult } from "@/actions/claim-action";
-import { FiCheckCircle, FiAlertTriangle, FiInfo, FiLoader } from "react-icons/fi";
-
-const initialState: ActionResult<{ correlativo: string; createdAt: string }> | null = null;
-
-// ── Helper ─────────────────────────────────────────────────────────────────────
-
-function FieldError({ errors }: { errors?: string[] }) {
-    if (!errors?.length) return null;
-    return <p className="mt-1 text-xs text-destructive">{errors[0]}</p>;
-}
-
-function inputClass(hasError: boolean) {
-    return [
-        "w-full border rounded-md px-3 py-2 text-sm transition-colors",
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        "bg-background text-foreground",
-        hasError 
-            ? "border-destructive bg-destructive/5 text-destructive" 
-            : "border-border",
-    ].join(" ");
-}
-
-// ── Componente ─────────────────────────────────────────────────────────────────
+const initialState: ActionState<Claim> = {
+    success: false,
+    errors: {},
+    message: ""
+};
 
 export default function ClaimForm() {
-    const [state, action, isPending] = useActionState(submitClaimAction, initialState);
+    const [state, formAction, isPending] = useActionState(createClaimAction, initialState);
+    const formRef = useRef<HTMLFormElement>(null);
 
-    // Éxito: mostrar confirmación en lugar del formulario
-    if (state?.success) {
-        return (
-            <div className="bg-accent-vivid-muted border border-accent-vivid/30 rounded-lg p-8 text-center space-y-3">
-                <div className="flex justify-center text-4xl text-accent-vivid">
-                    <FiCheckCircle />
-                </div>
-                <h2 className="text-xl font-semibold text-foreground">
-                    Reclamación registrada
-                </h2>
-                <p className="text-muted-foreground text-sm">
-                    Tu reclamo ha sido registrado exitosamente.
-                </p>
-                <p className="text-sm text-foreground">
-                    Número de correlativo:{" "}
-                    <strong className="font-mono text-primary">
-                        {state.data.correlativo}
-                    </strong>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                    Guarda este número para hacer seguimiento de tu reclamo.
-                    La respuesta será enviada a tu correo electrónico.
-                </p>
-            </div>
-        );
-    }
-
-    const fe = state?.success === false ? (state.fieldErrors ?? {}) : {};
+    useEffect(() => {
+        if (state.success && state.data) {
+            formRef.current?.reset();
+        }
+    }, [state.success, state.data]);
 
     return (
-        <form action={action} className="space-y-6">
-
-            {/* Error general del servidor */}
-            {state?.success === false && !state.fieldErrors && (
-                <div className="bg-destructive/10 border border-destructive text-destructive text-sm px-4 py-3 rounded-md flex items-center gap-2">
-                    <FiAlertTriangle className="shrink-0" />
-                    <span>{state.error}</span>
+        <div className="rounded-xl border bg-white p-6 shadow-sm">
+            {state.message && (
+                <div className="mb-6">
+                    <ErrorMessage
+                        variant={state.success ? "success" : "error"}
+                        mode="banner"
+                    >
+                        <div className="flex flex-col gap-0.5">
+                            <span className="font-semibold">{state.message}</span>
+                            {state.success && state.data && (
+                                <span className="font-mono text-xs opacity-90">Código de Seguimiento: {state.data.correlativo}</span>
+                            )}
+                        </div>
+                    </ErrorMessage>
                 </div>
             )}
 
-            {/* ── Sección 1: Consumidor ──────────────────────────────────────── */}
-            <section className="bg-muted/40 p-6 rounded-lg border border-border space-y-4">
-                <h2 className="text-xl font-semibold border-b border-border pb-2 text-foreground">
-                    1. Identificación del Consumidor
-                </h2> 
+            <form ref={formRef} action={formAction} className="space-y-8">
+                {/* SECCIÓN 1: DATOS DEL CONSUMIDOR */}
+                <fieldset className="space-y-4" disabled={isPending}>
+                    <legend className="text-lg font-semibold text-gray-900 border-b pb-2 w-full mb-2">
+                        1. Identificación del Consumidor Reclamante
+                    </legend>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="consumer.tipoDocumento">Tipo de Documento</Label>
+                            <Select
+                                key={state.payload?.consumer?.tipoDocumento}
+                                name="consumer.tipoDocumento"
+                                defaultValue={state.payload?.consumer?.tipoDocumento || "DNI"}
+                            >
+                                <SelectTrigger id="consumer.tipoDocumento">
+                                    <SelectValue placeholder="Seleccione" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="DNI">DNI</SelectItem>
+                                    <SelectItem value="CE">Carné Extranjería (CE)</SelectItem>
+                                    <SelectItem value="RUC">RUC</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {state.errors?.["consumer.tipoDocumento"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["consumer.tipoDocumento"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
 
-                    <div className="md:col-span-2">
-                        <label htmlFor="nombres" className="block text-sm font-medium text-foreground mb-1">
-                            Nombre y Apellidos <span className="text-destructive">*</span>
-                        </label>
-                        <input
+                        <div className="sm:col-span-2 space-y-1.5">
+                            <Label htmlFor="consumer.numeroDocumento">Número de Documento</Label>
+                            <Input
+                                id="consumer.numeroDocumento"
+                                type="text"
+                                name="consumer.numeroDocumento"
+                                placeholder="Ingrese el número de identidad"
+                                defaultValue={state.payload?.consumer?.numeroDocumento || ""}
+                            />
+                            {state.errors?.["consumer.numeroDocumento"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["consumer.numeroDocumento"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                        <Label htmlFor="consumer.nombres">Nombres Completos / Razón Social</Label>
+                        <Input
+                            id="consumer.nombres"
                             type="text"
-                            id="nombres"
-                            name="nombres"
-                            autoComplete="name"
-                            disabled={isPending}
-                            className={inputClass(!!fe.nombres)}
+                            name="consumer.nombres"
+                            placeholder="Ej: Juan Pérez"
+                            defaultValue={state.payload?.consumer?.nombres || ""}
                         />
-                        <FieldError errors={fe.nombres} />
+                        {state.errors?.["consumer.nombres"] && (
+                            <ErrorMessage variant="error" mode="inline">
+                                {state.errors["consumer.nombres"][0]}
+                            </ErrorMessage>
+                        )}
                     </div>
 
-                    <div>
-                        <label htmlFor="tipoDocumento" className="block text-sm font-medium text-foreground mb-1">
-                            Tipo de documento <span className="text-destructive">*</span>
-                        </label>
-                        <select
-                            id="tipoDocumento"
-                            name="tipoDocumento"
-                            disabled={isPending}
-                            defaultValue=""
-                            className={inputClass(!!fe.tipoDocumento)}
-                        >
-                            <option value="" disabled className="bg-background text-muted-foreground">Seleccione</option>
-                            <option value="DNI" className="bg-background text-foreground">DNI</option>
-                            <option value="CE" className="bg-background text-foreground">CE</option>
-                            <option value="RUC" className="bg-background text-foreground">RUC</option>
-                        </select>
-                        <FieldError errors={fe.tipoDocumento} />
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="consumer.celular">Teléfono / Celular</Label>
+                            <Input
+                                id="consumer.celular"
+                                type="tel"
+                                name="consumer.celular"
+                                placeholder="Ej: 987654321"
+                                defaultValue={state.payload?.consumer?.celular || ""}
+                            />
+                            {state.errors?.["consumer.celular"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["consumer.celular"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="consumer.email">E-mail</Label>
+                            <Input
+                                id="consumer.email"
+                                type="email"
+                                name="consumer.email"
+                                placeholder="usuario@correo.com"
+                                defaultValue={state.payload?.consumer?.email || ""}
+                            />
+                            {state.errors?.["consumer.email"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["consumer.email"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
                     </div>
 
-                    <div>
-                        <label htmlFor="numeroDocumento" className="block text-sm font-medium text-foreground mb-1">
-                            Número de documento <span className="text-destructive">*</span>
-                        </label>
-                        <input
+                    <div className="space-y-1.5">
+                        <Label htmlFor="consumer.direccion">Dirección Residencial</Label>
+                        <Input
+                            id="consumer.direccion"
                             type="text"
-                            id="numeroDocumento"
-                            name="numeroDocumento"
-                            disabled={isPending}
-                            className={inputClass(!!fe.numeroDocumento)}
+                            name="consumer.direccion"
+                            placeholder="Calle, Avenida, Mz. Lote, Nro, Dpto"
+                            defaultValue={state.payload?.consumer?.direccion || ""}
                         />
-                        <FieldError errors={fe.numeroDocumento} />
+                        {state.errors?.["consumer.direccion"] && (
+                            <ErrorMessage variant="error" mode="inline">
+                                {state.errors["consumer.direccion"][0]}
+                            </ErrorMessage>
+                        )}
                     </div>
 
-                    <div>
-                        <label htmlFor="celular" className="block text-sm font-medium text-foreground mb-1">
-                            Celular <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            type="tel"
-                            id="celular"
-                            name="celular"
-                            autoComplete="tel"
-                            disabled={isPending}
-                            className={inputClass(!!fe.celular)}
-                        />
-                        <FieldError errors={fe.celular} />
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="consumer.ciudad">Provincia / Ciudad</Label>
+                            <Input
+                                id="consumer.ciudad"
+                                type="text"
+                                name="consumer.ciudad"
+                                placeholder="Ej: Lima, Chincha"
+                                defaultValue={state.payload?.consumer?.ciudad || ""}
+                            />
+                            {state.errors?.["consumer.ciudad"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["consumer.ciudad"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="consumer.region">Departamento / Región</Label>
+                            <Input
+                                id="consumer.region"
+                                type="text"
+                                name="consumer.region"
+                                placeholder="Ej: Lima, Ica"
+                                defaultValue={state.payload?.consumer?.region || ""}
+                            />
+                            {state.errors?.["consumer.region"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["consumer.region"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
                     </div>
+                </fieldset>
 
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-                            Email <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            autoComplete="email"
-                            disabled={isPending}
-                            className={inputClass(!!fe.email)}
-                        />
-                        <FieldError errors={fe.email} />
-                    </div>
+                {/* SECCIÓN 2: DETALLE DEL RECLAMO */}
+                <fieldset className="space-y-4" disabled={isPending}>
+                    <legend className="text-lg font-semibold text-gray-900 border-b pb-2 w-full mb-2">
+                        2. Detalle de la Reclamación
+                    </legend>
 
-                    <div className="md:col-span-2">
-                        <label htmlFor="direccion" className="block text-sm font-medium text-foreground mb-1">
-                            Dirección <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="direccion"
-                            name="direccion"
-                            autoComplete="street-address"
-                            disabled={isPending}
-                            className={inputClass(!!fe.direccion)}
-                        />
-                        <FieldError errors={fe.direccion} />
-                    </div>
-
-                    <div>
-                        <label htmlFor="ciudad" className="block text-sm font-medium text-foreground mb-1">
-                            Ciudad <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="ciudad"
-                            name="ciudad"
-                            autoComplete="address-level2"
-                            disabled={isPending}
-                            className={inputClass(!!fe.ciudad)}
-                        />
-                        <FieldError errors={fe.ciudad} />
-                    </div>
-
-                    <div>
-                        <label htmlFor="region" className="block text-sm font-medium text-foreground mb-1">
-                            Región / Provincia <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            id="region"
-                            name="region"
-                            autoComplete="address-level1"
-                            disabled={isPending}
-                            className={inputClass(!!fe.region)}
-                        />
-                        <FieldError errors={fe.region} />
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Sección 2: Detalle ─────────────────────────────────────────── */}
-            <section className="bg-muted/40 p-6 rounded-lg border border-border space-y-4">
-                <h2 className="text-xl font-semibold border-b border-border pb-2 text-foreground">
-                    2. Detalle de la Reclamación y Pedido del Consumidor
-                </h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    <div>
-                        <span className="block text-sm font-medium text-foreground mb-2">
-                            Tipo <span className="text-destructive">*</span>
-                        </span>
-                        <div className="flex space-x-6">
-                            {(["Queja", "Reclamo"] as const).map((tipo) => (
-                                <label key={tipo} className="flex items-center gap-2 cursor-pointer text-foreground select-none">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                            <Label>Tipo de Incidencia</Label>
+                            <div className="mt-2 flex items-center space-x-6 h-10">
+                                <label className="inline-flex items-center text-sm cursor-pointer select-none">
                                     <input
                                         type="radio"
-                                        name="tipoReclamo"
-                                        value={tipo}
-                                        disabled={isPending}
-                                        className="accent-ring size-4"
+                                        name="detail.tipoReclamo"
+                                        value="Reclamo"
+                                        defaultChecked={!state.payload?.detail?.tipoReclamo || state.payload?.detail?.tipoReclamo === "Reclamo"}
+                                        className="h-4 w-4 text-primary border-gray-300 focus:ring-primary accent-black"
                                     />
-                                    <span className="text-sm">{tipo}</span>
+                                    <span className="ml-2 text-gray-700 font-medium">Reclamo (Disconformidad del producto)</span>
                                 </label>
-                            ))}
+                                <label className="inline-flex items-center text-sm cursor-pointer select-none">
+                                    <input
+                                        type="radio"
+                                        name="detail.tipoReclamo"
+                                        value="Queja"
+                                        defaultChecked={state.payload?.detail?.tipoReclamo === "Queja"}
+                                        className="h-4 w-4 text-primary border-gray-300 focus:ring-primary accent-black"
+                                    />
+                                    <span className="ml-2 text-gray-700 font-medium">Queja (Malestar en la atención)</span>
+                                </label>
+                            </div>
+                            {state.errors?.["detail.tipoReclamo"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["detail.tipoReclamo"][0]}
+                                </ErrorMessage>
+                            )}
                         </div>
-                        <FieldError errors={fe.tipoReclamo} />
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="detail.fechaIncidencia">Fecha de Incidencia</Label>
+                            <Input
+                                id="detail.fechaIncidencia"
+                                type="date"
+                                name="detail.fechaIncidencia"
+                                max={new Date().toISOString().split("T")[0]}
+                                defaultValue={state.payload?.detail?.fechaIncidencia || ""}
+                            />
+                            {state.errors?.["detail.fechaIncidencia"] && (
+                                <ErrorMessage variant="error" mode="inline">
+                                    {state.errors["detail.fechaIncidencia"][0]}
+                                </ErrorMessage>
+                            )}
+                        </div>
                     </div>
 
-                    <div>
-                        <label htmlFor="fechaIncidencia" className="block text-sm font-medium text-foreground mb-1">
-                            Fecha de incidencia <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                            type="date"
-                            id="fechaIncidencia"
-                            name="fechaIncidencia"
-                            disabled={isPending}
-                            className={inputClass(!!fe.fechaIncidencia)}
-                        />
-                        <FieldError errors={fe.fechaIncidencia} />
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <label htmlFor="detalle" className="block text-sm font-medium text-foreground mb-1">
-                            Detalle <span className="text-destructive">*</span>
-                        </label>
-                        <textarea
-                            id="detalle"
-                            name="detalle"
+                    <div className="space-y-1.5">
+                        <Label htmlFor="detail.detalle">Detalle Completo de lo Sucedido</Label>
+                        <Textarea
+                            id="detail.detalle"
+                            name="detail.detalle"
                             rows={4}
-                            disabled={isPending}
-                            placeholder="Describe con detalle lo ocurrido (mínimo 20 caracteres)."
-                            className={inputClass(!!fe.detalle)}
+                            placeholder="Describa detalladamente los hechos suscitados de forma clara..."
+                            className="resize-none"
+                            defaultValue={state.payload?.detail?.detalle || ""}
                         />
-                        <FieldError errors={fe.detalle} />
+                        {state.errors?.["detail.detalle"] && (
+                            <ErrorMessage variant="error" mode="inline">
+                                {state.errors["detail.detalle"][0]}
+                            </ErrorMessage>
+                        )}
                     </div>
 
-                    <div className="md:col-span-2">
-                        <label htmlFor="pedido" className="block text-sm font-medium text-foreground mb-1">
-                            Pedido — ¿Qué solicitas? <span className="text-destructive">*</span>
-                        </label>
-                        <textarea
-                            id="pedido"
-                            name="pedido"
+                    <div className="space-y-1.5">
+                        <Label htmlFor="detail.pedido">Pedido / Petición Concreta</Label>
+                        <Textarea
+                            id="detail.pedido"
+                            name="detail.pedido"
                             rows={3}
-                            disabled={isPending}
-                            placeholder="Indica qué solución o acción esperas de nuestra parte."
-                            className={inputClass(!!fe.pedido)}
+                            placeholder="Indique de forma directa su pretensión o solicitud formal..."
+                            className="resize-none"
+                            defaultValue={state.payload?.detail?.pedido || ""}
                         />
-                        <FieldError errors={fe.pedido} />
+                        {state.errors?.["detail.pedido"] && (
+                            <ErrorMessage variant="error" mode="inline">
+                                {state.errors["detail.pedido"][0]}
+                            </ErrorMessage>
+                        )}
                     </div>
-                </div>
-            </section>
+                </fieldset>
 
-            {/* ── Aviso ──────────────────────────────────────────────────────── */}
-            <div className="bg-accent-vivid-muted text-foreground border border-accent-vivid/20 p-4 rounded-md text-sm flex gap-2 items-start">
-                <FiInfo className="shrink-0 text-accent-vivid mt-0.5 text-base" />
-                <div>
-                    <strong>Observación:</strong> La respuesta a este reclamo o queja será enviada
-                    al correo electrónico indicado en este formulario en un plazo máximo de{" "}
-                    <strong>15 días hábiles</strong>.
+                <div className="pt-2">
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full h-11 text-sm font-semibold transition-all duration-200"
+                    >
+                        {isPending ? "Registrando Reclamación..." : "Enviar Reclamación Oficial"}
+                    </Button>
                 </div>
-            </div>
-
-            {/* ── Errores de validación del formulario ───────────────────────── */}
-            {state?.success === false && state.fieldErrors && (
-                <div className="flex items-center gap-2 text-sm text-destructive">
-                    <FiAlertTriangle className="shrink-0" />
-                    <p>{state.error}</p>
-                </div>
-            )}
-
-            {/* ── Submit ─────────────────────────────────────────────────────── */}
-            <button
-                type="submit"
-                disabled={isPending}
-                className="w-full md:w-auto bg-primary text-primary-foreground font-medium py-3 px-8 rounded-md
-                           hover:bg-action-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                           flex items-center justify-center gap-2"
-            >
-                {isPending ? (
-                    <>
-                        <FiLoader className="size-4 animate-spin" />
-                        <span>Enviando…</span>
-                    </>
-                ) : (
-                    "Enviar reclamación"
-                )}
-            </button>
-        </form>
+            </form>
+        </div>
     );
 }

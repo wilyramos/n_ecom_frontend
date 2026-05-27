@@ -85,7 +85,7 @@ export default function ResumenFinalCarrito() {
 
                                 <div className="flex justify-between items-center">
                                     <span className="font-medium">Envío</span>
-                                    <span className="text-[10px] font-bold uppercase text-accent-vivid bg-accent-vivid-muted px-2.5 py-0.5 rounded-full border border-accent-vivid/20 animate-pulse">
+                                    <span className="text-[10px] font-bold uppercase text-fg-primary bg-accent-vivid-muted px-2.5 py-0.5 rounded-full border border-accent-vivid/20 animate-pulse">
                                         Gratis
                                     </span>
                                 </div>
@@ -94,7 +94,7 @@ export default function ResumenFinalCarrito() {
 
                                 <div className="flex justify-between items-baseline font-bold text-fg-primary">
                                     <span className="text-base tracking-tight">Total a pagar</span>
-                                    <span className="text-xl text-accent-vivid tracking-tight">
+                                    <span className="text-xl text-fg-primary tracking-tight">
                                         S/ {total.toFixed(2)}
                                     </span>
                                 </div>

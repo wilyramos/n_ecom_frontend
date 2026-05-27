@@ -1,171 +1,144 @@
-// File: src/lib/schemas/claim.schema.ts
-
+// File: frontend/src/schemas/claim.schema.ts
 import { z } from "zod";
 
-// ── Enums ──────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// HELPERS & VALIDACIONES ESPECÍFICAS
+// ─────────────────────────────────────────────────────────────
 
-export const ClaimDocumentTypeSchema = z.enum(["DNI", "CE", "RUC"]);
-export const ClaimTypeSchema         = z.enum(["Queja", "Reclamo"]);
-export const ClaimStatusSchema       = z.enum(["Pendiente", "En Proceso", "Resuelto"]);
+const optionalString = z.string().optional().or(z.literal(""));
 
-export type ClaimDocumentType = z.infer<typeof ClaimDocumentTypeSchema>;
-export type ClaimType         = z.infer<typeof ClaimTypeSchema>;
-export type ClaimStatus       = z.infer<typeof ClaimStatusSchema>;
+// Validaciones para documentos de identidad peruanos (INDECOPI)
+const dniRegex = /^\d{8}$/;
+const ceRegex = /^[a-zA-Z0-9]{9,12}$/;
+const rucRegex = /^(10|15|17|20)\d{9}$/;
+const phoneRegex = /^9\d{8}$/;
 
-// ── Formulario público: Crear Reclamo ─────────────────────────────────────────
-
-export const CreateClaimSchema = z.object({
-    // Datos del consumidor
-    nombres: z
-        .string({ required_error: "El nombre completo es obligatorio." })
-        .trim()
-        .min(1, "El nombre completo es obligatorio.")
-        .max(150, "El nombre no puede superar 150 caracteres."),
-
-    tipoDocumento: ClaimDocumentTypeSchema,
-
-    numeroDocumento: z
-        .string({ required_error: "El número de documento es obligatorio." })
-        .trim()
-        .min(8, "Debe tener entre 8 y 15 caracteres.")
-        .max(15, "Debe tener entre 8 y 15 caracteres.")
-        .regex(/^[a-zA-Z0-9]+$/, "Solo se permiten letras y números."),
-
-    celular: z
-        .string({ required_error: "El celular es obligatorio." })
-        .trim()
-        .min(7, "Formato de celular no válido.")
-        .max(15, "Formato de celular no válido."),
-
-    email: z
-        .string({ required_error: "El correo es obligatorio." })
-        .trim()
-        .email("Formato de correo no válido.")
-        .toLowerCase(),
-
-    direccion: z
-        .string({ required_error: "La dirección es obligatoria." })
-        .trim()
-        .min(1, "La dirección es obligatoria.")
-        .max(250, "Máximo 250 caracteres."),
-
-    ciudad: z
-        .string({ required_error: "La ciudad es obligatoria." })
-        .trim()
-        .min(1, "La ciudad es obligatoria.")
-        .max(100, "Máximo 100 caracteres."),
-
-    region: z
-        .string({ required_error: "La región es obligatoria." })
-        .trim()
-        .min(1, "La región es obligatoria.")
-        .max(100, "Máximo 100 caracteres."),
-
-    // Detalle del reclamo
-    tipoReclamo: ClaimTypeSchema,
-
-    fechaIncidencia: z
-        .string({ required_error: "La fecha de incidencia es obligatoria." })
-        .date("Formato de fecha inválido (YYYY-MM-DD)."),
-
-    detalle: z
-        .string({ required_error: "El detalle del reclamo es obligatorio." })
-        .trim()
-        .min(20, "El detalle debe tener al menos 20 caracteres.")
-        .max(2000, "El detalle no puede superar 2000 caracteres."),
-
-    pedido: z
-        .string({ required_error: "El pedido es obligatorio." })
-        .trim()
-        .min(1, "El pedido es obligatorio.")
-        .max(200, "Máximo 200 caracteres."),
-});
-
-export type CreateClaimInput = z.infer<typeof CreateClaimSchema>;
-
-// ── Formulario admin: Actualizar resolución ───────────────────────────────────
-
-export const UpdateResolutionSchema = z.object({
-    estado: ClaimStatusSchema,
-
-    respuestaProveedor: z
-        .string()
-        .trim()
-        .max(2000, "Máximo 2000 caracteres.")
-        .optional(),
-});
-
-export type UpdateResolutionInput = z.infer<typeof UpdateResolutionSchema>;
-
-// ── Respuestas de la API ───────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// SUB-SCHEMAS — Sincronizados con backend/src/modules/claim/claim.model.ts
+// ─────────────────────────────────────────────────────────────
 
 export const ClaimConsumerSchema = z.object({
-    nombres:         z.string(),
-    tipoDocumento:   ClaimDocumentTypeSchema,
-    numeroDocumento: z.string(),
-    celular:         z.string(),
-    email:           z.string(),
-    direccion:       z.string(),
-    ciudad:          z.string(),
-    region:          z.string(),
+    nombres: z.string()
+        .trim()
+        .min(3, "El nombre completo o razón social debe tener al menos 3 caracteres")
+        .max(150, "El nombre no debe superar los 150 caracteres"),
+    tipoDocumento: z.enum(["DNI", "CE", "RUC"], {
+        errorMap: () => ({ message: "Seleccione un tipo de documento válido (DNI, CE o RUC)" }),
+    }),
+    numeroDocumento: z.string().trim().min(1, "El número de documento es requerido"),
+    celular: z.string()
+        .trim()
+        .regex(phoneRegex, "El número de celular debe ser un formato peruano válido (9 dígitos y empezar con 9)"),
+    email: z.string()
+        .trim()
+        .min(1, "El correo electrónico es requerido")
+        .email("Ingrese un formato de correo electrónico válido")
+        .toLowerCase(),
+    direccion: z.string().trim().min(5, "La dirección residencial debe ser detallada y clara"),
+    ciudad: z.string().trim().min(2, "La provincia o ciudad es requerida"),
+    region: z.string().trim().min(2, "El departamento o región es requerido"),
 });
 
 export const ClaimDetailSchema = z.object({
-    tipoReclamo:     ClaimTypeSchema,
-    fechaIncidencia: z.string(),
-    detalle:         z.string(),
-    pedido:          z.string(),
+    tipoReclamo: z.enum(["Queja", "Reclamo"], {
+        errorMap: () => ({ message: "Debe especificar si corresponde a una Queja o un Reclamo" }),
+    }),
+    fechaIncidencia: z.union([z.string(), z.date()], {
+        errorMap: () => ({ message: "La fecha del suceso es requerida" }),
+    }).transform((val) => new Date(val)),
+    detalle: z.string()
+        .trim()
+        .min(20, "El detalle del suceso debe ser claro y descriptivo (mínimo 20 caracteres)")
+        .max(2000, "El detalle no debe exceder los 2000 caracteres"),
+    pedido: z.string()
+        .trim()
+        .min(10, "Debe especificar concretamente cuál es su solicitud o petición")
+        .max(1000, "La petición no debe exceder los 1000 caracteres"),
 });
 
-export const ClaimResolutionSchema = z.object({
-    estado:              ClaimStatusSchema,
-    respuestaProveedor:  z.string().optional(),
-    fechaRespuesta:      z.string().optional(),
+export const ClaimAdminResolutionSchema = z.object({
+    estado: z.enum(["Pendiente", "En Proceso", "Resuelto"]).default("Pendiente"),
+    respuestaProveedor: optionalString,
+    fechaRespuesta: z.string().datetime().nullable().optional().or(z.date()),
 });
 
-export const ClaimSchema = z.object({
-    _id:        z.string(),
+// ─────────────────────────────────────────────────────────────
+// BASE SCHEMA (Formularios de Registro Público)
+// ─────────────────────────────────────────────────────────────
+
+export const BaseClaimSchema = z.object({
+    consumer: ClaimConsumerSchema,
+    detail: ClaimDetailSchema,
+});
+
+// ─────────────────────────────────────────────────────────────
+// SCHEMA FINAL CON REFINAMIENTOS DE INTEGRIDAD (Formularios)
+// ─────────────────────────────────────────────────────────────
+
+export const ClaimSchema = BaseClaimSchema.superRefine((data, ctx) => {
+    const { tipoDocumento, numeroDocumento } = data.consumer;
+
+    // 1. Validar la estructura del documento de identidad según su tipo
+    if (tipoDocumento === "DNI" && !dniRegex.test(numeroDocumento)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "El DNI debe constar exactamente de 8 dígitos numéricos",
+            path: ["consumer", "numeroDocumento"],
+        });
+    }
+
+    if (tipoDocumento === "RUC" && !rucRegex.test(numeroDocumento)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "El RUC ingresado no es válido (Debe tener 11 dígitos y comenzar con 10, 15, 17 o 20)",
+            path: ["consumer", "numeroDocumento"],
+        });
+    }
+
+    if (tipoDocumento === "CE" && !ceRegex.test(numeroDocumento)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "El Carné de Extranjería debe tener entre 9 y 12 caracteres alfanuméricos",
+            path: ["consumer", "numeroDocumento"],
+        });
+    }
+
+    // 2. Validar que la fecha de incidencia no pertenezca al futuro
+    if (data.detail.fechaIncidencia > new Date()) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "La fecha del suceso no puede ser posterior a la fecha actual",
+            path: ["detail", "fechaIncidencia"],
+        });
+    }
+});
+
+// ─────────────────────────────────────────────────────────────
+// RESPONSE SCHEMA — Para datos provenientes de la API o Backoffice
+// ─────────────────────────────────────────────────────────────
+
+export const ClaimResponseSchema = BaseClaimSchema.extend({
+    _id: z.string(),
     correlativo: z.string(),
-    consumer:   ClaimConsumerSchema,
-    detail:     ClaimDetailSchema,
-    resolution: ClaimResolutionSchema,
-    createdAt:  z.string(),
-    updatedAt:  z.string(),
+    resolution: ClaimAdminResolutionSchema,
+    createdAt: z.string(),
+    updatedAt: z.string(),
 });
 
-export type Claim = z.infer<typeof ClaimSchema>;
-
-// Respuesta POST /claims
-export const CreateClaimResponseSchema = z.object({
-    success:    z.boolean(),
-    message:    z.string(),
-    data: z.object({
-        id:          z.string(),
-        correlativo: z.string(),
-        createdAt:   z.string(),
-    }),
+// SCHEMA COMPACTO — Para formularios de consulta/seguimiento de tickets de reclamo
+export const ClaimTrackingSchema = z.object({
+    correlativo: z.string().trim().min(1, "El código correlativo es obligatorio (Ej: REC-2026-00001)"),
+    numeroDocumento: z.string().trim().min(1, "El número de identidad del titular es obligatorio"),
 });
 
-// Respuesta GET /claims
-export const GetAllClaimsResponseSchema = z.object({
-    success: z.boolean(),
-    results: z.number(),
-    data:    z.array(ClaimSchema),
-});
+// ─────────────────────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────────────────────
 
-// Respuesta GET /claims/track/:correlativo
-export const GetClaimByCorrelativoResponseSchema = z.object({
-    success: z.boolean(),
-    data:    ClaimSchema,
-});
+export type ClaimFormValues = z.infer<typeof ClaimSchema>;
+export type Claim = z.infer<typeof ClaimResponseSchema>;
+export type ClaimTrackingValues = z.infer<typeof ClaimTrackingSchema>;
 
-// Respuesta PATCH /claims/:correlativo/resolution
-export const UpdateResolutionResponseSchema = z.object({
-    success: z.boolean(),
-    message: z.string(),
-    data: z.object({
-        correlativo:    z.string(),
-        estado:         ClaimStatusSchema,
-        fechaRespuesta: z.string().optional(),
-    }),
-});
+export type ClaimConsumer = z.infer<typeof ClaimConsumerSchema>;
+export type ClaimDetail = z.infer<typeof ClaimDetailSchema>;
+export type ClaimAdminResolution = z.infer<typeof ClaimAdminResolutionSchema>;

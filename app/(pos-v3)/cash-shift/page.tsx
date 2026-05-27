@@ -1,7 +1,7 @@
 /* File: frontend/app/(pos-v3)/cash-shift/page.tsx */
 import { verifySession } from "@/src/auth/dal";
 import { CashService } from "@/src/services/cash-service";
-import { CashOpeningModal } from "@/src/components/pos/CashOpeningModal"; // Importación del Modal
+import { CashOpeningModal } from "@/src/components/pos/CashOpeningModal";
 import { CashStats } from "@/src/components/cash-shift/CashStats";
 import { MovementLog } from "@/src/components/cash-shift/MovementLog";
 import { MovementActions } from "@/src/components/cash-shift/MovementActions";
@@ -12,13 +12,11 @@ export default async function CashShiftPage() {
     const { user } = await verifySession();
     const { isOpen, shift } = await CashService.getStatus();
 
-    // Si la caja no está abierta, mostramos el Modal industrial
     if (!isOpen || !shift) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] bg-[var(--color-bg-primary)]">
                 <CashOpeningModal userId={user._id} />
 
-                {/* Opcional: Un placeholder visual de fondo mientras el modal está abierto */}
                 <div className="text-center space-y-4 opacity-20 select-none">
                     <h2 className="text-4xl font-black uppercase italic">Terminal Bloqueada</h2>
                     <p className="text-sm font-bold">Requiere apertura de turno para operar</p>

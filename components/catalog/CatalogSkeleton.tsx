@@ -7,7 +7,7 @@ function Skeleton({ className }: { className?: string }) {
 
 export default function CatalogSkeleton() {
     return (
-        <div className="container mx-auto px-4 md:px-6 max-w-[1440px] pb-20">
+        <div className="container mx-auto px-4 md:px-6 max-w-7xl pb-20">
 
             {/* 1. Header Skeleton */}
             <div className="pt-8 flex flex-col gap-6 pb-6 border-b border-gray-100">

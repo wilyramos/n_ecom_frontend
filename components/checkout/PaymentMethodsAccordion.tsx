@@ -89,7 +89,7 @@ export default function PaymentMethodsAccordion({ order }: { order: TOrderPopula
                     <AccordionContent className={contentClass}>
                         <div className="p-6 text-center bg-surface-primary">
                             <div className="mb-4 text-xs text-fg-muted max-w-sm mx-auto">
-                                Serás redirigido a la plataforma segura de Mercado Pago para completar tu compra de manera transparente.
+                                Serás redirigido a la plataforma segura de Mercado Pago para completar tu compra.
                             </div>
                             <CheckoutProMP orderId={order._id} />
                         </div>

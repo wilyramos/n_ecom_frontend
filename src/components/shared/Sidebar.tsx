@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    ShoppingBag, LayoutDashboard, ShoppingCart, FileText, History,
-    DollarSign, Users, Package, BarChart3, Settings, LogOut, LucideIcon
+    ShoppingBag, LayoutDashboard, ShoppingCart, History,
+    DollarSign, BarChart3, LogOut, LucideIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCashStore } from "@/src/store/useCashStore";
@@ -22,11 +22,7 @@ const ROUTES: NavItem[] = [
     { label: "POS", href: "/pos", icon: ShoppingCart, roles: ["administrador", "vendedor"] },
     { label: "Caja", href: "/cash-shift", icon: DollarSign, roles: ["administrador", "vendedor"] },
     { label: "Ventas", href: "/sales", icon: History, roles: ["administrador", "vendedor"] },
-    { label: "Proformas", href: "/quotes", icon: FileText, roles: ["administrador", "vendedor"] },
-    { label: "Productos", href: "/inventory", icon: Package, roles: ["administrador", "vendedor"] },
-    { label: "Clientes", href: "/customers", icon: Users, roles: ["administrador", "vendedor"] },
     { label: "Reportes", href: "/reports", icon: BarChart3, roles: ["administrador"] },
-    { label: "Ajustes", href: "/settings", icon: Settings, roles: ["administrador"] },
 ];
 
 export const Sidebar = ({ user }: { user: User }) => {

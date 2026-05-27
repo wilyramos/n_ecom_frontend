@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         template: "%s / home",
     },
     description:
-        "Neoshop es tu tienda de confianza en  para la compra de celulares, accesorios y más. Ofrecemos productos de calidad, envío rápido y atención personalizada.",
+        "Neoshop es tu tienda de productos apple en Perú. Encuentra iPhones, accesorios y tecnología de calidad a precios competitivos. ¡Visítanos y descubre lo mejor!",
     keywords: [
         "Neoshop",
         "tienda iPhone ",

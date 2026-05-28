@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    searchKey?: string; // Para buscar por una columna específica (ej: "nombre")
+    searchKey?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -54,36 +54,35 @@ export function DataTable<TData, TValue>({
     });
 
     return (
-        <div>
+        <div className="space-y-4">
             {searchKey && (
-                <div className="flex items-center py-4">
+                <div className="flex items-center">
                     <Input
                         placeholder="Buscar..."
                         value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
                             table.getColumn(searchKey)?.setFilterValue(event.target.value)
                         }
-                        className="max-w-sm"
+                        className="max-w-sm h-9"
                     />
                 </div>
             )}
-            <div className="rounded-md border">
+            
+            <div className="">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="bg-muted/50">
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    );
-                                })}
+                            <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id} className="font-semibold text-foreground">
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -103,7 +102,7 @@ export function DataTable<TData, TValue>({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
                                     No hay resultados.
                                 </TableCell>
                             </TableRow>
@@ -111,9 +110,10 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+
+            <div className="flex items-center justify-end space-x-2">
                 <Button
-                    variant="default"
+                    variant="outline"
                     size="sm"
                     onClick={() => table.previousPage()}
                     disabled={!table.getCanPreviousPage()}
@@ -121,7 +121,7 @@ export function DataTable<TData, TValue>({
                     Anterior
                 </Button>
                 <Button
-                    variant="default"
+                    variant="outline"
                     size="sm"
                     onClick={() => table.nextPage()}
                     disabled={!table.getCanNextPage()}

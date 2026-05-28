@@ -4,20 +4,9 @@ import { useState, useMemo } from "react";
 import type { TApiVariant, ProductWithCategoryResponse } from "@/src/schemas";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectTrigger,
-    SelectContent,
-    SelectItem,
-    SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, AlertCircle, ArrowUpDown } from "lucide-react";
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import MediaLibraryDialog from "./MediaLibraryDialog";
@@ -35,19 +24,14 @@ interface Props {
     onUploadToPool: (urls: string[]) => void; // Función para subir al padre
 }
 
-export default function ProductVariantsForm({ 
-    product, 
-    categoryAttributes, 
-    globalImagesPool, 
-    onUploadToPool 
-}: Props) {
+export default function ProductVariantsForm({ product, categoryAttributes, globalImagesPool, onUploadToPool }: Props) {
     const variantAttributes = categoryAttributes.filter((attr) => attr.isVariant);
-
     const [variants, setVariants] = useState<TApiVariant[]>(product?.variants ?? []);
     const [errors, setErrors] = useState<string[]>([]);
     const [openItems, setOpenItems] = useState<string[]>([]);
     const [sortMethod, setSortMethod] = useState<string>("default");
 
+    
     const getValidationErrors = (currentVariants: TApiVariant[]) => {
         const newErrors: string[] = [];
         if (!variantAttributes.length) return newErrors;
@@ -298,39 +282,44 @@ export default function ProductVariantsForm({
 
                                 {/* DATOS COMERCIALES */}
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
-                                    <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold uppercase">Precio Venta</Label>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold uppercase">Precio</Label>
                                         <Input
                                             type="number"
-                                            className="h-9"
-                                            value={variant.precio}
-                                            onChange={(e) => updateVariant(index, "precio", Number(e.target.value))}
+                                            value={variant.precio ?? ""}
+                                            onChange={(e) => updateVariant(index, "precio", parseFloat(e.target.value) || 0)}
+                                            className="h-9 text-xs font-mono"
+                                            min={0}
+                                            step={0.01}
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
+                                    <div className="space-y-1">
                                         <Label className="text-[10px] font-bold uppercase">Precio Comparativo</Label>
                                         <Input
                                             type="number"
-                                            className="h-9"
-                                            value={variant.precioComparativo}
-                                            onChange={(e) => updateVariant(index, "precioComparativo", Number(e.target.value))}
+                                            value={variant.precioComparativo ?? ""}
+                                            onChange={(e) => updateVariant(index, "precioComparativo", parseFloat(e.target.value) || 0)}
+                                            className="h-9 text-xs font-mono"
+                                            min={0}
+                                            step={0.01}
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold uppercase">Stock Disponible</Label>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold uppercase">Stock</Label>
                                         <Input
                                             type="number"
-                                            className="h-9"
-                                            value={variant.stock}
-                                            onChange={(e) => updateVariant(index, "stock", Number(e.target.value))}
+                                            value={variant.stock ?? ""}
+                                            onChange={(e) => updateVariant(index, "stock", parseInt(e.target.value) || 0)}
+                                            className="h-9 text-xs font-mono"
+                                            min={0}
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-bold uppercase">SKU Variante</Label>
+                                    <div className="space-y-1">
+                                        <Label className="text-[10px] font-bold uppercase">SKU</Label>
                                         <Input
-                                            className="h-9 uppercase text-[11px] font-bold tracking-wider"
-                                            value={variant.sku}
+                                            type="text"                                            value={variant.sku ?? ""}
                                             onChange={(e) => updateVariant(index, "sku", e.target.value)}
+                                            className="h-9 text-xs font-mono uppercase"
                                         />
                                     </div>
                                 </div>

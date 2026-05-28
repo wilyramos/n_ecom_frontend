@@ -13,11 +13,11 @@ export default function BrandTable({ brands }: { brands: Brand[] }) {
             <Table className="min-w-full table-auto border-separate border-spacing-0">
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="p-1 text-center w-[80px] text-xs font-medium">Logo</TableHead>
-                        <TableHead className="p-1 text-center w-[180px] text-xs font-medium">Nombre</TableHead>
-                        <TableHead className="p-1 text-center w-[180px] text-xs font-medium">Slug</TableHead>
-                        <TableHead className="p-1 text-center w-[90px] text-xs font-medium">Estado</TableHead>
-                        <TableHead className="p-1 text-center w-[90px] text-xs font-medium">Acciones</TableHead>
+                        <TableHead className="p-1 text-center w-[80px] ">Logo</TableHead>
+                        <TableHead className="p-1 text-center w-[180px] ">Nombre</TableHead>
+                        <TableHead className="p-1 text-center w-[180px] ">Slug</TableHead>
+                        <TableHead className="p-1 text-center w-[90px] ">Estado</TableHead>
+                        <TableHead className="p-1 text-center w-[90px] ">Acciones</TableHead>
                     </TableRow>
                 </TableHeader>
 

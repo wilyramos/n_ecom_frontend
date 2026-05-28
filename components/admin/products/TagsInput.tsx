@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, KeyboardEvent } from "react";
+import { useState } from "react";
+import type { KeyboardEvent } from "react";
 import { X, Tag, Plus } from "lucide-react";
 import { LabelWithTooltip } from "@/components/utils/LabelWithTooltip";
 
@@ -37,9 +38,9 @@ export default function TagsInput({ initial = [] }: TagsInputProps) {
 
     return (
         <div className="space-y-3">
-            {/* Header Estilizado */}
+            {/* Header */}
             <div className="flex items-center gap-2">
-                <Tag className="w-3.5 h-3.5 text-[var(--color-text-secondary)]" />
+                <Tag className="w-3.5 h-3.5 text-muted-foreground" />
                 <LabelWithTooltip
                     htmlFor="tags-input"
                     label="Etiquetas / Tags"
@@ -48,19 +49,17 @@ export default function TagsInput({ initial = [] }: TagsInputProps) {
             </div>
 
             {/* Contenedor de Tags e Input */}
-            <div
-                className="group flex flex-wrap gap-2 min-h-[44px] w-full border border-[var(--color-border-default)] bg-[var(--color-bg-primary)] px-3 py-2 transition-all focus-within:border-[var(--color-accent-warm)] focus-within:ring-1 focus-within:ring-[var(--color-accent-warm)]"
-            >
+            <div className="group flex flex-wrap gap-2 min-h-[44px] w-full border border-border bg-background px-3 py-2 transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary rounded-md">
                 {tags.map(tag => (
                     <span
                         key={tag}
-                        className="inline-flex items-center gap-1.5 bg-[var(--color-bg-secondary)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] px-2 py-1 text-[11px] font-bold uppercase tracking-tight"
+                        className="inline-flex items-center gap-1.5 bg-muted border border-border text-foreground px-2 py-1 text-[11px] font-bold uppercase tracking-tight rounded-sm"
                     >
                         {tag}
                         <button
                             type="button"
                             onClick={() => removeTag(tag)}
-                            className="text-[var(--color-text-tertiary)] hover:text-[var(--color-accent-warm)] transition-colors"
+                            className="text-muted-foreground hover:text-destructive transition-colors"
                             aria-label={`Eliminar ${tag}`}
                         >
                             <X size={12} strokeWidth={2.5} />
@@ -69,22 +68,22 @@ export default function TagsInput({ initial = [] }: TagsInputProps) {
                 ))}
 
                 <div className="flex-1 min-w-[150px] flex items-center gap-2">
-                    {tags.length > 0 && <Plus className="w-3 h-3 text-[var(--color-text-tertiary)]" />}
+                    {tags.length > 0 && <Plus className="w-3 h-3 text-muted-foreground" />}
                     <input
                         id="tags-input"
                         type="text"
                         value={inputValue}
                         onChange={e => setInputValue(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder={tags.length === 0 ? "Ej: iPhone, Premium, Oferta..." : "Añadir más..."}
-                        className="w-full bg-transparent outline-none placeholder:text-[var(--color-text-tertiary)] text-[13px] font-medium"
+                        placeholder={tags.length === 0 ? "Ej: iPhone, Premium..." : "Añadir más..."}
+                        className="w-full bg-transparent outline-none placeholder:text-muted-foreground text-[13px] font-medium"
                     />
                 </div>
             </div>
 
             {/* Info y Ayuda */}
             <div className="flex justify-between items-center px-1">
-                <p className="text-[10px] text-[var(--color-text-tertiary)] italic">
+                <p className="text-[10px] text-muted-foreground italic">
                     {tags.length > 0
                         ? `${tags.length} etiquetas añadidas`
                         : "Presiona Enter o Coma ( , ) para confirmar cada tag."
@@ -94,16 +93,14 @@ export default function TagsInput({ initial = [] }: TagsInputProps) {
                     <button
                         type="button"
                         onClick={() => setTags([])}
-                        className="text-[10px] font-bold uppercase tracking-tighter text-[var(--color-accent-warm)] hover:underline"
+                        className="text-[10px] font-bold uppercase tracking-tighter text-primary hover:underline"
                     >
                         Limpiar todo
                     </button>
                 )}
             </div>
 
-            {/* Serialización para el Formulario */}
             <input type="hidden" name="tags" value={JSON.stringify(tags)} />
-
         </div>
     );
 }

@@ -1,4 +1,6 @@
-// File: app/%28store%29/hc/libro-de-reclamaciones/components/ClaimForm.tsx
+// File: frontend/components/claim/ClaimForm.tsx
+
+
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";

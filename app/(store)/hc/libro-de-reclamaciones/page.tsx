@@ -1,4 +1,6 @@
-// File: app/%28store%29/hc/libro-de-reclamaciones/page.tsx
+// File: frontend/app/%28store%29/hc/libro-de-reclamaciones/page.tsx
+
+
 import { Metadata } from "next";
 import ClaimForm from "@/components/claim/ClaimForm";
 

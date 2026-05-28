@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-// Espeja el enum del backend
 type OrderStatus =
     | 'awaiting_payment'
     | 'processing'
@@ -23,11 +22,8 @@ type OrderStatus =
     | 'canceled'
     | 'paid_but_out_of_stock';
 
-// Estados terminales: no permiten ninguna acción
 const TERMINAL_STATUSES: OrderStatus[] = ['delivered', 'canceled'];
 
-// Estados donde el stock YA fue descontado (webhook lo hizo)
-// awaiting_payment NO está aquí → cancelar desde ese estado no restaura nada
 const STATUSES_WITH_DEDUCTED_STOCK: OrderStatus[] = [
     'processing',
     'shipped',
@@ -37,11 +33,10 @@ const STATUSES_WITH_DEDUCTED_STOCK: OrderStatus[] = [
 interface ConfirmConfig {
     title: string;
     description: string;
-    variant: 'default' | 'destructive';
+    variant: 'default' | 'destructive' | 'outline' | 'ghost';
     label: string;
 }
 
-// Recibe currentStatus para saber si hay stock involucrado en la cancelación
 const getConfirmConfig = (
     targetStatus: string,
     currentStatus: OrderStatus
@@ -113,11 +108,8 @@ export default function OrderActions({ orderId, currentStatus }: OrderActionsPro
         });
     };
 
-    const config = pendingStatus
-        ? getConfirmConfig(pendingStatus, currentStatus)
-        : null;
+    const config = pendingStatus ? getConfirmConfig(pendingStatus, currentStatus) : null;
 
-    // No mostrar nada si la orden está en estado terminal
     if (TERMINAL_STATUSES.includes(currentStatus)) return null;
 
     const willRestoreStock =
@@ -127,45 +119,36 @@ export default function OrderActions({ orderId, currentStatus }: OrderActionsPro
     return (
         <>
             <div className="flex flex-wrap gap-2">
-
-                {/* processing → shipped */}
                 {currentStatus === 'processing' && (
                     <Button
-                        variant="outline"
                         size="sm"
                         onClick={() => setPendingStatus('shipped')}
-                        className="bg-blue-600 text-white hover:bg-blue-700 hover:text-white"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                         Marcar como enviado
                     </Button>
                 )}
 
-                {/* shipped → delivered */}
                 {currentStatus === 'shipped' && (
                     <Button
-                        variant="outline"
                         size="sm"
                         onClick={() => setPendingStatus('delivered')}
-                        className="bg-green-600 text-white hover:bg-green-700 hover:text-white"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
                     >
                         Confirmar entrega
                     </Button>
                 )}
 
-                {/* paid_but_out_of_stock → processing (admin repuso stock) */}
                 {currentStatus === 'paid_but_out_of_stock' && (
                     <Button
-                        variant="outline"
                         size="sm"
                         onClick={() => setPendingStatus('processing')}
-                        className="bg-orange-500 text-white hover:bg-orange-600 hover:text-white"
+                        className="bg-[var(--color-accent-vivid)] text-white hover:bg-[var(--color-accent-vivid)]/90"
                     >
                         Re-intentar procesar
                     </Button>
                 )}
 
-                {/* Cancelar — disponible en todos los estados no terminales.
-                    El label cambia según si hay stock que devolver o no. */}
                 <Button
                     variant="destructive"
                     size="sm"
@@ -190,9 +173,8 @@ export default function OrderActions({ orderId, currentStatus }: OrderActionsPro
                         <DialogDescription>{config?.description}</DialogDescription>
                     </DialogHeader>
 
-                    {/* Aviso adicional cuando se va a restaurar stock */}
                     {willRestoreStock && (
-                        <p className="text-xs text-muted-foreground border border-dashed rounded-md px-3 py-2">
+                        <p className="text-xs text-muted-foreground border border-dashed border-border rounded-md px-3 py-2">
                             Los productos volverán al inventario de forma automática.
                         </p>
                     )}
@@ -206,7 +188,7 @@ export default function OrderActions({ orderId, currentStatus }: OrderActionsPro
                             Cancelar
                         </Button>
                         <Button
-                            variant={config?.variant}
+                            variant={config?.variant || 'default'}
                             onClick={executeUpdate}
                             disabled={isPending}
                         >

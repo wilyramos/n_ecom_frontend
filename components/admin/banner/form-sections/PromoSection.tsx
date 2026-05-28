@@ -1,4 +1,4 @@
-import { DollarSign, Clock } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -14,14 +14,8 @@ export default function PromoSection({ initialData, fields, fieldErrors }: Secti
     const val = (name: string, fallback?: string) => fields?.[name] ?? fallback ?? "";
     const err = (name: string) => fieldErrors?.[name]?.[0];
 
-    const toDatetimeLocal = (date?: Date | string | null) => {
-        if (!date) return "";
-        const d = new Date(date);
-        return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16);
-    };
-
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid gap-6">
 
             {/* ── Precio ───────────────────────────────────────────────── */}
             <Card>
@@ -88,44 +82,7 @@ export default function PromoSection({ initialData, fields, fieldErrors }: Secti
                 </CardContent>
             </Card>
 
-            {/* ── Countdown ────────────────────────────────────────────── */}
-            <Card>
-                <CardHeader className="flex flex-row items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-orange-500" />
-                    <CardTitle>Countdown</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-1">
-                        <Label className="text-xs">Etiqueta del contador</Label>
-                        <Input
-                            name="countdown.label"
-                            defaultValue={val("countdown.label", initialData?.countdown?.label)}
-                            placeholder="La oferta termina en:"
-                            className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
-                        />
-                    </div>
-                    <div className="space-y-1">
-                        <Label className="text-xs">Fecha de finalización</Label>
-                        <Input
-                            name="countdown.endsAt"
-                            type="datetime-local"
-                            defaultValue={toDatetimeLocal(initialData?.countdown?.endsAt)}
-                            className={`h-10 text-xs bg-background-secondary border rounded-sm ${err("countdown.endsAt") ? "border-destructive" : "border-border/40"}`}
-                        />
-                        {err("countdown.endsAt") && <p className="text-[10px] text-destructive">{err("countdown.endsAt")}</p>}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="countdown.showDays"
-                            value="true"
-                            defaultChecked={initialData?.countdown?.showDays ?? true}
-                            className="w-4 h-4 accent-blue-600"
-                        />
-                        <Label className="text-xs">Mostrar días</Label>
-                    </div>
-                </CardContent>
-            </Card>
+          
         </div>
     );
 }

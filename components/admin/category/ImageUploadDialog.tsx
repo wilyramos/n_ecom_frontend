@@ -9,14 +9,14 @@ import {
     DialogTitle,
     DialogDescription,
     DialogFooter,
-    DialogClose,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { uploadImageBrand } from "@/actions/brand/upload-image-action";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import SpinnerLoading from "@/components/ui/SpinnerLoading";
-import { useRef } from "react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type Props = {
     image?: string;
@@ -37,15 +37,12 @@ export function ImageUploadDialog({ image, inputRef }: Props) {
             toast.error("Por favor, selecciona un archivo de imagen válido.");
             return;
         }
-        if (file.size > 1 * 1024 * 1024) { // 1MB
+        if (file.size > 1 * 1024 * 1024) {
             toast.error("El tamaño de la imagen no debe superar los 1MB.");
             return;
         }
 
-        console.log("Archivo válido");
-
         setIsUploading(true);
-
         const form = new FormData();
         form.append("file", file);
 
@@ -53,9 +50,7 @@ export function ImageUploadDialog({ image, inputRef }: Props) {
             const result = await uploadImageBrand(form);
             if (result?.image) {
                 setUploadedUrl(result.image);
-                if (inputRef.current) {
-                    inputRef.current.value = result.image;
-                }
+                if (inputRef.current) inputRef.current.value = result.image;
                 setOpen(false);
             }
         } finally {
@@ -65,34 +60,28 @@ export function ImageUploadDialog({ image, inputRef }: Props) {
 
     function handleRemove() {
         setUploadedUrl(undefined);
-        if (inputRef.current) {
-            inputRef.current.value = "";
-        }
+        if (inputRef.current) inputRef.current.value = "";
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <div className="flex flex-col items-start gap-2 w-full cursor-pointer">
-                    <button
-                        type="button"
-                        className="w-full border rounded-lg p-3 text-sm text-gray-600 hover:bg-gray-50 transition"
-                    >
+                    <Button type="button" variant="outline" className="w-full justify-start">
                         {uploadedUrl ? "Cambiar imagen" : "Subir imagen"}
-                    </button>
+                    </Button>
 
-                    <div className="w-24 h-24 border rounded-lg flex items-center justify-center bg-gray-50 overflow-hidden">
+                    <div className="w-24 h-24 border border-border rounded-lg flex items-center justify-center bg-muted/50 overflow-hidden relative">
                         {uploadedUrl ? (
                             <Image
                                 src={uploadedUrl}
                                 alt="Category"
-                                className="object-contain"
-                                width={96}
-                                height={96}
-                                priority={!!uploadedUrl}
+                                className="object-cover"
+                                fill
+                                sizes="96px"
                             />
                         ) : (
-                            <span className="text-gray-400 text-xs">No hay imagen</span>
+                            <span className="text-muted-foreground text-[10px]">Sin imagen</span>
                         )}
                     </div>
                 </div>
@@ -107,8 +96,10 @@ export function ImageUploadDialog({ image, inputRef }: Props) {
                 </DialogHeader>
 
                 <div
-                    className={`relative border-2 border-dashed rounded-xl h-44 flex items-center justify-center bg-gray-50 hover:bg-gray-100 cursor-pointer transition overflow-hidden ${isUploading ? "opacity-60" : ""
-                        }`}
+                    className={cn(
+                        "relative border-2 border-dashed border-border rounded-xl h-44 flex items-center justify-center bg-muted/30 hover:bg-muted/50 cursor-pointer transition overflow-hidden",
+                        isUploading && "opacity-60 cursor-not-allowed"
+                    )}
                     onClick={() => !isUploading && fileInputRef.current?.click()}
                 >
                     {isUploading ? (
@@ -118,16 +109,13 @@ export function ImageUploadDialog({ image, inputRef }: Props) {
                             src={uploadedUrl}
                             alt="Category"
                             fill
-                            className="object-contain rounded-lg"
+                            className="object-contain p-2"
                         />
                     ) : (
-                        <span className="text-gray-500 text-sm">
-                            Haz clic para seleccionar una imagen
-                        </span>
+                        <span className="text-muted-foreground text-sm">Haz clic para seleccionar</span>
                     )}
                 </div>
 
-                {/* Input file oculto */}
                 <input
                     type="file"
                     accept="image/*"
@@ -136,19 +124,13 @@ export function ImageUploadDialog({ image, inputRef }: Props) {
                     onChange={handleFileChange}
                 />
 
-                <DialogFooter className="flex justify-between">
-                    {uploadedUrl && !isUploading && (
-                        <button
-                            type="button"
-                            onClick={handleRemove}
-                            className="text-red-600 text-sm hover:underline"
-                        >
-                            Eliminar imagen
-                        </button>
-                    )}
-                    <DialogClose asChild>
-
-                    </DialogClose>
+                <DialogFooter className="flex justify-between items-center sm:justify-between">
+                    {uploadedUrl && !isUploading ? (
+                        <Button type="button" variant="ghost" onClick={handleRemove} className="text-destructive hover:text-destructive/90 hover:bg-destructive/10">
+                            Eliminar
+                        </Button>
+                    ) : <div />}
+                    <Button variant="secondary" onClick={() => setOpen(false)}>Cerrar</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

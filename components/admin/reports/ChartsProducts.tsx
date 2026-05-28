@@ -7,9 +7,18 @@ import {
     YAxis,
     Tooltip,
     ResponsiveContainer,
-    LabelList,
+    LabelList
 } from "recharts";
 import { formatCurrency } from "@/src/utils/formatCurrency";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 
 type ProductData = {
     productId: string;
@@ -23,104 +32,91 @@ export default function ChartsProducts({ data }: { data: ProductData }) {
     const maxSales = Math.max(...data.map((item) => item.totalSales));
 
     return (
-        <div className="flex flex-col gap-8 lg:flex-row">
-            {/* Product Sales Chart - Minimalist Design */}
-            <div className="flex-1 rounded-lg bg-white p-6">
-                <h2 className="mb-6 text-sm font-extrabold text-gray-700">
-                    Total Sales by Product:
-                </h2>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart
-                        data={data}
-                        layout="vertical"
-                        margin={{ top: 10, right: 90, left: 100, bottom: 10 }}
-                        barSize={12}
-                        barCategoryGap={10}
-                    >
-                        <XAxis
-                            type="number"
-                            tickFormatter={formatCurrency}
-                            axisLine={false}
-                            tickLine={false}
-                            stroke="#e0e0e0"
-                            tick={{ fontSize: 12, fill: "#888" }}
-                            domain={[0, maxSales * 1.1]}
-                        />
-                        <YAxis
-                            dataKey="nombre"
-                            type="category"
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fontSize: 13, fill: "#555" }}
-                            width={120}
-                        />
-                        <Tooltip
-                            formatter={(value: number) => formatCurrency(value)}
-                            labelStyle={{
-                                color: "#333",
-                                fontSize: "14px",
-                                fontWeight: "bold",
-                            }}
-                            contentStyle={{
-                                background: "white",
-                                border: "1px solid #ccc",
-                                borderRadius: "4px",
-                                fontSize: "12px",
-                                padding: "8px",
-                            }}
-                        />
-                        <Bar
-                            dataKey="totalSales"
-                            fill="#007bff"
-                            radius={[0, 4, 4, 0]}
-                            name="Total Sales"
+        <div className="grid gap-6 lg:grid-cols-2">
+            {/* Gráfico de Ventas */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                        Total Ventas por Producto
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[350px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                            data={data}
+                            layout="vertical"
+                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            barSize={24}
                         >
-                            <LabelList
-                                dataKey="totalSales"
-                                position="right"
-                                formatter={(value: number) => formatCurrency(value)}
-                                style={{ fontSize: 12, fill: "#555" }}
+                            <XAxis
+                                type="number"
+                                hide
+                                domain={[0, maxSales * 1.1]}
                             />
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
-
-            {/* Product Details Table */}
-            <div className="flex-1 overflow-x-auto rounded-lg bg-white p-6">
-                <h2 className="mb-6 text-sm font-extrabold text-gray-700">
-                    Product Details:
-                </h2>
-                <table className="min-w-full text-sm">
-                    <thead>
-                        <tr className="border-b border-gray-200 text-gray-500">
-                            <th className="py-2 text-left font-medium">Product</th>
-                            <th className="py-2 text-right font-medium">Quantity</th>
-                            <th className="py-2 text-right font-medium">Sales</th>
-                            <th className="py-2 text-right font-medium">Margin</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((p) => (
-                            <tr
-                                key={p.productId}
-                                className="border-b border-gray-100 last:border-b-0"
+                            <YAxis
+                                dataKey="nombre"
+                                type="category"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fontSize: 12, fill: "hsl(var(--foreground))" }}
+                                width={100}
+                            />
+                            <Tooltip
+                                cursor={{ fill: "hsl(var(--muted))" }}
+                                formatter={(value: number) => formatCurrency(value)}
+                                contentStyle={{ 
+                                    backgroundColor: "hsl(var(--card))",
+                                    borderColor: "hsl(var(--border))",
+                                    borderRadius: "8px" 
+                                }}
+                            />
+                            <Bar
+                                dataKey="totalSales"
+                                fill="hsl(var(--primary))"
+                                radius={[0, 4, 4, 0]}
                             >
-                                <td className="py-3 text-gray-700">{p.nombre}</td>
-                                <td className="py-3 text-right text-gray-700">
-                                    {p.totalQuantity}
-                                </td>
-                                <td className="py-3 text-right text-gray-700">
-                                    {formatCurrency(p.totalSales)}
-                                </td>
-                                <td className="py-3 text-right text-gray-700">
-                                    {formatCurrency(p.margin)}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                                <LabelList
+                                    dataKey="totalSales"
+                                    position="right"
+                                    formatter={(value: number) => formatCurrency(value)}
+                                    style={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                                />
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+
+            {/* Detalle de Productos (Tabla) */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+                        Detalle de Productos
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent border-border">
+                                <TableHead>Producto</TableHead>
+                                <TableHead className="text-right">Cant.</TableHead>
+                                <TableHead className="text-right">Ventas</TableHead>
+                                <TableHead className="text-right">Margen</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {data.map((p) => (
+                                <TableRow key={p.productId} className="border-border">
+                                    <TableCell className="font-medium">{p.nombre}</TableCell>
+                                    <TableCell className="text-right text-muted-foreground">{p.totalQuantity}</TableCell>
+                                    <TableCell className="text-right font-semibold">{formatCurrency(p.totalSales)}</TableCell>
+                                    <TableCell className="text-right text-muted-foreground">{formatCurrency(p.margin)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     );
 }

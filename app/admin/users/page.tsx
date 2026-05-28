@@ -38,7 +38,7 @@ export default async function AdminClientsPage({ searchParams }: { searchParams:
             <AdminPageWrapper
                 title="Usuarios admin/vendedores"
                 showBackButton={false}
-                actions={<AddClientButton />}
+                actions={<AddClientButton role="admin" />}
             >
 
                 <div className="mt-4">

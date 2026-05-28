@@ -33,7 +33,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Sear
         <AdminPageWrapper
             title="Clientes"
             showBackButton={false}
-            actions={<AddClientButton />}
+            actions={<AddClientButton  role='client'/>}
         >
 
             <div className="mt-4">

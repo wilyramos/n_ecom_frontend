@@ -21,7 +21,6 @@ interface LinesClientProps {
 }
 
 export function LinesClient({ initialData, brands, categories }: LinesClientProps) {
-
     const [deleteState, deleteAction, isDeleting] = useActionState(deleteLineAction, initialState);
 
     // Estados UI
@@ -59,7 +58,6 @@ export function LinesClient({ initialData, brands, categories }: LinesClientProp
         setIsOpenDelete(true);
     };
 
-    // Ejecutar Server Action de borrado
     const onConfirmDelete = () => {
         if (deleteId) {
             startTransition(() => {
@@ -71,18 +69,16 @@ export function LinesClient({ initialData, brands, categories }: LinesClientProp
     const columns = getColumns({ onEdit: handleEdit, onDelete: handleDeleteClick });
 
     return (
-        <>
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Líneas de Producto</h1>
-                    <p className="text-muted-foreground">Gestiona las líneas o familias de productos.</p>
-                </div>
+        <div className="space-y-6">
+            <div className="flex items-center justify-end"> 
                 <Button onClick={handleCreate}>
                     <Plus className="mr-2 h-4 w-4" /> Nueva Línea
                 </Button>
             </div>
 
-            <DataTable columns={columns} data={initialData} searchKey="nombre" />
+            <div className="rounded">
+                <DataTable columns={columns} data={initialData} searchKey="nombre" />
+            </div>
 
             <LineModal
                 isOpen={isOpenForm}
@@ -96,12 +92,12 @@ export function LinesClient({ initialData, brands, categories }: LinesClientProp
                 isOpen={isOpenDelete}
                 onClose={() => setIsOpenDelete(false)}
                 onConfirm={onConfirmDelete}
-                loading={isDeleting} // Estado de carga nativo del action
-                title="¿Eliminar Línea?"
-                description="Esta acción borrará la línea permanentemente."
+                loading={isDeleting}
+                title="¿Estás seguro?"
+                description="Esta acción no se puede deshacer. Se eliminará permanentemente la línea seleccionada."
                 confirmText="Sí, eliminar"
                 variant="destructive"
             />
-        </>
+        </div>
     );
 }

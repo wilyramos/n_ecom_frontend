@@ -59,16 +59,16 @@
   --color-accent: var(--color-surface-secondary);
   --color-accent-foreground: var(--color-fg-primary);
   
-  --color-destructive: #ef4444; /* Rojo estándar para errores */
+  --color-destructive: #dc2626; /* Rojo inteso */
   --color-destructive-foreground: #ffffff;
   
   --color-border: var(--color-border-default);
   --color-input: var(--color-border-default);
   --color-ring: var(--color-brand-charcoal);
 
-  /* Color de acento vivo (Naranja claro) */
-  --color-accent-vivid: #fb923c; 
-  --color-accent-vivid-muted: #fff7ed;
+  /* Color de acento vivo (Rojo inteso) */
+  --color-accent-vivid: #ff9900; /* Rojo inteso para elementos destacados */
+  --color-accent-vivid-muted: #ff990033; /* Versión translúcida para hover/active states */
 }
 
 

@@ -74,7 +74,7 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
             const data = await res.json();
             setSearchResults(Array.isArray(data) ? data : (data.products || []));
         } catch (error) {
-            console.error("Search error:", error);
+            console.error("Error searching products:", error);
             setSearchResults([]);
         } finally {
             setLoadingSearch(false);
@@ -96,15 +96,13 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
     };
 
     return (
-        <div className="space-y-4 border p-4">
+        <div className="space-y-4 border border-border p-4 rounded-lg bg-card">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Package className="w-4 h-4 text-[var(--color-text-tertiary)]" />
+                    <Package className="w-4 h-4 text-muted-foreground" />
                     <div>
-                        <h3 className="text-sm text-[var(--color-text-primary)]">Complementarios</h3>
-                        <p className="text-[var(--color-text-tertiary)]">
-                            {selectedProducts.length} vinculados
-                        </p>
+                        <h3 className="text-sm font-semibold text-foreground">Complementarios</h3>
+                        <p className="text-xs text-muted-foreground">{selectedProducts.length} vinculados</p>
                     </div>
                 </div>
 
@@ -115,16 +113,16 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
                         </Button>
                     </DialogTrigger>
                     
-                    <DialogContent className="max-w-2xl p-0 overflow-hidden border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] shadow-none">
+                    <DialogContent className="max-w-2xl p-0 overflow-hidden border border-border bg-background">
                         <DialogHeader className="p-6 pb-0">
-                            <DialogTitle className="text-base font-normal text-[var(--color-text-primary)]">
+                            <DialogTitle className="text-base font-semibold text-foreground">
                                 Catálogo de Productos
                             </DialogTitle>
                             <div className="relative mt-4">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)]" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <Input 
                                     placeholder="Buscar productos..." 
-                                    className="h-10 pl-10 bg-[var(--color-bg-secondary)] border-none text-sm focus-visible:ring-1 focus-visible:ring-[var(--color-border-default)]"
+                                    className="h-10 pl-10 bg-muted/50 border-border"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -133,8 +131,8 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
 
                         <div className="h-[50vh] overflow-y-auto p-6 space-y-1">
                             {loadingSearch ? (
-                                <div className="h-full flex flex-col items-center justify-center">
-                                    <Loader2 className="animate-spin w-5 h-5 text-[var(--color-text-tertiary)]" />
+                                <div className="h-full flex items-center justify-center">
+                                    <Loader2 className="animate-spin w-5 h-5 text-muted-foreground" />
                                 </div>
                             ) : searchResults.length > 0 ? (
                                 searchResults.map((p) => {
@@ -144,29 +142,29 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
                                             key={p._id} 
                                             onClick={() => toggleProduct(p)}
                                             className={cn(
-                                                "flex items-center gap-4 p-2 transition-colors cursor-pointer border-b border-[var(--color-border-subtle)] last:border-0",
-                                                isSelected ? "bg-[var(--color-bg-secondary)]" : "hover:bg-[var(--color-bg-secondary)]/50"
+                                                "flex items-center gap-4 p-2 transition-colors cursor-pointer border-b border-border last:border-0",
+                                                isSelected ? "bg-muted" : "hover:bg-muted/50"
                                             )}
                                         >
-                                            <div className="relative w-10 h-10 bg-white border border-[var(--color-border-subtle)] shrink-0">
+                                            <div className="relative w-10 h-10 border rounded bg-background shrink-0">
                                                 <Image src={p.imagenes?.[0] || "/placeholder.png"} alt={p.nombre} fill className="object-contain p-1" unoptimized />
                                             </div>
                                             <div className="flex-1">
-                                                <p className="text-xs text-[var(--color-text-primary)]">{p.nombre}</p>
-                                                <p className="text-xs text-[var(--color-text-tertiary)]">S/ {p.precio.toFixed(2)}</p>
+                                                <p className="text-xs text-foreground">{p.nombre}</p>
+                                                <p className="text-xs text-muted-foreground">S/ {p.precio.toFixed(2)}</p>
                                             </div>
-                                            {isSelected && <CheckCircle2 className="w-4 h-4 text-[var(--color-text-primary)]" />}
+                                            {isSelected && <CheckCircle2 className="w-4 h-4 text-primary" />}
                                         </div>
                                     );
                                 })
                             ) : (
-                                <div className="h-full flex items-center justify-center text-xs text-[var(--color-text-tertiary)]">
+                                <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
                                     {searchTerm.length >= 2 ? "Sin resultados" : "Escribe para buscar"}
                                 </div>
                             )}
                         </div>
 
-                        <div className="p-4 border-t border-[var(--color-border-subtle)] flex justify-end">
+                        <div className="p-4 border-t border-border flex justify-end">
                             <Button onClick={() => setIsModalOpen(false)} size="sm" className="px-6 h-8 text-xs">Cerrar</Button>
                         </div>
                     </DialogContent>
@@ -176,21 +174,21 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {loadingInitial ? (
                     <div className="col-span-full py-6 flex flex-col items-center justify-center">
-                        <Loader2 className="animate-spin w-4 h-4 text-[var(--color-text-tertiary)]" />
+                        <Loader2 className="animate-spin w-4 h-4 text-muted-foreground" />
                     </div>
                 ) : selectedProducts.map((p) => (
-                    <div key={`sel-${p._id}`} className="group relative flex items-center gap-3 p-2 border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)]">
-                        <div className="relative w-8 h-8 bg-white border border-[var(--color-border-subtle)]">
+                    <div key={`sel-${p._id}`} className="group relative flex items-center gap-3 p-2 border border-border rounded-md bg-background">
+                        <div className="relative w-8 h-8 bg-background border rounded">
                             <Image src={p.imagenes?.[0] || "/placeholder.png"} alt={p.nombre} fill className="object-contain p-1" unoptimized />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs text-[var(--color-text-primary)] truncate">{p.nombre}</p>
-                            <p className="text-[9px] text-[var(--color-text-tertiary)]">S/ {p.precio.toFixed(2)}</p>
+                            <p className="text-xs text-foreground truncate">{p.nombre}</p>
+                            <p className="text-[9px] text-muted-foreground">S/ {p.precio.toFixed(2)}</p>
                         </div>
                         <button
                             type="button"
                             onClick={() => setSelectedProducts(prev => prev.filter(i => i._id !== p._id))}
-                            className="p-1 opacity-0 group-hover:opacity-100 text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-all"
+                            className="p-1 opacity-50 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-all"
                         >
                             <X className="w-3.5 h-3.5" />
                         </button>
@@ -199,9 +197,9 @@ export default function ComplementaryProductsSection({ initialItems = [] }: Prop
                 ))}
 
                 {!loadingInitial && selectedProducts.length === 0 && (
-                    <div className="col-span-full p-6 border border-dashed border-[var(--color-border-subtle)] flex flex-col items-center justify-center opacity-50 bg-[var(--color-bg-secondary)]/30">
-                        <AlertCircle className="w-4 h-4 mb-1 text-[var(--color-text-tertiary)]" />
-                        <span className="text-xs text-[var(--color-text-tertiary)]">Sin vinculaciones</span>
+                    <div className="col-span-full p-6 border border-dashed border-border flex flex-col items-center justify-center opacity-50 bg-muted/30">
+                        <AlertCircle className="w-4 h-4 mb-1 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">Sin vinculaciones</span>
                     </div>
                 )}
             </div>

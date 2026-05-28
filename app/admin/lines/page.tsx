@@ -1,8 +1,8 @@
-// app/admin/lines/page.tsx
 import { LinesClient } from "./components/lines-client";
 import { linesService } from "@/src/services/lines.service";
 import { getBrands } from "@/src/services/brands";
 import { getCategories } from "@/src/services/categorys";
+import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 
 export default async function LinesPage() {
     const [linesData, brandsData, categoriesData] = await Promise.all([
@@ -21,12 +21,18 @@ export default async function LinesPage() {
     ]);
 
     return (
-        <div className="flex-1 space-y-4 p-8 pt-6">
+        <AdminPageWrapper
+            title="Líneas de Producto"
+            breadcrumbItems={[
+                { label: "Productos", href: "/admin/products" },
+            ]}
+            breadcrumbCurrent="Líneas"
+        >
             <LinesClient
                 initialData={linesData}
                 brands={brandsData}
                 categories={categoriesData}
             />
-        </div>
+        </AdminPageWrapper>
     );
 }

@@ -214,7 +214,12 @@ export default function GeneralSection({ initialData, fields, fieldErrors }: Sec
                     </div>
 
                     <div className="space-y-1">
-                        <Label className="text-xs font-bold text-foreground">Object Fit</Label>
+                        <LabelWithTooltip
+                                htmlFor="media.objectFit"
+                                label="Object Fit"
+                                tooltip="Cómo se ajusta la imagen dentro del banner."
+
+                        />
                         <Select
                             name="media.objectFit"
                             defaultValue={val("media.objectFit", initialData?.media?.objectFit ?? "cover")}

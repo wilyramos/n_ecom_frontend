@@ -1,7 +1,11 @@
 "use client";
-import { Label } from "@/components/ui/label";
+
 import { useState } from "react";
 import type { KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 type SpecItem = { key: string; value: string };
 
@@ -32,7 +36,6 @@ export default function SpecificationsSection({ initial = [] }: Props) {
 
     const removeRow = (idx: number) => setItems(items.filter((_, i) => i !== idx));
 
-    // --- Manejo de pegado desde tabla o texto con ":" ---
     const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
         e.preventDefault();
         const pasteData = e.clipboardData.getData("text");
@@ -42,28 +45,18 @@ export default function SpecificationsSection({ initial = [] }: Props) {
             .map((line) => {
                 let key = "";
                 let value = "";
-
                 if (line.includes("|")) {
                     const parts = line.split("|").map((p) => p.trim()).filter(Boolean);
-                    if (parts.length >= 2) {
-                        key = parts[0];
-                        value = parts[1];
-                    }
+                    if (parts.length >= 2) [key, value] = parts;
                 } else if (line.includes("\t")) {
                     const parts = line.split("\t");
-                    if (parts.length >= 2) {
-                        key = parts[0].trim();
-                        value = parts[1].trim();
-                    }
+                    if (parts.length >= 2) [key, value] = [parts[0].trim(), parts[1].trim()];
                 } else if (line.includes(":")) {
                     const [k, ...v] = line.split(":");
                     key = k.trim();
                     value = v.join(":").trim();
                 }
-
-                if (key.toLowerCase() === "característica" && value.toLowerCase() === "especificación")
-                    return null;
-
+                if (key.toLowerCase() === "característica") return null;
                 return { key, value };
             })
             .filter((item): item is SpecItem => item !== null && item.key.trim() !== "");
@@ -71,7 +64,6 @@ export default function SpecificationsSection({ initial = [] }: Props) {
         if (newItems.length > 0) setItems([...items, ...newItems]);
     };
 
-    // --- Manejo de Enter para nueva fila ---
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -79,17 +71,12 @@ export default function SpecificationsSection({ initial = [] }: Props) {
         }
     };
 
-    // --- Manejo automático del ":" al escribir ---
     const handleChange = (e: ChangeEvent<HTMLInputElement>, idx: number, field: "key" | "value") => {
         const value = e.target.value;
-
-        // Si el usuario está escribiendo en "key" y pone ":", dividimos automáticamente
         if (field === "key" && value.includes(":")) {
             const [k, ...v] = value.split(":");
-            const key = k.trim();
-            const val = v.join(":").trim();
             const newItems = [...items];
-            newItems[idx] = { key, value: val };
+            newItems[idx] = { key: k.trim(), value: v.join(":").trim() };
             setItems(newItems);
         } else {
             updateItem(idx, field, value);
@@ -97,35 +84,35 @@ export default function SpecificationsSection({ initial = [] }: Props) {
     };
 
     return (
-        <div className="py-2 border p-2">
-            <Label className="mb-2">Especificaciones: </Label>
+        <div className="space-y-3 p-4 border border-border rounded-xl bg-background">
+            <Label className="text-sm font-semibold">Especificaciones</Label>
 
             {items.map((item, i) => (
-                <div key={i} className="flex ">
-                    <input
-                        type="text"
+                <div key={i} className="flex gap-2">
+                    <Input
                         placeholder="Clave"
-                        className="border-2  p-2 w-1/2 font-bold text-gray-600"
+                        className="w-1/2 font-medium"
                         value={item.key}
                         onChange={(e) => handleChange(e, i, "key")}
                         onPaste={handlePaste}
                         onKeyDown={(e) => handleKeyDown(e, i)}
                     />
-                    <input
-                        type="text"
+                    <Input
                         placeholder="Valor"
-                        className="border-2  p-2 w-1/2 "
+                        className="w-1/2"
                         value={item.value}
                         onChange={(e) => handleChange(e, i, "value")}
                         onKeyDown={(e) => handleKeyDown(e, i)}
                     />
-                    <button
+                    <Button
                         type="button"
+                        variant="ghost"
+                        size="icon"
                         onClick={() => removeRow(i)}
-                        className="text-red-500 font-bold px-2"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
                     >
-                        ×
-                    </button>
+                        <X className="h-4 w-4" />
+                    </Button>
                 </div>
             ))}
 

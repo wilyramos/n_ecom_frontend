@@ -37,7 +37,7 @@ export default function ProfileForm({ user }: { user: User }) {
     }
 
     return (
-        <div className="bg-white p-8 max-w-3xl mx-auto">
+        <div className="p-8 mx-auto">
             <form 
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 noValidate

@@ -10,19 +10,29 @@ import {
     Legend,
 } from "recharts";
 import { formatCurrency } from "@/src/utils/formatCurrency";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 
 const COLORS = ["#0077B6", "#00B4D8", "#90E0EF", "#48CAE4", "#5467C3", "#03045E"];
 
 export default function ChartsByVendors({ data }: { data: VendorReport[] }) {
     return (
         <div className="space-y-6">
-            {/* Donut + Lista */}
             <div className="grid gap-6 md:grid-cols-3">
                 {/* Donut Chart */}
-                <div className="md:col-span-2 bg-white p-4 rounded shadow flex flex-col items-center">
-                    <h2 className="text-base font-semibold mb-4">Ventas por Vendedor</h2>
-                    <div className="w-full h-72">
-                        <ResponsiveContainer>
+                <Card className="md:col-span-2">
+                    <CardHeader>
+                        <CardTitle className="text-base">Ventas por Vendedor</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-72">
+                        <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
                                     data={data}
@@ -40,55 +50,64 @@ export default function ChartsByVendors({ data }: { data: VendorReport[] }) {
                                         />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                                <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: "12px" }} />
+                                <Tooltip 
+                                    formatter={(value: number) => formatCurrency(value)}
+                                    contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))' }}
+                                />
+                                <Legend verticalAlign="bottom" height={36} />
                             </PieChart>
                         </ResponsiveContainer>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
 
                 {/* Lista Detalle */}
-                <div className="bg-white p-4 rounded shadow">
-                    <h2 className="text-base font-semibold mb-4">Detalle de Vendedores</h2>
-                    <ul>
-                        {data.map((v, i) => (
-                            <li key={i} className="flex justify-between text-sm py-1 border-b last:border-0">
-                                <span>{v.nombre}</span>
-                                <span className="font-semibold">{formatCurrency(v.totalSales)}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-base">Detalle de Vendedores</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-2">
+                            {data.map((v, i) => (
+                                <div key={i} className="flex justify-between text-sm py-2 border-b border-border last:border-0">
+                                    <span className="text-muted-foreground">{v.nombre}</span>
+                                    <span className="font-semibold">{formatCurrency(v.totalSales)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             {/* Tabla Resumen */}
-            <div className="bg-white p-4 rounded shadow">
-                <h2 className="text-base font-semibold mb-4">Resumen de Ventas</h2>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-3 py-2 text-left">Vendedor</th>
-                                <th className="px-3 py-2 text-right">Ventas</th>
-                                <th className="px-3 py-2 text-right">Unidades</th>
-                                <th className="px-3 py-2 text-right"># Ventas</th>
-                                <th className="px-3 py-2 text-right">Margen</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-base">Resumen de Ventas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent">
+                                <TableHead>Vendedor</TableHead>
+                                <TableHead className="text-right">Ventas</TableHead>
+                                <TableHead className="text-right">Unidades</TableHead>
+                                <TableHead className="text-right"># Ventas</TableHead>
+                                <TableHead className="text-right">Margen</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
                             {data.map((v, i) => (
-                                <tr key={i} className="hover:bg-gray-50">
-                                    <td className="px-3 py-2">{v.nombre}</td>
-                                    <td className="px-3 py-2 text-right">{formatCurrency(v.totalSales)}</td>
-                                    <td className="px-3 py-2 text-right">{v.totalUnits}</td>
-                                    <td className="px-3 py-2 text-right">{v.numSales}</td>
-                                    <td className="px-3 py-2 text-right">{formatCurrency(v.margin)}</td>
-                                </tr>
+                                <TableRow key={i}>
+                                    <TableCell className="font-medium">{v.nombre}</TableCell>
+                                    <TableCell className="text-right">{formatCurrency(v.totalSales)}</TableCell>
+                                    <TableCell className="text-right">{v.totalUnits}</TableCell>
+                                    <TableCell className="text-right">{v.numSales}</TableCell>
+                                    <TableCell className="text-right">{formatCurrency(v.margin)}</TableCell>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         </div>
     );
 }

@@ -1,3 +1,5 @@
+//File: frontend/components/admin/AdminPageWrapper.tsx
+
 import React from "react";
 import BackButton from "@/components/ui/BackButton";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";

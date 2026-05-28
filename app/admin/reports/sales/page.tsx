@@ -1,3 +1,5 @@
+//File: frontend/app/admin/reports/sales/page.tsx
+
 import SalesReportsResultsAdmin from '@/components/admin/reports/SalesReportsResultsAdmin';
 import { Suspense } from 'react';
 import SpinnerLoading from '@/components/ui/SpinnerLoading';

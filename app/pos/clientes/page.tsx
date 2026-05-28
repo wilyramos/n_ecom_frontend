@@ -35,7 +35,9 @@ export default async function pageClientesPOS({ searchParams }: { searchParams: 
     return (
         <>
 
-            <AddClientButton />
+            <AddClientButton 
+                role="client"
+            />
 
             {clients && clients.users ? (
 

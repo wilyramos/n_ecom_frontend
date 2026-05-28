@@ -1,52 +1,42 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import CategoryForm from "./CategoryForm"
-import { createCategoryAction } from "@/actions/category/create-category-action"
-import { useActionState, useEffect } from "react"
-import { toast } from 'react-toastify'
-import type { CategoryResponse } from "@/src/schemas"
-
+import { useRouter } from "next/navigation";
+import CategoryForm from "./CategoryForm";
+import { createCategoryAction } from "@/actions/category/create-category-action";
+import { useActionState, useEffect } from "react";
+import { toast } from 'react-toastify';
+import type { CategoryResponse } from "@/src/schemas";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function CreateCategoryForm({ categories }: { categories: CategoryResponse[] }) {
-
-    const router = useRouter()
-    const [state, dispatch] = useActionState(createCategoryAction, {
+    const router = useRouter();
+    const [state, dispatch, isPending] = useActionState(createCategoryAction, {
         errors: [],
         success: ""
-    })
+    });
 
     useEffect(() => {
-        if (state.errors) {
-            state.errors.forEach((error) => {
-                // console.log("error", error)
-                toast.error(error)
-            })
-        }
+        if (state.errors) state.errors.forEach((error) => toast.error(error));
         if (state.success) {
-            toast.success(state.success)
-            router.push('/admin/products/category')
+            toast.success(state.success);
+            router.push('/admin/products/category');
         }
-    }, [state, router])
-
+    }, [state, router]);
 
     return (
+        <form className="w-full max-w-7xl mx-auto" noValidate action={dispatch}>
+            <Card>
+                <CardContent className="pt-6">
+                    <CategoryForm categories={categories} />
+                </CardContent>
+            </Card>
 
-        <form
-            className="flex flex-col gap-4 w-full max-w-2xl mx-auto mt-10"
-            noValidate
-            action={dispatch}
-        >
-            <CategoryForm 
-                categories={categories}
-            />
-
-            <input
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-2xl"
-                value="Crear Categoria"
-            />
-
+            <div className="flex justify-end mt-6">
+                <Button type="submit" disabled={isPending}>
+                    {isPending ? "Creando..." : "Crear Categoría"}
+                </Button>
+            </div>
         </form>
-    )
+    );
 }

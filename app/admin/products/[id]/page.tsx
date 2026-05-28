@@ -58,7 +58,7 @@ export default async function ProductDetailsPage({ params }: { params: Params })
                 product={product}
                 categorias={categorias}
                 brands={brands}
-                lines={lines} // <--- 3. Pasamos las líneas al formulario
+                lines={lines}
             />
         </AdminPageWrapper>
     );

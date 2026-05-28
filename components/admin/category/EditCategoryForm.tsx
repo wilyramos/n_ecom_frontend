@@ -1,50 +1,60 @@
-"use client"
-import type { CategoryResponse } from "@/src/schemas"
-import CategoryForm from "./CategoryForm"
-import { EditCategory } from "@/actions/category/edit-category-action"
-import { useActionState, useEffect } from "react"
-import { toast } from "react-toastify"
+"use client";
 
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner"; // Asegúrate de usar sonner si es tu estándar, o mantén react-toastify
+import { EditCategory } from "@/actions/category/edit-category-action";
+import CategoryForm from "./CategoryForm";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import type { CategoryResponse } from "@/src/schemas";
 
-export default function EditCategoryForm({ category, categories }: { category: CategoryResponse, categories: CategoryResponse[] }) {
-
+export default function EditCategoryForm({ 
+    category, 
+    categories 
+}: { 
+    category: CategoryResponse; 
+    categories: CategoryResponse[] 
+}) {
     const editCategoryWithId = EditCategory.bind(null, category._id);
-    const [state, dispatch] = useActionState(editCategoryWithId, {
+    
+    const [state, dispatch, isPending] = useActionState(editCategoryWithId, {
         errors: [],
         success: ""
-    })
-
+    });
 
     useEffect(() => {
         if (state.errors) {
-            state.errors.forEach(error => {
-                toast.error(error)
-            })
+            state.errors.forEach((error) => toast.error(error));
         }
         if (state.success) {
-            toast.success(state.success)
-            
+            toast.success(state.success);
         }
-
-    }, [state])
-
+    }, [state]);
 
     return (
         <form
-            className="flex flex-col gap-4 w-full max-w-2xl mx-auto mt-10"
+            className="w-full max-w-7xl mx-auto"
             noValidate
             action={dispatch}
         >
-            <CategoryForm
-                category={category}
-                categories={categories}
-            />
+            <Card className="border-border">
+                <CardContent className="pt-6">
+                    <CategoryForm
+                        category={category}
+                        categories={categories}
+                    />
+                </CardContent>
+            </Card>
 
-            <input
-                type="submit"
-                value="Actualizar Categoria"
-                className="bg-blue-500 text-white font-bold py-3 rounded-full w-full hover:bg-blue-600 transition duration-200 ease-in-out cursor-pointer mt-4"
-            />
+            <div className="flex justify-end mt-6">
+                <Button 
+                    type="submit" 
+                    disabled={isPending}
+                    className="w-full sm:w-auto"
+                >
+                    {isPending ? "Actualizando..." : "Actualizar Categoría"}
+                </Button>
+            </div>
         </form>
-    )
+    );
 }

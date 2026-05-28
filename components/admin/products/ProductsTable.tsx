@@ -1,4 +1,3 @@
-// Neutral palette applied version of ProductsTable
 "use client";
 
 import Link from "next/link";
@@ -11,7 +10,6 @@ import { useColumnFilter } from "@/hooks/useColumnFilter";
 
 import type { ProductsAPIResponse } from "@/src/schemas";
 import type { CategoryListResponse } from "@/src/schemas";
-import { Brand } from "@/src/services/brands";
 
 import {
     Table,
@@ -31,10 +29,14 @@ import {
     SelectItem,
 } from "@/components/ui/select";
 
-export default function ProductsTable({ products, categories, brands }: {
+export default function ProductsTable({ 
+    products, 
+    categories,
+    itemsPerPage = 10 
+}: {
     products: ProductsAPIResponse | null;
     categories: CategoryListResponse;
-    brands: Brand[];
+    itemsPerPage?: number;
 }) {
     const router = useRouter();
 
@@ -42,13 +44,13 @@ export default function ProductsTable({ products, categories, brands }: {
     const skuFilter = useColumnFilter("sku");
     const priceSort = useColumnFilter("precioSort");
     const stockSort = useColumnFilter("stockSort");
-    const brandFilter = useColumnFilter("brand");
     const activeFilter = useColumnFilter("isActive");
-    const nuevoFilter = useColumnFilter("esNuevo");
     const destacadoFilter = useColumnFilter("esDestacado");
     const categoryFilter = useColumnFilter("category");
 
-    const noProducts = !products || products.products.length === 0;
+    // Lógica para limitar a 10 (o itemsPerPage)
+    const displayProducts = products?.products.slice(0, itemsPerPage) ?? [];
+    const noProducts = !products || displayProducts.length === 0;
 
     const clearFilters = () => {
         [
@@ -56,9 +58,7 @@ export default function ProductsTable({ products, categories, brands }: {
             skuFilter,
             priceSort,
             stockSort,
-            brandFilter,
             activeFilter,
-            nuevoFilter,
             destacadoFilter,
             categoryFilter,
         ].forEach((f) => f.reset());
@@ -85,10 +85,8 @@ export default function ProductsTable({ products, categories, brands }: {
                             skuFilter,
                             priceSort,
                             stockSort,
-                            brandFilter,
                             categoryFilter,
                             activeFilter,
-                            nuevoFilter,
                             destacadoFilter,
                         ].map((filter, i) => (
                             <TableHead
@@ -141,23 +139,6 @@ export default function ProductsTable({ products, categories, brands }: {
                                 )}
                                 {i === 4 && (
                                     <Select
-                                        value={brandFilter.value || undefined}
-                                        onValueChange={brandFilter.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Marca" />
-                                        </SelectTrigger>
-                                        <SelectContent className="max-h-60 overflow-auto bg-gray-50 text-black">
-                                            {brands.map((b) => (
-                                                <SelectItem key={b._id} value={b._id}>
-                                                    {b.nombre}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                                {i === 5 && (
-                                    <Select
                                         value={categoryFilter.value || undefined}
                                         onValueChange={categoryFilter.setValue}
                                     >
@@ -173,7 +154,7 @@ export default function ProductsTable({ products, categories, brands }: {
                                         </SelectContent>
                                     </Select>
                                 )}
-                                {i === 6 && (
+                                {i === 5 && (
                                     <Select
                                         value={activeFilter.value || undefined}
                                         onValueChange={activeFilter.setValue}
@@ -187,21 +168,7 @@ export default function ProductsTable({ products, categories, brands }: {
                                         </SelectContent>
                                     </Select>
                                 )}
-                                {i === 7 && (
-                                    <Select
-                                        value={nuevoFilter.value || undefined}
-                                        onValueChange={nuevoFilter.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Nuevo" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-50 text-black">
-                                            <SelectItem value="true">Sí</SelectItem>
-                                            <SelectItem value="false">No</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                                {i === 8 && (
+                                {i === 6 && (
                                     <Select
                                         value={destacadoFilter.value || undefined}
                                         onValueChange={destacadoFilter.setValue}
@@ -228,14 +195,14 @@ export default function ProductsTable({ products, categories, brands }: {
                     {noProducts ? (
                         <TableRow>
                             <TableCell
-                                colSpan={10}
+                                colSpan={8}
                                 className="text-center py-6 text-sm text-zinc-600"
                             >
                                 No se encontraron productos.
                             </TableCell>
                         </TableRow>
                     ) : (
-                        products.products.map((p) => (
+                        displayProducts.map((p) => (
                             <TableRow
                                 key={p._id}
                                 className="text-xs border-b hover:bg-gray-50"
@@ -257,9 +224,7 @@ export default function ProductsTable({ products, categories, brands }: {
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="
-                                                h-8 w-8 flex items-center justify-center rounded border bg-gray-100 text-zinc-400 text-[10px]
-                                            ">
+                                            <div className="h-8 w-8 flex items-center justify-center rounded border bg-gray-100 text-zinc-400 text-[10px]">
                                                 no image
                                             </div>
                                         )}
@@ -282,14 +247,9 @@ export default function ProductsTable({ products, categories, brands }: {
                                 </TableCell>
 
                                 <TableCell className="p-2 text-center w-[130px] text-zinc-600">
-                                    {p.brand?.nombre || "-"}
-                                </TableCell>
-
-                                <TableCell className="p-2 text-center w-[130px] text-zinc-600">
                                     -
                                 </TableCell>
 
-                                {/* Estado */}
                                 <TableCell className="p-2 text-center w-[60px]">
                                     {p.isActive ? (
                                         <Check className="w-4 h-4 text-green-600" />
@@ -298,16 +258,6 @@ export default function ProductsTable({ products, categories, brands }: {
                                     )}
                                 </TableCell>
 
-                                {/* Nuevo */}
-                                <TableCell className="p-2 text-center w-[60px]">
-                                    {p.esNuevo ? (
-                                        <Check className="w-4 h-4 text-green-600" />
-                                    ) : (
-                                        <X className="w-4 h-4 text-red-600" />
-                                    )}
-                                </TableCell>
-
-                                {/* Destacado */}
                                 <TableCell className="p-2 text-center w-[60px]">
                                     {p.esDestacado ? (
                                         <Check className="w-4 h-4 text-green-600" />
@@ -316,7 +266,6 @@ export default function ProductsTable({ products, categories, brands }: {
                                     )}
                                 </TableCell>
 
-                                {/* Acciones */}
                                 <TableCell className="p-2 text-center w-[80px]">
                                     <ProductMenuAction productId={p._id} />
                                 </TableCell>

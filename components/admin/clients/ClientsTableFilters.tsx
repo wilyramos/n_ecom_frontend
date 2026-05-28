@@ -1,9 +1,12 @@
+// File: frontend/components/admin/clients/ClientsTableFilters.tsx
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { FiSearch } from "react-icons/fi";
+import { TableHead } from "@/components/ui/table";
+import {Input} from "@/components/ui/input";
 
 export default function ClientsTableFilters() {
     const router = useRouter();
@@ -20,13 +23,9 @@ export default function ClientsTableFilters() {
 
     const handleFilterChange = useDebouncedCallback(() => {
         const params = new URLSearchParams();
-
         Object.entries(filters).forEach(([key, value]) => {
-            if (value.trim()) {
-                params.set(key, value);
-            }
+            if (value.trim()) params.set(key, value);
         });
-
         router.push(`${pathname}?${params.toString()}`);
     }, 400);
 
@@ -36,73 +35,31 @@ export default function ClientsTableFilters() {
         handleFilterChange();
     };
 
+    const inputClasses = "pl-8 py-1.5 w-full text-base bg-background border border-border rounded-sm focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground";
+
     return (
-        <tr className="bg-gray-50 py-4 font-bold ">
-            <td className="px-2 py-1">
-                <div className="relative">
-                    <input
-                        type="text"
-                        name="nombre"
-                        placeholder="Nombre"
-                        value={filters.nombre}
-                        onChange={handleChange}
-                        className="pl-8 py-2 w-full text-sm focus:outline-none focus:border-rose-600 focus:border-b-3 placeholder:text-gray-700"
-                    />
-                    <FiSearch className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                </div>
-            </td>
-            <td className="px-2 py-1">
-                <div className="relative">
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={filters.email}
-                        onChange={handleChange}
-                        className="pl-8 py-2 border-b w-full text-sm focus:outline-none focus:border-gray-800 focus:border-b-3 placeholder:text-gray-700"
-                    />
-                    <FiSearch className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                </div>
-            </td>
-            <td className="px-2 py-1">
-                <div className="relative">
-                    <input
-                        type="tel"
-                        name="telefono"
-                        placeholder="Teléfono"
-                        value={filters.telefono}
-                        onChange={handleChange}
-                        className="pl-8 py-2 border-b w-full text-sm focus:outline-none focus:border-gray-800 focus:border-b-3 placeholder:text-gray-700"
-                    />
-                    <FiSearch className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                </div>
-            </td>
-            <td className="px-2 py-1">
-                <div className="relative">
-                    <input
-                        type="text"
-                        name="numeroDocumento"
-                        placeholder="Documento"
-                        value={filters.numeroDocumento}
-                        onChange={handleChange}
-                        className="pl-8 py-2 border-b w-full text-sm focus:outline-none focus:border-gray-800 focus:border-b-3 placeholder:text-gray-700"
-                    />
-                    <FiSearch className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                </div>
-            </td>
-            <td className="px-2 py-1">
-                <div className="relative">
-                    <input
-                        type="text"
-                        name="rol"
-                        placeholder="Rol"
-                        value={filters.rol}
-                        onChange={handleChange}
-                        className="pl-8 py-2 border-b w-full text-sm focus:outline-none focus:border-gray-800 focus:border-b-3 placeholder:text-gray-700"
-                    />
-                    <FiSearch className="absolute left-1.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                </div>
-            </td>
+        <tr>
+            {[
+                { name: "nombre", placeholder: "Nombre" },
+                { name: "email", placeholder: "Email" },
+                { name: "telefono", placeholder: "Teléfono" },
+                { name: "numeroDocumento", placeholder: "Documento" },
+                { name: "rol", placeholder: "Rol" },
+            ].map((field) => (
+                <TableHead key={field.name} className="px-2 py-2">
+                    <div className="relative">
+                        <Input
+                            type="text"
+                            name={field.name}
+                            placeholder={field.placeholder}
+                            value={filters[field.name as keyof typeof filters]}
+                            onChange={handleChange}
+                            className={inputClasses}
+                        />
+                        <FiSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    </div>
+                </TableHead>
+            ))}
         </tr>
     );
 }

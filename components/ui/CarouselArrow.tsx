@@ -13,14 +13,14 @@ export function CarouselArrow({ onClick, direction }: ArrowProps) {
         "absolute top-1/2 -translate-y-1/2 z-10 cursor-pointer " +
         "text-gray-400 hover:text-gray-900 transition-colors duration-200";
 
-    const position = direction === "left" ? "-left-2" : "-right-2";
+    const position = direction === "left" ? "-left-1" : "-right-1";
 
     return (
         <button onClick={onClick} className={`${baseClasses} ${position}`}>
             {direction === "left" ? (
-                <MdArrowBackIosNew size={28} />
+                <MdArrowBackIosNew size={24} />
             ) : (
-                <MdArrowForwardIos size={28} />
+                <MdArrowForwardIos size={24} />
             )}
         </button>
     );

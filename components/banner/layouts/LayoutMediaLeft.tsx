@@ -16,11 +16,11 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
         return () => clearTimeout(t);
     }, []);
 
-    // Lógica de colores actualizada
     const isDark = design.theme !== "light";
     const bg = design.bgColor ?? (isDark ? "#000000" : "#ffffff");
     const text = design.textColor ?? (isDark ? "#a0a0a0" : "#0f0f0f");
     const accent = design.accentColor ?? "#a0a0a0";
+    
     const fadeUp = (delay: number): React.CSSProperties => ({
         opacity: loaded ? 1 : 0,
         transform: loaded ? "translateY(0px)" : "translateY(14px)",
@@ -32,7 +32,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
             className="banner-slot group relative w-full overflow-hidden flex items-center"
             style={{ backgroundColor: bg }}
         >
-            <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-row items-center px-4 sm:px-8">
+            <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-row items-center px-3 sm:px-8">
 
                 {/* ── Media (izquierda) ─────────────────────────────── */}
                 {media?.imageUrl && (
@@ -44,7 +44,6 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                             transition: "opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1)",
                         }}
                     >
-                        {/* Contenedor relativo al 100% para que la imagen ocupe todo el espacio */}
                         <div className="relative w-full h-full">
                             <Image
                                 src={media.imageUrl}
@@ -62,14 +61,14 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
 
                 {/* ── Texto (derecha) ───────────────────────────────── */}
                 <div
-                    className="flex flex-col justify-center items-center w-1/2 h-full pl-2 sm:pl-4 gap-2 sm:gap-4 overflow-hidden"
+                    className="flex flex-col justify-center items-start w-1/2 h-full pl-1.5 sm:pl-4 py-2 sm:py-0 gap-1 sm:gap-4 overflow-hidden"
                     style={{ color: text }}
                 >
                     {subtitle && (
                         <div style={fadeUp(0.1)}>
                             <span
-                                className="inline-block text-[10px] sm:text-sm md:text-base font-bold uppercase px-2.5 py-1"
-                                style={{ borderLeft: `3px solid ${accent}` }}
+                                className="inline-block text-[9px] sm:text-sm md:text-base font-bold uppercase px-1.5 sm:px-2.5 py-0.5 sm:py-1 leading-none sm:leading-normal"
+                                style={{ borderLeft: `2.5px solid ${accent}` }}
                             >
                                 {subtitle}
                             </span>
@@ -79,8 +78,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                     {title && (
                         <div style={fadeUp(0.2)}>
                             <h2
-                                className="font-bold leading-[1.1] tracking-[-0.03em]
-                                           text-[clamp(1rem,2.5vw,2.8rem)] line-clamp-3"
+                                className="font-bold leading-[1.1] tracking-[-0.03em] text-[clamp(1.05rem,2.5vw,2.8rem)] line-clamp-2 sm:line-clamp-3"
                             >
                                 {title}
                             </h2>
@@ -90,8 +88,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                     {description && (
                         <div style={fadeUp(0.3)}>
                             <p
-                                className="text-[10px] sm:text-[13px] md:text-sm
-                                           leading-relaxed line-clamp-2 sm:line-clamp-4 max-w-[32ch]"
+                                className="text-[9px] sm:text-[13px] md:text-sm leading-tight sm:leading-relaxed line-clamp-1 sm:line-clamp-4 max-w-[32ch]"
                                 style={{ opacity: 0.75 }}
                             >
                                 {description}
@@ -100,7 +97,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                     )}
 
                     {price?.current !== undefined && price.current !== null && (
-                        <div style={fadeUp(0.45)} className="mt-0 sm:mt-1">
+                        <div style={fadeUp(0.45)} className="mt-0.5 sm:mt-1">
                             <SliderPrice
                                 price={price}
                                 textColor={text}
@@ -111,8 +108,8 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                     )}
 
                     {terms && (
-                        <div style={fadeUp(0.50)} className="mt-1 sm:mt-2">
-                            <p className="text-[8px] sm:text-[9px] font-medium tracking-wide uppercase" style={{ opacity: 0.45 }}>
+                        <div style={fadeUp(0.50)} className="mt-0.5 sm:mt-2">
+                            <p className="text-[7px] sm:text-[9px] font-medium tracking-wide uppercase line-clamp-1" style={{ opacity: 0.45 }}>
                                 {terms}
                             </p>
                         </div>
@@ -130,6 +127,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
             aria-label={title ?? banner.name}
+            className="block w-full"
         >
             {content}
         </Link>

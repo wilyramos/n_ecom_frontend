@@ -1,4 +1,3 @@
-// File: components/admin/AdminSidebar.tsx
 "use client";
 
 import type { ElementType } from "react";
@@ -33,7 +32,6 @@ import {
 } from "lucide-react";
 
 type NavLink = {
-    type?: "link" | "separator";
     href?: string;
     icon?: ElementType;
     label: string;
@@ -58,10 +56,6 @@ const menuGroups: NavLink[] = [
 
     // ── VENTAS ──────────────────────────────
     {
-        type: "separator",
-        label: "Ventas y Clientes",
-    },
-    {
         href: "/admin/orders",
         icon: ReceiptText,
         label: "Órdenes",
@@ -73,10 +67,6 @@ const menuGroups: NavLink[] = [
     },
 
     // ── CATÁLOGO ────────────────────────────
-    {
-        type: "separator",
-        label: "Catálogo e Inventario",
-    },
     {
         href: "/admin/products",
         icon: Package,
@@ -99,10 +89,6 @@ const menuGroups: NavLink[] = [
     },
 
     // ── REPORTES ────────────────────────────
-    {
-        type: "separator",
-        label: "Control y Reportes",
-    },
     {
         icon: BarChart3,
         label: "Reportes",
@@ -129,10 +115,6 @@ const menuGroups: NavLink[] = [
 
     // ── CONFIGURACIÓN ───────────────────────
     {
-        type: "separator",
-        label: "Configuración",
-    },
-    {
         href: "/admin/slider",
         icon: Sliders,
         label: "Slider Banners",
@@ -154,10 +136,6 @@ const menuGroups: NavLink[] = [
 
     // ── CANALES ─────────────────────────────
     {
-        type: "separator",
-        label: "Canales",
-    },
-    {
         href: "/pos",
         icon: Store,
         label: "Punto de Venta",
@@ -166,7 +144,7 @@ const menuGroups: NavLink[] = [
     {
         href: "/",
         icon: Store,
-        label: "Ver Tienda Online",
+        label: "Ver Tienda",
         isExternal: true,
     },
 ];
@@ -238,27 +216,12 @@ export default function AdminSidebar({ user }: Props) {
                 <nav className="custom-scrollbar flex-1 space-y-1 overflow-y-auto px-3 py-2">
                     {menuGroups.map((item) => {
                         const {
-                            type,
                             href,
                             icon: Icon,
                             label,
                             children,
                             isExternal,
                         } = item;
-
-                        // ── Separator ─────────────────────
-                        if (type === "separator") {
-                            if (!expanded) return null;
-
-                            return (
-                                <div
-                                    key={`separator-${label}`}
-                                    className="select-none px-3 pb-1 pt-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400"
-                                >
-                                    {label}
-                                </div>
-                            );
-                        }
 
                         // ── Dropdown Menu ─────────────────
                         if (children) {

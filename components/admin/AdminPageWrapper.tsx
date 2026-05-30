@@ -49,7 +49,7 @@ export default function AdminPageWrapper({
                         <div className="flex items-center gap-3">
                             {/* Marcador vertical naranja para dar vivacidad al título */}
                             <div className="w-1.5 h-8 bg-[var(--color-accent-vivid)] rounded-full shrink-0" />
-                            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-fg-primary)]">
+                            <h1 className="text-lg md:text-xl font-bold tracking-tight text-[var(--color-fg-primary)]">
                                 {title}
                             </h1>
                         </div>

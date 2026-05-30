@@ -1,3 +1,5 @@
+// 
+
 import { getProductsByAdmin } from '@/src/services/products';
 import ProductsTable from '@/components/admin/products/ProductsTable';
 import Pagination from '@/components/ui/Pagination';

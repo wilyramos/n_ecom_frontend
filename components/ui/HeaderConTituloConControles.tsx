@@ -23,7 +23,7 @@ export default function HeaderConTituloConControles({ title, viewAllHref }: Prop
             {viewAllHref && (
                 <Link
                     href={viewAllHref}
-                    className="hidden md:flex items-center gap-1 text-sm font-semibold text-fg-primary hover:text-fg-secondary transition-colors whitespace-nowrap"
+                    className="hidden md:flex items-center gap-1 text-sm font-semibold text-fg-muted hover:text-fg-secondary transition-colors whitespace-nowrap"
                 >
                     Ver más
                 </Link>

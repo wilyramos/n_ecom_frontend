@@ -15,7 +15,7 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
 
     const content = (
         <div
-            className="banner-slot group relative w-full overflow-hidden "
+            className="banner-slot group relative w-full overflow-hidden flex items-center justify-center"
             style={{ backgroundColor: bg }}
         >
             {isVideo ? (
@@ -27,17 +27,15 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
                     muted
                     loop
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover
-                               transition-transform "
+                    className="absolute inset-0 w-full h-full object-cover transition-transform"
                 />
             ) : media?.imageUrl ? (
                 <Image
                     src={media.imageUrl}
                     alt={media.altText ?? title ?? ""}
                     fill
-                    className={`
-                               ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                    sizes="100vw"
+                    className={`${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
+                    sizes="(max-width: 640px) 100vw, 100vw"
                     priority
                     unoptimized
                 />
@@ -53,6 +51,7 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
             aria-label={title ?? banner.name}
+            className="block w-full"
         >
             {content}
         </Link>

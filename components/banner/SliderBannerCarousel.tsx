@@ -4,8 +4,7 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { SliderBannerSlide } from "./SliderBannerSlide";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
-import { CarouselDot } from "./CarouselDot";
-import {CarouselArrow} from "@/components/ui/CarouselArrow";
+import { CarouselArrow } from "@/components/ui/CarouselArrow";
 
 interface Props {
     banners: SliderBanner[];
@@ -35,12 +34,11 @@ export default function SliderBannerCarousel({ banners }: Props) {
                     infinite
                     autoPlay
                     autoPlaySpeed={autoPlaySpeed}
-                    showDots={banners.length > 1}
+                    showDots={false}
                     containerClass="w-full"
                     customLeftArrow={<CarouselArrow direction="left" />}
                     customRightArrow={<CarouselArrow direction="right" />}
                     dotListClass="!bottom-4"
-                    customDot={<CarouselDot autoPlaySpeed={autoPlaySpeed} />}
                 >
                     {banners.map((banner) => (
                         <SliderBannerSlide key={banner._id} banner={banner} />

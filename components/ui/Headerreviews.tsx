@@ -9,19 +9,6 @@ interface Props extends ButtonGroupProps {
     viewAllHref?: string;
 }
 
-function GoogleLogo() {
-    return (
-        <span className="text-[15px] font-bold tracking-tight select-none leading-none">
-            <span style={{ color: "#4285F4" }}>G</span>
-            <span style={{ color: "#EA4335" }}>o</span>
-            <span style={{ color: "#FBBC04" }}>o</span>
-            <span style={{ color: "#4285F4" }}>g</span>
-            <span style={{ color: "#34A853" }}>l</span>
-            <span style={{ color: "#EA4335" }}>e</span>
-        </span>
-    );
-}
-
 export default function HeaderReviews({ title, viewAllHref }: Props) {
     return (
         <div className="w-full mb-4 select-none flex items-center justify-between gap-2">
@@ -39,15 +26,12 @@ export default function HeaderReviews({ title, viewAllHref }: Props) {
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-default bg-surface-primary hover:bg-surface-secondary transition-colors whitespace-nowrap shrink-0"
                 >
-                    <GoogleLogo />
-                    {/* Separador vertical */}
-                    <span className="w-px h-3.5 bg-border-default" />
                     {/* Texto desktop */}
-                    <span className="hidden md:inline text-xs font-medium text-fg-secondary">
+                    <span className="hidden md:inline text-xs font-medium text-fg-muted hover:text-fg-secondary">
                         Ver reseñas
                     </span>
                     {/* Texto mobile */}
-                    <span className="md:hidden text-xs font-medium text-fg-secondary">
+                    <span className="md:hidden text-xs font-medium text-fg-secondary hover:text-fg-primary">
                         Ver
                     </span>
                     {/* Ícono externo */}

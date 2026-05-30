@@ -3,7 +3,7 @@ import type { SliderPrice as TSliderPrice } from "@/src/schemas/slider.schema";
 
 interface Props {
     price: TSliderPrice;
-    textColor: string;    // Cambiado de 'color' a 'textColor'
+    textColor: string;
     accentColor: string;
     isDark: boolean;
 }
@@ -11,29 +11,29 @@ interface Props {
 export default function SliderPrice({ price, textColor, accentColor, isDark }: Props) {
     return (
         <div
-            className="inline-flex flex-col gap-1 w-fit"
+            className="inline-flex flex-col gap-0.5 sm:gap-1 w-fit"
             style={{ color: textColor }}
         >
             {/* ── Etiqueta superior (opcional) ──────────────────────── */}
             {price.label && (
                 <span
-                    className="w-fit text-[9px] sm:text-[11px] font-bold uppercase tracking-widest leading-none rounded-sm px-2 py-1 shadow-sm"
+                    className="w-fit text-[7.5px] sm:text-[11px] font-bold uppercase tracking-widest leading-none rounded-sm px-1.5 sm:px-2 py-0.5 sm:py-1 shadow-sm whitespace-nowrap"
                     style={{
                         backgroundColor: accentColor,
-                        color: "#ffffff", // Texto blanco para contrastar con el acento
+                        color: "#ffffff",
                     }}
                 >
                     {price.label}
                 </span>
             )}
 
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <div className="flex flex-wrap items-baseline gap-x-1.5 sm:gap-x-3 gap-y-0.5">
 
                 {/* ── Precio actual ─────────────────────────────────── */}
                 {price.current !== undefined && price.current !== null && (
-                    <span className="font-black tracking-tighter leading-none text-[clamp(1.4rem,4.5vw,3rem)]">
+                    <span className="font-black tracking-tighter leading-none text-[clamp(1.15rem,4.5vw,3rem)] whitespace-nowrap">
                         <span
-                            className="mr-1 align-top font-bold text-[0.4em]"
+                            className="mr-0.5 sm:mr-1 align-top font-bold text-[0.45em]"
                             style={{ opacity: isDark ? 0.6 : 0.5 }}
                         >
                             {price.currency ?? "S/"}
@@ -43,7 +43,7 @@ export default function SliderPrice({ price, textColor, accentColor, isDark }: P
 
                         {price.suffix && (
                             <span
-                                className="ml-1.5 align-baseline text-[0.3em] font-medium uppercase tracking-[0.1em]"
+                                className="ml-1 align-baseline text-[0.35em] font-medium uppercase tracking-[0.05em] sm:tracking-[0.1em]"
                                 style={{ opacity: isDark ? 0.6 : 0.5 }}
                             >
                                 {price.suffix}
@@ -55,7 +55,7 @@ export default function SliderPrice({ price, textColor, accentColor, isDark }: P
                 {/* ── Precio anterior tachado ───────────────────────── */}
                 {price.compare !== undefined && price.compare !== null && (
                     <span
-                        className="text-xs sm:text-sm md:text-base font-medium leading-none tracking-tight line-through decoration-[1.5px]"
+                        className="text-[9px] sm:text-sm md:text-base font-medium leading-none tracking-tight line-through decoration-[1px] sm:decoration-[1.5px] whitespace-nowrap"
                         style={{ opacity: isDark ? 0.4 : 0.3 }}
                     >
                         {price.currency ?? "S/"}{price.compare.toFixed(2)}

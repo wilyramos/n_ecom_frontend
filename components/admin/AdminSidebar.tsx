@@ -16,19 +16,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import {
     LayoutDashboard,
-    Package,
-    Users,
-    ReceiptText,
-    Sliders,
+    ShoppingBag,
+    Boxes,
+    Tags,
     Building2,
-    GitBranch,
-    FolderTree,
-    BarChart3,
-    Store,
-    Scale,
-    UserCheck,
+    GitFork,
+    FileText,
+    ShieldAlert,
+    Image,
+    Users,
+    MonitorSmartphone,
+    Eye,
     ChevronDown,
-    ChevronRight,
+    ChevronRight
 } from "lucide-react";
 
 type NavLink = {
@@ -57,24 +57,19 @@ const menuGroups: NavLink[] = [
     // ── VENTAS ──────────────────────────────
     {
         href: "/admin/orders",
-        icon: ReceiptText,
+        icon: ShoppingBag,
         label: "Órdenes",
     },
-    {
-        href: "/admin/clients",
-        icon: Users,
-        label: "Clientes",
-    },
-
+  
     // ── CATÁLOGO ────────────────────────────
     {
         href: "/admin/products",
-        icon: Package,
+        icon: Boxes,
         label: "Productos",
     },
     {
         href: "/admin/products/category",
-        icon: FolderTree,
+        icon: Tags,
         label: "Categorías",
     },
     {
@@ -84,13 +79,13 @@ const menuGroups: NavLink[] = [
     },
     {
         href: "/admin/lines",
-        icon: GitBranch,
+        icon: GitFork,
         label: "Líneas",
     },
 
     // ── REPORTES ────────────────────────────
     {
-        icon: BarChart3,
+        icon: FileText,
         label: "Reportes",
         children: [
             {
@@ -109,41 +104,32 @@ const menuGroups: NavLink[] = [
     },
     {
         href: "/admin/claims",
-        icon: Scale,
+        icon: ShieldAlert,
         label: "Reclamaciones",
     },
 
     // ── CONFIGURACIÓN ───────────────────────
     {
         href: "/admin/slider",
-        icon: Sliders,
+        icon: Image,
         label: "Slider Banners",
     },
     {
-        icon: UserCheck,
+        icon: Users,
         label: "Usuarios",
-        children: [
-            {
-                href: "/admin/users",
-                label: "Lista de Usuarios",
-            },
-            {
-                href: "/admin/users/roles",
-                label: "Roles y Permisos",
-            },
-        ],
+        href: "/admin/users",
     },
 
     // ── CANALES ─────────────────────────────
     {
         href: "/pos",
-        icon: Store,
+        icon: MonitorSmartphone,
         label: "Punto de Venta",
         isExternal: true,
     },
     {
         href: "/",
-        icon: Store,
+        icon: Eye,
         label: "Ver Tienda",
         isExternal: true,
     },

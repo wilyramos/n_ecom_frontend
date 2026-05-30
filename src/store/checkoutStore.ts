@@ -1,3 +1,5 @@
+//File: checkoutStore.ts
+
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import type { TShippingAddress } from '../schemas';

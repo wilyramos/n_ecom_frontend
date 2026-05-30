@@ -30,14 +30,11 @@ export default async function AdminClaimsPage({ searchParams }: PageProps) {
         limit: 10,
     });
 
-    const breadcrumbs = [
-        { label: "Dashboard", href: "/admin" }
-    ];
+
 
     return (
         <AdminPageWrapper
             title="Libro de Reclamaciones"
-            breadcrumbItems={breadcrumbs}
             breadcrumbCurrent="Reclamaciones"
             showBackButton={false}
         >

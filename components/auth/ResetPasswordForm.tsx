@@ -28,7 +28,7 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   }, [state, router])
 
   return (
-    <div className="w-full max-w-md bg-white p-8 rounded-3xl shadow-md">
+    <div className="w-full max-w-md bg-white p-8">
       <div className="text-center mb-6">
         <p className="text-gray-500 mt-2">Ingresa tu nueva contraseña</p>
       </div>

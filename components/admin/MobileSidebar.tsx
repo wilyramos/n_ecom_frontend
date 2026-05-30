@@ -10,16 +10,17 @@ import {
     ChevronDown, 
     ChevronRight,
     LayoutDashboard,
-    Package2,
-    Users2,
-    ReceiptText,
-    BadgeDollarSign,
+    ShoppingBag,
+    Boxes,
+    Tags,
     Building2,
-    GitBranch,
-    Shapes,
-    BarChart3,
-    ShieldCheck,
-    Store
+    GitFork,
+    FileText,
+    ShieldAlert,
+    Image,
+    Users,
+    MonitorSmartphone,
+    Eye
 } from "lucide-react";
 import { User } from "@/src/schemas";
 import { cn } from "@/lib/utils";
@@ -41,15 +42,13 @@ export default function MobileSidebar({ user }: { user: User }) {
 
     const links: NavLink[] = [
         { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-        { href: "/admin/products", icon: Package2, label: "Productos" },
-        { href: "/admin/clients", icon: Users2, label: "Clientes" },
-        { href: "/admin/orders", icon: ReceiptText, label: "Órdenes" },
-        { href: "/admin/slider", icon: BadgeDollarSign, label: "Slider" },
+        { href: "/admin/orders", icon: ShoppingBag, label: "Órdenes" },
+        { href: "/admin/products", icon: Boxes, label: "Productos" },
+        { href: "/admin/products/category", icon: Tags, label: "Categorías" },
         { href: "/admin/brands", icon: Building2, label: "Marcas" },
-        { href: "/admin/lines", icon: GitBranch, label: "Líneas" },
-        { href: "/admin/products/category", icon: Shapes, label: "Categorías" },
+        { href: "/admin/lines", icon: GitFork, label: "Líneas" },
         {
-            icon: BarChart3,
+            icon: FileText,
             label: "Reportes",
             children: [
                 { href: "/admin/reports", label: "Vista General" },
@@ -57,16 +56,11 @@ export default function MobileSidebar({ user }: { user: User }) {
                 { href: "/admin/reports/orders", label: "Órdenes" },
             ],
         },
-        {
-            icon: ShieldCheck,
-            label: "Usuarios",
-            children: [
-                { href: "/admin/users", label: "Lista de usuarios" },
-                { href: "/admin/users/roles", label: "Roles y permisos" },
-            ],
-        },
-        { href: "/pos", icon: Store, label: "Punto de Venta", isExternal: true },
-        { href: "/", icon: Store, label: "Ver Tienda", isExternal: true },
+        { href: "/admin/claims", icon: ShieldAlert, label: "Reclamaciones" },
+        { href: "/admin/slider", icon: Image, label: "Slider Banners" },
+        { href: "/admin/users", icon: Users, label: "Usuarios" },
+        { href: "/pos", icon: MonitorSmartphone, label: "Punto de Venta", isExternal: true },
+        { href: "/", icon: Eye, label: "Ver Tienda", isExternal: true },
     ];
 
     return (

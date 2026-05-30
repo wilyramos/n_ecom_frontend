@@ -85,6 +85,7 @@ export default function CheckoutYape({ order }: { order: TOrderPopulated }) {
                 token: tokenResp.id,
                 amount: totalAmount,
                 payerEmail: payerEmail || "",
+                
             });
 
             if (backendRes.status === "approved") {

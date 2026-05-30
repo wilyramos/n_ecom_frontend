@@ -1,3 +1,5 @@
+//File: frontend/app/admin/profile/page.tsx
+
 import { getCurrentUser } from "@/src/auth/currentUser";
 import ProfileForm from "@/components/profile/ProfileForm";
 import AdminPageWrapper from "@/components/admin/AdminPageWrapper";

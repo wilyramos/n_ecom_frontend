@@ -36,10 +36,10 @@ export default function FeatureCards() {
   return (
     <section className="py-1 w-full">
       <div className="w-full px-2 md:px-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 w-full">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 w-full ">
           {features.map(({ title, description, icon: Icon }) => (
             <div key={title} className="group block w-full">
-              <Card className="w-full h-full flex flex-row items-center justify-start gap-2.5 sm:gap-3.5 px-2.5 sm:px-4 py-3 sm:py-4 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-xl shadow-none">
+              <Card className="w-full h-full flex flex-row items-center justify-center gap-2.5 sm:gap-3.5 px-2.5 sm:px-4 py-3 sm:py-4 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-xl shadow-none">
                 <div className="flex-shrink-0 text-fg-primary/80 group-hover:text-action-primary transition-colors">
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={1.5} />
                 </div>

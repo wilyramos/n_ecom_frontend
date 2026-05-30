@@ -15,7 +15,6 @@ export default async function ClaimDetailPage({ params }: DetailProps) {
     if (!claim) notFound();
 
     const breadcrumbs = [
-        { label: "Dashboard", href: "/admin" },
         { label: "Reclamaciones", href: "/admin/claims" },
     ];
 

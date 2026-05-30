@@ -1,3 +1,5 @@
+//File: frontend/components/checkout/mercadopago/CheckoutProMP.tsx
+
 'use client'
 
 import { useState } from "react";

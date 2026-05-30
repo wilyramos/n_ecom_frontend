@@ -1,4 +1,3 @@
-// File: frontend/actions/checkout/create-mp-yape-payment.ts
 'use server';
 
 import getToken from "@/src/auth/token";
@@ -22,8 +21,8 @@ export async function createMPYapePayment(data: {
             token: data.token,
             transaction_amount: data.amount,
             payer: { email: data.payerEmail },
-            description: `Pago de orden ${data.orderId}`,
-            orderId: data.orderId
+            orderId: data.orderId,
+            description: `Pago de orden ${data.orderId}`
         })
     });
 

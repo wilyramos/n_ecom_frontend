@@ -1,69 +1,77 @@
-import { Suspense } from "react";
-import SpinnerLoading from "@/components/ui/SpinnerLoading";
-import AddClientButton from "@/components/admin/clients/AddClientButton";
-import ClientsTable from "@/components/admin/clients/ClientsTable";
-import { getUsers } from "@/src/services/users";
-import Pagination from "@/components/ui/Pagination";
+// File: frontend/app/admin/users/page.tsx
+
+import { UsersApiService } from "@/src/services/user-service";
 import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
+import NuevoClienteModal from "@/components/admin/users/NuevoClienteModal";
+import UserFilters from "@/components/admin/users/UserFilters";
+import UserTable from "@/components/admin/users/UserTable";
+import Pagination from "@/components/ui/Pagination";
+import { Muted } from "@/components/ui/Typography";
 
-
-type SearchParams = Promise<{
+interface SearchParams {
     page?: string;
     limit?: string;
     nombre?: string;
     email?: string;
     telefono?: string;
     numeroDocumento?: string;
-}>;
+}
 
-export default async function AdminClientsPage({ searchParams }: { searchParams: SearchParams }) {
+interface PageProps {
+    searchParams: Promise<SearchParams>;
+}
 
+export default async function UsersPage({ searchParams }: PageProps) {
     const params = await searchParams;
-    const currentPage = params.page ? parseInt(params.page, 10) : 1;
-    const itemsPerPage = params.limit ? parseInt(params.limit, 10) : 10;
 
+    const page = Math.max(1, Number(params.page ?? 1));
+    const limit = Math.max(1, Number(params.limit ?? 25));
+    const nombre = params.nombre?.trim() || undefined;
+    const email = params.email?.trim() || undefined;
+    const telefono = params.telefono?.trim() || undefined;
+    const numeroDocumento = params.numeroDocumento?.trim() || undefined;
 
-    const clients = await getUsers({
-        page: currentPage,
-        limit: itemsPerPage,
-        nombre: params.nombre,
-        email: params.email,
-        telefono: params.telefono,
-        numeroDocumento: params.numeroDocumento,
+    const { users, totalUsers, totalPages } = await UsersApiService.getAll({
+        page,
+        limit,
+        nombre,
+        email,
+        telefono,
+        numeroDocumento,
     });
 
     return (
-        <main >
+        <AdminPageWrapper
+            title="Gestión de Usuarios"
+            showBackButton={false}
+            actions={<NuevoClienteModal />}
+        >
+            <div className="space-y-5">
+                <UserFilters
+                    filters={{
+                        nombre: params.nombre,
+                        email: params.email,
+                        telefono: params.telefono,
+                        numeroDocumento: params.numeroDocumento,
+                    }}
+                />
 
-            <AdminPageWrapper
-                title="Usuarios admin/vendedores"
-                showBackButton={false}
-                actions={<AddClientButton role="admin" />}
-            >
+                <UserTable users={users} />
 
-                <div className="mt-4">
-                    <Suspense fallback={<SpinnerLoading />}>
-
-                        {clients && clients.users ? (
-
-                            <>
-                                <ClientsTable clients={clients} />
-                                <Pagination
-                                    currentPage={currentPage}
-                                    totalPages={Math.ceil(clients.totalUsers / itemsPerPage)}
-                                    limit={itemsPerPage}
-                                    pathname="/admin/clients"
-                                />
-                            </>
-
-                        ) : (
-                            <div className="text-center py-12">
-                                <p className="text-gray-500 text-sm">No se encontraron clientes.</p>
-                            </div>
-                        )}
-                    </Suspense>
-                </div>
-            </AdminPageWrapper>
-        </main>
-    )
+                {totalUsers > 0 && (
+                    <div className="flex flex-col items-center gap-3 pt-4">
+                        <Muted className="uppercase tracking-wider font-bold">
+                            Mostrando {users.length} de {totalUsers} usuarios activos
+                        </Muted>
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            limit={limit}
+                            pathname="/admin/users"
+                        />
+                    </div>
+                )}
+            </div>
+        </AdminPageWrapper>
+    );
 }

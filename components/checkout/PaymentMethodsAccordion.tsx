@@ -1,3 +1,5 @@
+//File: frontend/components/checkout/PaymentMethodsAccordion.tsx
+
 "use client";
 
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";

@@ -8,7 +8,6 @@ export default function ReportsAdminPage() {
     return (
         <AdminPageWrapper
             title="Reportes"
-            breadcrumbItems={[{ label: "Dashboard", href: "/admin" }]}
             breadcrumbCurrent="Reportes"
         >
             <div className="space-y-8">

@@ -1,3 +1,5 @@
+//File: frontend/app/%28store%29/checkout/payment/page.tsx
+
 import { redirect } from "next/navigation";
 import { getOrder } from "@/src/services/orders";
 import PaymentMethodsAccordion from "@/components/checkout/PaymentMethodsAccordion";

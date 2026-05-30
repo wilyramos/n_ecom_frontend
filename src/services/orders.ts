@@ -1,3 +1,5 @@
+//File: frontend/src/services/orders.ts
+
 import "server-only"
 
 import { getTokenOptional } from "@/src/auth/dal"
@@ -66,6 +68,8 @@ export const getOrder = async (id: string) => {
 
     const req = await fetch(url, {
         method: 'GET',
+        cache: 'no-store',
+
         headers: {
             'Authorization': `Bearer ${token}`
         }
@@ -86,6 +90,7 @@ export const getOrdersByUser = async ({ page = 1, limit = 5 }) => {
 
     const req = await fetch(url, {
         method: 'GET',
+        cache: 'no-store',
         headers: {
             'Authorization': `Bearer ${token}`
         }

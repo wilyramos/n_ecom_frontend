@@ -15,7 +15,7 @@ export default function SidebarPages() {
     const legalNav = [
         {
             name: "Términos y Condiciones",
-            href: "/terminos",
+            href: "/terminos-y-condiciones",
             icon: RiServiceLine,
             iconFill: RiServiceFill
         },

@@ -292,7 +292,7 @@ export default function ClaimForm() {
                         disabled={isPending}
                         className="w-full h-11 text-sm font-semibold transition-all duration-200"
                     >
-                        {isPending ? "Registrando Reclamación..." : "Enviar Reclamación Oficial"}
+                        {isPending ? "Registrando Reclamación..." : "Enviar Reclamación"}
                     </Button>
                 </div>
             </form>

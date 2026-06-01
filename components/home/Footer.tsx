@@ -17,7 +17,7 @@ const navigation = {
     ],
     legal: [
         { label: "Política de privacidad", href: "/hc/politicas-de-privacidad" },
-        { label: "Términos y condiciones", href: "/terminos" },
+        { label: "Términos y condiciones", href: "/terminos-y-condiciones" },
         { label: "Política de cambios y devoluciones", href: "/cambios-devoluciones" },
     ],
 };
@@ -50,7 +50,7 @@ export default function Footer() {
                                 ))}
                             </nav>
                             <div className="pt-1">
-                                <Link href="/hc/libro-de-reclamaciones" className="inline-flex items-center gap-2 rounded-md border border-border-default px-3 py-1.5 text-xs font-medium text-fg-primary transition-all hover:bg-action-primary-hover hover:text-fg-inverse">
+                                <Link href="/libro-de-reclamaciones" className="inline-flex items-center gap-2 rounded-md border border-border-default px-3 py-1.5 text-xs font-medium text-fg-primary transition-all hover:bg-action-primary-hover hover:text-fg-inverse">
                                     <BookOpen size={12} />
                                     Libro de Reclamaciones
                                 </Link>

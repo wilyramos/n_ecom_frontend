@@ -14,7 +14,7 @@ export default function robots(): MetadataRoute.Robots {
                     "/ofertas",
                     "/marca",
                     "/hc",             
-                    "/terminos",       
+                    "/terminos-y-condiciones",       
                     "/cookies",        
                     "/auth",
                     "/search",

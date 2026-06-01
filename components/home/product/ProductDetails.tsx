@@ -206,7 +206,7 @@ export default function ProductDetails({ producto }: Props) {
                         </header>
 
                         <div className="py-4">
-                            <InstallmentInfo price={precio} installments={12} />
+                            <InstallmentInfo price={precio} installments={6} />
                         </div>
                         <div className="space-y-5">
                             {Object.entries(allAttributes).map(([key]) => {
@@ -335,10 +335,26 @@ export default function ProductDetails({ producto }: Props) {
                     <div className="pt-4 ">
 
 
+                        {/* Consulta por terminos y condiciones */}
+
+                        <div className="flex items-center  bg-surface-primary gap-4">
+                            <span className="text-sm font-medium text-fg-muted">
+                                Consulta por Términos y Condiciones
+                            </span>
+                            <Link
+                                href="/terminos-y-condiciones"
+                                className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"
+                            >
+                                Ver Términos y Condiciones
+                                <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+                            </Link>
+                        </div>
+
+
                         {/* Consulta por WhatsApp */}
                         <div className="flex items-center  bg-surface-primary gap-4">
                             <span className="text-sm font-medium text-fg-muted">
-                                ¿Tienes dudas?
+                                Comprar por WhatsApp
                             </span>
 
                             <a

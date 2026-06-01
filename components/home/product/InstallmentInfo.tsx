@@ -8,11 +8,11 @@ type Props = {
     installments?: number;
 };
 
-export default function InstallmentInfo({ price, installments = 12 }: Props) {
+export default function InstallmentInfo({ price, installments = 6 }: Props) {
     const installmentAmount = price / installments;
 
     return (
-        <div className="flex flex-col gap-2 p-3 border border-border-default bg-surface-secondary/50 rounded-2xl">
+        <div className="flex flex-col gap-2 p-3 border border-border-default  rounded-2xl">
             {/* Información de Pago */}
             <div className="flex items-center gap-3">
                 <CreditCard className="text-blue-600 shrink-0" size={18} />

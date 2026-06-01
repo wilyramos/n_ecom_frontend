@@ -46,7 +46,7 @@ export default function Sidebarcs() {
 
                     <div>
                         <Link
-                            href="/terminos"
+                            href="/terminos-y-condiciones"
                             className="block px-2 py-2 text-sm font-bold text-gray-600 hover:text-black"
                         >
                             Información Legal

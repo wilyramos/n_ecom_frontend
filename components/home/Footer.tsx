@@ -39,7 +39,7 @@ export default function Footer() {
                     <div className="grid gap-8 sm:grid-cols-3">
                         <FooterLinks title="Tienda" links={navigation.tienda} />
                         <FooterLinks title="Soporte" links={navigation.soporte} />
-                        
+
                         <div className="space-y-3">
                             <SectionTitle>Legal</SectionTitle>
                             <nav className="flex flex-col gap-2">
@@ -62,7 +62,7 @@ export default function Footer() {
                 <div className="mt-12 flex flex-col gap-6 border-t border-border-default pt-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="space-y-1">
                         <p className="text-[10px] uppercase tracking-wider text-fg-primary font-semibold">Neoshop Importaciones</p>
-                       
+
                     </div>
                     <div className="flex flex-col items-start gap-4 lg:items-end">
                         <div className="opacity-90 hover:opacity-100 transition-opacity">

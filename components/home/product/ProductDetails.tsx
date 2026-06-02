@@ -334,12 +334,25 @@ export default function ProductDetails({ producto }: Props) {
                     </div>
                     <div className="pt-4 ">
 
+                        {/* consulta por politicas de cambios y devoluciones */}
+                        <div className="flex items-center  bg-surface-primary gap-4">
+                            <span className="text-sm font-medium text-fg-muted">
+                                {/* Consulta por Políticas de Cambios y Devoluciones */}
+                            </span>
+                            <Link
+                                href="/cambios-devoluciones"
+                                className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"
+                            >
+                                Ver Políticas de Cambios y Devoluciones
+                                <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+                            </Link>
+                        </div>
 
                         {/* Consulta por terminos y condiciones */}
 
                         <div className="flex items-center  bg-surface-primary gap-4">
                             <span className="text-sm font-medium text-fg-muted">
-                                Consulta por Términos y Condiciones
+                                {/* Consulta por Términos y Condiciones */}
                             </span>
                             <Link
                                 href="/terminos-y-condiciones"
@@ -354,7 +367,7 @@ export default function ProductDetails({ producto }: Props) {
                         {/* Consulta por WhatsApp */}
                         <div className="flex items-center  bg-surface-primary gap-4">
                             <span className="text-sm font-medium text-fg-muted">
-                                Comprar por WhatsApp
+                                {/* Comprar por WhatsApp */}
                             </span>
 
                             <a

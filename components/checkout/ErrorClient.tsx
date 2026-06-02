@@ -11,11 +11,11 @@ export default function ErrorClient({ errorMessage, orderId }: ErrorClientProps)
         <div className="flex items-center justify-center px-4 py-20 min-h-screen bg-[var(--color-bg-primary)]">
             <div className="w-full max-w-lg bg-[var(--color-bg-tertiary)] shadow-sm rounded-3xl p-10 text-center border border-[var(--color-error)]/20">
                 <FiAlertCircle className="text-[var(--color-error)] text-7xl mx-auto mb-6 animate-pulse" />
-                
+
                 <h1 className="text-3xl font-semibold text-[var(--color-text-primary)] mb-2 flex items-center justify-center gap-2">
                     ¡Algo salió mal!
                 </h1>
-                
+
                 <p className="text-[var(--color-text-secondary)] text-sm mb-8 tracking-wide">
                     {errorMessage || 'No pudimos procesar tu pago o hubo un problema con tu orden.'}
                     <br />
@@ -31,7 +31,7 @@ export default function ErrorClient({ errorMessage, orderId }: ErrorClientProps)
                 {/* Acciones */}
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                     <Link
-                        href="/carrito"
+                        href="/checkout"
                         className="w-full sm:w-auto bg-[var(--color-error)] text-[var(--color-text-inverse)] py-2.5 px-6 rounded-full text-sm font-medium tracking-wide hover:bg-[var(--color-error)]/90 transition flex items-center justify-center gap-2 shadow-md"
                     >
                         <FiShoppingCart className="text-lg" />

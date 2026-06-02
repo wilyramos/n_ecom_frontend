@@ -44,7 +44,7 @@ export default function ShopNowButton({ product, variant, disabled }: Props) {
         // 3. Proceso de compra
         addToCart(product, variant);
         toast.success("Producto procesado, yendo al carrito...");
-        router.push("/carrito");
+        router.push("/checkout");
     };
 
     return (

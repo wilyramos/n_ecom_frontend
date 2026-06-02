@@ -6,7 +6,7 @@ export default function PaymentMethods() {
         { src: "/payments/mastercard.png", alt: "Mastercard" },
         { src: "/payments/amex.png", alt: "American Express" },
         { src: "/payments/mp.png", alt: "Mercado Pago" },
-        { src: "/payments/yape.svg", alt: "Yape" },
+        // { src: "/payments/yape.svg", alt: "Yape" },
     ];
 
     return (

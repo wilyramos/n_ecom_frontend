@@ -53,8 +53,8 @@ export default function ErrorClient({ errorMessage, orderId }: ErrorClientProps)
                     </a>.
                     <br className="mb-2" />
                     O vía WhatsApp al{" "}
-                    <a href="https://wa.me/51925054636" className="text-[var(--color-action-primary)] font-medium hover:underline">
-                        +51 925054636
+                    <a href="https://wa.me/51902900653" className="text-[var(--color-action-primary)] font-medium hover:underline">
+                        +51 902900653
                     </a>.
                 </div>
             </div>

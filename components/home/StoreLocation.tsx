@@ -75,10 +75,12 @@ export default function StoreLocation() {
                             </div>
                         </div>
 
+                     
+
                         {/* MAPA */}
                         <div className="flex-1 overflow-hidden rounded-2xl">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.715367687508!2d-76.9995574!3d-12.1316521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105b81dfca8a14b%3A0x6739023027b5e436!2sAv.%20Caminos%20del%20Inca%20257%2C%20Santiago%20de%20Surco%2015038!5e0!3m2!1ses-419!2spe!4v1710000000000!5m2!1ses-419!2spe"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1048.8949539496946!2d-76.99246893041152!3d-12.113867299258004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c7e5102df947%3A0x3c711f9098ede003!2sNeoshop%20Importaciones!5e1!3m2!1ses-419!2spe!4v1780441451331!5m2!1ses-419!2spe"
                                 className="h-full w-full border-0"
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"

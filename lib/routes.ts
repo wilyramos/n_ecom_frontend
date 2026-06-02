@@ -26,7 +26,7 @@ export const routes = {
     
     // Para contacto
     whatsapp: (productName?: string) => {
-        const phone = "51925054636"; // Tu número
+        const phone = "51902900653"; // Tu número
         const text = productName 
             ? `Hola, estoy interesado en el producto: ${productName}`
             : `Hola, tengo una consulta sobre la tienda.`;

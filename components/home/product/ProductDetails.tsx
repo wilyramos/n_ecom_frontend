@@ -371,7 +371,7 @@ export default function ProductDetails({ producto }: Props) {
                             </span>
 
                             <a
-                                href={`https://wa.me/51925054636?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
+                                href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"

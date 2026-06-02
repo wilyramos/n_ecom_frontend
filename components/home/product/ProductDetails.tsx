@@ -82,6 +82,9 @@ export default function ProductDetails({ producto }: Props) {
         window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
     };
 
+    const hasVariants = (producto.variants?.length ?? 0) > 0;
+    const isSelectionIncomplete = hasVariants && !selectedVariant;
+
     const getAvailableValues = (attrKey: string): string[] => {
         const values = new Set<string>();
         producto.variants?.forEach(variant => {
@@ -321,13 +324,15 @@ export default function ProductDetails({ producto }: Props) {
                                 <AddProductToCart
                                     product={producto}
                                     variant={selectedVariant ?? undefined}
+
                                 />
                             </div>
                             <div className="flex-1 w-full">
                                 <ShopNowButton
-                                    disabled={((producto.variants?.length ?? 0) > 0 && (!allAttributesSelected || !selectedVariant)) || stock <= 0}
+                                    disabled={stock <= 0}
                                     product={producto}
                                     variant={selectedVariant ?? undefined}
+                                    isSelectionIncomplete={isSelectionIncomplete}
                                 />
                             </div>
                         </div>

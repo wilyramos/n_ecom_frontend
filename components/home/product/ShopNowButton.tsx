@@ -1,3 +1,4 @@
+// ShopNowButton.tsx
 'use client';
 
 import { ProductWithCategoryResponse, VariantCart } from "@/src/schemas";
@@ -9,53 +10,45 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
     product: ProductWithCategoryResponse;
-    variant?: VariantCart; // Variante seleccionada (opcional)
-    disabled?: boolean;    // Prop opcional que viene del padre
+    variant?: VariantCart;
+    disabled?: boolean;
+    // Nueva prop para forzar la validación desde el padre si es necesario
+    isSelectionIncomplete?: boolean; 
 }
 
-export default function ShopNowButton({ product, variant, disabled }: Props) {
+export default function ShopNowButton({ product, variant, disabled, isSelectionIncomplete }: Props) {
     const { addToCart } = useCartStore();
     const router = useRouter();
-
     const stock = variant?.stock ?? product.stock ?? 0;
 
-    // Detectamos si falta seleccionar variante para mostrar el mensaje correcto
-    const hasVariants = product.variants && product.variants.length > 0;
-    // Si tiene variantes y no se ha pasado una variante válida, está incompleto
-    const isSelectionIncomplete = hasVariants && !variant;
-
-    // Determinamos si visualmente debe verse bloqueado
-    // Consideramos la prop 'disabled' del padre O si no hay stock O si falta selección
-    const isVisuallyDisabled = disabled || stock <= 0 || isSelectionIncomplete;
-
     const handleClick = () => {
-        // 1. Validar si faltan opciones (Variantes)
+        // 1. Validar variantes
         if (isSelectionIncomplete) {
-            toast.error("Por favor, selecciona las opciones para continuar.");
+            toast.error("Por favor, selecciona las opciones (talla, color, etc.) antes de continuar.");
             return;
         }
 
         // 2. Validar stock
         if (stock <= 0) {
-            toast.error("Lo sentimos, este producto se encuentra agotado.");
+            toast.error("Lo sentimos, esta opción no tiene stock disponible.");
             return;
         }
 
-        // 3. Proceso de compra
+        // 3. Acción
         addToCart(product, variant);
-        toast.success("Producto procesado, yendo al carrito...");
+        toast.success("Producto añadido al carrito");
         router.push("/checkout");
     };
 
     return (
         <Button
             onClick={handleClick}
-            disabled={isVisuallyDisabled}
-            variant={stock <= 0 ? "destructive" : "secondary"}
-            size="default"
+            // Mantenemos el botón habilitado para poder mostrar el toast de error al clickear
+            disabled={disabled && stock <= 0} 
+            variant={stock <= 0 ? "destructive" : "default"}
             className="w-full"
         >
-            <IoBagCheckOutline size={18} />
+            <IoBagCheckOutline className="mr-2" size={18} />
             {stock <= 0 ? "Agotado" : "Comprar ahora"}
         </Button>
     );

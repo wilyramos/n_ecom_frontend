@@ -23,44 +23,36 @@ export default function AddProductToCart({ product, variant }: Props) {
         setSelectedVariant(variant ?? null);
     }, [variant]);
 
-    // Calcular el stock disponible según si es variante o producto simple
     const stock = selectedVariant?.stock ?? product.stock ?? 0;
-
-    // Verificar si visualmente debería parecer deshabilitado
     const hasVariants = product.variants && product.variants.length > 0;
     const isSelectionIncomplete = hasVariants && !selectedVariant;
     const isOutOfStock = stock <= 0;
 
-    // Esta variable controla solo el ESTILO visual, no la funcionalidad del click
-    const isVisuallyDisabled = isSelectionIncomplete || isOutOfStock;
+    // Solo deshabilitamos el botón físicamente si está agotado.
+    // Si falta selección, el botón queda activo para mostrar el error al usuario.
+    const isButtonDisabled = isOutOfStock;
 
     const handleClick = () => {
-        // 1. Validar si faltan seleccionar variantes
         if (isSelectionIncomplete) {
             toast.error("Por favor, selecciona una variante antes de añadir al carrito.");
             return;
         }
 
-        // 2. Validar si no hay stock
         if (isOutOfStock) {
             toast.error("Lo sentimos, este producto no tiene stock disponible.");
             return;
         }
 
-        // 3. Lógica normal de añadir al carrito
         const activeVariant = selectedVariant ?? undefined;
-
         const productInCart = cart.find((item) => {
             if (activeVariant) return item._id === product._id && item.variant?._id === activeVariant._id;
             return item._id === product._id && !item.variant;
         });
 
         if (productInCart && productInCart.cantidad >= stock) {
-            toast.warning(`Solo hay ${stock} unidades disponibles. Ya tienes todo el stock en tu carrito.`);
+            toast.warning(`Solo hay ${stock} unidades disponibles.`);
             return;
         }
-
-        console.log("Añadiendo al carrito:", product, activeVariant);
 
         addToCart(product, activeVariant);
         toast.success("Producto añadido al carrito");
@@ -71,12 +63,11 @@ export default function AddProductToCart({ product, variant }: Props) {
         <div className="w-full">
             <Button
                 onClick={handleClick}
-                disabled={isVisuallyDisabled}
+                disabled={isButtonDisabled}
                 variant={isOutOfStock ? "destructive" : "accent"}
-                size="default"
-                className="w-full  "
+                className="w-full"
             >
-                <FaPlus size={14} />
+                <FaPlus size={14} className="mr-2" />
                 {isOutOfStock ? "Sin stock" : "Añadir al carrito"}
             </Button>
         </div>

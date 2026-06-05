@@ -27,6 +27,27 @@ const storeImages = [
     "/location3.webp",
 ];
 
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full  text-black  transition-all hover:bg-white hover:scale-110"
+    >
+        <ChevronLeft size={20} />
+    </button>
+);
+
+const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full  text-black  transition-all hover:bg-white hover:scale-110"
+    >
+        <ChevronRight size={20} />
+    </button>
+);
+
 export default function StoreLocation() {
     return (
         <section className="py-6 text-fg-primary">
@@ -75,7 +96,7 @@ export default function StoreLocation() {
                             </div>
                         </div>
 
-                     
+
 
                         {/* MAPA */}
                         <div className="flex-1 overflow-hidden rounded-2xl">
@@ -96,7 +117,8 @@ export default function StoreLocation() {
                             infinite
                             autoPlay
                             autoPlaySpeed={3000}
-                            arrows
+                            customLeftArrow={<CustomLeftArrow onClick={() => { }} />}
+                            customRightArrow={<CustomRightArrow onClick={() => { }} />}
                             showDots={false}
                         >
                             {storeImages.map((src, index) => (

@@ -5,6 +5,7 @@ import NavBar from "@/components/navigation/NavBar";
 import { metadata as globalMetadata } from "@/app/layout";
 import type { Metadata } from "next";
 import WhatsappButton from "@/components/home/WhatsappButton";
+import ScrollToTop from "@/components/navigation/ScrollToTop";
 
 // Extendemos metadata global para esta sección
 export const metadata: Metadata = {
@@ -42,11 +43,12 @@ export const metadata: Metadata = {
     }
 };
 
+
 export default function layout({ children }: { children: React.ReactNode }) {
     return (
         <>
+            <ScrollToTop /> 
             <section className="flex flex-col min-h-screen">
-                {/* Asegura que el header sea inferior al z-9999 del banner */}
                 <header className="relative z-40">
                     <NavBar />
                 </header>

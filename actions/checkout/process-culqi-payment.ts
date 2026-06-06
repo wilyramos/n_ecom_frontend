@@ -1,18 +1,20 @@
-// File: frontend/actions/checkout/process-culqi-payment.ts
+//File: frontend/actions/checkout/process-culqi-payment.ts
+
 "use server";
 
-import { getTokenOptional } from "@/src/auth/dal";
+// para procesar pagos con o sin token
+import { getTokenOptional } from "@/src/auth/dal"; 
 
 export interface CulqiPaymentPayload {
-    token?: string;  // Flujo síncrono: ID del token de la tarjeta (tkn_live_...)
-    order?: string;  // Flujo asíncrono: ID de la orden de Culqi (ord_live_...)
-    amount: number;  // Monto entero en céntimos
-    email: string;   // Correo dinámico del cliente en la orden
-    orderId: string; // ID interno de la orden en tu base de datos de MongoDB
+    token?: string;   
+    order?: string;   
+    amount: number;   
+    email: string;
+    orderId: string;  
 }
 
 export async function processPaymentCulqi(paymentData: CulqiPaymentPayload) {
-    console.log("📤 [Server Action] processPaymentCulqi iniciado:", {
+    console.log("📤 [SA] processPaymentCulqi iniciado:", {
         hasToken: !!paymentData.token,
         hasOrder: !!paymentData.order,
         amount: paymentData.amount,
@@ -20,23 +22,24 @@ export async function processPaymentCulqi(paymentData: CulqiPaymentPayload) {
         orderId: paymentData.orderId,
     });
 
-    // Permite que usuarios no autenticados (invitados) completen el pago sin lanzar excepciones
+    // CAMBIO: Usar el validador opcional en lugar del estricto
     const authToken = await getTokenOptional();
 
     const url = process.env.API_URL;
     if (!url) {
-        console.error("❌ [Server Action] API_URL no se encuentra definida en las variables de entorno");
-        throw new Error("Error de configuración del sistema.");
+        console.error("❌ [SA] API_URL no definida en variables de entorno");
+        throw new Error("API_URL no configurada.");
     }
 
     const endpoint = `${url}/checkout/process-payment-culqi`;
+    console.log("🌐 [SA] Enviando a:", endpoint);
 
-    // Configuración estructural de cabeceras
+    // Configurar cabeceras dinámicas
     const headers: Record<string, string> = {
         "Content-Type": "application/json",
     };
 
-    // Si el usuario está registrado e inició sesión, adjuntamos su token JWT de portador
+    // Inyectar el token de autorización únicamente si el usuario está autenticado
     if (authToken) {
         headers["Authorization"] = `Bearer ${authToken}`;
     }
@@ -51,13 +54,10 @@ export async function processPaymentCulqi(paymentData: CulqiPaymentPayload) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-        console.error("❌ [Server Action] Error devuelto por la API del Backend:", {
-            status: res.status,
-            data,
-        });
-        throw new Error(data.message || "Ocurrió un error inesperado al procesar la transacción con Culqi.");
+        console.error("❌ [SA] Error del backend:", { status: res.status, data });
+        throw new Error(data.message || "Error procesando el pago.");
     }
 
-    console.log("✅ [Server Action] Pago procesado exitosamente por el Backend:", data);
+    console.log("✅ [SA] Respuesta exitosa del backend:", data);
     return data;
 }

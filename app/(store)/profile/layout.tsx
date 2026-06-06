@@ -18,7 +18,7 @@ export default async function ProfileLayout({ children }: { children: React.Reac
     }
 
     return (
-        <div className="flex flex-col md:flex-row bg-[var(--color-bg-primary)]">
+        <div className="flex flex-col md:flex-row max-w-7xl mx-auto min-h-screen">
             {/* Sidebar */}
             <aside className="w-full md:w-80 bg-[var(--color-bg-secondary)] p-8 flex flex-col justify-between border-r border-[var(--color-border-subtle)] min-h-[auto] md:min-h-screen">
                 <div className="space-y-10">

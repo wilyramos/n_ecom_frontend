@@ -1,3 +1,5 @@
+// fILE: frontend/app/%28store%29/checkout-result/success/page.tsx
+
 import SuccessClient from "@/components/checkout/SuccessClient";
 import { getOrder } from "@/src/services/orders";
 

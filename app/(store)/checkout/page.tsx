@@ -11,7 +11,7 @@ export default async function CheckoutPage() {
     return (
         <div className="max-w-2xl mx-auto bg-background p-6 border-2 border-border-default rounded-2xl">
             <header className="flex flex-col gap-1 mb-4 pb-2">
-               
+
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center text-fg-primary">
                         <FiShoppingBag size={16} strokeWidth={1.5} />

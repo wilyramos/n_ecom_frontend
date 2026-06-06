@@ -1,4 +1,3 @@
-// File: frontend/app/(store)/checkout-result/verifying/page.tsx
 "use client";
 
 import { useEffect, useState, use } from "react";
@@ -25,7 +24,6 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
 
         const pollStatus = async () => {
             try {
-                // Endpoint unificado de tu Express API
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/number/${orderNumber}`, {
                     cache: "no-store",
                 });
@@ -36,7 +34,6 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
 
                 if (!order) return;
 
-                // 🚨 FLUJO DE REDIRECCIÓN BASADO EN EL ESTADO REAL EN MONGO
                 if (order.status === "processing" || order.status === "paid_but_out_of_stock") {
                     clearInterval(interval);
                     setMessage("¡Pago confirmado con éxito!");
@@ -51,8 +48,6 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
                     return;
                 }
 
-                // Si pasaron 5 segundos (2 intentos) y la orden de Culqi sigue pendiente,
-                // significa que eligió PagoEfectivo / CIP y debe ir a la pantalla de Pendiente.
                 if (order.status === "awaiting_payment" && attempts >= 2 && order.payment?.provider === "culqi") {
                     clearInterval(interval);
                     setMessage("Código de pago generado con éxito.");
@@ -67,28 +62,27 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
             attempts++;
             if (attempts >= maxAttempts) {
                 clearInterval(interval);
-                // Fail-safe: si hay excesiva latencia en los servidores de Culqi, mandarlo a pendiente de forma segura
                 router.push("/");
             }
         };
 
         const interval = setInterval(pollStatus, 2500);
-        pollStatus(); // Ejecución inmediata inicial
+        pollStatus();
 
         return () => clearInterval(interval);
     }, [orderNumber, router]);
 
     return (
-        <div className="min-h-[60vh] flex flex-col items-center justify-center bg-background px-4">
-            <div className="max-w-md w-full text-center space-y-6 p-8 border border-border rounded-3xl bg-card shadow-xs flex flex-col items-center">
-                <Loader2 className="h-10 w-10 text-orange-600 animate-spin" />
+        <div className="h-screen w-full flex flex-col items-center justify-center bg-background px-4">
+            <div className="max-w-md w-full text-center space-y-6 p-8 border border-border rounded-3xl bg-card flex flex-col items-center">
+                <Loader2 className="h-10 w-10 text-fg-action animate-spin" />
                 <div className="space-y-2">
-                    <h2 className="text-xl font-bold tracking-tight text-foreground">Validando tu Transacción</h2>
-                    <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                    <h2 className="text-xl font-bold tracking-tight text-fg-primary">Validando tu Transacción</h2>
+                    <p className="text-sm text-fg-primary/70 max-w-xs mx-auto leading-relaxed">
                         {message}
                     </p>
                 </div>
-                <div className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground/50">
+                <div className="text-[10px] uppercase font-mono tracking-widest text-fg-primary/40">
                     Pedido ref: {orderNumber}
                 </div>
             </div>

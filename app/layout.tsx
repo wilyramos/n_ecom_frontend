@@ -104,7 +104,7 @@ export default function RootLayout({
                         expand
                         position="top-center"
                         duration={5000}
-                        richColors={true}
+                        richColors={false}
                     />
                 </GoogleOAuthProvider>
             </body>

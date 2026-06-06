@@ -1,3 +1,4 @@
+//fILE: frontend/components/checkout/SuccessClient.tsx
 'use client';
 
 import { useEffect } from 'react';

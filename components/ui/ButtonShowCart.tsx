@@ -83,7 +83,7 @@ export default function ButtonShowCart() {
                             <Button
                                 onClick={handleCheckout}
                                 className="w-full"
-                                variant="secondary"
+                                variant="accent"
                             >
                                 Finalizar Pedido <ArrowRight size={16} />
                             </Button>

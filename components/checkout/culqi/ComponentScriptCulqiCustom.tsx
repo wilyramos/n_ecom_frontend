@@ -189,7 +189,7 @@ export default function ComponentScriptCulqiCustom({ order }: { order: CulqiOrde
 
         const instance = new window.CulqiCheckout(pk, {
             settings: {
-                title: "GOPHONE",
+                title: "NEOSHOP",
                 currency: currentOrder.currency || "PEN",
                 amount: amount,
                 order: currentOrder.culqiOrderId,

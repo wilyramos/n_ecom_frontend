@@ -152,7 +152,7 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
                     )}
 
                     {/* Badge Entrega Inmediata */}
-                    <div className="absolute bottom-1 left-1 z-10">
+                    <div className="absolute bottom-1 left-1 z-10 px-3">
                         <span className="px-1.5 py-0.5 bg-fg-primary text-white text-[8px] md:text-[9px] font-bold uppercase tracking-wider ">
                             Entrega inmediata
                         </span>

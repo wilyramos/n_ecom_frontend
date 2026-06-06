@@ -18,7 +18,7 @@ export default function InstallmentInfo({ price, installments = 6 }: Props) {
                 <CreditCard className="text-blue-600 shrink-0" size={18} />
                 <div className="flex items-center gap-1.5 text-sm flex-wrap">
                     <span className="font-semibold text-fg-primary">
-                        Págalo en {installments} cuotas de
+                        Págalo hasta en {installments} cuotas de
                     </span>
                     <span className="font-extrabold text-blue-700">
                         S/ {installmentAmount.toFixed(2)}

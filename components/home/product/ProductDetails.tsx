@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import ProductExpandableSections from './ProductExpandableSections ';
 import InstallmentInfo from './InstallmentInfo';
+import { ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
 
 type Props = {
     producto: ProductWithCategoryResponse;
@@ -128,6 +130,11 @@ export default function ProductDetails({ producto }: Props) {
 
     const colorAtributo = !producto.variants?.length && (producto.atributos?.color || producto.atributos?.Color || producto.atributos?.COLOR || null);
 
+
+    const tieneComplementarios = producto.complementarios &&
+        producto.complementarios.length > 0 &&
+        producto.complementarios.some(comp => typeof comp !== 'string');
+
     return (
         <>
             <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto bg-surface-primary px-4 py-4 rounded-lg">
@@ -183,7 +190,7 @@ export default function ProductDetails({ producto }: Props) {
                                             S/ {precioComparativo!.toFixed(2)}
 
                                         </span>
-                                        <span className=" font-semibold px-2 py-0.5 bg-surface-inverse text-fg-inverse rounded-sm">
+                                        <span className=" font-semibold px-2 py-0.5 bg-red-600 text-fg-inverse rounded-sm">
                                             −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
                                         </span>
                                     </div>
@@ -208,7 +215,7 @@ export default function ProductDetails({ producto }: Props) {
                         </header>
 
                         <div className="py-4">
-                            <InstallmentInfo price={precio} installments={6} />
+                            <InstallmentInfo price={precio} installments={12} />
                         </div>
                         <div className="space-y-5">
                             {Object.entries(allAttributes).map(([key]) => {
@@ -355,10 +362,86 @@ export default function ProductDetails({ producto }: Props) {
                                 Cambios y devoluciones
                             </Link>
 
+
+                            <div className="p-4 flex flex-row justify-between items-center rounded-2xl border border-border">
+                                <div className="text-sm font-semibold tracking-tighter text-[var(--color-text-primary)] flex flex-row items-center gap-2">
+                                    <ShieldCheck className="w-5 h-5 text-fg-action shrink-0" />
+                                    1 año de garantía
+                                </div>
+                                <div>
+                                    <Link
+                                        href="/cambios-devoluciones"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-[var(--color-text-secondary)]  hover:text-[var(--color-text-primary)] transition-colors whitespace-nowrap"
+                                    >
+                                        Ver más detalles
+                                    </Link>
+                                </div>
+                            </div>
+
                             <ProductExpandableSections producto={producto} />
                         </div>
+
+                        <section>
+
+                            {tieneComplementarios && (
+                                <section className="container mx-auto py-2 ">
+                                    <h2 className="text-md font-semibold text-fg-primary mb-4">
+                                        Complementa tu compra <span className="text-xs font-bold bg-red-600 text-white px-2  "> Hasta 20% de Dcto</span>
+                                    </h2>
+
+                                  
+                                    <section className="max-w-screen-2xl mx-auto px-4">
+                                        <div className="pt-8 space-y-4">
+                                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                                {producto.complementarios.map((comp) => {
+                                                    const isPopulated = typeof comp !== 'string';
+                                                    if (!isPopulated) return null;
+
+                                                    return (
+                                                        <Link
+                                                            key={comp._id}
+                                                            href={`/productos/${comp.slug}`}
+                                                            className="group flex flex-col justify-between p-3 transition-all  hover:border-fg-primary bg-surface-primary rounded-2xl border border-border-default"
+                                                        >
+                                                            <div className="space-y-3">
+                                                                <div className="relative aspect-square overflow-hidden rounded bg-surface-primary w-full">
+                                                                    <Image
+                                                                        src={comp.imagenes?.[0] || "/logo.png"}
+                                                                        alt={comp.nombre}
+                                                                        fill
+                                                                        className="object-contain p-1 transition-transform duration-300 group-hover:scale-103"
+                                                                        unoptimized
+                                                                    />
+                                                                </div>
+
+                                                                <div className="space-y-1">
+                                                                    <h4 className="text-xs font-medium text-fg-primary leading-tight line-clamp-2 uppercase tracking-tight">
+                                                                        {comp.nombre}
+                                                                    </h4>
+                                                                </div>
+                                                            </div>
+
+                                                            <p className="text-sm font-semibold text-fg-primary pt-2">
+                                                                S/ {comp.precio.toFixed(2)}
+                                                            </p>
+                                                        </Link>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </section>
+                                </section>
+                            )}
+                        </section>
+
                     </div>
+
+
                 </section>
+
+
             </article>
 
             <div className="mt-8">

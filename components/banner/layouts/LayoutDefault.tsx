@@ -87,7 +87,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                         <div style={fadeUp(0.5)}>
                             <span
                                 className="inline-block px-3 sm:px-6 py-1.5 sm:py-2.5 text-[8px] sm:text-xs md:text-sm font-bold uppercase tracking-wide transition-opacity hover:opacity-90 whitespace-nowrap"
-                                style={{ backgroundColor: accent, color: isDark ? "#000" : "#fff" }}
+                                style={{ backgroundColor: accent, color: isDark ? "#fff" : "#000" }}
                             >
                                 Ver catálogo
                             </span>

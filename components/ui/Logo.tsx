@@ -7,7 +7,7 @@ type LogoProps = {
 };
 
 export default function Logo({ color = "black", size = 28 }: LogoProps) {
-    const logoSrc = color === "black" ? "/logo_fondo_blanco.svg" : "/logo_fondo_blanco.svg";
+    const logoSrc = color === "black" ? "/logo_fondo_blanco_v3.svg" : "/logo_fondo_blanco_v3.svg";
 
     const logoHeight = size;
     const logoWidth = size * 3;

@@ -38,7 +38,7 @@ export default function TopBanner() {
     }, []);
 
     return (
-        <div className="w-full h-8 bg-fg-action text-fg-primary flex items-center justify-center border-b border-border-default/10 select-none overflow-hidden relative">
+        <div className="w-full h-8 bg-fg-action text-fg-inverse flex items-center justify-center border-b border-border-default/10 select-none overflow-hidden relative">
             {/* Contenido animado centrado */}
             <div className="w-full max-w-xl flex items-center justify-center px-4">
                 <div
@@ -62,7 +62,7 @@ export default function TopBanner() {
                         href={item.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-6 w-6 rounded-full flex items-center justify-center text-fg-primary/70 transition-colors hover:text-fg-primary hover:bg-white/10 border"
+                        className="h-6 w-6 rounded-full flex items-center justify-center text-fg-inverse/70 transition-colors hover:text-fg-inverse hover:bg-white/10 border"
                         aria-label={item.label}
                     >
                         {item.icon}

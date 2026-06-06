@@ -56,7 +56,7 @@ export default function ProductExpandableSections({ producto }: Props) {
             {/* SECCIÓN 2: ESPECIFICACIONES */}
             {hasSpecs && (
                 <AccordionItem value="specs" className="border-b border-border-default">
-                    <AccordionTrigger className="py-6 hover:no-underline group px-1">
+                    <AccordionTrigger className="py-6 hover:no-underline group">
                         <div className="flex items-center gap-3">
                             <span className="text-base font-semibold tracking-tight text-fg-muted">
                                 Especificaciones técnicas

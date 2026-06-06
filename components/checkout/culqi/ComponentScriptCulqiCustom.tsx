@@ -39,7 +39,7 @@ interface CulqiCheckoutConfig {
         title: string;
         currency: string;
         amount: number;
-        order?: string; 
+        order?: string;
     };
     options: {
         lang: string;
@@ -74,6 +74,7 @@ export default function ComponentScriptCulqiCustom({ order }: { order: CulqiOrde
 
     const paymentHandlerRef = useRef<() => Promise<void>>(async () => { });
 
+
     paymentHandlerRef.current = async () => {
         const Culqi = checkoutRef.current;
         if (!Culqi) return;
@@ -98,15 +99,19 @@ export default function ComponentScriptCulqiCustom({ order }: { order: CulqiOrde
 
         try {
             if (Culqi.token) {
+                // ── Flujo Síncrono: Tarjetas / Yape Directo ──
                 await processPaymentCulqi({
                     token: Culqi.token.id,
                     email: Culqi.token.email || userEmail,
                     amount,
                     orderId,
                 });
-                Culqi.close(); 
+                Culqi.close();
                 router.push(`/checkout-result/verifying?orderNumber=${orderNumber}`);
             } else if (Culqi.order) {
+                // ── Flujo Asíncrono: PagoEfectivo / QR / Banca Móvil ──
+                console.log("📥 [Culqi] Registrando orden asíncrona en el backend...");
+
                 await processPaymentCulqi({
                     order: Culqi.order.id,
                     email: userEmail,
@@ -114,14 +119,61 @@ export default function ComponentScriptCulqiCustom({ order }: { order: CulqiOrde
                     orderId,
                 });
 
-                setLoading(false); 
                 toast.success("Código de pago generado de manera exitosa.");
+
+                // ── SOLUCIÓN DE IMPACTO: REDIRECCIÓN PROACTIVA ──
+                // En lugar de esperar a que el usuario presione "De acuerdo", cambiamos la página de fondo ya mismo.
+                // El modal de Culqi se mantendrá visible encima porque vive en el DOM global (Body),
+                // pero el usuario ya estará posicionado en la ruta correcta (/pending).
+
+                setTimeout(() => {
+                    setLoading(false);
+                    router.push(`/checkout-result/pending?orderId=${orderId}`);
+                }, 800); // Pequeño delay imperceptible para dejar que los estados internos se asienten
             }
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Error procesando el pago con Culqi.");
             setLoading(false);
         }
     };
+
+    // ── ESTRATEGIA ROBUSTA: EVENT LISTENER DE CIERRE PARA FLUJOS ASÍNCRONOS ──
+    useEffect(() => {
+        const handleCulqiMessageEvents = (event: MessageEvent) => {
+            // Aseguramos capturar exclusivamente eventos nativos provenientes de Culqi
+            if (event.origin !== "https://3ds.culqi.com" && !event.origin.includes("culqi.com")) {
+                return;
+            }
+
+            try {
+                // El iframe de Culqi emite strings JSON o estructuras de control al cerrarse
+                const eventData = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+
+                // Evaluamos si el evento gatillado corresponde al cierre interactivo del Checkout
+                if (eventData?.event === "checkout_closed" || eventData?.action === "close") {
+                    const currentOrder = orderRef.current;
+
+                    // Si ya se cargó o guardó una estructura de PagoEfectivo en el flujo del cliente
+                    if (currentOrder?.payment?.status === "pending" || currentOrder?.culqiOrderId) {
+                        // console.log("🔄 [Culqi Event] Redirigiendo a pantalla de orden pendiente tras clic en De Acuerdo/Cerrar.");
+
+                        // Cerramos de forma imperativa cualquier nodo residual
+                        if (checkoutRef.current) checkoutRef.current.close();
+
+                        // Redirección directa y segura hacia la ruta correspondiente
+                        router.push(`/checkout-result/pending?orderId=${currentOrder._id}`);
+                    }
+                }
+            } catch (e) {
+                console.warn("⚠️ [Culqi Event] No se pudo procesar el mensaje del iframe:", e);
+            }
+        };
+
+        window.addEventListener("message", handleCulqiMessageEvents);
+        return () => {
+            window.removeEventListener("message", handleCulqiMessageEvents);
+        };
+    }, [router]);
 
     const initCheckout = () => {
         const pk = process.env.NEXT_PUBLIC_CULQI_PUBLIC_KEY;

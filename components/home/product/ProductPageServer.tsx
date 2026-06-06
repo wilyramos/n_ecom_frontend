@@ -5,8 +5,6 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import RecentViewed from '@/components/home/product/RecentViewed';
 import type { ProductWithCategoryResponse } from '@/src/schemas';
 import { routes } from "@/lib/routes";
-import Link from 'next/link';
-import Image from 'next/image';
 
 type Props = {
     producto: ProductWithCategoryResponse;

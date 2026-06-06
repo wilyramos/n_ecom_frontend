@@ -7,8 +7,7 @@ import "react-multi-carousel/lib/styles.css";
 import { ExternalLink } from "lucide-react";
 import HeaderReviews from "@/components/ui/Headerreviews";
 
-const GOOGLE_MAPS_LINK = "https://maps.google.com/?cid=TU_ID_DE_GOOGLE_MAPS";
-
+const GOOGLE_MAPS_LINK = "https://www.google.com/maps/place/Neoshop+Importaciones/@-12.1203426,-76.9977364,10z/data=!4m6!3m5!1s0x9105c7e5102df947:0x3c711f9098ede003!8m2!3d-12.1138673!4d-76.9918252!16s%2Fg%2F11nhlq2d6p?entry=ttu&g_ep=EgoyMDI2MDYwMS4wIKXMDSoASAFQAw%3D%3D";
 const reviews = [
     {
         name: "Grassli Cabrera",

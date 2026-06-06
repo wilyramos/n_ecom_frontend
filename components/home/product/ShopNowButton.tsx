@@ -45,7 +45,7 @@ export default function ShopNowButton({ product, variant, disabled, isSelectionI
             onClick={handleClick}
             // Mantenemos el botón habilitado para poder mostrar el toast de error al clickear
             disabled={disabled && stock <= 0} 
-            variant={stock <= 0 ? "destructive" : "default"}
+            variant={stock <= 0 ? "accent" : "accent"}
             className="w-full"
         >
             <IoBagCheckOutline className="mr-2" size={18} />

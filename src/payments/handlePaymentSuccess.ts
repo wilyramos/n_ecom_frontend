@@ -31,6 +31,10 @@ export async function handlePaymentSuccess(paymentResponse: PaymentResponse, shi
                 productId: item._id,
                 quantity: item.cantidad,
                 price: item.precio,
+                subtotal: item.precio * item.cantidad,
+                nombre: item.nombre,
+                
+                
             })),
             subtotal: paymentResponse.transaction_amount,
             shippingCost: 0,

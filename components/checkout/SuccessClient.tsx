@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { useCartStore } from '@/src/store/cartStore';
 import { useCheckoutStore } from '@/src/store/checkoutStore';
 import type { TOrderPopulated } from '@/src/schemas';
-import { toast } from 'sonner';
 import Link from 'next/link';
 
 import { BsCheckCircle, BsTruck, BsFileEarmarkText, BsCreditCard, BsClipboardCheck, BsBagCheck } from 'react-icons/bs';
@@ -18,7 +17,6 @@ export default function SuccessClient({ order }: { order: TOrderPopulated }) {
         if (order?.payment?.status === 'approved') {
             clearCart();
             clearCheckout();
-            toast.success('¡Pago exitoso! Tu orden ha sido procesada correctamente.');
         }
     }, [order, clearCart, clearCheckout]);
 

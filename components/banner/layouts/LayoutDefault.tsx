@@ -19,7 +19,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
     const isDark = design.theme !== "light";
     const bg = design.bgColor ?? (isDark ? "#000000" : "#ffffff");
     const text = design.textColor ?? (isDark ? "#a8a8a8" : "#0f0f0f");
-    const accent = design.accentColor ?? "#a0a0a0";
+    const accent = design.accentColor ?? "#a7c7aa";
 
     const fadeUp = (delay: number): React.CSSProperties => ({
         opacity: loaded ? 1 : 0,

@@ -64,7 +64,7 @@ export default function AddProductToCart({ product, variant }: Props) {
             <Button
                 onClick={handleClick}
                 disabled={isButtonDisabled}
-                variant={isOutOfStock ? "destructive" : "accent"}
+                variant={isOutOfStock ? "default" : "secondary"}
                 className="w-full"
             >
                 <FaPlus size={14} className="mr-2" />

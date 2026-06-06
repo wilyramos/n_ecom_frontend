@@ -40,8 +40,8 @@ export default function FeatureCards() {
           {features.map(({ title, description, icon: Icon }) => (
             <div key={title} className="group block w-full">
               <Card className="w-full h-full flex flex-row items-center justify-center gap-2.5 sm:gap-3.5 px-2.5 sm:px-4 py-3 sm:py-4 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-xl shadow-none">
-                <div className="flex-shrink-0 text-fg-primary/80 group-hover:text-action-primary transition-colors">
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={1.5} />
+                <div className="flex-shrink-0 text-fg-action transition-colors">
+                  <Icon className="w-5 h-5 sm:w-10 sm:h-10" strokeWidth={1.5} />
                 </div>
 
                 <div className="flex flex-col min-w-0 text-center justify-center h-full">

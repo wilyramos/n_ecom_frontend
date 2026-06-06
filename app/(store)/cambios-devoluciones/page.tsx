@@ -173,6 +173,37 @@ export default function CambiosDevolucionesPage() {
                                 en estos casos.
                             </p>
                         </div>
+
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h3 className="font-bold text-base mb-1">
+                                D) Garantía Comercial de 1 Año por Defectos de Fabricación
+                            </h3>
+                            <p>
+                                Todos los productos comercializados por neoshop importaciones cuentan
+                                con una <strong>garantía comercial de 12 meses</strong> contra defectos
+                                de fabricación y fallas de funcionamiento atribuibles al producto,
+                                contados desde la fecha de recepción. Para solicitar la cobertura de
+                                garantía, el cliente deberá presentar el comprobante de compra y
+                                permitir la evaluación técnica del producto. La garantía cubre
+                                exclusivamente defectos de fabricación.
+                            </p>
+
+                            <p className="mt-2">
+                                La garantía no cubre daños ocasionados por uso inadecuado, golpes,
+                                caídas, contacto con líquidos, sobretensiones eléctricas,
+                                modificaciones, reparaciones realizadas por terceros no autorizados,
+                                desgaste normal por el uso, instalación incorrecta o cualquier otra
+                                causa ajena a un defecto de fabricación.
+                            </p>
+
+                            <p className="mt-2">
+                                Una vez verificada la existencia de un defecto cubierto por la garantía,
+                                neoshop importaciones. Los plazos de atención podrán variar según la naturaleza del
+                                producto, la disponibilidad de repuestos y los tiempos del servicio
+                                técnico autorizado.
+                            </p>
+                        </div>
+
                     </div>
                 </section>
 

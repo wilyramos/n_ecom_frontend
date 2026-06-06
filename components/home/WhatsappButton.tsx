@@ -14,11 +14,11 @@ export default function WhatsappButton() {
                     group flex items-center justify-start 
                     h-12 w-12 hover:w-36 
                     rounded-full p-3.5 gap-3
-                    bg-surface-inverse text-fg-inverse 
-                    border border-border-default/40
-                    shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
-                    hover:shadow-[0_8px_30px_rgba(23,20,17,0.25)]
-                    hover:bg-brand-black
+                    bg-[#25D366] text-white 
+                    border border-[#128C7E]/20
+                    shadow-[0_8px_30px_rgba(37,211,102,0.2)] 
+                    hover:shadow-[0_8px_30px_rgba(18,140,126,0.4)]
+                    hover:bg-[#128C7E]
                     transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
                     overflow-hidden active:scale-95
                 "

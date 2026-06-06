@@ -5,8 +5,6 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import RecentViewed from '@/components/home/product/RecentViewed';
 import type { ProductWithCategoryResponse } from '@/src/schemas';
 import { routes } from "@/lib/routes";
-import Link from 'next/link';
-import Image from 'next/image';
 
 type Props = {
     producto: ProductWithCategoryResponse;
@@ -79,14 +77,13 @@ export default async function ProductPageServer({ producto }: Props) {
                 </div>
             </section>
 
-            <section>
+            <section className="container mx-auto px-4 md:px-6 py-4">
+{/* 
+                <h2 className="text-lg font-semibold  tracking-tighter text-[var(--color-text-primary)] ">
+                    Completa tu compra            </h2>
                 <section className="max-w-screen-2xl mx-auto mt-4 px-4">
                     {producto.complementarios && producto.complementarios.length > 0 && (
                         <div className="pt-8  space-y-4">
-                            <h3 className="text-lg font-normal tracking-tight text-fg-primary">
-                                Completa tu compra
-                            </h3>
-
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                 {producto.complementarios.map((comp) => {
                                     const isPopulated = typeof comp !== 'string';
@@ -96,7 +93,7 @@ export default async function ProductPageServer({ producto }: Props) {
                                         <Link
                                             key={comp._id}
                                             href={`/productos/${comp.slug}`}
-                                            className="group flex flex-col justify-between p-3 transition-all border border-border-default rounded-md hover:border-fg-primary bg-surface-primary"
+                                            className="group flex flex-col justify-between p-3 transition-all border border-border-default hover:border-fg-primary bg-surface-primary rounded-2xl"
                                         >
                                             <div className="space-y-3">
                                                 <div className="relative aspect-square overflow-hidden rounded bg-surface-primary w-full">
@@ -125,7 +122,7 @@ export default async function ProductPageServer({ producto }: Props) {
                             </div>
                         </div>
                     )}
-                </section>
+                </section> */}
             </section>
 
             {/* Productos Relacionados (Por Línea/Marca) */}

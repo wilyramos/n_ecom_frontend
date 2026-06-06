@@ -1,4 +1,3 @@
-// frontend/components/navigation/NavBar.tsx
 import Link from "next/link";
 import Logo from "../ui/Logo";
 import ButtonShowCart from "../ui/ButtonShowCart";
@@ -11,7 +10,10 @@ import { HiOutlineUserCircle } from "react-icons/hi2";
 export default function NavBar() {
     return (
         <NavBarClient>
-            <header className="sticky top-0 z-[99] h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300">
+            <div 
+                id="navbar-fixed" 
+                className="h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300"
+            >
                 <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative">
 
                     {/* Mobile: Logo centrado */}
@@ -50,10 +52,10 @@ export default function NavBar() {
 
                             <Link
                                 href="/auth/registro"
-                                className="hidden md:flex items-center text-fg-muted  rounded-full transition-colors duration-200 "
+                                className="hidden md:flex items-center text-fg-muted rounded-full transition-colors duration-200"
                                 aria-label="Cuenta"
                             >
-                                <div className="hover:bg-surface-secondary rounded-full p-2 transition-colors duration-200">
+                                <div className="hover:bg-fg-action rounded-full p-2 transition-colors duration-200">
                                     <HiOutlineUserCircle className="h-6 w-6" />
                                 </div>
                             </Link>
@@ -63,7 +65,7 @@ export default function NavBar() {
                     </div>
 
                 </div>
-            </header>
+            </div>
         </NavBarClient>
     );
 }

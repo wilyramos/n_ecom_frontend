@@ -921,7 +921,6 @@ export interface Window {
     };
 }
 
-
 // ======= ORDER ======= //
 
 /* ============================
@@ -947,7 +946,6 @@ export const PaymentStatus = z.enum([
     SUBSCHEMAS
 ============================ */
 
-// Datos de Identificación y Contacto del Comprador (Siempre requerido)
 export const CustomerProfileSchema = z.object({
     nombre: z.string().min(1, "El nombre es requerido"),
     apellidos: z.string().min(1, "Los apellidos son requeridos"),
@@ -957,7 +955,6 @@ export const CustomerProfileSchema = z.object({
     numeroDocumento: z.string().min(8, "Documento de identidad inválido"),
 });
 
-// Dirección de envío
 export const ShippingAddressSchema = z.object({
     departamento: z.string().min(1, "El departamento es requerido"),
     provincia: z.string().min(1, "La provincia es requerida"),
@@ -968,18 +965,16 @@ export const ShippingAddressSchema = z.object({
     referencia: z.string().min(1, "La referencia es requerida"),
 });
 
-// Item de la orden
 export const OrderItemSchema = z.object({
     productId: z.string().min(1, "El producto es requerido"),
-    variantId: z.string().optional(),
-    variantAttributes: z.record(z.string()).optional(),
-    quantity: z.number().positive("La cantidad debe ser mayor a 0"),
-    price: z.number().nonnegative("El precio no puede ser negativo"),
-    nombre: z.string().optional(),
-    imagen: z.string().url().optional(),
+    variantId: z.string().optional().nullable(), // Ajuste: Backend puede devolver null
+    variantAttributes: z.record(z.string()).optional().nullable(),
+    quantity: z.number().positive(),
+    price: z.number().nonnegative(),
+    nombre: z.string(), // Backend lo requiere
+    imagen: z.string().url().optional().nullable(),
 });
 
-// Product for order populated
 export const ProductForOrderSchema = z.object({
     _id: z.string(),
     nombre: z.string().optional(),
@@ -991,23 +986,36 @@ export const ProductForOrderSchema = z.object({
 export const OrderItemPopulatedSchema = z.object({
     productId: ProductForOrderSchema.nullable(),
     variantId: z.string().optional(),
-    quantity: z.number().positive("La cantidad debe ser mayor a 0"),
-    price: z.number().nonnegative("El precio no puede ser negativo"),
+    quantity: z.number().positive(),
+    price: z.number().nonnegative(),
 });
 
-// Información de pago
+// Información de pago — incluye campos Culqi opcionales
 export const PaymentInfoSchema = z.object({
-    provider: z.string().min(1, "El proveedor es requerido"), // Ej: 'IZIPAY'
-    method: z.string().optional(), // Ej: 'visa', 'yape'
-    transactionId: z.string().optional(),
+    provider: z.string().min(1, "El proveedor es requerido"), // 'culqi' | 'mercadopago' | 'izipay'
+    method: z.string().optional(),                          // 'tarjeta' | 'yape' | 'pagoefectivo' | ...
+    transactionId: z.string().optional(),                          // cge_live_xxx (cargo tarjeta/Yape)
     status: PaymentStatus.default("pending"),
     rawResponse: z.any().optional(),
+
+    // ── Culqi Orden ──────────────────────────────────────────────────────────
+    /** ID único de la orden en Culqi: "ord_live_xxx". Se pasa al Checkout JS. */
+    culqiOrderId: z.string().optional(),
+    /** order_number enviado a Culqi. Para conciliación. */
+    culqiOrderNumber: z.string().optional(),
+    /** Código CIP de PagoEfectivo. Mostrar al cliente si eligió ese medio. */
+    culqiPaymentCode: z.string().optional(),
+    /** Estado de la orden en Culqi: "pending" | "paid" | "expired" | "deleted" */
+    culqiOrderState: z.string().optional(),
+    /** Unix timestamp de expiración de la orden Culqi. */
+    culqiExpirationDate: z.number().optional(),
+    /** Unix timestamp del pago confirmado (paid_at del webhook). */
+    culqiPaidAt: z.number().optional(),
 });
 
-// Historial de estados
 export const StatusHistorySchema = z.object({
     status: OrderStatus,
-    changedAt: z.string().or(z.date()), // fecha como string o Date
+    changedAt: z.string().or(z.date()),
 });
 
 /* ============================
@@ -1017,8 +1025,8 @@ export const StatusHistorySchema = z.object({
 export const OrderSchema = z.object({
     _id: z.string(),
     orderNumber: z.string(),
-    user: z.string().optional(), // ID del usuario, ahora opcional para invitados
-    customerProfile: CustomerProfileSchema, // Agregado estáticamente
+    user: z.string().optional(),
+    customerProfile: CustomerProfileSchema,
     items: z.array(OrderItemSchema),
     subtotal: z.number().nonnegative(),
     shippingCost: z.number().nonnegative(),
@@ -1032,12 +1040,11 @@ export const OrderSchema = z.object({
     updatedAt: z.string(),
 });
 
-// Order populate
 export const OrderPopulatedSchema = z.object({
     _id: z.string(),
     orderNumber: z.string(),
-    user: z.lazy(() => UserSchema).nullable().optional(), // Opcional o null si es invitado
-    customerProfile: CustomerProfileSchema, // Agregado estáticamente
+    user: z.lazy(() => UserSchema).nullable().optional(),
+    customerProfile: CustomerProfileSchema,
     items: z.array(OrderItemSchema),
     subtotal: z.number().nonnegative(),
     shippingCost: z.number().nonnegative(),
@@ -1055,7 +1062,6 @@ export const OrderPopulatedSchema = z.object({
     REQUEST SCHEMAS
 ============================ */
 
-// Crear orden
 export const CreateOrderSchema = z.object({
     items: z.array(OrderItemSchema).min(1, "Debe haber al menos un producto"),
     subtotal: z.number().nonnegative(),
@@ -1063,11 +1069,19 @@ export const CreateOrderSchema = z.object({
     totalPrice: z.number().nonnegative(),
     currency: z.string().default("PEN"),
     shippingAddress: ShippingAddressSchema,
-    customerProfile: CustomerProfileSchema, // Se requiere pasar los datos personales del checkout unificado
+    customerProfile: CustomerProfileSchema,
     payment: PaymentInfoSchema,
 });
 
-// Actualizar estado de la orden
+// Respuesta del backend al crear una orden con Culqi.
+// culqiOrderId se devuelve en el root para que el frontend
+// lo inyecte en settings.order del Checkout JS.
+export const CreateOrderResponseSchema = z.object({
+    message: z.string(),
+    order: OrderSchema,
+    culqiOrderId: z.string().optional(), // presente solo si provider === 'culqi' y la API respondió OK
+});
+
 export const UpdateOrderStatusSchema = z.object({
     status: OrderStatus,
 });
@@ -1076,7 +1090,6 @@ export const UpdateOrderStatusSchema = z.object({
     RESPONSES DEL BACKEND
 ============================ */
 
-// Respuesta de lista de órdenes (con paginación)
 export const OrdersListResponseSchema = z.object({
     orders: z.array(OrderSchema),
     totalOrders: z.number(),
@@ -1103,9 +1116,11 @@ export type TPaymentInfo = z.infer<typeof PaymentInfoSchema>;
 export type TStatusHistory = z.infer<typeof StatusHistorySchema>;
 export type TOrder = z.infer<typeof OrderSchema>;
 export type TCreateOrder = z.infer<typeof CreateOrderSchema>;
+export type TCreateOrderResponse = z.infer<typeof CreateOrderResponseSchema>;
 export type TOrdersListResponse = z.infer<typeof OrdersListResponseSchema>;
 export type TOrderPopulated = z.infer<typeof OrderPopulatedSchema>;
 export type TOrdersListResponsePopulate = z.infer<typeof OrdersListResponseSchemaPopulate>;
+
 // ======= SALES ======= //
 
 export const SaleSourceSchema = z.enum(["ONLINE", "POS"])

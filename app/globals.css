@@ -14,6 +14,7 @@
   --color-brand-silver: #cbcbcb;
   --color-brand-black: #0a0a0a;
   --color-brand-gris: #a0a0a0;
+  --color-brand-action: #a7c7aa;
 
   /* --- ESTANDARIZACIÓN SEMÁNTICA E-COMMERCE / POS --- */
   
@@ -26,6 +27,7 @@
   --color-fg-primary: var(--color-brand-charcoal);
   --color-fg-secondary: var(--color-brand-silver);
   --color-fg-muted: var(--color-brand-gris);
+  --color-fg-action: var(--color-brand-action);
   --color-fg-inverse: #ffffff;
 
   /* Acciones y CTAs */
@@ -33,6 +35,7 @@
   --color-action-primary-hover: var(--color-brand-black);
   --color-action-secondary: var(--color-brand-silver);
   --color-action-secondary-hover: var(--color-brand-gris);
+  --color-action-destructive: var(--color-brand-action);
 
   /* Bordes y Divisores */
   --color-border-default: var(--color-brand-silver);

@@ -9,7 +9,6 @@ import { cn } from '@/lib/utils';
 import { useSearchParams } from 'next/navigation';
 import ColorCircle from '@/components/ui/ColorCircle';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
 import {
     Select,
     SelectTrigger,
@@ -338,57 +337,25 @@ export default function ProductDetails({ producto }: Props) {
                         </div>
                     </div>
                     <div className="pt-4 ">
-
-                        {/* consulta por politicas de cambios y devoluciones */}
-                        <div className="flex items-center  bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-muted">
-                                {/* Consulta por Políticas de Cambios y Devoluciones */}
-                            </span>
-                            <Link
-                                href="/cambios-devoluciones"
-                                className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"
-                            >
-                                Ver Políticas de Cambios y Devoluciones
-                                <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
-                            </Link>
-                        </div>
-
-                        {/* Consulta por terminos y condiciones */}
-
-                        <div className="flex items-center  bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-muted">
-                                {/* Consulta por Términos y Condiciones */}
-                            </span>
-                            <Link
-                                href="/terminos-y-condiciones"
-                                className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"
-                            >
-                                Ver Términos y Condiciones
-                                <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
-                            </Link>
-                        </div>
-
-
-                        {/* Consulta por WhatsApp */}
-                        <div className="flex items-center  bg-surface-primary gap-4">
-                            <span className="text-sm font-medium text-fg-muted">
-                                {/* Comprar por WhatsApp */}
-                            </span>
+                        <div className="flex flex-col gap-2 text-sm">
 
                             <a
                                 href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sm font-semibold text-fg-primary inline-flex items-center gap-1 hover:underline w-fit group"
+                                className="text-fg-muted hover:text-fg transition-colors"
                             >
                                 Consultar por WhatsApp
-                                <ChevronRight className="w-3.5 h-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
                             </a>
-                        </div>
 
-                        <div>
+                            <Link
+                                href="/cambios-devoluciones"
+                                className="text-fg-muted hover:text-fg transition-colors"
+                            >
+                                Cambios y devoluciones
+                            </Link>
+
                             <ProductExpandableSections producto={producto} />
-
                         </div>
                     </div>
                 </section>

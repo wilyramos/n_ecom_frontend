@@ -1,51 +1,33 @@
-// File: frontend/app/(store)/page.tsx
-
 import { Metadata } from "next";
 import { metadata as globalMetadata } from "@/app/layout";
 import ProductosDestacados from "@/components/home/ProductosDestacados";
 import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasWrapper";
 import FeatureCards from "@/components/home/FeatureCards";
 import GoogleReviews from "@/components/home/GoogleReviews";
-
 import CarruselPrincipal from "@/components/home/CarruselPrincipal";
 import StoreLocation from "@/components/home/StoreLocation";
 import StoreMaintenance from "@/components/home/StoreMaintenance";
+import BrandsList from "@/components/home/BrandsList";
+import TopBanner from "@/components/navigation/TopBanner";
 
-// Metadata for SEO and social sharing
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
         default: "Neoshop importaciones",
         template: "%s / Neoshop importaciones",
     },
-    description:
-        "Neoshop es tu tienda de productos apple en Perú. Encuentra iPhones, accesorios y tecnología de calidad a precios competitivos. ¡Visítanos y descubre lo mejor!",
+    description: "Neoshop es tu tienda de productos apple en Perú. Encuentra iPhones, accesorios y tecnología de calidad a precios competitivos. ¡Visítanos y descubre lo mejor!",
     keywords: [
-        "Neoshop",
-        "tienda iPhone ",
-        "venta de celulares ",
-        "accesorios para celulares",
-        "tecnología en ",
-        "comprar iPhone ",
-        "gadgets ",
-        "tienda online ",
-        "Neoshop Perú",
-        "cases y fundas ",
-        "cargadores y cables ",
-        "auriculares y audífonos ",
-        "repuestos y reparación de celulares",
-        "ofertas de tecnología ",
-        "smartphones en ",
-        "tienda de tecnología en ",
-        "iPhone",
-        "audífonos",
-        "cases"
+        "Neoshop", "tienda iPhone ", "venta de celulares ", "accesorios para celulares",
+        "tecnología en ", "comprar iPhone ", "gadgets ", "tienda online ", "Neoshop Perú",
+        "cases y fundas ", "cargadores y cables ", "auriculares y audífonos ",
+        "repuestos y reparación de celulares", "ofertas de tecnología ", "smartphones en ",
+        "tienda de tecnología en ", "iPhone", "audífonos", "cases"
     ],
     openGraph: {
         ...globalMetadata.openGraph,
         title: "Neoshop - ",
-        description:
-            "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en . ¡Visítanos y descubre nuestras ofertas!",
+        description: "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en . ¡Visítanos y descubre nuestras ofertas!",
         url: "https://Neoshop.pe",
         images: [
             {
@@ -59,15 +41,16 @@ export const metadata: Metadata = {
     twitter: {
         ...globalMetadata.twitter,
         title: "Neoshop - Venta de accesorios y tecnología en ",
-        description:
-            "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en .",
+        description: "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en .",
         images: ["https://Neoshop.pe/favicon.ico"],
     }
 };
 
 export default function HomePage() {
     return (
-        <>
+        <div className="">
+            {/* El aviso promocional se muestra únicamente aquí, justo debajo del Navbar fijo */}
+            <TopBanner />
 
             <div>
                 <StoreMaintenance />
@@ -81,30 +64,25 @@ export default function HomePage() {
                 <FeatureCards />
             </section>
 
-            <section className="">
+            <section>
                 <CategoriasDestacadasWrapper />
             </section>
 
             <section>
                 <ProductosDestacados />
             </section>
- {/* 
-            <section>
-               <ProductosNuevos /> 
-            </section>
-
 
             <section className="my-5">
-                {/* <BrandsList /> 
-            </section>*/}
+                <BrandsList />
+            </section>
 
-            <section className= "py-5">
+            <section className="py-5">
                 <GoogleReviews />
             </section>
 
             <section>
                 <StoreLocation />
             </section>
-        </>
+        </div>
     );
 }

@@ -192,7 +192,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                 step={10}
                                 value={priceRangeValue}
                                 onValueChange={(val) => setPriceRangeValue(val as [number, number])}
-                                className="w-full"
+                                className="w-full "
                             />
                             <div className="flex items-center justify-between text-xs font-medium text-fg-primary">
                                 <span>S/. {priceRangeValue[0]}</span>
@@ -218,7 +218,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                             className={cn(
                                                 "flex items-center justify-between px-3 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
                                                 active
-                                                    ? "bg-action-primary border-action-primary text-surface-primary shadow-sm"
+                                                    ? "bg-fg-action border-action-primary text-surface-primary shadow-sm"
                                                     : "border-border-default bg-surface-primary text-fg-primary hover:border-brand-charcoal"
                                             )}
                                         >

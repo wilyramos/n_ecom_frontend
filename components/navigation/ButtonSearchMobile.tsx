@@ -1,4 +1,3 @@
-// frontend/components/navigation/ButtonSearchMobile.tsx
 "use client";
 
 import { Search, X } from "lucide-react";
@@ -7,20 +6,7 @@ import ButtonSearchFormStore from "../ui/ButtonSearchFormStore";
 
 export default function ButtonSearchMobile() {
     const [openSearch, setOpenSearch] = useState(false);
-    const [headerHeight, setHeaderHeight] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const updateHeight = () => {
-            const nav = document.getElementById("navbar-fixed");
-            if (nav) {
-                setHeaderHeight(nav.offsetHeight);
-            }
-        };
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
-    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -37,7 +23,7 @@ export default function ButtonSearchMobile() {
             {/* Toggle button único para responsive */}
             <button
                 onClick={() => setOpenSearch(!openSearch)}
-                className="p-2.5 rounded-full hover:bg-surface-secondary text-fg-muted  transition-colors duration-200 active:scale-90"
+                className="p-2.5 rounded-full hover:bg-fg-action text-fg-muted transition-colors duration-200 active:scale-90"
                 aria-label="Buscar productos"
             >
                 {openSearch ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
@@ -47,8 +33,7 @@ export default function ButtonSearchMobile() {
             {openSearch && (
                 <div
                     ref={containerRef}
-                    className="fixed left-0 w-full bg-surface-primary border-b border-border-default z-[45] px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-200"
-                    style={{ top: headerHeight }}
+                    className="fixed left-0 top-20 w-full bg-surface-primary border-b border-border-default z-[45] px-4 py-3 animate-in fade-in slide-in-from-top-2 duration-200"
                 >
                     <div className="max-w-3xl mx-auto w-full">
                         <ButtonSearchFormStore
@@ -62,11 +47,7 @@ export default function ButtonSearchMobile() {
             {/* Overlay */}
             {openSearch && (
                 <div
-                    className="fixed inset-0 bg-brand-black/40 backdrop-blur-xs z-[40]"
-                    style={{
-                        top: headerHeight,
-                        height: `calc(100vh - ${headerHeight}px)`
-                    }}
+                    className="fixed left-0 top-20 w-full h-[calc(100vh-5rem)] bg-brand-black/40 backdrop-blur-xs z-[40]"
                     onClick={() => setOpenSearch(false)}
                 />
             )}

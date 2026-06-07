@@ -35,24 +35,23 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
             <DialogTitle className="sr-only">{ad.title}</DialogTitle>
 
             <DialogContent
-                className="w-[90vw] max-w-[340px] p-0 overflow-hidden rounded-2xl bg-background shadow-xl z-9999 border-border border [&>button]:focus:ring-0 [&>button]:focus:ring-offset-0 [&>button]:focus:outline-none [&>button]:outline-none [&>button]:border-0 [&>button]:focus-visible:outline-none"
+                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background rounded-2xl"
             >
-                <div className="flex flex-col p-5 gap-4 bg-background">
-                    {/* ── 1. TÍTULO EN LA PARTE SUPERIOR ── */}
-                    <div className="text-center space-y-1 shrink-0">
-                        <h3 className="text-2xl md:text-3xl font-bold tracking-tight text-fg-muted leading-snug">
+                <div className="flex flex-col p-4 sm:p-5  bg-background">
+
+                    <div className="text-center space-y-0.5 shrink-0">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-fg-muted leading-snug">
                             {ad.title}
                         </h3>
                         {ad.subtitle && (
-                            <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                            <p className="text-[11px] sm:text-xs text-muted-foreground font-medium leading-relaxed">
                                 {ad.subtitle}
                             </p>
                         )}
                     </div>
 
-                    {/* ── 2. IMAGEN AL MEDIO RESPONSIVE ── */}
                     {ad.imageUrl && (
-                        <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-2xs border border-border/10">
+                        <div className="relative w-full aspect-square rounded-lg overflow-hidden ">
                             <Image
                                 src={ad.imageUrl}
                                 alt={ad.title}
@@ -64,13 +63,12 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
                         </div>
                     )}
 
-                    {/* ── 3. BOTÓN AL FINAL ── */}
                     <div className="w-full shrink-0">
                         {ad.linkTo ? (
                             <Button
                                 asChild
                                 size="sm"
-                                className="w-full text-xs font-semibold h-9 rounded-lg cursor-pointer"
+                                className="w-full text-xs font-semibold  cursor-pointer focus:ring-0 focus-visible:ring-0 focus:shadow-none"
                                 onClick={() => handleOpenChange(false)}
                             >
                                 <Link href={ad.linkTo}>Ver Detalles</Link>
@@ -79,7 +77,7 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
                             <Button
                                 size="sm"
                                 variant="accent"
-                                className="w-full text-xs font-semibold h-9 cursor-pointer"
+                                className="w-full text-xs font-semibold cursor-pointer focus:ring-0 focus-visible:ring-0 focus:shadow-none"
                                 onClick={() => handleOpenChange(false)}
                             >
                                 Cerrar

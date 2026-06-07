@@ -115,6 +115,11 @@ const menuGroups: NavLink[] = [
         label: "Slider Banners",
     },
     {
+        href: "/admin/sections",
+        icon: Image,
+        label: "Secciones",
+    },
+    {
         icon: Users,
         label: "Usuarios",
         href: "/admin/users",

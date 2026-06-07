@@ -9,6 +9,7 @@ import StoreLocation from "@/components/home/StoreLocation";
 import StoreMaintenance from "@/components/home/StoreMaintenance";
 import BrandsList from "@/components/home/BrandsList";
 import TopBanner from "@/components/navigation/TopBanner";
+import HomepageSectionsWrapper from "@/components/home/sections/HomepageSectionsWrapper";
 
 export const metadata: Metadata = {
     ...globalMetadata,
@@ -82,6 +83,11 @@ export default function HomePage() {
 
             <section>
                 <StoreLocation />
+            </section>
+
+            <section>
+                            <HomepageSectionsWrapper />
+
             </section>
         </div>
     );

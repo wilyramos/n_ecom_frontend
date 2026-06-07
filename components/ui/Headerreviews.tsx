@@ -24,10 +24,10 @@ export default function HeaderReviews({ title, viewAllHref }: Props) {
                     href={viewAllHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-default bg-surface-primary hover:bg-surface-secondary transition-colors whitespace-nowrap shrink-0"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-default bg-surface-primary transition-colors whitespace-nowrap shrink-0"
                 >
                     {/* Texto desktop */}
-                    <span className="hidden md:inline text-xs font-medium text-fg-muted hover:text-fg-secondary">
+                    <span className="hidden md:inline text-xs font-medium text-fg-muted ">
                         Ver reseñas
                     </span>
                     {/* Texto mobile */}

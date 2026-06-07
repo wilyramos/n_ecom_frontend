@@ -1,3 +1,5 @@
+//File: frontend/app/admin/sections/new/page.tsx
+
 import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 import NewSectionClient from "@/components/admin/sections/NewSectionClient";
 

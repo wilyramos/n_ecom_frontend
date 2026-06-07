@@ -1,3 +1,5 @@
+//File: frontend/components/admin/sections/NewSectionClient.tsx
+
 "use client";
 
 import { useActionState, useEffect } from "react";

@@ -34,7 +34,7 @@ const features: Feature[] = [
 
 export default function FeatureCards() {
   return (
-    <section className="py-1 w-full">
+    <section className="py-1 w-full max-w-screen-2xl mx-auto">
       <div className="w-full px-2 md:px-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 w-full ">
           {features.map(({ title, description, icon: Icon }) => (

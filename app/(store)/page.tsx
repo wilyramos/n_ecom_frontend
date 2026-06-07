@@ -6,10 +6,9 @@ import FeatureCards from "@/components/home/FeatureCards";
 import GoogleReviews from "@/components/home/GoogleReviews";
 import CarruselPrincipal from "@/components/home/CarruselPrincipal";
 import StoreLocation from "@/components/home/StoreLocation";
-import StoreMaintenance from "@/components/home/StoreMaintenance";
 import BrandsList from "@/components/home/BrandsList";
-import TopBanner from "@/components/navigation/TopBanner";
 import HomepageSectionsWrapper from "@/components/home/sections/HomepageSectionsWrapper";
+import GlobalAdContainer from "@/components/home/GlobalAdContainer";
 
 export const metadata: Metadata = {
     ...globalMetadata,
@@ -47,15 +46,12 @@ export const metadata: Metadata = {
     }
 };
 
+
 export default function HomePage() {
     return (
-        <div className="">
-            {/* El aviso promocional se muestra únicamente aquí, justo debajo del Navbar fijo */}
-            <TopBanner />
-
-            <div>
-                <StoreMaintenance />
-            </div>
+        <div className="w-full">
+          
+            <GlobalAdContainer />
 
             <section>
                 <CarruselPrincipal />
@@ -86,8 +82,7 @@ export default function HomePage() {
             </section>
 
             <section>
-                            <HomepageSectionsWrapper />
-
+                <HomepageSectionsWrapper />
             </section>
         </div>
     );

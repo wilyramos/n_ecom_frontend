@@ -5,6 +5,7 @@ import { FiClock } from "react-icons/fi";
 import CheckoutCulqi from "@/components/checkout/culqi/CheckoutCulqi";
 import type { TOrder } from "@/src/schemas";
 
+
 type PaymentPageProps = {
   searchParams: Promise<{ orderId: string }>;
 };

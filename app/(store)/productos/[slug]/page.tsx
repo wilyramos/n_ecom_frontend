@@ -78,8 +78,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             creator: '@neoshop',
         },
         icons: {
-            icon: "/logoapp.png",
-            apple: "/logoapp.png",
+            icon: "/favicon.ico",
+            apple: "/favicon.ico",
         },
         alternates: {
             canonical: url,

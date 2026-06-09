@@ -3,8 +3,15 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { FiSearch, FiCalendar, FiCreditCard, FiTruck, FiDollarSign } from "react-icons/fi";
+import { format } from "date-fns";
+import { CalendarIcon, X, Search, DollarSign, Truck, CreditCard } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 export default function OrdersTableFilters() {
     const router = useRouter();
@@ -20,166 +27,115 @@ export default function OrdersTableFilters() {
         montoMax: searchParams.get("montoMax") || "",
     });
 
-    const handleFilterChange = useDebouncedCallback(() => {
+    const updateURL = useDebouncedCallback((newFilters: typeof filters) => {
         const params = new URLSearchParams();
-
-        Object.entries(filters).forEach(([key, value]) => {
-            if (value.trim() !== "") params.set(key, value);
+        Object.entries(newFilters).forEach(([key, value]) => {
+            if (value && value.toString().trim() !== "") params.set(key, value);
         });
-
         router.push(`/admin/orders?${params.toString()}`);
     }, 400);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFilters((prev) => ({ ...prev, [name]: value }));
-        handleFilterChange();
+        const newFilters = { ...filters, [name]: value };
+        setFilters(newFilters);
+        updateURL(newFilters);
     };
 
-    const handleClearFilters = () => {
-        setFilters({
-            pedido: "",
-            fecha: "",
-            fechaFin: "",
-            estadoPago: "",
-            estadoEnvio: "",
-            montoMin: "",
-            montoMax: "",
-        });
+    const handleSelectChange = (name: string, value: string) => {
+        const newFilters = { ...filters, [name]: value === "todos" ? "" : value };
+        setFilters(newFilters);
+        updateURL(newFilters);
+    };
+
+    const handleDateChange = (name: "fecha" | "fechaFin", date: Date | undefined) => {
+        const dateString = date ? format(date, "yyyy-MM-dd") : "";
+        const newFilters = { ...filters, [name]: dateString };
+        setFilters(newFilters);
+        updateURL(newFilters);
+    };
+
+    const handleClear = () => {
+        const cleared = { pedido: "", fecha: "", fechaFin: "", estadoPago: "", estadoEnvio: "", montoMin: "", montoMax: "" };
+        setFilters(cleared);
         router.push("/admin/orders");
     };
 
-    const hasActiveFilters = Object.values(filters).some(val => val.trim() !== "");
+    const hasFilters = Object.values(filters).some((v) => v !== "");
 
     return (
-        <div className="w-full p-3">
-            {/* Botón limpiar */}
-            {hasActiveFilters && (
-                <div className="mb-3 flex justify-end">
-                    <button
-                        onClick={handleClearFilters}
-                        className="text-sm text-red-600 hover:underline font-medium"
-                    >
-                        Limpiar Filtros
-                    </button>
-                </div>
-            )}
+        <div className="bg-card p-4 rounded-xl border shadow-sm space-y-4">
+            <div className="flex justify-between items-center">
+                <h3 className="font-semibold text-sm">Filtros Avanzados</h3>
+                {hasFilters && (
+                    <Button variant="ghost" size="sm" onClick={handleClear} className="h-8 text-destructive hover:text-destructive">
+                        <X className="mr-2 h-4 w-4" /> Limpiar
+                    </Button>
+                )}
+            </div>
 
-            {/* Filtros Responsive */}
-            <div className="space-y-3">
-                {/* Primera fila: Búsqueda y Fechas */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {/* Pedido */}
-                    <div className="relative">
-                        <FiSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <Input
-                            type="text"
-                            name="pedido"
-                            placeholder="Nº Pedido"
-                            value={filters.pedido}
-                            onChange={handleChange}
-                            className="w-full"
-                        />
-                        
-                       
-                    </div>
-
-                    {/* Fecha inicio */}
-                    <div className="relative">
-                        <FiCalendar className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="date"
-                            name="fecha"
-                            value={filters.fecha}
-                            onChange={handleChange}
-                            className="w-full pl-8 pr-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                    </div>
-
-                    {/* Fecha fin */}
-                    <div className="relative">
-                        <FiCalendar className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="date"
-                            name="fechaFin"
-                            placeholder="Fecha fin"
-                            value={filters.fechaFin}
-                            onChange={handleChange}
-                            disabled={!filters.fecha}
-                            className="w-full pl-8 pr-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-50 disabled:text-gray-400"
-                        />
-                    </div>
-
-                    {/* Estado de Pago */}
-                    <div className="relative">
-                        <FiCreditCard className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <select
-                            name="estadoPago"
-                            value={filters.estadoPago}
-                            onChange={handleChange}
-                            className="w-full pl-8 pr-2 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            <option value="">Estado de Pago</option>
-                            <option value="pending">Pendiente</option>
-                            <option value="approved">Aprobado</option>
-                            <option value="rejected">Rechazado</option>
-                            <option value="refunded">Reembolsado</option>
-                        </select>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Búsqueda */}
+                <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input name="pedido" placeholder="ID Pedido" value={filters.pedido} onChange={handleInputChange} className="pl-9" />
                 </div>
 
-                {/* Segunda fila: Estados y Monto */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {/* Estado de Envío */}
-                    <div className="relative">
-                        <FiTruck className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <select
-                            name="estadoEnvio"
-                            value={filters.estadoEnvio}
-                            onChange={handleChange}
-                            className="w-full pl-8 pr-2 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        >
-                            <option value="">Estado de Envío</option>
-                            <option value="awaiting_payment">Pendiente de pago</option>
-                            <option value="processing">Procesando</option>
-                            <option value="shipped">Enviado</option>
-                            <option value="delivered">Entregado</option>
-                            <option value="canceled">Cancelado</option>
-                            <option value="paid_but_out_of_stock">Sin stock</option>
-                        </select>
-                    </div>
+                {/* Fechas */}
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" className={cn("justify-start text-left font-normal", !filters.fecha && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {filters.fecha ? filters.fecha : "Fecha inicio"}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={filters.fecha ? new Date(filters.fecha) : undefined} onSelect={(d) => handleDateChange("fecha", d)} />
+                    </PopoverContent>
+                </Popover>
 
-                    {/* Monto mínimo */}
-                    <div className="relative">
-                        <FiDollarSign className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="number"
-                            name="montoMin"
-                            placeholder="Monto mín."
-                            value={filters.montoMin}
-                            onChange={handleChange}
-                            min="0"
-                            step="0.01"
-                            className="w-full pl-8 pr-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                    </div>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="outline" disabled={!filters.fecha} className={cn("justify-start text-left font-normal", !filters.fechaFin && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {filters.fechaFin ? filters.fechaFin : "Fecha fin"}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar mode="single" selected={filters.fechaFin ? new Date(filters.fechaFin) : undefined} onSelect={(d) => handleDateChange("fechaFin", d)} />
+                    </PopoverContent>
+                </Popover>
 
-                    {/* Monto máximo */}
-                    <div className="relative">
-                        <FiDollarSign className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input
-                            type="number"
-                            name="montoMax"
-                            placeholder="Monto máx."
-                            value={filters.montoMax}
-                            onChange={handleChange}
-                            min="0"
-                            step="0.01"
-                            className="w-full pl-8 pr-2 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                    </div>
+                {/* Estado Pago */}
+                <Select value={filters.estadoPago || "todos"} onValueChange={(v) => handleSelectChange("estadoPago", v)}>
+                    <SelectTrigger><CreditCard className="mr-2 h-4 w-4" /><SelectValue placeholder="Estado Pago" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="todos">Todos los pagos</SelectItem>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="approved">Aprobado</SelectItem>
+                        <SelectItem value="rejected">Rechazado</SelectItem>
+                    </SelectContent>
+                </Select>
 
-                    <div />
+                {/* Estado Envío */}
+                <Select value={filters.estadoEnvio || "todos"} onValueChange={(v) => handleSelectChange("estadoEnvio", v)}>
+                    <SelectTrigger><Truck className="mr-2 h-4 w-4" /><SelectValue placeholder="Estado Envío" /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="todos">Todos los envíos</SelectItem>
+                        <SelectItem value="processing">Procesando</SelectItem>
+                        <SelectItem value="shipped">Enviado</SelectItem>
+                        <SelectItem value="delivered">Entregado</SelectItem>
+                    </SelectContent>
+                </Select>
+
+                {/* Montos */}
+                <div className="relative">
+                    <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input type="number" name="montoMin" placeholder="Monto mín." value={filters.montoMin} onChange={handleInputChange} className="pl-9" />
+                </div>
+                <div className="relative">
+                    <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input type="number" name="montoMax" placeholder="Monto máx." value={filters.montoMax} onChange={handleInputChange} className="pl-9" />
                 </div>
             </div>
         </div>

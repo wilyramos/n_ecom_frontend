@@ -9,7 +9,8 @@ import {
     OrdersListResponseSchema,
     OrdersOverTimeSchema,
     OrdersSummarySchema,
-    OrderPopulatedSchema
+    OrderPopulatedSchema,
+    OrdersByPaymentMethodSchema
 } from "@/src/schemas";
 
 type GetOrdersParams = {
@@ -35,7 +36,7 @@ export const getOrders = async ({
 
     // Agregar filtros dinámicamente
     Object.entries(filters).forEach(([key, value]) => {
-        if (value && String(value).trim() !== '') {
+        if (value !== undefined && value !== null && String(value).trim() !== '') {
             params.append(key, String(value));
         }
     });
@@ -151,6 +152,59 @@ export const getSummaryOrders = async (params: GetOrdersReportsParams) => {
     } catch (error) {
         console.error("Error fetching sales summary:", error);
         return null;
+    }
+}
+
+// En frontend/src/services/orders.ts
+
+export const getReportOrdersByPaymentMethod = async (params: GetOrdersReportsParams) => {
+    try {
+        const token = await getTokenOptional();
+        const queryParams = new URLSearchParams();
+        if (params.fechaInicio) queryParams.append('fechaInicio', params.fechaInicio);
+        if (params.fechaFin) queryParams.append('fechaFin', params.fechaFin);
+
+        const url = `${process.env.API_URL}/orders/reports/orders-by-payment-method?${queryParams.toString()}`;
+
+        const req = await fetch(url, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!req.ok) return [];
+
+        const json = await req.json();
+        // Validamos con el nuevo esquema
+        return OrdersByPaymentMethodSchema.array().parse(json);
+    } catch (error) {
+        console.error("Error al obtener reporte por método de pago:", error);
+        return [];
+    }
+}
+
+// En frontend/src/services/orders.ts
+
+export const getReportOrdersByPaymentStatus = async (params: GetOrdersReportsParams) => {
+    try {
+        const token = await getTokenOptional();
+        const queryParams = new URLSearchParams();
+        if (params.fechaInicio) queryParams.append('fechaInicio', params.fechaInicio);
+        if (params.fechaFin) queryParams.append('fechaFin', params.fechaFin);
+
+        const url = `${process.env.API_URL}/orders/reports/payment-status?${queryParams.toString()}`;
+
+        const req = await fetch(url, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!req.ok) return [];
+        const json = await req.json();
+        // Asumiendo que el esquema es similar a OrdersByStatusSchema
+        return OrdersByStatusSchema.array().parse(json);
+    } catch (error) {
+        console.error("Error al obtener reporte por estado de pago:", error);
+        return [];
     }
 }
 

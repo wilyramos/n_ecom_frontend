@@ -67,41 +67,37 @@ export default function DateRangeDropdown() {
     const endDate = range[0].endDate ? format(range[0].endDate, "dd MMM yyyy", { locale: es }) : "";
 
     return (
-        <div className="relative" ref={dropdownRef}>
-            <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-muted-foreground whitespace-nowrap">Periodo:</span>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setOpen(!open)}
-                    className="h-8 text-xs font-bold gap-2 bg-card"
-                >
-                    <CalendarIcon className="w-3.5 h-3.5" />
-                    {startDate} - {endDate}
-                </Button>
-            </div>
+        <div className="relative z-50" ref={dropdownRef}>
+            {/* Botón activador */}
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setOpen(!open)}
+                className="h-8 text-xs font-bold gap-2 bg-card w-full sm:w-auto"
+            >
+                <CalendarIcon className="w-3.5 h-3.5" />
+                {startDate} - {endDate}
+            </Button>
+
+            {/* Contenedor del Dropdown */}
             {open && (
                 <div
                     className={cn(
-                        "absolute top-full mt-2 z-[999] bg-card border border-border shadow-2xl rounded-xl overflow-hidden",
-                        // Ajuste responsivo:
-                        // 1. En móvil, se centra respecto al botón (left-1/2 -translate-x-1/2)
-                        // 2. En escritorio (md), se alinea al inicio del contenedor (left-0, sin traslación)
-                        "left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0",
-                        // Ancho: casi pantalla completa en móvil, ancho automático en escritorio
-                        "w-[95vw] md:w-auto",
-                        // Aseguramos que no se salga de la pantalla en scroll
-                        "max-h-[80vh] overflow-y-auto"
+                        "absolute right-0 mt-2 bg-card border border-border shadow-2xl rounded-xl z-[999]",
+                        "w-[320px] sm:w-[640px]", // Ancho fijo para 1 mes (móvil) y 2 meses (desktop)
+                        "max-h-[80vh] overflow-y-auto sm:overflow-hidden" // Scroll solo en móvil
                     )}
                 >
                     <DateRange
                         ranges={range}
                         onChange={handleRangeChange}
                         moveRangeOnFirstSelection={false}
+                        // Forzamos el número de meses y dirección basados en isMobile
                         months={isMobile ? 1 : 2}
                         direction={isMobile ? "vertical" : "horizontal"}
                         locale={es}
-                        className="!bg-card !text-card-foreground [&_.rdrMonth]:!bg-card [&_.rdrCalendarWrapper]:!bg-card [&_.rdrDayNumber]:!text-card-foreground [&_.rdrDayDisabled]:!bg-muted [&_.rdrNextPrevButton]:!bg-muted [&_.rdrPprevButton]:!bg-muted"
+                        // ESTILOS CRÍTICOS: Eliminamos restricciones de ancho y altura de las clases de la librería
+                        className="!w-full !max-w-none" 
                     />
                 </div>
             )}

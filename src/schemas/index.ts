@@ -1256,4 +1256,11 @@ export type TPurchase = z.infer<typeof purchaseSchema>;
 export type TPurchasesResponse = z.infer<typeof purchasesResponseSchema>;
 export type TpurchaseSchemaPopulated = z.infer<typeof purchaseSchemaPopulated>;
 
-// TODO: DADOQ que hay cassos donde tiene que venir populado y no. manejar un schemas robustos y adecuada.
+
+export const OrdersByPaymentMethodSchema = z.object({
+    provider: z.string(), // O 'method' según tu DB
+    numberOfOrders: z.number().min(0),
+    totalSales: z.number().min(0),
+});
+
+export type TOrdersByPaymentMethod = z.infer<typeof OrdersByPaymentMethodSchema>;

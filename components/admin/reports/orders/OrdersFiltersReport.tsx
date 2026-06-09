@@ -4,12 +4,9 @@ import DateRangeDropdown from "@/components/admin/reports/FiltersReportsSales";
 import { HeadingH2 } from "@/components/ui/Heading";
 import {
     ArrowLeft,
-    LayoutDashboard,
-    Package,
-    Users,
-    ShoppingCart,
+    LayoutDashboard, ShoppingCart,
     DollarSign,
-    BarChart3,
+    BarChart3
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,8 +17,6 @@ const tabs = [
     { href: "/admin/reports/orders/status", label: "Por Estado", icon: ShoppingCart },
     { href: "/admin/reports/orders/payments", label: "Por Método de Pago", icon: DollarSign },
     { href: "/admin/reports/orders/payment-status", label: "Por Estado de Pago", icon: BarChart3 },
-    { href: "/admin/reports/orders/products", label: "Por Productos", icon: Package },
-    { href: "/admin/reports/orders/locations", label: "Por Ubicación", icon: Users },
 ];
 
 export default function OrdersFiltersReport() {

@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
             {/* DESKTOP LAYOUT */}
             <div className="hidden md:grid grid-cols-[auto_1fr] ">
-                <div className="border-r h-screen sticky top-0">
+                <div className="border-r border-border h-screen sticky top-0">
                     <AdminSidebar user={user} />
                 </div>
                 <main className="overflow-y-auto ">{children}</main>

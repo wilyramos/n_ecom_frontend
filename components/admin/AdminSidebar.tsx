@@ -127,7 +127,7 @@ export default function AdminSidebar({ user }: Props) {
                                                 <div className={cn("grid overflow-hidden transition-all", isOpen && expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
                                                     <div className="min-h-0 pl-8 py-0.5 space-y-0.5">
                                                         {children.map(sub => (
-                                                            <Link key={sub.href} href={sub.href} className={cn("block text-xs py-1.5", (pathname === sub.href) ? "font-semibold text-[var(--color-accent-vivid)]" : "text-zinc-500 hover:text-black")}>
+                                                            <Link key={sub.href} href={sub.href} className={cn("block text-xs py-1.5", (pathname === sub.href) ? " text-[var(--color-accent-vivid)]" : "text-zinc-500 hover:text-black")}>
                                                                 {sub.label}
                                                             </Link>
                                                         ))}

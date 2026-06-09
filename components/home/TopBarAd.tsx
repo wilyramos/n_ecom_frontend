@@ -36,7 +36,7 @@ export default function TopBarAd({ ads }: TopBarAdProps) {
     const ContentWrapper = currentAd.linkTo ? Link : "div";
 
     return (
-        <div className="w-full h-8 bg-fg-action text-fg-inverse border-b border-border-default/10 select-none overflow-hidden relative">
+        <div className="w-full h-8 bg-fg-secondary text-fg-inverse border-b border-border-default/10 select-none overflow-hidden relative">
             <div className="w-full h-full max-w-7xl mx-auto px-3 grid grid-cols-12 items-center">
                 
                 {/* Contenedor Animado: Toma 9 columnas en móvil para dar espacio a las redes */}

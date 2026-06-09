@@ -64,9 +64,9 @@ export default function OrdersTableFilters() {
     const hasFilters = Object.values(filters).some((v) => v !== "");
 
     return (
-        <div className="bg-card p-4 rounded-xl border shadow-sm space-y-4">
+        <div className="bg-card p-4  space-y-4">
             <div className="flex justify-between items-center">
-¿                {hasFilters && (
+                {hasFilters && (
                     <Button variant="ghost" size="sm" onClick={handleClear} className="h-8 text-destructive hover:text-destructive">
                         <X className="mr-2 h-4 w-4" /> Limpiar
                     </Button>

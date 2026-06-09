@@ -79,9 +79,9 @@ export default function ResumenCarrito() {
 
                     {/* CUPÓN */}
                     <div className="pt-1 md:pt-2">
-                        <label className="text-xs md:text-sm text-muted-foreground mb-1 block">
+                        {/* <label className="text-xs md:text-sm text-muted-foreground mb-1 block">
                             ¿Tienes un cupón?
-                        </label>
+                        </label> */}
                         {/* <div className="flex items-center gap-2">
                             <input
                                 type="text"
@@ -99,7 +99,7 @@ export default function ResumenCarrito() {
                         Verifica tus productos antes de continuar.
                     </p>
 
-                    <Button onClick={() => router.push("/checkout/profile")} variant="primary" className="w-full">
+                    <Button onClick={() => router.push("/checkout/profile")} variant="accent" className="w-full">
                         Finalizar Compra
                     </Button>
                 </div>

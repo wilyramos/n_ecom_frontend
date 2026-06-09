@@ -61,7 +61,7 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
                         <div>
                             <div className="p-4 flex flex-row justify-between items-center rounded-2xl border border-border">
                                 <div className="text-sm font-semibold tracking-tighter text-[var(--color-text-primary)] flex flex-row items-center gap-2">
-                                    <ShieldCheck className="w-5 h-5 text-[var(--color-text-primary)] shrink-0" />
+                                    <ShieldCheck className="w-5 h-5 text-fg-action shrink-0" />
                                     1 año de garantía
                                 </div>
                                 <div>

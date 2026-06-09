@@ -355,13 +355,7 @@ export default function ProductDetails({ producto }: Props) {
                                 Consultar por WhatsApp
                             </a>
 
-                            <Link
-                                href="/cambios-devoluciones"
-                                className="text-fg-muted hover:text-fg transition-colors"
-                            >
-                                Cambios y devoluciones
-                            </Link>
-
+    
 
                             <div className="p-4 flex flex-row justify-between items-center rounded-2xl border border-border">
                                 <div className="text-sm font-semibold tracking-tighter text-[var(--color-text-primary)] flex flex-row items-center gap-2">

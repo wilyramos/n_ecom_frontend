@@ -99,7 +99,7 @@ export default function ResumenCarrito() {
                         Verifica tus productos antes de continuar.
                     </p>
 
-                    <Button onClick={() => router.push("/checkout/profile")} variant="accent" className="w-full">
+                    <Button onClick={() => router.push("/checkout")} variant="accent" className="w-full">
                         Finalizar Compra
                     </Button>
                 </div>

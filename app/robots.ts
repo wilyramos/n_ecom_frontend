@@ -2,39 +2,23 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-    return {
-        rules: [
-            {
-                userAgent: "*",
-
-                allow: [
-                    "/",
-                    "/productos",
-                    "/categoria",
-                    "/ofertas",
-                    "/marca",
-                    "/hc",             
-                    "/terminos-y-condiciones",       
-                    "/cookies",        
-                    "/auth",
-                    "/search",
-                ],
-
-                disallow: [
-                    "/admin",
-                    "/checkout",
-                    "/carrito",
-                    "/profile",
-                    "/pos",
-                    "/api",
-                    "/search?*sort=",
-                    "/search?*priceRange=",
-                    "/search?*min=",
-                    "/search?*max=",
-                ],
-            },
+  return {
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/", // Permite todo por defecto
+        disallow: [
+          "/admin",
+          "/checkout",
+          "/carrito",
+          "/profile",
+          "/pos",
+          "/api",
+          "/auth", // Bloquea acceso a login/registro
+          "/search?", // Bloquea parámetros de búsqueda
         ],
-
-        sitemap: "https://www.neoshopimportaciones.com/sitemap.xml",
-    };
+      },
+    ],
+    sitemap: "https://www.neoshopimportaciones.com/sitemap.xml",
+  };
 }

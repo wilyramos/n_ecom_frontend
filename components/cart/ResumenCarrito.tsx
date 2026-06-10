@@ -98,7 +98,6 @@ export default function ResumenCarrito() {
                     <p className="text-[10px] md:text-xs text-muted-foreground/80">
                         Verifica tus productos antes de continuar.
                     </p>
-
                     <Button onClick={() => router.push("/checkout")} variant="accent" className="w-full">
                         Finalizar Compra
                     </Button>

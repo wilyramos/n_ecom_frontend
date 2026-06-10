@@ -992,9 +992,9 @@ export const OrderItemPopulatedSchema = z.object({
 
 // Información de pago — incluye campos Culqi opcionales
 export const PaymentInfoSchema = z.object({
-    provider: z.string().min(1, "El proveedor es requerido"), 
-    method: z.string().optional(),                          
-    transactionId: z.string().optional(),                          
+    provider: z.string().min(1, "El proveedor es requerido"),
+    method: z.string().optional(),
+    transactionId: z.string().optional(),
     status: PaymentStatus.default("pending"),
     rawResponse: z.any().optional(),
 
@@ -1024,7 +1024,7 @@ export const StatusHistorySchema = z.object({
 export const OrderSchema = z.object({
     _id: z.string(),
     orderNumber: z.string(),
-    user: z.string().optional(),
+    user: z.string().optional().nullable(),
     customerProfile: CustomerProfileSchema,
     items: z.array(OrderItemSchema),
     subtotal: z.number().nonnegative(),

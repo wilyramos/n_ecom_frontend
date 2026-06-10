@@ -1,6 +1,6 @@
 // app/sitemap.ts
 import { GetAllProductsSlug } from "@/src/services/products";
-import { getAllSubcategories } from "@/src/services/categorys";
+import { getCategories } from "@/src/services/categorys";
 import { getActiveBrands } from "@/src/services/brands";
 import type { MetadataRoute } from "next";
 
@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Obtener Datos en Paralelo (Eficiencia máxima)
     const [products, categories, brands] = await Promise.all([
         GetAllProductsSlug(),
-        getAllSubcategories(),
+        getCategories(),
         getActiveBrands(),
     ]);
 

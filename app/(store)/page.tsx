@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     openGraph: {
         ...globalMetadata.openGraph,
         title: "Neoshop - ",
-        description: "En Neoshop encontrarás una amplia variedad de accesorios y productos tecnológicos en . ¡Visítanos y descubre nuestras ofertas!",
+        description: "Compra los productos Apple a un precio increíble en Neoshop, tu tienda de tecnología de confianza en . Encuentra iPhones, accesorios y más.",
         url: "https://Neoshop.pe",
         images: [
             {

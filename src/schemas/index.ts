@@ -992,25 +992,24 @@ export const OrderItemPopulatedSchema = z.object({
 
 // Información de pago — incluye campos Culqi opcionales
 export const PaymentInfoSchema = z.object({
-    provider: z.string().min(1, "El proveedor es requerido"), // 'culqi' | 'mercadopago' | 'izipay'
-    method: z.string().optional(),                          // 'tarjeta' | 'yape' | 'pagoefectivo' | ...
-    transactionId: z.string().optional(),                          // cge_live_xxx (cargo tarjeta/Yape)
+    provider: z.string().min(1, "El proveedor es requerido"), 
+    method: z.string().optional(),                          
+    transactionId: z.string().optional(),                          
     status: PaymentStatus.default("pending"),
     rawResponse: z.any().optional(),
 
     // ── Culqi Orden ──────────────────────────────────────────────────────────
-    /** ID único de la orden en Culqi: "ord_live_xxx". Se pasa al Checkout JS. */
     culqiOrderId: z.string().optional(),
-    /** order_number enviado a Culqi. Para conciliación. */
     culqiOrderNumber: z.string().optional(),
-    /** Código CIP de PagoEfectivo. Mostrar al cliente si eligió ese medio. */
     culqiPaymentCode: z.string().optional(),
-    /** Estado de la orden en Culqi: "pending" | "paid" | "expired" | "deleted" */
     culqiOrderState: z.string().optional(),
-    /** Unix timestamp de expiración de la orden Culqi. */
     culqiExpirationDate: z.number().optional(),
-    /** Unix timestamp del pago confirmado (paid_at del webhook). */
     culqiPaidAt: z.number().optional(),
+
+    // ── MercadoPago ──────────────────────────────────────────────────────────
+    mpPreferenceId: z.string().optional(),
+    mpMerchantOrderId: z.string().optional(),
+    mpPaymentStatusDetail: z.string().optional(),
 });
 
 export const StatusHistorySchema = z.object({

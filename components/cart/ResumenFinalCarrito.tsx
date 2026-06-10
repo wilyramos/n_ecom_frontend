@@ -11,7 +11,7 @@ export default function ResumenFinalCarrito() {
     const total = subtotal + envio;
 
     return (
-        <section className="p-5 border-l border-border bg-background h-full">
+        <section className="p-5  bg-background h-full">
             <h2 className="text-fg-action font-bold text-sm md:text-base pb-2 tracking-tight">
                 Resumen del carrito
             </h2>

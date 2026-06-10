@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import type { CategoryListResponse, ProductWithCategoryResponse } from '@/src/schemas'
 import type { TBrand } from '@/src/schemas/brands'
 import type { ProductLine } from '@/src/schemas/line.schema' // Importamos tipo Line
+import { Button } from '@/components/ui/button'
 
 interface CreateProductFormProps {
     categorias: CategoryListResponse;
@@ -53,11 +54,17 @@ export default function CreateProductForm({ categorias, brands, lines, initialDa
                 brands={brands}
                 lines={lines} // Pasamos las líneas
             />
-            <input
-                type='submit'
-                className='bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 cursor-pointer inline-block'
-                value={"Crear producto"}
-            />
+
+            <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center pointer-events-none">
+                <Button
+                    type='submit'
+                    className="pointer-events-auto"
+
+                >
+                    Crear producto
+                </Button>
+
+            </div>
         </form>
     )
 }

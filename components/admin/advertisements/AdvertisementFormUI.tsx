@@ -218,7 +218,7 @@ export default function AdvertisementFormUI({
                             <Input
                                 name="subtitle"
                                 defaultValue={resolvedSubtitle}
-                                placeholder="Ej: Usa el código GOPHONE20 al finalizar tu compra"
+                                placeholder="Ej: Usa el código ABCDT al finalizar tu compra"
                                 className="h-10 text-sm bg-background/50 border-border/40 rounded-sm"
                             />
                         </Field>

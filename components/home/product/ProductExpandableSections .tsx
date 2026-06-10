@@ -38,9 +38,9 @@ export default function ProductExpandableSections({ producto }: Props) {
             {/* SECCIÓN 1: INFORMACIÓN */}
             {hasDescripcion && (
                 <AccordionItem value="info" className="border-b border-border-default">
-                    <AccordionTrigger className="py-6 hover:no-underline group ">
+                    <AccordionTrigger className=" hover:no-underline group ">
                         <div className="flex items-center gap-3">
-                            <span className="text-base font-semibold tracking-tight text-fg-muted">
+                            <span className="text-base font tracking-tight text-fg-muted">
                                 Información del producto
                             </span>
                         </div>

@@ -35,9 +35,9 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
             <DialogTitle className="sr-only">{ad.title}</DialogTitle>
 
             <DialogContent
-                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background rounded-2xl"
+                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background rounded-2xl focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none"
             >
-                <div className="flex flex-col p-4 sm:p-5  bg-background">
+                <div className="flex flex-col p-4 sm:p-5 bg-background">
 
                     <div className="text-center space-y-0.5 shrink-0">
                         <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-fg-muted leading-snug">
@@ -63,12 +63,13 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
                         </div>
                     )}
 
-                    <div className="w-full shrink-0">
+                    <div className="w-full shrink-0 flex items-center justify-center">
                         {ad.linkTo ? (
                             <Button
                                 asChild
                                 size="sm"
-                                className="w-full text-xs font-semibold  cursor-pointer focus:ring-0 focus-visible:ring-0 focus:shadow-none"
+                                variant="accent"
+                                className="w-fit text-xs font-semibold cursor-pointer focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none focus:shadow-none"
                                 onClick={() => handleOpenChange(false)}
                             >
                                 <Link href={ad.linkTo}>Ver Detalles</Link>
@@ -77,7 +78,7 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
                             <Button
                                 size="sm"
                                 variant="accent"
-                                className="w-full text-xs font-semibold cursor-pointer focus:ring-0 focus-visible:ring-0 focus:shadow-none"
+                                className="w-full text-xs font-semibold cursor-pointer focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none focus:shadow-none"
                                 onClick={() => handleOpenChange(false)}
                             >
                                 Cerrar

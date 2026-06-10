@@ -72,6 +72,9 @@ export default function HomePage() {
             <section className="my-5">
                 <BrandsList />
             </section>
+              <section>
+                <HomepageSectionsWrapper />
+            </section>
 
             <section className="py-5">
                 <GoogleReviews />
@@ -81,9 +84,7 @@ export default function HomePage() {
                 <StoreLocation />
             </section>
 
-            <section>
-                <HomepageSectionsWrapper />
-            </section>
+          
         </div>
     );
 }

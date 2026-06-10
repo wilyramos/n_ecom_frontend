@@ -1,7 +1,6 @@
 // app/sitemap.ts
 import { GetAllProductsSlug } from "@/src/services/products";
 import { getCategories } from "@/src/services/categorys";
-import { getActiveBrands } from "@/src/services/brands";
 import type { MetadataRoute } from "next";
 
 // Tipo auxiliar para asegurar que usamos strings válidos para Google
@@ -11,10 +10,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = "https://www.neoshopimportaciones.com";
 
     // 1. Obtener Datos en Paralelo (Eficiencia máxima)
-    const [products, categories, brands] = await Promise.all([
+    const [products, categories] = await Promise.all([
         GetAllProductsSlug(),
         getCategories(),
-        getActiveBrands(),
     ]);
 
     // 2. URLs de Productos
@@ -33,12 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.9,
     }));
 
-    // 4. URLs de Marcas (Landing Pages SEO)
-    const brandUrls = brands.map((b) => ({
-        url: `${baseUrl}/catalogo/${b.slug}`,
-        changeFrequency: "weekly" as ChangeFreq,
-        priority: 0.9,
-    }));
+    
 
     // 5. Páginas Estáticas del Sistema
     const staticPages = [
@@ -67,7 +60,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
         ...staticPages,
         ...categoryUrls,
-        ...brandUrls,
         ...productUrls,
     ];
 }

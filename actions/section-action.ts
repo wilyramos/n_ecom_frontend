@@ -1,8 +1,12 @@
+// File: frontend/src/modules/section/section.actions.ts
+
 "use server"
 
 import { revalidateTag } from "next/cache";
 import { verifySession } from "@/src/auth/dal";
 import { CreateSectionDTOSchema, SectionBlock } from "@/src/schemas/section.schema";
+
+const API_URL = process.env.API_URL;
 
 export interface FormActionState {
     ok: boolean;
@@ -33,15 +37,24 @@ function parseSectionFormData(formData: FormData): {
     blocks: SectionBlock[];
 } {
     const rawBlocksString = formData.get("blocksData")?.toString();
-    const rawBlocksData: SectionBlock[] = rawBlocksString ? JSON.parse(rawBlocksString) : [];
+    let rawBlocksData: SectionBlock[] = rawBlocksString ? JSON.parse(rawBlocksString) : [];
+
+    // Limpieza e inicialización desde el Formulario: Sanitización del campo linkTo y cadenas vacías
+    rawBlocksData = rawBlocksData.map(block => ({
+        ...block,
+        title: block.title?.trim() || undefined,
+        subtitle: block.subtitle?.trim() || undefined,
+        linkTo: block.linkTo?.trim() === "" ? undefined : block.linkTo?.trim(),
+        productId: block.productId === "" ? undefined : block.productId,
+    }));
 
     return {
-        title:    formData.get("title")?.toString() || "",
-        type:     formData.get("type")?.toString() || undefined,
-        order:    formData.get("order") ? Number(formData.get("order")) : 0,
+        title: formData.get("title")?.toString() || "",
+        type: formData.get("type")?.toString() || undefined,
+        order: formData.get("order") ? Number(formData.get("order")) : 0,
         isActive: formData.get("isActive") === "true",
         settings: {
-            bodyText:    formData.get("settings.bodyText")?.toString() || undefined,
+            bodyText: formData.get("settings.bodyText")?.toString() || undefined,
             gridColumns: formData.get("settings.gridColumns") ? Number(formData.get("settings.gridColumns")) : 4,
         },
         blocks: rawBlocksData,
@@ -59,31 +72,32 @@ export async function createSectionAction(
     if (!validated.success) {
         const fieldErrors: Record<string, string> = {};
         validated.error.errors.forEach((err) => {
-            fieldErrors[err.path.join(".")] = err.message;
+            const pathKey = err.path.join(".");
+            fieldErrors[pathKey] = err.message;
         });
         return {
-            ok:        false,
-            error:     "Revisa los campos marcados antes de continuar.",
-            fields:    fieldErrors,
+            ok: false,
+            error: "Revisa los campos marcados antes de continuar.",
+            fields: fieldErrors,
             submitted: rawData,
         };
     }
 
     try {
-        const res = await fetch(`${process.env.API_URL}/sections`, {
-            method:  "POST",
+        const res = await fetch(`${API_URL}/sections`, {
+            method: "POST",
             headers: {
-                "Content-Type":  "application/json",
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${session.token}`,
             },
             body: JSON.stringify(validated.data),
         });
 
         if (!res.ok) {
-            const errData = await res.json().catch(() => ({ message: "" })) as { message?: string };
+            const errData = await res.json().catch(() => ({})) as { message?: string; error?: string };
             return {
-                ok:        false,
-                error:     errData.message || "Error del servidor al guardar la sección.",
+                ok: false,
+                error: errData.error || errData.message || "Error del servidor al guardar la sección.",
                 submitted: rawData,
             };
         }
@@ -93,8 +107,8 @@ export async function createSectionAction(
     } catch (error) {
         console.error("Error de red al crear sección:", error);
         return {
-            ok:        false,
-            error:     "Fallo de conexión con el servidor. Intenta nuevamente.",
+            ok: false,
+            error: "Fallo de conexión con el servidor. Intenta nuevamente.",
             submitted: rawData,
         };
     }
@@ -108,46 +122,36 @@ export async function updateSectionAction(
     const session = await verifySession();
     const rawData = parseSectionFormData(formData);
 
-    const cleanedBlocks = rawData.blocks.map(block => ({
-        ...block,
-        productId: (block.productId && typeof block.productId === "string") ? block.productId : undefined
-    }));
-    
-    const processedData = {
-        ...rawData,
-        blocks: cleanedBlocks
-    };
-    // -----------------------------------------------------------
-
-    const validated = CreateSectionDTOSchema.safeParse(processedData);
+    const validated = CreateSectionDTOSchema.safeParse(rawData);
     if (!validated.success) {
         const fieldErrors: Record<string, string> = {};
         validated.error.errors.forEach((err) => {
-            fieldErrors[err.path.join(".")] = err.message;
+            const pathKey = err.path.join(".");
+            fieldErrors[pathKey] = err.message;
         });
         return {
             ok: false,
             error: "Revisa los campos marcados antes de continuar.",
             fields: fieldErrors,
-            submitted: processedData,
+            submitted: rawData,
         };
     }
 
     try {
-        const res = await fetch(`${process.env.API_URL}/sections/${id}`, {
-            method:  "PUT",
+        const res = await fetch(`${API_URL}/sections/${id}`, {
+            method: "PUT",
             headers: {
-                "Content-Type":  "application/json",
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${session.token}`,
             },
             body: JSON.stringify(validated.data),
         });
 
         if (!res.ok) {
-            const errData = await res.json().catch(() => ({ message: "" })) as { message?: string };
+            const errData = await res.json().catch(() => ({})) as { message?: string; error?: string };
             return {
-                ok:        false,
-                error:     errData.message || "Error al actualizar la sección.",
+                ok: false,
+                error: errData.error || errData.message || "Error al actualizar la sección.",
                 submitted: rawData,
             };
         }
@@ -157,8 +161,8 @@ export async function updateSectionAction(
     } catch (error) {
         console.error("Error de red al actualizar sección:", error);
         return {
-            ok:        false,
-            error:     "Fallo de red al intentar actualizar.",
+            ok: false,
+            error: "Fallo de red al intentar actualizar.",
             submitted: rawData,
         };
     }
@@ -168,10 +172,10 @@ export async function reorderSectionsAction(orders: { id: string; order: number 
     const session = await verifySession();
 
     try {
-        const res = await fetch(`${process.env.API_URL}/sections/reorder`, {
-            method:  "PATCH",
+        const res = await fetch(`${API_URL}/sections/reorder`, {
+            method: "PATCH",
             headers: {
-                "Content-Type":  "application/json",
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${session.token}`
             },
             body: JSON.stringify({ orders })
@@ -193,10 +197,10 @@ export async function deleteSectionAction(id: string): Promise<{ ok: boolean; er
     const session = await verifySession();
 
     try {
-        const res = await fetch(`${process.env.API_URL}/sections/${id}`, {
-            method:  "DELETE",
+        const res = await fetch(`${API_URL}/sections/${id}`, {
+            method: "DELETE",
             headers: {
-                "Content-Type":  "application/json",
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${session.token}`
             }
         });

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Check, X } from "lucide-react";
 
 import ProductMenuAction from "./ProductMenuActionts";
 import { useColumnFilter } from "@/hooks/useColumnFilter";
@@ -252,17 +251,25 @@ export default function ProductsTable({
 
                                 <TableCell className="p-2 text-center w-[60px]">
                                     {p.isActive ? (
-                                        <Check className="w-4 h-4 text-green-600" />
+                                        <div className="flex items-center justify-center gap-1 rounded bg-green-100 text-green-600 px-1 py-0.5 text-[10px] font-semibold">
+                                            Activo
+                                        </div>
                                     ) : (
-                                        <X className="w-4 h-4 text-red-600" />
+                                        <div className="flex items-center justify-center gap-1 rounded bg-red-100 text-red-600 px-1 py-0.5 text-[10px] font-semibold">
+                                            Inactivo
+                                        </div>
                                     )}
                                 </TableCell>
 
                                 <TableCell className="p-2 text-center w-[60px]">
                                     {p.esDestacado ? (
-                                        <Check className="w-4 h-4 text-green-600" />
+                                        <div className="flex items-center justify-center gap-1 rounded bg-green-100 text-green-600 px-1 py-0.5 text-[10px] font-semibold">
+                                            Destacado
+                                        </div>
                                     ) : (
-                                        <X className="w-4 h-4 text-red-600" />
+                                        <div className="flex items-center justify-center gap-1 rounded bg-gray-100 text-gray-600 px-1 py-0.5 text-[10px] font-semibold">
+                                            No Destacado
+                                        </div>
                                     )}
                                 </TableCell>
 

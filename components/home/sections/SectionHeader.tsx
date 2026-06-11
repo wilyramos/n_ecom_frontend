@@ -8,7 +8,6 @@ export default function SectionHeader({ title }: SectionHeaderProps) {
             <h2 className="text-lg md:text-xl font-semibold tracking-tight text-fg-muted">
                 {title}
             </h2>
-            <div className="flex-1 h-px bg-border" />
         </div>
     );
 }

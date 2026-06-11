@@ -1,13 +1,15 @@
+// File: frontend/src/modules/section/section.service.ts
+
 import {
-    SectionListApiResponseSchema,
+    SectionListResponseSchema,
     SectionPaginatedApiResponseSchema,
-    SectionApiResponseSchema,
+    SectionSingleResponseSchema,
     SectionResponse,
     SectionPaginatedApiResponse
 } from "@/src/schemas/section.schema";
 import { getTokenOptional } from "@/src/auth/dal";
 
-const API_URL = `${process.env.API_URL}`;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL;
 
 /**
  * Obtiene las secciones activas ordenadas para el Storefront público.
@@ -22,14 +24,14 @@ export async function getActiveSections(): Promise<SectionResponse[]> {
     if (!res.ok) throw new Error('Error al cargar las secciones del escaparate');
 
     const json = await res.json();
-    const validation = SectionListApiResponseSchema.safeParse(json);
+    const validation = SectionListResponseSchema.safeParse(json);
 
     if (!validation.success) {
         console.error("❌ ZOD ERROR (getActiveSections):", JSON.stringify(validation.error.format(), null, 2));
         throw new Error('Estructura de datos inválida de la API pública');
     }
 
-    return validation.data.data;
+    return validation.data;
 }
 
 /**
@@ -78,13 +80,12 @@ export async function getSectionById(id: string): Promise<SectionResponse> {
     if (!res.ok) throw new Error('No se pudo encontrar la sección solicitada');
 
     const json = await res.json();
-    const validation = SectionApiResponseSchema.safeParse(json);
+    const validation = SectionSingleResponseSchema.safeParse(json);
 
     if (!validation.success) {
-        // Revela de forma exacta en tu terminal qué propiedad rompe el contrato con el backend
         console.error("❌ ZOD ERROR (getSectionById):", JSON.stringify(validation.error.format(), null, 2));
         throw new Error('Error de consistencia en el detalle de la sección');
     }
 
-    return validation.data.data;
+    return validation.data;
 }

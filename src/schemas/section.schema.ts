@@ -1,3 +1,5 @@
+// File: frontend/src/modules/section/section.schema.ts
+
 import { z } from "zod";
 
 // ============================================================================
@@ -17,13 +19,12 @@ export type SectionType = z.infer<typeof SectionTypeEnum>;
 
 export const SectionSettingsSchema = z.object({
     bodyText: z.string().optional(),
-    gridColumns: z.coerce.number().int().min(1).max(6).default(4)
+    gridColumns: z.coerce.number().int().min(1).max(8).default(4) // 💡 Corregido de max(6) a max(8)
 });
 export type SectionSettings = z.infer<typeof SectionSettingsSchema>;
 
 /**
  * Referencia simplificada del producto devuelto por el populate del Backend.
- * Propiedades en español alineadas con el servicio y modelo mapeado de MongoDB.
  */
 export const ProductRefSchema = z.object({
     _id:      z.string(),
@@ -37,8 +38,6 @@ export type ProductRef = z.infer<typeof ProductRefSchema>;
 
 /**
  * Bloque de contenido flexible.
- * Remueve la obligatoriedad estricta de IDs, URLs o productos,
- * permitiendo almacenar colecciones genéricas o banners estáticos simples.
  */
 export const SectionBlockSchema = z.object({
     _id:       z.string().optional(),
@@ -77,12 +76,16 @@ export const CreateSectionDTOSchema = z.object({
     order:    z.coerce.number().int().nonnegative('El orden debe ser 0 o mayor').default(0),
     isActive: z.boolean().default(true),
     settings: SectionSettingsSchema,
-    blocks:   z.array(SectionBlockSchema).default([])
+    blocks:   z.array(SectionBlockSchema)
+        .default([])
+        .refine((val) => val.length <= 8, {
+            message: "La sección no puede contener más de 8 bloques de contenido."
+        })
 });
 export type CreateSectionDTO = z.infer<typeof CreateSectionDTOSchema>;
 
 // ============================================================================
-// ── 2. SECCIÓN COMPLETA (RESPONSE ← Backend)
+// ── 2. SECCIÓN COMPLETA (Estructura de la Entidad Base)
 // ============================================================================
 
 export const SectionResponseSchema = z.object({
@@ -100,46 +103,17 @@ export const SectionResponseSchema = z.object({
 export type SectionResponse = z.infer<typeof SectionResponseSchema>;
 
 // ============================================================================
-// ── 3. ENVOLTORIOS DE RESPUESTA DE LA API
+// ── 3. RESPUESTAS EXACTAS DE LA API (RESPONSE ← Backend)
 // ============================================================================
 
-/**
- * Valida de forma segura las respuestas de detalle administrativo o slugs.
- * Tolera tanto el formato estándar `{ ok: true, data: {} }` como el objeto crudo en raíz.
- */
-export const SectionApiResponseSchema = z.preprocess((val) => {
-    if (!val || typeof val !== "object") return {};
-    if ("ok" in val && "data" in val) return val;
-    return {
-        ok: true,
-        data: val
-    };
-}, z.object({
-    ok: z.boolean(),
-    data: SectionResponseSchema
-}));
-export type SectionApiResponse = z.infer<typeof SectionApiResponseSchema>;
+export const SectionSingleResponseSchema = SectionResponseSchema;
+export type SectionSingleResponse = z.infer<typeof SectionSingleResponseSchema>;
 
-/**
- * Usado para el listado plano del Storefront público.
- * Convierte un arreglo directo de la raíz a la firma esperada del cliente.
- */
-export const SectionListApiResponseSchema = z.preprocess((val) => {
-    if (!val) return {};
-    if (Array.isArray(val)) return { ok: true, data: val };
-    if (typeof val === "object" && "data" in val) return val;
-    return {};
-}, z.object({
-    ok: z.boolean(),
-    data: z.array(SectionResponseSchema)
-}));
-export type SectionListApiResponse = z.infer<typeof SectionListApiResponseSchema>;
+export const SectionListResponseSchema = z.array(SectionResponseSchema);
+export type SectionListResponse = z.infer<typeof SectionListResponseSchema>;
 
-/**
- * Mapea la respuesta estructurada de la paginación del endpoint administrativo.
- */
 export const SectionPaginatedApiResponseSchema = z.object({
-    ok:   z.boolean(),
+    ok: z.boolean(),
     data: z.array(SectionResponseSchema),
     meta: z.object({
         total: z.number(),

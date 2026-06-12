@@ -4,20 +4,19 @@
 import { revalidateTag, revalidatePath } from "next/cache";
 import {
     SliderBannerSchema,
-    type SliderBannerFormValues,
+    SliderLayoutEnum,
+    SliderThemeEnum,
+    SliderObjectFitEnum,
     type SliderBanner,
+    type SliderBannerFormValues,
     type SliderPrice,
     type SliderDesign,
     type SliderMedia,
 } from "@/src/schemas/slider.schema";
 import getToken from "@/src/auth/token";
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-
 const ADMIN_BANNERS_PATH = "/admin/slider";
 const BASE_URL = `${process.env.API_URL}/slider-banners`;
-
-// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 export type ReorderItem = { id: string; order: number };
 
@@ -36,8 +35,6 @@ export type ActionFailure = {
 };
 
 export type ActionState<T = null> = ActionSuccess<T> | ActionFailure;
-
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
 
 async function getAuthHeaders(): Promise<HeadersInit> {
     const token = await getToken();
@@ -62,86 +59,96 @@ function formString(formData: FormData, key: string): string | undefined {
 
 function formNumber(formData: FormData, key: string): number | undefined {
     const val = formData.get(key);
-    if (!val) return undefined;
+    if (val === null || val === "") return undefined;
     const n = Number(val);
     return Number.isFinite(n) ? n : undefined;
 }
 
 function formBool(formData: FormData, key: string): boolean {
+    const values = formData.getAll(key);
+    if (values.length > 0) {
+        return values.includes("true");
+    }
     return formData.get(key) === "true";
 }
 
-/**
- * Mapea FormData a SliderBannerFormValues.
- * Campos opcionales se omiten si están vacíos.
- */
 function mapFormDataToBanner(formData: FormData): SliderBannerFormValues {
-
-    // ── Price ──────────────────────────────────────────────
+    // ── Price (Removido 'price.currency' ya que no existe en tu Backend Model) ──
     const priceCurrent = formNumber(formData, "price.current");
-    const price: SliderPrice | undefined = priceCurrent !== undefined
+    const priceCompare = formNumber(formData, "price.compare");
+    const priceLabel = formString(formData, "price.label");
+    const priceSuffix = formString(formData, "price.suffix");
+
+    const price: SliderPrice | undefined = (priceCurrent !== undefined || priceCompare !== undefined || priceLabel || priceSuffix)
         ? {
-            current:  priceCurrent,
-            compare:  formNumber(formData, "price.compare"),
-            label:    formString(formData, "price.label"),
-            suffix:   formString(formData, "price.suffix"),
-            currency: formString(formData, "price.currency") ?? "S/",
+            current: priceCurrent,
+            compare: priceCompare,
+            label: priceLabel,
+            suffix: priceSuffix,
         }
         : undefined;
 
     // ── Media ──────────────────────────────────────────────
-    const imageUrl   = formString(formData, "media.imageUrl");
-    const videoUrl   = formString(formData, "media.videoUrl");
-    const media: SliderMedia | undefined = imageUrl || videoUrl
+    const imageUrl = formString(formData, "media.imageUrl");
+    const videoUrl = formString(formData, "media.videoUrl");
+    const rawObjectFit = formString(formData, "media.objectFit");
+
+    const parsedObjectFit = SliderObjectFitEnum.safeParse(rawObjectFit);
+    const objectFit = parsedObjectFit.success ? parsedObjectFit.data : "cover";
+
+    const media: SliderMedia | undefined = (imageUrl || videoUrl)
         ? {
-            imageUrl,
-            videoUrl,
-            videoPoster: formString(formData, "media.videoPoster"),
-            altText:     formString(formData, "media.altText"),
-            objectFit:   (formString(formData, "media.objectFit") as SliderMedia["objectFit"]) ?? "cover",
+            imageUrl: imageUrl || undefined,
+            videoUrl: videoUrl || undefined,
+            objectFit,
         }
         : undefined;
 
     // ── Design ─────────────────────────────────────────────
+    const rawLayout = formString(formData, "design.layout");
+    const rawTheme = formString(formData, "design.theme");
+
+    const parsedLayout = SliderLayoutEnum.safeParse(rawLayout);
+    const parsedTheme = SliderThemeEnum.safeParse(rawTheme);
+
     const design: SliderDesign = {
-        layout:      (formString(formData, "design.layout")      as SliderDesign["layout"])  ?? "default",
-        theme:       (formString(formData, "design.theme")       as SliderDesign["theme"])   ?? "dark",
-        bgColor:     formString(formData, "design.bgColor"),
+        layout: parsedLayout.success ? parsedLayout.data : "default",
+        theme: parsedTheme.success ? parsedTheme.data : "dark",
+        bgColor: formString(formData, "design.bgColor"),
         accentColor: formString(formData, "design.accentColor"),
-        textColor:   formString(formData, "design.textColor"),
+        textColor: formString(formData, "design.textColor"),
     };
 
     // ── Countdown ──────────────────────────────────────────
     const countdownEndsAt = formString(formData, "countdown.endsAt");
-    const countdown: SliderBannerFormValues["countdown"] = countdownEndsAt
+    const countdownLabel = formString(formData, "countdown.label");
+    const countdown: SliderBannerFormValues["countdown"] = (countdownEndsAt || countdownLabel)
         ? {
-            endsAt:   new Date(countdownEndsAt),
-            label:    formString(formData, "countdown.label"),
+            endsAt: countdownEndsAt ? new Date(countdownEndsAt) : undefined,
+            label: countdownLabel,
             showDays: formBool(formData, "countdown.showDays"),
         }
         : undefined;
 
     // ── Schedule ───────────────────────────────────────────
     const scheduleStartsAt = formString(formData, "schedule.startsAt");
-    const scheduleEndsAt   = formString(formData, "schedule.endsAt");
-    const schedule: SliderBannerFormValues["schedule"] = scheduleStartsAt || scheduleEndsAt
+    const scheduleEndsAt = formString(formData, "schedule.endsAt");
+    const schedule: SliderBannerFormValues["schedule"] = (scheduleStartsAt || scheduleEndsAt)
         ? {
             startsAt: scheduleStartsAt ? new Date(scheduleStartsAt) : undefined,
-            endsAt:   scheduleEndsAt   ? new Date(scheduleEndsAt)   : undefined,
+            endsAt: scheduleEndsAt ? new Date(scheduleEndsAt) : undefined,
         }
         : undefined;
 
     return {
-        name:        formString(formData, "name") ?? "",
-        tags:        formData.getAll("tags").map(String).filter(Boolean),
-        title:       formString(formData, "title"),
-        subtitle:    formString(formData, "subtitle"),
+        title: formString(formData, "title") ?? "",
+        subtitle: formString(formData, "subtitle"),
         description: formString(formData, "description"),
-        terms:       formString(formData, "terms"),
-        destUrl:     formString(formData, "destUrl"),
+        terms: formString(formData, "terms"),
+        destUrl: formString(formData, "destUrl"),
         openInNewTab: formBool(formData, "openInNewTab"),
-        isActive:    formBool(formData, "isActive"),
-        order:       formNumber(formData, "order"),
+        isActive: formBool(formData, "isActive"),
+        order: formNumber(formData, "order"),
         price,
         media,
         design,
@@ -149,8 +156,6 @@ function mapFormDataToBanner(formData: FormData): SliderBannerFormValues {
         schedule,
     };
 }
-
-// ─── ACTIONS ──────────────────────────────────────────────────────────────────
 
 export async function createSliderBannerAction(
     _prev: ActionState<SliderBanner>,
@@ -182,8 +187,9 @@ export async function createSliderBannerAction(
             headers: await getAuthHeaders(),
             body: JSON.stringify(result.data),
         });
+
         const body = await res.json() as { data: SliderBanner; message?: string };
-        if (!res.ok) throw new Error((body as { message?: string }).message ?? "Error al crear.");
+        if (!res.ok) throw new Error(body.message ?? "Error al crear el banner.");
 
         revalidateTag("banners-active");
         revalidatePath(ADMIN_BANNERS_PATH);
@@ -215,8 +221,9 @@ export async function updateSliderBannerAction(
             headers: await getAuthHeaders(),
             body: JSON.stringify(result.data),
         });
+
         const body = await res.json() as { data: SliderBanner; message?: string };
-        if (!res.ok) throw new Error((body as { message?: string }).message ?? "Error al actualizar.");
+        if (!res.ok) throw new Error(body.message ?? "Error al actualizar el banner.");
 
         revalidateTag("banners-active");
         revalidateTag(`banner-${id}`);
@@ -227,16 +234,14 @@ export async function updateSliderBannerAction(
     }
 }
 
-export async function toggleSliderBannerAction(
-    id: string,
-): Promise<ActionState<SliderBanner>> {
+export async function toggleSliderBannerAction(id: string): Promise<ActionState<SliderBanner>> {
     try {
         const res = await fetch(`${BASE_URL}/${id}/toggle`, {
             method: "PATCH",
             headers: await getAuthHeaders(),
         });
         const body = await res.json() as { data: SliderBanner; message?: string };
-        if (!res.ok) throw new Error((body as { message?: string }).message ?? "Error al cambiar estado.");
+        if (!res.ok) throw new Error(body.message ?? "Error al cambiar estado.");
 
         revalidateTag("banners-active");
         revalidateTag(`banner-${id}`);
@@ -246,9 +251,7 @@ export async function toggleSliderBannerAction(
     }
 }
 
-export async function deleteSliderBannerAction(
-    id: string,
-): Promise<ActionState> {
+export async function deleteSliderBannerAction(id: string): Promise<ActionState> {
     try {
         const res = await fetch(`${BASE_URL}/${id}`, {
             method: "DELETE",
@@ -262,15 +265,13 @@ export async function deleteSliderBannerAction(
         }
 
         const body = await res.json() as { message?: string };
-        throw new Error(body.message ?? "No se pudo eliminar.");
+        throw new Error(body.message ?? "No se pudo eliminar el banner.");
     } catch (error) {
         return { success: false, message: getErrorMessage(error) };
     }
 }
 
-export async function reorderSliderBannersAction(
-    items: ReorderItem[],
-): Promise<ActionState> {
+export async function reorderSliderBannersAction(items: ReorderItem[]): Promise<ActionState> {
     try {
         const res = await fetch(`${BASE_URL}/reorder`, {
             method: "PATCH",

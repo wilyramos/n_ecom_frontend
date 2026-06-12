@@ -22,20 +22,20 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
                 <video
                     ref={videoRef}
                     src={media!.videoUrl}
-                    poster={media!.videoPoster ?? media!.imageUrl}
+                    poster={media?.imageUrl ?? "bannervideoplaceholder.jpg"}
                     autoPlay
                     muted
                     loop
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover transition-transform"
+                    className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : media?.imageUrl ? (
                 <Image
                     src={media.imageUrl}
-                    alt={media.altText ?? title ?? ""}
+                    alt={title ?? "Banner"}
                     fill
-                    className={`${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                    sizes="(max-width: 640px) 100vw, 100vw"
+                    className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
+                    sizes="100vw"
                     priority
                     unoptimized
                 />
@@ -50,7 +50,7 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
             href={destUrl}
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
-            aria-label={title ?? banner.name}
+            aria-label={title ?? "Banner Link"}
             className="block w-full"
         >
             {content}

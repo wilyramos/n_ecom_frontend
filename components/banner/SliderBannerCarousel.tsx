@@ -1,3 +1,4 @@
+// File: src/components/banner/SliderBannerCarousel.tsx
 "use client";
 
 import Carousel from "react-multi-carousel";
@@ -8,7 +9,6 @@ import { CarouselArrow } from "@/components/ui/CarouselArrow";
 
 interface Props {
     banners: SliderBanner[];
-    height?: { mobile?: string; desktop?: string };
 }
 
 const responsive = {
@@ -21,14 +21,8 @@ export default function SliderBannerCarousel({ banners }: Props) {
     const autoPlaySpeed = 5000;
 
     return (
-        // flex-col-reverse pone el carrusel (el segundo elemento) arriba en móvil
-        // md:flex-row restaura el orden a la izquierda (texto) y derecha (carrusel)
-        <div className="w-full  mx-auto flex flex-col-reverse md:flex-row items-center gap-8 py-8 px-4">
-
-            {/* Lado izquierdo: Contenido Fijo */}
-      
-            {/* Lado derecho: Carrusel */}
-            <div className="w-full ">
+        <div className="w-full mx-auto relative overflow-hidden">
+            <div className="w-full">
                 <Carousel
                     responsive={responsive}
                     infinite

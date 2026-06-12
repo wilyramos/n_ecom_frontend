@@ -67,10 +67,10 @@ export const SliderService = {
 
     getAllAdmin: async (filters: AdminFilters = {}): Promise<PaginatedResult> => {
         const params = new URLSearchParams();
-        if (filters.page)                params.append("page",     filters.page.toString());
-        if (filters.limit)               params.append("limit",    filters.limit.toString());
+        if (filters.page)                   params.append("page",     filters.page.toString());
+        if (filters.limit)                  params.append("limit",    filters.limit.toString());
         if (filters.isActive !== undefined) params.append("isActive", filters.isActive.toString());
-        if (filters.search)              params.append("search",   filters.search);
+        if (filters.search)                 params.append("search",   filters.search);
 
         const res = await fetch(`${BASE_URL}?${params.toString()}`, {
             headers: await authHeaders(),

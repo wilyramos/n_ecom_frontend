@@ -10,7 +10,7 @@ interface ArrowProps {
 
 export function CarouselArrow({ onClick, direction }: ArrowProps) {
     const baseClasses =
-        "absolute top-1/2 -translate-y-1/2 z-10 cursor-pointer " +
+        "absolute top-1/2 -translate-y-1/2 z-10 cursor-pointer md:px-4 " +
         "text-gray-400 hover:text-gray-900 transition-colors duration-200";
 
     const position = direction === "left" ? "-left-1" : "-right-1";

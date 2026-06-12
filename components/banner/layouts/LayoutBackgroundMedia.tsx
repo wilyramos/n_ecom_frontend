@@ -14,7 +14,7 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
 
     const isDark = design.theme !== "light";
     const bg = design.bgColor ?? (isDark ? "#000000" : "#ffffff");
-    const text = design.textColor ?? (isDark ? "#a0a0a0" : "#0f0f0f");
+    const text = design.textColor ?? (isDark ? "#cbcbcb" : "#171411");
     const accent = design.accentColor ?? "#a0a0a0";
 
     useEffect(() => {
@@ -40,32 +40,31 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
             {isVideo ? (
                 <video
                     ref={videoRef}
-                    src={media!.videoUrl!}
-                    poster={media!.videoPoster ?? media!.imageUrl}
+                    src={media!.videoUrl}
+                    poster={media!.imageUrl}
                     autoPlay
                     muted
                     loop
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+                    className="absolute inset-0 w-full h-full object-cover ]"
                 />
             ) : media?.imageUrl ? (
                 <Image
                     src={media.imageUrl}
-                    alt={media.altText ?? title ?? ""}
+                    alt={title ?? "Banner Background"}
                     fill
-                    className={`absolute inset-0 object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04] ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                    sizes="(max-width: 640px) 100vw, 100vw"
+                    className={`absolute inset-0 ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
+                    sizes="100vw"
                     priority
                     unoptimized
                 />
             ) : null}
 
-            {/* ── Gradiente inferior ────────────────────────────────── */}
+            {/* ── Gradiente inferior para legibilidad ────────────────── */}
             <div
-                className="absolute inset-x-0 bottom-0 pointer-events-none z-10"
+                className="absolute inset-0 pointer-events-none z-10"
                 style={{
-                    height: "100%",
-                    background: `linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.15) 80%, transparent 100%)`,
+                    background: `linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.15) 100%)`,
                 }}
             />
 
@@ -141,7 +140,7 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
             href={destUrl}
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
-            aria-label={title ?? banner.name}
+            aria-label={title ?? "Banner Link"}
             className="block w-full"
         >
             {content}

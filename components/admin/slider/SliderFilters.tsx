@@ -62,7 +62,6 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
 
     return (
         <div className={`flex items-center gap-2 ${isPending ? "opacity-60 pointer-events-none" : ""}`}>
-
             {/* Búsqueda */}
             <div className="relative flex-1 min-w-[180px] max-w-xs">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
@@ -77,9 +76,10 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
                     <Button
                         onClick={handleSearchClear}
                         variant="ghost"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-transparent"
                         aria-label="Limpiar búsqueda"
                     >
-                        <X className="h-3.5 w-3.5" />
+                        <X className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
                     </Button>
                 )}
             </div>

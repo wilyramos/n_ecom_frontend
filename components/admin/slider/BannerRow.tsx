@@ -1,3 +1,4 @@
+// File: src/components/admin/slider/BannerRow.tsx
 "use client";
 
 import { useOptimistic, useTransition } from "react";
@@ -32,8 +33,12 @@ interface BannerRowProps {
 
 export default function BannerRow({
     banner,
-    isDragging, isDragOver,
-    onDragStart, onDragOver, onDragEnd, onDrop,
+    isDragging,
+    isDragOver,
+    onDragStart,
+    onDragOver,
+    onDragEnd,
+    onDrop,
     onError,
 }: BannerRowProps) {
     const [isPending, startTransition] = useTransition();
@@ -60,7 +65,7 @@ export default function BannerRow({
                 isDragOver ? "bg-[var(--color-action-primary-light)]" : "",
             ].join(" ")}
         >
-            {/* Handle */}
+            {/* Handle de arrastre */}
             <TableCell className="w-8 px-3">
                 <GripVertical
                     className="h-4 w-4 cursor-grab active:cursor-grabbing"
@@ -68,7 +73,7 @@ export default function BannerRow({
                 />
             </TableCell>
 
-            {/* Thumbnail + nombre interno + título */}
+            {/* Miniatura + Título */}
             <TableCell>
                 <div className="flex items-center gap-3 min-w-0">
                     <div
@@ -78,7 +83,7 @@ export default function BannerRow({
                         {banner.media?.imageUrl ? (
                             <Image
                                 src={banner.media.imageUrl}
-                                alt={banner.media.altText ?? banner.name}
+                                alt={banner.title || "Banner Image"}
                                 fill
                                 className="object-cover"
                                 sizes="56px"
@@ -96,20 +101,18 @@ export default function BannerRow({
                         )}
                     </div>
                     <div className="min-w-0">
-                        {/* name es el identificador interno, siempre presente */}
                         <p
                             className="text-sm font-medium truncate"
                             style={{ color: "var(--color-text-primary)" }}
                         >
-                            {banner.name}
+                            {banner.title || "Sin título definido"}
                         </p>
-                        {/* título es el texto visible en el banner, opcional */}
-                        {banner.title && (
+                        {banner.subtitle && (
                             <p
                                 className="text-xs truncate mt-0.5"
                                 style={{ color: "var(--color-text-tertiary)" }}
                             >
-                                {banner.title}
+                                {banner.subtitle}
                             </p>
                         )}
                     </div>
@@ -139,7 +142,7 @@ export default function BannerRow({
                 </span>
             </TableCell>
 
-            {/* Estado */}
+            {/* Estado Informativo */}
             <TableCell>
                 <span
                     className="text-xs px-2 py-0.5 rounded-full font-medium"
@@ -152,10 +155,10 @@ export default function BannerRow({
                 </span>
             </TableCell>
 
-            {/* Acciones */}
+            {/* Menú de Acciones directas */}
             <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-0.5">
-                    <ActionIcon href={`/admin/slider/${banner._id}/preview`} label="Preview">
+                    <ActionIcon href={`/admin/slider/${banner._id}/preview`} label="Vista Previa">
                         <Eye className="h-3.5 w-3.5" />
                     </ActionIcon>
                     <ActionIcon href={`/admin/slider/${banner._id}`} label="Editar">
@@ -179,7 +182,7 @@ export default function BannerRow({
                     </button>
                     <DeleteSliderButton
                         bannerId={banner._id}
-                        bannerName={banner.name}
+                        bannerName={banner.title ?? "Banner"}
                     />
                 </div>
             </TableCell>

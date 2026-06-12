@@ -1,18 +1,13 @@
 // File: src/components/admin/slider/SliderTable.tsx
 "use client";
 
-import {
-    useState, useCallback, useTransition,
-    useRef, useEffect,
-} from "react";
+import { useState, useCallback, useTransition, useRef, useEffect } from "react";
 import { reorderSliderBannersAction, type ReorderItem } from "@/actions/slider-actions";
 import type { SliderBanner }  from "@/src/schemas/slider.schema";
 import BannerRow              from "./BannerRow";
 import EmptyStateSlider       from "./EmptyStateSlider";
 import Alert                  from "@/components/ui/Alert";
-import {
-    Table, TableHeader, TableHead, TableBody,
-} from "@/components/ui/table";
+import { Table, TableHeader, TableHead, TableBody } from "@/components/ui/table";
 
 interface SliderTableProps {
     banners: SliderBanner[];
@@ -72,7 +67,7 @@ export default function SliderTable({ banners }: SliderTableProps) {
                 const result = await reorderSliderBannersAction(payload);
                 if (!result.success) {
                     setErrorMsg(result.message);
-                    setItems(banners); // rollback
+                    setItems(banners);
                 }
             });
         }, 300);

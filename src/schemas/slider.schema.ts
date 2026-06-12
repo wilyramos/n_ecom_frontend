@@ -23,8 +23,6 @@ const optionalString = z.string().optional().or(z.literal(""));
 export const SliderMediaSchema = z.object({
     imageUrl: optionalString,
     videoUrl: optionalString,
-    videoPoster: optionalString,
-    altText: optionalString,
     objectFit: SliderObjectFitEnum.default("cover"),
 });
 
@@ -33,7 +31,6 @@ export const SliderPriceSchema = z.object({
     compare: z.number().min(0).optional(),
     label: optionalString,
     suffix: optionalString,
-    currency: z.string().default("S/"),
 });
 
 export const SliderDesignSchema = z.object({
@@ -58,12 +55,8 @@ export const SliderScheduleSchema = z.object({
 // ─── BASE SCHEMA ──────────────────────────────────────────────────────────────
 
 export const BaseSliderBannerSchema = z.object({
-    // ── Admin ──────────────────────────────
-    name: z.string().min(1, "El nombre interno es requerido").trim(),
-    tags: z.array(z.string().trim()).optional(),
-
     // ── Contenido ──────────────────────────
-    title: optionalString,
+    title: z.string().min(1, "El título es requerido").trim(),
     subtitle: optionalString,
     description: optionalString,
     terms: optionalString,
@@ -93,8 +86,6 @@ export const BaseSliderBannerSchema = z.object({
 // ─── SCHEMA FORMULARIO (CREACIÓN / EDICIÓN) ───────────────────────────────────
 
 export const SliderBannerSchema = BaseSliderBannerSchema.superRefine((data, ctx) => {
-
-    // Precio: compare debe ser mayor que current
     if (
         data.price?.current !== undefined &&
         data.price?.compare !== undefined &&
@@ -107,7 +98,6 @@ export const SliderBannerSchema = BaseSliderBannerSchema.superRefine((data, ctx)
         });
     }
 
-    // Schedule: endsAt debe ser posterior a startsAt
     if (data.schedule?.startsAt && data.schedule?.endsAt) {
         if (data.schedule.endsAt <= data.schedule.startsAt) {
             ctx.addIssue({
@@ -120,8 +110,6 @@ export const SliderBannerSchema = BaseSliderBannerSchema.superRefine((data, ctx)
 });
 
 // ─── RESPONSE SCHEMA ──────────────────────────────────────────────────────────
-// Se extiende desde el BaseSchema para evitar que los superRefine del formulario
-// interfieran con los datos históricos que llegan de la base de datos.
 
 export const SliderBannerResponseSchema = BaseSliderBannerSchema.extend({
     _id: z.string(),

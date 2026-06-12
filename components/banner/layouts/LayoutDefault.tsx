@@ -116,9 +116,9 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                         <div className="relative w-full h-full">
                             <Image
                                 src={media.imageUrl}
-                                alt={media.altText ?? title ?? ""}
+                                alt={media.imageUrl ?? title ?? "Banner"}
                                 fill
-                                className={`transition-transform duration-[2000ms] group-hover:scale-105
+                                className={`
                              ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                                 sizes="(max-width: 640px) 50vw, 40vw"
                                 priority
@@ -138,7 +138,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
             href={destUrl}
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
-            aria-label={title ?? banner.name}
+            aria-label={title ?? "Banner Link"}
             className="block"
         >
             {content}

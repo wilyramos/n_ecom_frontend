@@ -18,7 +18,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
 
     const isDark = design.theme !== "light";
     const bg = design.bgColor ?? (isDark ? "#000000" : "#ffffff");
-    const text = design.textColor ?? (isDark ? "#a0a0a0" : "#0f0f0f");
+    const text = design.textColor ?? (isDark ? "#cbcbcb" : "#171411");
     const accent = design.accentColor ?? "#a0a0a0";
     
     const fadeUp = (delay: number): React.CSSProperties => ({
@@ -33,8 +33,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
             style={{ backgroundColor: bg }}
         >
             <div className="relative z-10 w-full max-w-7xl mx-auto h-full flex flex-row items-center px-3 sm:px-8">
-
-                {/* ── Media (izquierda) ─────────────────────────────── */}
+                {/* Media Izquierda */}
                 {media?.imageUrl && (
                     <div
                         className="w-1/2 h-full pointer-events-none"
@@ -47,11 +46,10 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                         <div className="relative w-full h-full">
                             <Image
                                 src={media.imageUrl}
-                                alt={media.altText ?? title ?? ""}
+                                alt={title ?? "Banner"}
                                 fill
-                                className={`transition-transform duration-[2000ms] group-hover:scale-105
-                           ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                                sizes="(max-width: 640px) 50vw, 40vw"
+                                className={` ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
+                                sizes="50vw"
                                 priority
                                 unoptimized
                             />
@@ -59,7 +57,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                     </div>
                 )}
 
-                {/* ── Texto (derecha) ───────────────────────────────── */}
+                {/* Texto Derecha */}
                 <div
                     className="flex flex-col justify-center items-start w-1/2 h-full pl-1.5 sm:pl-4 py-2 sm:py-0 gap-1 sm:gap-4 overflow-hidden"
                     style={{ color: text }}
@@ -77,9 +75,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
 
                     {title && (
                         <div style={fadeUp(0.2)}>
-                            <h2
-                                className="font-bold leading-[1.1] tracking-[-0.03em] text-[clamp(1.05rem,2.5vw,2.8rem)] line-clamp-2 sm:line-clamp-3"
-                            >
+                            <h2 className="font-bold leading-[1.1] tracking-[-0.03em] text-[clamp(1.05rem,2.5vw,2.8rem)] line-clamp-2 sm:line-clamp-3">
                                 {title}
                             </h2>
                         </div>
@@ -96,7 +92,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                         </div>
                     )}
 
-                    {price?.current !== undefined && price.current !== null && (
+                    {price?.current !== undefined && (
                         <div style={fadeUp(0.45)} className="mt-0.5 sm:mt-1">
                             <SliderPrice
                                 price={price}
@@ -126,7 +122,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
             href={destUrl}
             target={openInNewTab ? "_blank" : undefined}
             rel={openInNewTab ? "noopener noreferrer" : undefined}
-            aria-label={title ?? banner.name}
+            aria-label={title ?? "Banner Link"}
             className="block w-full"
         >
             {content}

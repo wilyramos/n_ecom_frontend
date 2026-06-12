@@ -9,6 +9,9 @@ interface Props {
 }
 
 export default function SliderPrice({ price, textColor, accentColor, isDark }: Props) {
+    // Definimos el símbolo fijo de la moneda de acuerdo al Backend Model que no almacena currency
+    const CURRENCY_SYMBOL = "S/";
+
     return (
         <div
             className="inline-flex flex-col gap-0.5 sm:gap-1 w-fit"
@@ -17,17 +20,17 @@ export default function SliderPrice({ price, textColor, accentColor, isDark }: P
             {/* ── Etiqueta superior (opcional) ──────────────────────── */}
             {price.label && (
                 <span
-                    className="w-fit text-[7.5px] sm:text-[11px] font-bold uppercase tracking-widest leading-none rounded-sm px-1.5 sm:px-2 py-0.5 sm:py-1 shadow-sm whitespace-nowrap"
+                    className="w-fit text-[7.5px] sm:text-[11px] font-bold uppercase tracking-widest leading-none rounded-sm px-1.5 sm:px-2 py-0.5 sm:py-1 shadow-sm whitespace-nowrap animate-fade-in"
                     style={{
                         backgroundColor: accentColor,
-                        color: "#ffffff",
+                        color: isDark ? "#171411" : "#ffffff",
                     }}
                 >
                     {price.label}
                 </span>
             )}
 
-            <div className="flex flex-wrap items-baseline gap-x-1.5 sm:gap-x-3 gap-y-0.5">
+            <div className="flex items-baseline gap-x-1.5 sm:gap-x-3 gap-y-0.5">
 
                 {/* ── Precio actual ─────────────────────────────────── */}
                 {price.current !== undefined && price.current !== null && (
@@ -36,7 +39,7 @@ export default function SliderPrice({ price, textColor, accentColor, isDark }: P
                             className="mr-0.5 sm:mr-1 align-top font-bold text-[0.45em]"
                             style={{ opacity: isDark ? 0.6 : 0.5 }}
                         >
-                            {price.currency ?? "S/"}
+                            {CURRENCY_SYMBOL}
                         </span>
 
                         {price.current.toFixed(2)}
@@ -58,7 +61,7 @@ export default function SliderPrice({ price, textColor, accentColor, isDark }: P
                         className="text-[9px] sm:text-sm md:text-base font-medium leading-none tracking-tight line-through decoration-[1px] sm:decoration-[1.5px] whitespace-nowrap"
                         style={{ opacity: isDark ? 0.4 : 0.3 }}
                     >
-                        {price.currency ?? "S/"}{price.compare.toFixed(2)}
+                        {CURRENCY_SYMBOL}{price.compare.toFixed(2)}
                     </span>
                 )}
             </div>

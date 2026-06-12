@@ -21,8 +21,7 @@ export default async function AdminProfilePage() {
     return (
         <AdminPageWrapper
             title={`Perfil de ${user.nombre}`}
-            breadcrumbItems={[{ label: "Configuración", href: "/admin/profile" }]}
-            breadcrumbCurrent="Perfil"
+           
             actions={
                 <div className="flex items-center gap-2">
                     <Link

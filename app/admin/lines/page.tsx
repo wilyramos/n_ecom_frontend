@@ -23,10 +23,6 @@ export default async function LinesPage() {
     return (
         <AdminPageWrapper
             title="Líneas de Producto"
-            breadcrumbItems={[
-                { label: "Productos", href: "/admin/products" },
-            ]}
-            breadcrumbCurrent="Líneas"
         >
             <LinesClient
                 initialData={linesData}

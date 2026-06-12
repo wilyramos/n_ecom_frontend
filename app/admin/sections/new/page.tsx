@@ -7,8 +7,6 @@ export default function NewSectionPage() {
     return (
         <AdminPageWrapper
             title="Nueva Sección"
-            breadcrumbItems={[{ label: "Panel", href: "/admin" }, { label: "Secciones", href: "/admin/sections" }]}
-            breadcrumbCurrent="Nueva"
             showBackButton={true}
         >
             <div className="py-2">

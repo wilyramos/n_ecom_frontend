@@ -38,7 +38,6 @@ export default async function SliderPage({ searchParams }: PageProps) {
     return (
         <AdminPageWrapper
             title="Slider Banners"
-            breadcrumbCurrent="Slider"
             showBackButton={false}
             actions={<NuevoBanner />}
         >

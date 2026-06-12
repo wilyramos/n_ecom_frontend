@@ -33,8 +33,7 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
     return (
         <AdminPageWrapper
             title={`Pedido ${order.orderNumber}`}
-            breadcrumbItems={[{ label: "Pedidos", href: "/admin/orders" }]}
-            breadcrumbCurrent="Detalles"
+          
             actions={
                 <div className="flex gap-2">
                     <PrintOrderButton orderId={id} />

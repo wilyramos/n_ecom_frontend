@@ -40,7 +40,6 @@ export default async function AdminAdvertisementsPage({ searchParams }: PageProp
         <AdminPageWrapper
             title="Campañas y Avisos Publicitarios"
             breadcrumbItems={[{ label: "Panel", href: "/admin" }]}
-            breadcrumbCurrent="Avisos"
             showBackButton={false}
             actions={
                 <Link

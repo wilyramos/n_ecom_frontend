@@ -34,11 +34,7 @@ export default async function SliderBannerPreviewPage({ params }: Props) {
     return (
         <AdminPageWrapper
             title="Preview del Banner"
-            breadcrumbItems={[
-                { label: "Marketing", href: "/admin/marketing" },
-                { label: "Slider", href: "/admin/slider" },
-            ]}
-            breadcrumbCurrent="Preview"
+           
             actions={
                 <div className="flex gap-2">
                     <Link href={`/admin/slider/${id}`} className={buttonVariants({ variant: "default" })}>

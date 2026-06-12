@@ -8,11 +8,7 @@ export default async function NewCategoryPage() {
     return (
         <AdminPageWrapper
             title="Crear nueva categoría"
-            breadcrumbItems={[
-                { label: "Productos", href: "/admin/products" },
-                { label: "Categorías", href: "/admin/products/category" },
-            ]}
-            breadcrumbCurrent="Nueva categoría"
+           
         >
             <div className="bg-card border border-border rounded-xl p-6">
                 <CreateCategoryForm categories={categories} />

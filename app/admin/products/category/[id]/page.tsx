@@ -13,11 +13,7 @@ export default async function CategoryPageDetails({ params }: { params: Params }
     return (
         <AdminPageWrapper
             title={`Editar: ${category.nombre}`}
-            breadcrumbItems={[
-                { label: "Productos", href: "/admin/products" },
-                { label: "Categorías", href: "/admin/products/category" },
-            ]}
-            breadcrumbCurrent="Editar categoría"
+            
             actions={
                 <div className="flex gap-2">
                   

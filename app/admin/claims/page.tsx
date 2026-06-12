@@ -35,7 +35,6 @@ export default async function AdminClaimsPage({ searchParams }: PageProps) {
     return (
         <AdminPageWrapper
             title="Libro de Reclamaciones"
-            breadcrumbCurrent="Reclamaciones"
             showBackButton={false}
         >
             <div className="space-y-6">

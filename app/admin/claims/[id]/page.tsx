@@ -41,7 +41,6 @@ export default async function ClaimDetailPage({ params }: DetailProps) {
         <AdminPageWrapper
             title={`Hoja de Reclamación ${claim.correlativo}`}
             breadcrumbItems={breadcrumbs}
-            breadcrumbCurrent={claim.correlativo}
             showBackButton={true}
             actions={actionBadge}
         >

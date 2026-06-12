@@ -9,7 +9,6 @@ export default function NewAdvertisementPage() {
                 { label: "Panel", href: "/admin" }, 
                 { label: "Avisos", href: "/admin/advertisements" }
             ]}
-            breadcrumbCurrent="Nueva"
             showBackButton={true}
         >
             <div className="py-2">

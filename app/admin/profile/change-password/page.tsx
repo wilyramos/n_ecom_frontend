@@ -19,11 +19,7 @@ export default async function ChangePasswordPage() {
     return (
         <AdminPageWrapper
             title={`Perfil de ${user.nombre}`}
-            breadcrumbItems={[
-                { label: "Configuración", href: "/admin/profile" },
-                { label: "Perfil", href: "/admin/profile" }
-            ]}
-            breadcrumbCurrent="Cambiar contraseña"
+           
             actions={
                 <div className="flex items-center gap-2">
                     <Link

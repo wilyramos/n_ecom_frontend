@@ -28,7 +28,6 @@ export default async function EditAdvertisementPage({ params }: PageProps) {
                 { label: "Panel", href: "/admin" },
                 { label: "Avisos", href: "/admin/advertisements" }
             ]}
-            breadcrumbCurrent="Editar"
             showBackButton={true}
         >
             <div className="py-2">

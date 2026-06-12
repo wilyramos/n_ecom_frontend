@@ -22,8 +22,7 @@ export default async function EditSectionPage({ params }: EditPageProps) {
     return (
         <AdminPageWrapper
             title="Configuración de la Sección"
-            breadcrumbItems={[{ label: "Panel", href: "/admin" }, { label: "Secciones", href: "/admin/sections" }]}
-            breadcrumbCurrent="Editar"
+          
             showBackButton={true}
         >
             <div className="py-2">

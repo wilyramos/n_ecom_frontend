@@ -8,7 +8,6 @@ export default function ReportsAdminPage() {
     return (
         <AdminPageWrapper
             title="Reportes"
-            breadcrumbCurrent="Reportes"
         >
             <div className="space-y-8">
                 <Suspense fallback={<SpinnerLoading />}>

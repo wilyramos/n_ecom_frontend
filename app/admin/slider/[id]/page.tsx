@@ -17,8 +17,6 @@ export default async function EditSliderBannerPage({ params }: Props) {
     return (
         <AdminPageWrapper
             title={banner.title ?? "Editar Banner"}
-            breadcrumbItems={[{ label: "Marketing", href: "/admin/marketing" }]}
-            breadcrumbCurrent="Slider"
             showBackButton={true}
             actions={
                 <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded"

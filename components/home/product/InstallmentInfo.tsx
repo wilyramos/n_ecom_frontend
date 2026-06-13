@@ -66,10 +66,10 @@ export default function InstallmentInfo({ price }: Props) {
                                     className={cn(
                                         "py-2 text-xs font-medium rounded-2xl border transition-all truncate px-1",
                                         selected === p.cuotas
-                                            ? "border-fg-primary bg-fg-primary text-fg-inverse"
-                                            : "border-border-default text-fg-muted hover:border-fg-primary hover:text-fg-primary"
+                                            ? "border-fg-secondary bg-fg-secondary text-fg-inverse"
+                                            : "border-border-default text-fg-muted hover:border-fg-secondary hover:text-fg-secondary"
                                     )}
-                                redundancy-grid-cols-4>
+                                >
                                     {p.label}
                                 </button>
                             ))}

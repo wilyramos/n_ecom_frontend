@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import {
     LayoutDashboard, ShoppingBag, Boxes, Tags, Building2, GitFork,
     FileText, ShieldAlert, Images, Layers, Megaphone, Users,
-    MonitorSmartphone, Eye, ChevronDown, ChevronRight,
+    MonitorSmartphone, Eye, ChevronDown, ChevronRight, Fingerprint,
 } from "lucide-react";
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
@@ -58,7 +58,13 @@ const navGroups: NavGroup[] = [
             { href: "/admin/advertisements", icon: Megaphone, label: "Avisos Publicitarios" },
         ],
     },
-    { groupLabel: "Administración", items: [{ href: "/admin/users", icon: Users, label: "Usuarios" }] },
+    {
+        groupLabel: "Administración",
+        items: [
+            { href: "/admin/users", icon: Users, label: "Usuarios" },
+            { href: "/admin/attendance", icon: FileText, label: "Asistencias" }
+        ]
+    },
     {
         groupLabel: "Accesos",
         items: [
@@ -73,7 +79,7 @@ const navGroups: NavGroup[] = [
 export default function AdminSidebar({ user }: Props) {
     const pathname = usePathname();
     const [expanded, setExpanded] = useState(true);
-    const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({ Reportes: true });
+    const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
     const toggleMenu = (label: string) => {
         if (!expanded) { setExpanded(true); setTimeout(() => setOpenMenus(p => ({ ...p, [label]: true })), 150); return; }
@@ -84,7 +90,7 @@ export default function AdminSidebar({ user }: Props) {
         <TooltipProvider>
             <aside
                 className={cn(
-                    "relative hidden h-screen flex-col bg-white shadow-sm transition-all duration-300 md:flex", // <-- Eliminé "border-r border-[var(--color-border-default)]"
+                    "relative hidden h-screen flex-col bg-white shadow-sm transition-all duration-300 md:flex",
                     expanded ? "w-60" : "w-[72px]"
                 )}
             >
@@ -99,22 +105,20 @@ export default function AdminSidebar({ user }: Props) {
                     <Logo />
                 </div>
 
-                <nav className="custom-scrollbar flex-1 space-y-3 overflow-y-auto px-2 py-2">
+                <nav className="custom-scrollbar flex-1 space-y-3 overflow-y-auto px-2 py-1">
                     {navGroups.map((group) => (
                         <div key={group.groupLabel}>
                             {expanded && (
-                                <p className="mb-1 px-3 text-[9px] font-bold text-zinc-400 select-none">
+                                <p className="mb-0.5 px-3 text-[8px] font-bold text-zinc-400 select-none uppercase tracking-wider">
                                     {group.groupLabel}
                                 </p>
                             )}
                             <div className="space-y-0">
                                 {group.items.map((item) => {
                                     const { href, icon: Icon, label, children, isExternal } = item;
-
                                     if (children) {
                                         const isOpen = !!openMenus[label];
                                         const isChildActive = children.some(c => pathname === c.href || pathname.startsWith(`${c.href}/`));
-
                                         return (
                                             <div key={label}>
                                                 <button onClick={() => toggleMenu(label)} className={cn("flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm font-medium transition-all", isChildActive ? "bg-[var(--color-accent-vivid)]/10 text-[var(--color-accent-vivid)]" : "text-zinc-600 hover:bg-zinc-100")}>
@@ -136,11 +140,10 @@ export default function AdminSidebar({ user }: Props) {
                                             </div>
                                         );
                                     }
-
                                     const isActive = href && (pathname === href || (href !== "/admin" && pathname.startsWith(href)));
                                     return (
-                                        <Link key={label} href={href!} target={isExternal ? "_blank" : undefined} className={cn("flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-all", isActive ? "bg-[var(--color-accent-vivid)] text-white" : "text-zinc-600 hover:bg-zinc-100")}>
-                                            {Icon && <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-white" : "text-zinc-400")} />}
+                                        <Link key={label} href={href!} target={isExternal ? "_blank" : undefined} className={cn("flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-all", isActive ? "bg-[var(--color-secondary)] text-primary" : "text-zinc-600 hover:bg-zinc-100")}>
+                                            {Icon && <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-zinc-400")} />}
                                             {expanded && <span className="truncate">{label}</span>}
                                         </Link>
                                     );
@@ -151,6 +154,13 @@ export default function AdminSidebar({ user }: Props) {
                 </nav>
 
                 <div className="shrink-0 border-t border-[var(--color-border-default)] p-3">
+                    <div className="mb-3">
+                        <Link href="/staff/attendance" target="_blank" className={cn("flex items-center gap-3 rounded-lg border border-[var(--color-accent-vivid)]/20 bg-[var(--color-accent-vivid)]/5 px-3 py-2 text-[var(--color-accent-vivid)] transition-all hover:bg-[var(--color-accent-vivid)]/10", !expanded && "justify-center px-0")}>
+                            <Fingerprint className="h-4 w-4 shrink-0" />
+                            {expanded && <span className="text-xs font-bold uppercase tracking-wider">Asistencia</span>}
+                        </Link>
+                    </div>
+
                     <div className={cn("flex items-center gap-2", expanded ? "justify-between" : "justify-center")}>
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-accent-vivid)]/10 text-xs font-bold text-[var(--color-accent-vivid)]">
                             {user?.nombre?.charAt(0).toUpperCase()}

@@ -60,7 +60,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
 
                 {totalUsers > 0 && (
                     <div className="flex flex-col items-center gap-3 pt-4">
-                        <Muted className="uppercase tracking-wider font-bold">
+                        <Muted className="uppercase">
                             Mostrando {users.length} de {totalUsers} usuarios activos
                         </Muted>
                         <Pagination

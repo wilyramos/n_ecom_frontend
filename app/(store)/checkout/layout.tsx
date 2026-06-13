@@ -47,7 +47,7 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
 
                 <div className={`flex items-center gap-1.5 ${isPaymentStep ? 'text-foreground font-semibold' : 'text-muted-foreground/60'}`}>
                     <CreditCard className="w-4 h-4" style={{ color: isPaymentStep ? 'var(--color-brand-action, #a7c7aa)' : 'inherit' }} />
-                    <span>Pago seguro</span>
+                    <span>Pago</span>
                 </div>
             </nav>
 

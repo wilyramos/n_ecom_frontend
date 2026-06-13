@@ -3,28 +3,24 @@ import Image from "next/image";
 
 type LogoProps = {
     color?: "black" | "white";
-    size?: number; // El size define la altura (height) en píxeles y escala proporcionalmente
+    className?: string; 
 };
 
-export default function Logo({ color = "black", size = 28 }: LogoProps) {
-    const logoSrc = color === "black" ? "/logo_fondo_blanco_v3.svg" : "/logo_fondo_blanco_v3.svg";
-
-    const logoHeight = size;
-    const logoWidth = size * 3;
+export default function Logo({ color = "black", className = "h-8 w-auto" }: LogoProps) {
+    // 1. Corrección de rutas de imagen (Asegúrate de cambiar la ruta del blanco según tus assets)
+    const logoSrc = color === "black" 
+        ? "/logo_fondo_blanco.svg" 
+        : "/logo_fondo_blanco.svg";
 
     return (
-        <div
-            className="flex items-center justify-start select-none shrink-0"
-            style={{ height: logoHeight, width: logoWidth }}
-        >
+        <div className={`flex items-center justify-start select-none shrink-0 ${className}`}>
             <Image
                 src={logoSrc}
-                alt="NEOSHOP Distribuidor Oficial"
-                width={logoWidth}
-                height={logoHeight}
-                quality={50} // Optimizado para evitar pixelación en tamaños grandes
+                alt="NEOSHOP Importaciones Logo"
+                width={150} 
+                height={50}
                 priority
-                className="w-full h-full object-contain"
+                className="w-auto h-full object-contain"
             />
         </div>
     );

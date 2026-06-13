@@ -32,7 +32,7 @@ export default function ResumenCarrito() {
 
     return (
         <div className="max-w-7xl mx-auto py-1 md:py-8">
-            <HeadingH1 className="text-lg md:text-2xl text-fg-muted">
+            <HeadingH1 className="text-base md:text-2xl text-fg-muted">
                 Resumen del carrito
             </HeadingH1>
 

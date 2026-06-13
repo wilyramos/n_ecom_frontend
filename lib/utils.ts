@@ -75,3 +75,12 @@ export function formatPrice(price: number): string {
         minimumFractionDigits: 2,
     }).format(price);
 }
+
+export const toDateKey = (d: Date | string): string =>
+    new Date(d).toISOString().slice(0, 10);
+
+export const isSameDay = (a: Date | string, b: Date | string): boolean =>
+    toDateKey(a) === toDateKey(b);
+
+export const formatTime = (date: Date | string): string =>
+    new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });

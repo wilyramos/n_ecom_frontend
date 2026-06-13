@@ -41,7 +41,7 @@ export const SuccessSchemaRegister = z.object({
 export const SuccessSchemaLogin = z.object({
     message: z.string(),
     token: z.string(),
-    role: z.enum(['cliente', 'administrador', 'vendedor']),
+    role: z.enum(['cliente', 'administrador', 'vendedor', 'colaborador']),
 });
 
 export const SuccessSchemaForgotPassword = z.object({
@@ -90,7 +90,7 @@ export const BaseUserSchema = z.object({
     numeroDocumento: z.string().optional(),
     telefono: z.string().optional(),
     email: z.string().email().optional(),
-    rol: z.enum(['cliente', 'administrador', 'vendedor']).optional(),
+    rol: z.enum(['cliente', 'administrador', 'vendedor', 'colaborador']).optional(),
     googleId: z.string().optional(),
 });
 
@@ -106,7 +106,7 @@ export const UserSchema = z.object({
     numeroDocumento: z.string().optional(),
     telefono: z.string().optional(),
     email: z.string().email().optional(),
-    rol: z.enum(['cliente', 'administrador', 'vendedor']).optional(),
+    rol: z.enum(['cliente', 'administrador', 'vendedor', 'colaborador']).optional(),
     googleId: z.string().optional(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),

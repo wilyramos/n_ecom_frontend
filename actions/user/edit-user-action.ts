@@ -22,8 +22,7 @@ export async function EditUserAction(prevState: ActionStateType, formData: FormD
         tipoDocumento: formData.get("tipoDocumento"),
         numeroDocumento: formData.get("numeroDocumento"),
         telefono: formData.get("telefono"),
-        email: formData.get("email"),
-    } 
+    }
 
     console.log("userData", userData)
 
@@ -36,7 +35,7 @@ export async function EditUserAction(prevState: ActionStateType, formData: FormD
     }
 
     console.log("Parsed userData:", parsed.data)
-    
+
     const token = await getToken()
     if (!token) {
         return {
@@ -57,7 +56,7 @@ export async function EditUserAction(prevState: ActionStateType, formData: FormD
     })
 
     console.log('Response status:', req.status)
-    
+
     const json = await req.json()
 
     console.log('Response JSON:', json)
@@ -72,7 +71,7 @@ export async function EditUserAction(prevState: ActionStateType, formData: FormD
 
 
 
-    
+
 
     // Revalidate the path to update the user profile
     revalidatePath("/profile")

@@ -3,11 +3,6 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-// This action handles the login with Google by sending the credential to the backend
-// and setting the token in cookies for session management.
-// This 
-
-
 export async function googleLoginAction({ credential, redirectTo }: { credential: string, redirectTo: string }) {
     if (!credential) {
         return {
@@ -20,7 +15,7 @@ export async function googleLoginAction({ credential, redirectTo }: { credential
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ credential  })
+        body: JSON.stringify({ credential })
     })
 
     const data = await res.json()
@@ -32,17 +27,21 @@ export async function googleLoginAction({ credential, redirectTo }: { credential
     }
 
     const { token, role } = data;
+    
     (await cookies()).set({
         name: "ecommerce-token",
         value: token,
         path: "/",
-        httpOnly: true
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 30
     })
 
-    
+    // Redirección centralizada por rol
+    if (role === "administrador") redirect("/admin");
+    if (role === "vendedor") redirect("/pos");
+    if (role === "colaborador") redirect("/staff/attendance");
 
-    // Redirección basada en rol
-    if (role === "administrador") return redirect("/admin")
-    if (role === "vendedor") return redirect("/pos")
-    redirect(redirectTo)
+    redirect(redirectTo);
 }

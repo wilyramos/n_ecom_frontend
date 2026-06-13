@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     ShoppingBag, LayoutDashboard, ShoppingCart, History,
-    DollarSign, BarChart3, LogOut, LucideIcon
+    DollarSign, BarChart3, LogOut, LucideIcon, Fingerprint
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCashStore } from "@/src/store/useCashStore";
@@ -42,7 +42,6 @@ export const Sidebar = ({ user }: { user: User }) => {
     );
 
     return (
-        // Usamos h-dvh para asegurar que no se desborde en móviles y overflow-y-auto para scroll interno
         <aside className="hidden lg:flex h-dvh w-20 flex-col items-center border-r py-4 bg-[var(--color-surface-inverse)] border-[var(--color-border-default)] overflow-y-auto">
 
             {/* Brand Logo */}
@@ -52,7 +51,7 @@ export const Sidebar = ({ user }: { user: User }) => {
 
             <div className="mb-4 w-10 h-px bg-[var(--color-border-default)]" />
 
-            {/* Navigation Flow: flex-1 permite que el scroll ocurra aquí si es necesario */}
+            {/* Navigation Flow */}
             <nav className="flex flex-col gap-2 w-full items-center">
                 {filteredRoutes.map((route) => {
                     const isActive = pathname.startsWith(route.href);
@@ -78,6 +77,18 @@ export const Sidebar = ({ user }: { user: User }) => {
 
                 {/* --- SECCIÓN ADMINISTRATIVA Y EXTERNA --- */}
                 <div className="flex flex-col gap-2 w-full items-center border-t border-[var(--color-border-default)] pt-2 mt-2">
+
+                    {/* Asistencia */}
+                    <Link
+                        href="/staff/attendance"
+                        target="_blank"
+                        className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all"
+                        title="Asistencia"
+                    >
+                        <Fingerprint size={18} />
+                        <span className="text-[8px] font-black uppercase tracking-tighter">Asist.</span>
+                    </Link>
+
                     {user.rol === "administrador" && (
                         <Link href="/admin" className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all">
                             <LayoutDashboard size={18} />

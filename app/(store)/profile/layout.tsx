@@ -1,3 +1,4 @@
+// File: frontend/app/admin/profile/layout.tsx
 import { verifySession } from '@/src/auth/dal';
 import { redirect } from 'next/navigation';
 import { logout } from '@/actions/logout-user-action';
@@ -7,22 +8,30 @@ import SidebarProfileNav from '@/components/profile/SidebarProfileNav';
 export default async function ProfileLayout({ children }: { children: React.ReactNode }) {
     const { user } = await verifySession();
 
-    // Validar que el usuario exista
+    // 1. Validar autenticación
     if (!user) {
         redirect('/auth/login');
     }
 
-    // Redireccionar a admin si el usuario es administrador
+    // 2. REDIRECCIÓN AUTOMÁTICA POR ROL
     if (user.rol === 'administrador') {
         redirect('/admin');
     }
 
+    if (user.rol === 'vendedor') {
+        redirect('/pos');
+    }
+
+    if (user.rol === 'colaborador') {
+        redirect('/staff/attendance');
+    }
+
+    // Si llega aquí, es un 'cliente' y puede ver su perfil normalmente
     return (
         <div className="flex flex-col md:flex-row max-w-7xl mx-auto min-h-screen">
             {/* Sidebar */}
             <aside className="w-full md:w-80 bg-[var(--color-bg-secondary)] p-8 flex flex-col justify-between border-r border-[var(--color-border-subtle)] min-h-[auto] md:min-h-screen">
                 <div className="space-y-10">
-                    {/* Perfil de Usuario */}
                     <div className="space-y-4">
                         <div className="space-y-1">
                             <p className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight">
@@ -31,9 +40,8 @@ export default async function ProfileLayout({ children }: { children: React.Reac
                             <p className="text-xs font-medium text-[var(--color-text-tertiary)] truncate">
                                 {user.email}
                             </p>
-                            {/* Badge del rol */}
-                            <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]">
-                                {user.rol === 'cliente' ? 'Cliente' : user.rol === 'vendedor' ? 'Vendedor' : user.rol}
+                            <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] uppercase">
+                                {user.rol}
                             </span>
                         </div>
 
@@ -49,10 +57,8 @@ export default async function ProfileLayout({ children }: { children: React.Reac
                         </form>
                     </div>
 
-                    {/* Separador Sutil */}
                     <div className="h-px bg-[var(--color-border-default)] w-full" />
 
-                    {/* Navegación */}
                     <nav className="space-y-1">
                         <SidebarProfileNav />
                     </nav>

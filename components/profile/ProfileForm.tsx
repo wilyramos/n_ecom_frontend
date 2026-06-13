@@ -103,15 +103,18 @@ export default function ProfileForm({ user }: { user: User }) {
                 </div>
 
                 {/* Email */}
-                <div className="flex flex-col gap-1">
-                    <Label htmlFor="email" className="text-sm text-gray-600 font-old">Email</Label>
-                    <Input
-                        type="email"
-                        id="email"
-                        name="email"
-                        defaultValue={user?.email}
-                    />
-                </div>
+               {/* Email */}
+<div className="flex flex-col gap-1">
+    <Label htmlFor="email" className="text-sm text-gray-600 font-bold">Email</Label>
+    <Input
+        type="email"
+        id="email"
+        name="email" 
+        defaultValue={user?.email}
+        disabled={true} // Esto evita la edición y el navegador ignora este campo en el submit
+        className="bg-gray-100 cursor-not-allowed" // Estilo visual para indicar que es de solo lectura
+    />
+</div>
 
                 {/* Botón */}
                 <Button type="submit">

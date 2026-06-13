@@ -4,7 +4,7 @@ import { z } from "zod";
 
 // ── Enums ─────────────────────────────────────────────────────────────────────
 
-export const UserRoleSchema = z.enum(['cliente', 'administrador', 'vendedor']);
+export const UserRoleSchema = z.enum(['cliente', 'administrador', 'vendedor', 'colaborador']);
 export const TipoDocumentoSchema = z.enum(['DNI', 'RUC', 'CE']);
 
 export type UserRole = z.infer<typeof UserRoleSchema>;

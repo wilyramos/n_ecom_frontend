@@ -1,7 +1,7 @@
 export default function ProcesoCompraPage() {
     const pasos = [
         { title: "Selección de productos", description: "Explora nuestras categorías y agrega lo que busques a tu bolsa de compra." },
-        { title: "Pago seguro", description: "Finaliza tu pedido con métodos confiables. Procesamos tu pago con seguridad garantizada." },
+        { title: "Pago", description: "Finaliza tu pedido con métodos confiables. Procesamos tu pago con seguridad garantizada." },
         { title: "Confirmación", description: "Recibirás un correo automático con el resumen detallado y tu número de orden." },
         { title: "Preparación", description: "Cada producto pasa por un control de calidad y embalaje protector antes del despacho." },
         { title: "Envío y seguimiento", description: "Despachamos a nivel nacional con tiempos de entrega priorizados según tu ubicación." }
@@ -9,7 +9,7 @@ export default function ProcesoCompraPage() {
 
     return (
         <section className="max-w-2xl mx-auto py-12 px-4">
-            
+
             {/* Header */}
             <header className="mb-16">
                 <h1 className="text-3xl font-bold text-black mb-4">Proceso de compra</h1>
@@ -31,7 +31,7 @@ export default function ProcesoCompraPage() {
                 ))}
             </div>
 
-            
+
         </section>
     );
 }

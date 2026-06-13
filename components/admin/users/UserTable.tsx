@@ -140,6 +140,8 @@ export default function UserTable({ users }: UserTableProps) {
         return <Badge className="bg-primary text-primary-foreground border-transparent rounded-[var(--radius-sm)] capitalize gap-1"><Shield className="w-3 h-3" /> {role}</Badge>;
       case "vendedor":
         return <Badge className="bg-secondary text-secondary-foreground border-transparent rounded-[var(--radius-sm)] capitalize gap-1"><Briefcase className="w-3 h-3" /> {role}</Badge>;
+      case "colaborador":
+        return <Badge className="bg-green-100 text-green-800 border-transparent rounded-[var(--radius-sm)] capitalize gap-1"><UserIcon className="w-3 h-3" /> {role}</Badge>;
       default:
         return <Badge variant="outline" className="rounded-[var(--radius-sm)] capitalize gap-1"><UserIcon className="w-3 h-3" /> {role}</Badge>;
     }
@@ -224,6 +226,9 @@ export default function UserTable({ users }: UserTableProps) {
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value="administrador" className="text-sm cursor-pointer rounded-[var(--radius-sm)]">
                         Administrador
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="colaborador" className="text-sm cursor-pointer rounded-[var(--radius-sm)]">
+                        Colaborador
                       </DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
 

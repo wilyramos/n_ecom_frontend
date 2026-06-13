@@ -56,7 +56,7 @@ export default function StoreLocation() {
           <div className="flex h-[500px] flex-col overflow-hidden">
             {/* Header */}
             <div>
-              <Logo color="black" size={100} />
+              <Logo color="black"  />
             </div>
 
             {/* Info */}

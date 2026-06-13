@@ -19,7 +19,7 @@ export default function NavBar() {
                     {/* Mobile: Logo centrado */}
                     <div className="md:hidden absolute left-1/2 -translate-x-1/2">
                         <Link href="/" className="flex items-center">
-                            <Logo color="black" size={50} />
+                            <Logo color="black"  />
                         </Link>
                     </div>
 
@@ -31,7 +31,7 @@ export default function NavBar() {
                     {/* Desktop: Logo a la izquierda con gap */}
                     <div className="hidden md:flex items-center gap-2 shrink-0">
                         <Link href="/" className="flex items-center max-w-[140px]">
-                            <Logo color="black" size={50} />
+                            <Logo color="black"  />
                         </Link>
                     </div>
 

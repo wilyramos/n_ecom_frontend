@@ -1,3 +1,4 @@
+// File: frontend/components/checkout/mercadopago/InstallmentInfo.tsx
 "use client";
 
 import {
@@ -15,20 +16,21 @@ type Props = {
     price: number;
 };
 
-const TRANSACTION_FEE = 0.0399;
-const TRANSACTION_FIXED = 1.00;
+// Constantes matemáticas exactas basadas en la fórmula reversa con IGV (18%) incluido
+const MP_FIXED_FEE_WITH_IGV = 1.18; // S/ 1.00 + 18% IGV
+const MP_TOTAL_PERCENTAGE_FEE_WITH_IGV = 0.164964; // (3.49% + 10.49%) * 1.18
 
 const PLANS = [
-    { cuotas: 3, label: "3 cuotas", installmentFee: 0.0549 },
-    { cuotas: 6, label: "6 cuotas", installmentFee: 0.0549 },
-    { cuotas: 12, label: "12 cuotas", installmentFee: 0.1049 },
+    { cuotas: 3, label: "3 cuotas" },
+    { cuotas: 6, label: "6 cuotas" },
+    { cuotas: 12, label: "12 cuotas" },
 ] as const;
 
 export default function InstallmentInfo({ price }: Props) {
     const [selected, setSelected] = useState<number>(12);
 
-    const plan = PLANS.find(p => p.cuotas === selected)!;
-    const totalAmount = (price * (1 + TRANSACTION_FEE + plan.installmentFee)) + TRANSACTION_FIXED;
+    // El precio total simulado calcula de forma fija el recargo total compuesto (cobro + 12 cuotas)
+    const totalAmount = (price + MP_FIXED_FEE_WITH_IGV) / (1 - MP_TOTAL_PERCENTAGE_FEE_WITH_IGV);
     const cuotaAmount = totalAmount / selected;
 
     return (

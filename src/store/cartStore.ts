@@ -109,6 +109,7 @@ export const useCartStore = create<Store>()(
                                     subtotal: precio,
                                     stock,
                                     imagenes,
+                                    slug: item.slug,  // 👈
                                     variant: variant
                                         ? {
                                             _id: variant._id,

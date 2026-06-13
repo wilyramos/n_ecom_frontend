@@ -34,7 +34,7 @@ export default function InstallmentInfo({ price }: Props) {
     return (
         <div className="w-full space-y-2">
             {/* Métodos de pago aceptados */}
-            <div className="flex items-center justify-between px-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
                 <span className="text-[10px] text-fg-muted uppercase tracking-wide font-semibold shrink-0">
                     Métodos aceptados:
                 </span>
@@ -45,64 +45,61 @@ export default function InstallmentInfo({ price }: Props) {
             <Accordion type="single" collapsible className="w-full border border-border-default rounded-2xl overflow-hidden">
                 <AccordionItem value="cuotas" className="border-none">
                     <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-surface-secondary/30 transition-colors [&>svg]:text-fg-muted">
-                        <div className="flex items-center gap-2.5">
-
+                        <div className="flex flex-wrap items-center gap-2">
                             <span className="text-sm font-medium text-fg-primary">
                                 Hasta 12 cuotas
                             </span>
-                            <span className="text-[10px] font-bold text-fg-primary bg-[var(--color-brand-action)]/20 border border-[var(--color-brand-action)] px-1.5 py-0.5 rounded uppercase tracking-wide">
-                                sin interéses
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                Sin intereses
                             </span>
                         </div>
                     </AccordionTrigger>
 
                     <AccordionContent className="px-4 pb-4 pt-1 border-t border-border-default/50 space-y-4">
                         {/* Selector de cuotas */}
-                        <div className="grid grid-cols-4 gap-1.5 pt-2">
+                        <div className="grid grid-cols-3 gap-1.5 pt-2">
                             {PLANS.map((p) => (
                                 <button
                                     key={p.cuotas}
                                     type="button"
                                     onClick={() => setSelected(p.cuotas)}
                                     className={cn(
-                                        "py-2 text-xs font-medium rounded-xl border transition-all",
+                                        "py-2 text-xs font-medium rounded-2xl border transition-all truncate px-1",
                                         selected === p.cuotas
                                             ? "border-fg-primary bg-fg-primary text-fg-inverse"
                                             : "border-border-default text-fg-muted hover:border-fg-primary hover:text-fg-primary"
                                     )}
-                                >
+                                redundancy-grid-cols-4>
                                     {p.label}
                                 </button>
                             ))}
                         </div>
 
                         {/* Resultado */}
-                        <div className="flex items-baseline gap-2 px-1">
-                            <span className="text-2xl font-bold text-fg-primary">
+                        <div className="flex flex-wrap items-baseline gap-2 px-1">
+                            <span className="text-xl sm:text-2xl font-bold text-blue-700 whitespace-nowrap">
                                 S/ {cuotaAmount.toFixed(2)}
                             </span>
-                            <span className="text-sm text-fg-muted">
+                            <span className="text-xs sm:text-sm text-fg-muted whitespace-nowrap">
                                 × {selected} {selected === 1 ? "pago" : "cuotas"}
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-1 px-1">
-                            <span className="text-sm text-fg-muted  gap-1">
-                                Valido para pagos con tarjetas de crédito a través de
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 px-1">
+                            <span className="text-xs sm:text-sm text-fg-muted">
+                                Válido para pagos con tarjetas de crédito a través de
                             </span>
-                            <div className="relative w-24 h-5 shrink-0">
+                            <div className="relative w-24 h-5 shrink-0 mt-1 sm:mt-0">
                                 <Image
                                     src="/payments/mercadopago.png"
                                     alt="MercadoPago"
                                     fill
                                     className="object-contain object-left"
-                                    sizes="( max-width: 640px ) 100vw, 150px"
+                                    sizes="96px"
                                     unoptimized
                                 />
                             </div>
                         </div>
-
-
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>

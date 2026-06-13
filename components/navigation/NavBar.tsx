@@ -14,12 +14,12 @@ export default function NavBar() {
                 id="navbar-fixed" 
                 className="h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300"
             >
-                <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative">
+                <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative h-full">
 
                     {/* Mobile: Logo centrado */}
-                    <div className="md:hidden absolute left-1/2 -translate-x-1/2">
-                        <Link href="/" className="flex items-center">
-                            <Logo color="black"  />
+                    <div className="md:hidden absolute left-1/2 -translate-x-1/2 h-14 w-40">
+                        <Link href="/" className="flex items-center w-full h-full">
+                            <Logo color="black" />
                         </Link>
                     </div>
 
@@ -28,10 +28,10 @@ export default function NavBar() {
                         <ServerSheetMobile />
                     </div>
 
-                    {/* Desktop: Logo a la izquierda con gap */}
-                    <div className="hidden md:flex items-center gap-2 shrink-0">
-                        <Link href="/" className="flex items-center max-w-[140px]">
-                            <Logo color="black"  />
+                    {/* Desktop: Logo a la izquierda ocupando espacio */}
+                    <div className="hidden md:flex items-center flex-1 h-16 max-w-[250px]">
+                        <Link href="/" className="flex items-center w-full h-full">
+                            <Logo color="black" />
                         </Link>
                     </div>
 

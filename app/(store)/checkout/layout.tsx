@@ -59,7 +59,7 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
                         <ResumenFinalCarrito />
 
                         <div>
-                            <div className="p-4 flex flex-row justify-between items-center rounded-2xl border border-border">
+                            <div className="p-4 flex flex-row justify-between items-center rounded-2xl ">
                                 <div className="text-sm font-semibold tracking-tighter text-[var(--color-text-primary)] flex flex-row items-center gap-2">
                                     <ShieldCheck className="w-5 h-5 text-fg-action shrink-0" />
                                     1 año de garantía
@@ -69,7 +69,7 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
                                         href="/cambios-devoluciones"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs text-[var(--color-text-secondary)] underline hover:text-[var(--color-text-primary)] transition-colors whitespace-nowrap"
+                                        className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors whitespace-nowrap"
                                     >
                                         Ver más detalles
                                     </Link>

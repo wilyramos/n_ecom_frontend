@@ -1,3 +1,5 @@
+//File: frontend/components/home/PaymentMethods.tsx
+
 import Image from "next/image";
 
 export default function PaymentMethods() {

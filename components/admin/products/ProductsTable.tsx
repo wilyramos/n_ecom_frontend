@@ -274,7 +274,7 @@ export default function ProductsTable({
                                 </TableCell>
 
                                 <TableCell className="p-2 text-center w-[80px]">
-                                    <ProductMenuAction productId={p._id} />
+                                    <ProductMenuAction productId={p._id} slug={p.slug} />
                                 </TableCell>
                             </TableRow>
                         ))

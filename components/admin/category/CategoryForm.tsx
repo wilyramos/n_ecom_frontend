@@ -1,3 +1,5 @@
+//File: frontend/components/admin/category/CategoryForm.tsx
+
 "use client";
 
 import * as React from "react";

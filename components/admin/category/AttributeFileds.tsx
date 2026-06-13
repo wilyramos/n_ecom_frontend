@@ -7,6 +7,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Trash2, Plus } from "lucide-react";
+import ColorCircle from "@/components/ui/ColorCircle";
+import { diccionarioColores } from "@/src/utils/constants/colores";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function AttributeFields({
     defaultAttributes,
@@ -16,6 +31,7 @@ export default function AttributeFields({
     const [attributes, setAttributes] = useState<CategoryAttribute[]>(
         defaultAttributes || []
     );
+    const [openPopoverIndex, setOpenPopoverIndex] = useState<string | null>(null);
 
     const update = (fn: (draft: CategoryAttribute[]) => void) => {
         const draft = [...attributes];
@@ -44,6 +60,8 @@ export default function AttributeFields({
     const handleIsVariantChange = (index: number, value: boolean) =>
         update((d) => { d[index].isVariant = value; });
 
+    const availableColors = Object.keys(diccionarioColores);
+
     return (
         <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground">Atributos</h3>
@@ -51,77 +69,127 @@ export default function AttributeFields({
             <input type="hidden" name="attributes" value={JSON.stringify(attributes)} />
 
             <div className="grid gap-4 sm:grid-cols-2">
-                {attributes.map((attr, i) => (
-                    <div
-                        key={i}
-                        className="space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm"
-                    >
-                        <div className="space-y-1">
-                            <Label htmlFor={`attr-name-${i}`}>Nombre del atributo</Label>
-                            <Input
-                                id={`attr-name-${i}`}
-                                value={attr.name}
-                                onChange={(e) => handleAttrNameChange(i, e.target.value)}
-                                placeholder="Ej: Color, Talla..."
-                            />
-                        </div>
+                {attributes.map((attr, i) => {
+                    const isColorAttribute = attr.name.toLowerCase().trim() === "color";
 
-                        <div className="space-y-2">
-                            <Label>Valores</Label>
-                            {attr.values.map((val, j) => (
-                                <div key={j} className="flex items-center gap-2">
-                                    <Input
-                                        value={val}
-                                        onChange={(e) => handleAttrValueChange(i, j, e.target.value)}
-                                        placeholder="Ej: Rojo, M..."
-                                    />
-                                    {attr.values.length > 1 && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => removeValue(i, j)}
-                                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    )}
-                                </div>
-                            ))}
+                    return (
+                        <div
+                            key={i}
+                            className="space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm"
+                        >
+                            <div className="space-y-1">
+                                <Label htmlFor={`attr-name-${i}`}>Nombre del atributo</Label>
+                                <Input
+                                    id={`attr-name-${i}`}
+                                    value={attr.name}
+                                    onChange={(e) => handleAttrNameChange(i, e.target.value)}
+                                    placeholder="Ej: Color, Talla..."
+                                />
+                            </div>
 
-                            <div className="flex items-center justify-between pt-2">
-                                <div className="flex items-center space-x-2">
-                                    <Switch
-                                        checked={attr.isVariant ?? false}
-                                        onCheckedChange={(v) => handleIsVariantChange(i, v)}
-                                    />
-                                    <Label className="text-xs">Usar como variante</Label>
+                            <div className="space-y-2">
+                                <Label>Valores</Label>
+                                {attr.values.map((val, j) => (
+                                    <div key={j} className="flex items-center gap-2">
+                                        <div className="relative flex-1 flex items-center gap-2">
+                                            {isColorAttribute && (
+                                                <Popover
+                                                    open={openPopoverIndex === `${i}-${j}`}
+                                                    onOpenChange={(open) => 
+                                                        setOpenPopoverIndex(open ? `${i}-${j}` : null)
+                                                    }
+                                                >
+                                                    <PopoverTrigger asChild>
+                                                        <button 
+                                                            type="button"
+                                                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-input bg-transparent hover:bg-accent hover:text-accent-foreground"
+                                                        >
+                                                            <ColorCircle color={val} size={20} />
+                                                        </button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-[200px] p-0" align="start">
+                                                        <Command>
+                                                            <CommandInput placeholder="Buscar color..." className="h-8" />
+                                                            <CommandList>
+                                                                <CommandEmpty>No se encontraron colores.</CommandEmpty>
+                                                                <CommandGroup>
+                                                                    {availableColors.map((colorKey) => (
+                                                                        <CommandItem
+                                                                            key={colorKey}
+                                                                            value={colorKey}
+                                                                            onSelect={(currentValue) => {
+                                                                                handleAttrValueChange(i, j, currentValue);
+                                                                                setOpenPopoverIndex(null);
+                                                                            }}
+                                                                            className="flex items-center gap-2 capitalize"
+                                                                        >
+                                                                            <ColorCircle color={colorKey} size={16} />
+                                                                            <span>{colorKey}</span>
+                                                                        </CommandItem>
+                                                                    ))}
+                                                                </CommandGroup>
+                                                            </CommandList>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
+                                            )}
+                                            
+                                            <Input
+                                                value={val}
+                                                onChange={(e) => handleAttrValueChange(i, j, e.target.value)}
+                                                placeholder={isColorAttribute ? "Ej: Rojo, #FF0000 o titanio natural" : "Ej: M, L..."}
+                                                className="w-full"
+                                            />
+                                        </div>
+
+                                        {attr.values.length > 1 && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => removeValue(i, j)}
+                                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))}
+
+                                <div className="flex items-center justify-between pt-2">
+                                    <div className="flex items-center space-x-2">
+                                        <Switch
+                                            checked={attr.isVariant ?? false}
+                                            onCheckedChange={(v) => handleIsVariantChange(i, v)}
+                                        />
+                                        <Label className="text-xs">Usar como variante</Label>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => addValue(i)}
+                                        className="h-8 text-xs"
+                                    >
+                                        <Plus className="w-3 h-3 mr-1" /> Valor
+                                    </Button>
                                 </div>
+                            </div>
+
+                            <div className="pt-2 border-t border-border">
                                 <Button
                                     type="button"
-                                    variant="outline"
+                                    variant="destructive"
                                     size="sm"
-                                    onClick={() => addValue(i)}
-                                    className="h-8 text-xs"
+                                    onClick={() => removeAttribute(i)}
+                                    className="w-full"
                                 >
-                                    <Plus className="w-3 h-3 mr-1" /> Valor
+                                    <Trash2 className="w-3.5 h-3.5 mr-2" /> Eliminar atributo
                                 </Button>
                             </div>
                         </div>
-
-                        <div className="pt-2 border-t border-border">
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeAttribute(i)}
-                                className="w-full"
-                            >
-                                <Trash2 className="w-3.5 h-3.5 mr-2" /> Eliminar atributo
-                            </Button>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <Button

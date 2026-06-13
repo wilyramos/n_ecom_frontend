@@ -16,9 +16,10 @@ import DeleteProductForm from './DeleteProductButton'
 
 interface Props {
     productId: string
+    slug: string
 }
 
-export default function ProductMenuAction({ productId }: Props) {
+export default function ProductMenuAction({ productId, slug }: Props) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -35,7 +36,7 @@ export default function ProductMenuAction({ productId }: Props) {
                 </DropdownMenuItem>
                 
                 <DropdownMenuItem asChild>
-                    <Link href={`/products/${productId}`} target="_blank">
+                    <Link href={`/productos/${slug}`} target="_blank">
                         <ExternalLink className="size-4" />
                         <span>Ver en tienda</span>
                     </Link>

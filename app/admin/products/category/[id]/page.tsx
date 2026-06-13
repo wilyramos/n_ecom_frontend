@@ -22,7 +22,7 @@ export default async function CategoryPageDetails({ params }: { params: Params }
             }
         >
             {/* Formulario envuelto en tarjeta */}
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+            <div className="">
                 <EditCategoryForm 
                     category={category}
                     categories={patternCategories}

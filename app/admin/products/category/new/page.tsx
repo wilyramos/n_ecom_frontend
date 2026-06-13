@@ -10,7 +10,7 @@ export default async function NewCategoryPage() {
             title="Crear nueva categoría"
            
         >
-            <div className="bg-card border border-border rounded-xl p-6">
+            <div className="">
                 <CreateCategoryForm categories={categories} />
             </div>
         </AdminPageWrapper>

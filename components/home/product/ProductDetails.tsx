@@ -215,7 +215,7 @@ export default function ProductDetails({ producto }: Props) {
                         </header>
 
                         <div className="py-4">
-                            <InstallmentInfo price={precio} installments={12} />
+                            {precio > 100 && <InstallmentInfo price={precio} />}
                         </div>
                         <div className="space-y-5">
                             {Object.entries(allAttributes).map(([key]) => {
@@ -355,7 +355,7 @@ export default function ProductDetails({ producto }: Props) {
                                 Consultar por WhatsApp
                             </a>
 
-    
+
 
                             <div className="p-4 flex flex-row justify-between items-center rounded-2xl border border-border">
                                 <div className="text-sm font-semibold tracking-tighter text-[var(--color-text-primary)] flex flex-row items-center gap-2">
@@ -385,7 +385,7 @@ export default function ProductDetails({ producto }: Props) {
                                         Complementa tu compra <span className="text-xs font-bold bg-red-600 text-white px-2  "> Hasta 20% de Dcto</span>
                                     </h2>
 
-                                  
+
                                     <section className="max-w-screen-2xl mx-auto px-4">
                                         <div className="pt-8 space-y-4">
                                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

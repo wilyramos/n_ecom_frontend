@@ -1,4 +1,3 @@
-// File: frontend/app/(shop)/checkout/payment/PaymentAccordionClient.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -9,6 +8,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import CopyButton from "@/components/checkout/CopyButton";
 
 type PaymentAccordionClientProps = {
     orderId: string;
@@ -40,7 +40,6 @@ export default function PaymentAccordionClient({
         router.replace(`/checkout/payment?orderId=${orderId}&method=${value}`, { scroll: false });
     };
 
-    // Desglose proporcional de los recargos internos de Mercado Pago con IGV (18%) incluido
     const mpCobroPasarela = (mercadopagoTotal * 0.0349 + 1) * 1.18;
     const mpFinanciacionCuotas = mercadopagoTotal * 0.1049 * 1.18;
 
@@ -73,14 +72,15 @@ export default function PaymentAccordionClient({
                 onValueChange={handleMethodChange}
                 className="space-y-3"
             >
-                {/* ── Opción 1: Transferencia / Efectivo ── */}
+                {/* ── Opción 1: Transferencia ── */}
                 <AccordionItem value="transferencia" className="border rounded-xl overflow-hidden bg-surface-primary">
                     <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-surface-secondary/10 transition-colors [&>svg]:text-fg-muted">
-                        <div className="flex items-center justify-between w-full gap-4 pr-3">
-                            <div className="text-left">
-                                <span className="block text-sm font-semibold text-fg-primary">
+                        <div className="flex items-center justify-between w-full gap-4 pr-3 text-left">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+                                <span className="text-sm font-semibold text-fg-primary">
                                     Transferencia
                                 </span>
+                    
                             </div>
                             <span className="text-sm sm:text-base font-bold text-fg-primary whitespace-nowrap">
                                 S/ {orderTotalPrice.toFixed(2)}
@@ -89,16 +89,69 @@ export default function PaymentAccordionClient({
                     </AccordionTrigger>
 
                     <AccordionContent className="px-5 pb-5 pt-4 border-t border-border-default/50 space-y-4">
-                        <p className="text-xs text-fg-muted leading-relaxed">
-                            Coordina directamente con nuestro equipo de soporte para recibir los datos de depósito actuales.
-                        </p>
+                        <div className="space-y-3 text-xs text-fg-muted leading-relaxed">
+                            <p className="font-medium text-fg-primary">
+                                Realiza tu depósito en cualquiera de nuestras cuentas a nombre de <strong>NEOSHOP IMPORTACIONES</strong>:
+                            </p>
+                            
+                            <div className="bg-surface-secondary/30 p-3 rounded-lg space-y-3 border border-border-default/30">
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative w-8 h-4">
+                                            <Image 
+                                                src="/payments/bcp.png" 
+                                                alt="BCP" 
+                                                fill 
+                                                className="object-contain"
+                                                unoptimized
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2 pl-1">
+                                        <span>Cuenta: <strong className="text-fg-primary">1917237105069</strong></span>
+                                        <CopyButton text="1917237105069" />
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2 pl-1">
+                                        <span>CCI: <strong className="text-fg-primary">00219100723710506950</strong></span>
+                                        <CopyButton text="00219100723710506950" />
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-border-default/50 pt-2 space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="relative w-8 h-4">
+                                            <Image 
+                                                src="/payments/interbank.png" 
+                                                alt="Interbank" 
+                                                fill 
+                                                className="object-contain"
+                                                unoptimized
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2 pl-1">
+                                        <span>Cuenta: <strong className="text-fg-primary">200-3006506826</strong></span>
+                                        <CopyButton text="200-3006506826" />
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2 pl-1">
+                                        <span>CCI: <strong className="text-fg-primary">003-200-003006506826-31</strong></span>
+                                        <CopyButton text="003-200-003006506826-31" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="text-fg-primary font-medium">
+                                Una vez realizado el depósito, presiona el botón de abajo para enviar el voucher por WhatsApp y validar tu pago.
+                            </p>
+                        </div>
+                        
                         <a
                             href={`https://wa.me/51902900653?text=${waMessage}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-[#25D366] text-[#25D366] text-sm font-semibold hover:bg-[#25D366]/10 transition-colors"
                         >
-                            Coordinar Pago por WhatsApp
+                            Enviar voucher por WhatsApp
                         </a>
                     </AccordionContent>
                 </AccordionItem>
@@ -133,7 +186,6 @@ export default function PaymentAccordionClient({
                                 <span>Comisión de pasarela (3.7%)</span>
                                 <span>S/ {(orderTotalPrice * CULQI_TRANSACTION_FEE).toFixed(2)}</span>
                             </div>
-                          
                         </div>
                         <div className="w-full pt-2">
                             {checkoutCulqiComponent}
@@ -176,7 +228,6 @@ export default function PaymentAccordionClient({
                                 <span>Costo de financiación</span>
                                 <span>S/ {mpFinanciacionCuotas.toFixed(2)}</span>
                             </div>
-                           
                         </div>
                         <div className="w-full pt-2">
                             {checkoutMercadoPagoComponent}

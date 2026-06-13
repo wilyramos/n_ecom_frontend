@@ -90,7 +90,7 @@ export default function PaymentAccordionClient({
 
                     <AccordionContent className="px-5 pb-5 pt-4 border-t border-border-default/50 space-y-4">
                         <p className="text-xs text-fg-muted leading-relaxed">
-                            Coordina directamente con nuestro equipo de soporte para recibir los datos de depósito actuales o efectuar tu pago en efectivo.
+                            Coordina directamente con nuestro equipo de soporte para recibir los datos de depósito actuales.
                         </p>
                         <a
                             href={`https://wa.me/51902900653?text=${waMessage}`}

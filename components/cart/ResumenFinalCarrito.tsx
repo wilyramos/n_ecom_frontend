@@ -42,7 +42,7 @@ export default function ResumenFinalCarrito() {
     }
 
     return (
-        <section className="p-5 bg-background h-full border-l border-border-default">
+        <section className="p-5 bg-background h-full ">
             <h2 className="text-fg-action font-semibold text-sm md:text-base pb-2 tracking-tight">
                 Resumen del carrito
             </h2>

@@ -24,7 +24,7 @@ export default function ShopNowButton({ product, variant, disabled, isSelectionI
     const handleClick = () => {
         // 1. Validar variantes
         if (isSelectionIncomplete) {
-            toast.error("Por favor, selecciona las opciones (talla, color, etc.) antes de continuar.");
+            toast.error("Por favor, selecciona las opciones (color, etc.) antes de continuar.");
             return;
         }
 

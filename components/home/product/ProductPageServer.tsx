@@ -64,7 +64,7 @@ export default async function ProductPageServer({ producto }: Props) {
                 {producto.nombre} - neoshop
             </h1>
 
-            <section className="container mx-auto px-2 md:px-6 pt-4">
+            <section className="container mx-auto px-2 md:px-6 pt-1">
                 {/* Navegación de migas de pan */}
                 <Breadcrumbs
                     items={breadcrumbSegments}

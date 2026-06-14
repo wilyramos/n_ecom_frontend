@@ -248,10 +248,10 @@ export default function ProductDetails({ producto }: Props) {
                                                                 selected
                                                                     ? "border-fg-primary ring-1 ring-fg-primary"
                                                                     : "border-border-default hover:border-fg-primary",
-                                                                outOfStock && "opacity-40 cursor-not-allowed"
+                                                                outOfStock && "opacity-55 cursor-not-allowed"
                                                             )}
                                                         >
-                                                            <div className={cn("relative w-7 h-7 rounded-full border border-border-default overflow-hidden shrink-0", outOfStock && "grayscale")}>
+                                                            <div className={cn("relative w-7 h-7 rounded-full border border-border-default overflow-hidden shrink-0", outOfStock && "grayscale brightness-90")}>
                                                                 <ColorCircle color={variantForValue?.atributos[key] || val} size={28} />
                                                                 {outOfStock && (
                                                                     <span className="absolute inset-0 flex items-center justify-center z-10">
@@ -302,14 +302,15 @@ export default function ProductDetails({ producto }: Props) {
                                                             onClick={() => !outOfStock && updateSelectedVariant(key, val)}
                                                             disabled={outOfStock}
                                                             className={cn(
-                                                                "h-9 px-4 text-xs font-medium border rounded-2xl transition-all relative overflow-hidden bg-surface-primary text-fg-primary cursor-pointer",
+                                                                "h-9 px-4 text-xs font-medium border rounded-2xl transition-all relative overflow-hidden cursor-pointer",
                                                                 selected
-                                                                    ? "border-fg-primary ring-1 ring-fg-primary"
-                                                                    : "border-border-default hover:border-fg-primary",
-                                                                outOfStock && "opacity-40 text-fg-secondary bg-surface-secondary cursor-not-allowed"
+                                                                    ? "border-fg-primary ring-1 ring-fg-primary bg-surface-primary text-fg-primary"
+                                                                    : outOfStock
+                                                                        ? "border-border-default bg-surface-secondary text-fg-muted cursor-not-allowed line-through"
+                                                                        : "border-border-default bg-surface-primary text-fg-primary hover:border-fg-primary"
                                                             )}
                                                         >
-                                                            <span className={cn(outOfStock && "line-through")}>{val}</span>
+                                                            <span className={cn("block", outOfStock && "line-through decoration-fg-muted")}>{val}</span>
                                                             {outOfStock && (
                                                                 <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                                                     <div className="w-[110%] -rotate-[15deg]" />

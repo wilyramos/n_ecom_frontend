@@ -137,11 +137,13 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
                                     <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); nextImage(); }} className="absolute right-2 top-1/2 -translate-y-1/2 bg-surface-primary/80 backdrop-blur-sm text-fg-primary p-1.5 rounded-full opacity-0 md:group-hover:opacity-100 transition shadow-sm hover:scale-110 z-10">
                                         <ChevronRight size={16} />
                                     </button>
-                                    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-                                        {previewImages.map((_, idx) => (
-                                            <span key={idx} className={`h-1.5 rounded-full  opacity-0 md:group-hover:opacity-100 ${idx === currentIndex ? "w-4 bg-fg-primary" : "w-1.5 bg-fg-primary/30"}`} />
-                                        ))}
-                                    </div>
+                                    {previewImages.length > 1 && previewImages.length <= 5 && (
+                                        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+                                            {previewImages.map((_, idx) => (
+                                                <span key={idx} className={`h-1.5 rounded-full opacity-0 md:group-hover:opacity-100 ${idx === currentIndex ? "w-4 bg-fg-primary" : "w-1.5 bg-fg-primary/30"}`} />
+                                            ))}
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>

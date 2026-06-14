@@ -1,7 +1,6 @@
 import { getOrders } from "@/src/services/orders";
 import OrdersTable from "@/components/admin/orders/OrdersTable";
 import Pagination from "@/components/ui/Pagination";
-import AddOrderButton from "@/components/admin/orders/AddOrderButton";
 import OrdersTableFilters from "@/components/admin/orders/OrdersTableFilters";
 import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 
@@ -46,7 +45,6 @@ export default async function pageOrders({ searchParams }: PageOrdersProps) {
         <AdminPageWrapper
             title="Pedidos"
             showBackButton={false}
-            actions={<AddOrderButton />}
         >
             <div className="space-y-4">
                 <OrdersTableFilters />

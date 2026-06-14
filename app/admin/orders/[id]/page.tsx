@@ -163,7 +163,9 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
                                                 src={item.imagen || "/logomini.svg"} 
                                                 alt={item.nombre || "Producto"} 
                                                 fill
-                                                className="object-cover" 
+                                                className="object-contain"
+                                                unoptimized={true}
+                                                quality={10}
                                             />
                                         </div>
                                         <div className="space-y-1">

@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         product.nombre,
         categoryName,
         ...productTags,
-        'neoshop',
+        'Neoshop',
         'Lima - Perú',
         'Productos',
         'Tienda Online',
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
             title,
             description,
             url,
-            siteName: 'neoshop',
+            siteName: 'Neoshop',
             type: 'website',
             images: [
                 {

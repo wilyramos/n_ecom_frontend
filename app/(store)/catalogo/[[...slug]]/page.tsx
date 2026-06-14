@@ -21,7 +21,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     // Obtenemos los datos (deduplicado automáticamente por Next.js)
     const data = await getCatalogData(slugs, resolvedSearchParams);
 
-    if (!data) return { title: "Catálogo | neoshop" };
+    if (!data) return { title: "Catálogo | Neoshop" };
 
     const { categoryName, brandName, lineName, searchQuery } = data.context;
 
@@ -43,7 +43,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         }
     }
 
-    const fullTitle = `${title} | neoshop`;
+    const fullTitle = `${title} | Neoshop`;
     const description = `Compra ${title} al mejor precio en Perú. Envíos a todo el país y garantía oficial. Descubre ofertas en ${brandName || 'tecnología'} y más.`;
 
     // 2. URL Canónica
@@ -60,7 +60,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
             title: fullTitle,
             description: description,
             url: `${baseUrl}${canonicalPath}`,
-            siteName: "neoshop",
+            siteName: "Neoshop",
             images: [
                 {
                     url: `${baseUrl}/images/og-catalog.jpg`,

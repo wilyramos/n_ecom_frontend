@@ -8,28 +8,28 @@ import ScrollToTop from "@/components/navigation/ScrollToTop";
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "NeoShop",
+        default: "Neoshop",
         template: "%s",
     },
-    description: "Sección principal de la tienda NeoShop: productos, compras, cuenta y soporte.",
+    description: "Sección principal de la tienda Neoshop: productos, compras, cuenta y soporte.",
     openGraph: {
         ...globalMetadata.openGraph,
-        title: "NeoShop",
-        description: "Productos, compras, cuenta y soporte dentro de la tienda NeoShop.",
+        title: "Neoshop",
+        description: "Productos, compras, cuenta y soporte dentro de la tienda Neoshop.",
         url: "https://neoshop.pe/productos",
         images: [
             {
                 url: "https://neoshop.pe/favicon.ico",
                 width: 1200,
                 height: 630,
-                alt: "NeoShop Tienda"
+                alt: "Neoshop Tienda"
             }
         ]
     },
     twitter: {
         ...globalMetadata.twitter,
-        title: "NeoShop | Tienda",
-        description: "Explora productos, compras y soporte en la tienda NeoShop.",
+        title: "Neoshop | Tienda",
+        description: "Explora productos, compras y soporte en la tienda Neoshop.",
         images: ["https://neoshop.pe/favicon.ico"]
     },
     alternates: {

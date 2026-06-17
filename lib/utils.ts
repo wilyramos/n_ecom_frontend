@@ -79,8 +79,15 @@ export function formatPrice(price: number): string {
 export const toDateKey = (d: Date | string): string =>
     new Date(d).toISOString().slice(0, 10);
 
-export const isSameDay = (a: Date | string, b: Date | string): boolean =>
-    toDateKey(a) === toDateKey(b);
+export function isSameDay(
+    a: Date | string | number,
+    b: Date | string | number,
+    timeZone = 'America/Lima'
+): boolean {
+    const opts: Intl.DateTimeFormatOptions = { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(a).toLocaleDateString('en-CA', opts) ===
+           new Date(b).toLocaleDateString('en-CA', opts);
+}
 
 export const formatTime = (date: Date | string): string =>
     new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });

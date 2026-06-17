@@ -6,12 +6,17 @@ import type { Attendance } from "@/src/schemas/attendance.schema";
 
 export const dynamic = "force-dynamic";
 
+function toLocalDateKey(date: Date | string): string {
+    return new Date(date).toLocaleDateString('en-CA', { timeZone: 'America/Lima' });
+    // 'en-CA' produce formato YYYY-MM-DD
+}
+
 function extractTodayRecord(history: Attendance[]): Attendance | null {
     if (!history.length) return null;
     const latest = history[0];
-    return new Date(latest.date).toISOString().slice(0, 10) === new Date().toISOString().slice(0, 10)
-        ? latest
-        : null;
+    const todayKey = toLocalDateKey(new Date());
+    const recordKey = toLocalDateKey(latest.date);
+    return recordKey === todayKey ? latest : null;
 }
 
 export default async function StaffAttendancePage() {

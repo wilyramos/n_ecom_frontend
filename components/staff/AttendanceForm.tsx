@@ -21,6 +21,12 @@ interface AttendanceFormProps {
     historyRecords: Attendance[];
 }
 
+// ─── HELPER ───────────────────────────────────────────────────────────────────
+
+function toLocalDateKey(date: Date | string): string {
+    return new Date(date).toLocaleDateString('en-CA', { timeZone: 'America/Lima' });
+}
+
 // ─── COMPONENTE PRINCIPAL ─────────────────────────────────────────────────────
 
 export default function AttendanceForm({ initialRecord, historyRecords }: AttendanceFormProps) {
@@ -32,16 +38,32 @@ export default function AttendanceForm({ initialRecord, historyRecords }: Attend
     const [isPending, startTransition]    = useTransition();
 
     useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        const timer = setInterval(() => {
+            const now = new Date();
+            setCurrentTime(now);
+
+            // Re-evalúa si el registro de hoy sigue siendo válido para Lima.
+            // Cubre el edge case de que la sesión cruce medianoche Lima sin recargar.
+            if (todayRecord) {
+                const recordKey = toLocalDateKey(todayRecord.date);
+                const todayKey  = toLocalDateKey(now);
+                if (recordKey !== todayKey) {
+                    setTodayRecord(null);
+                }
+            }
+        }, 1000);
         return () => clearInterval(timer);
-    }, []);
+    }, [todayRecord]);
 
     const handleCheckIn = () => {
         startTransition(async () => {
             const result = await checkInAction();
             if (result.ok && result.data) {
                 setTodayRecord(result.data);
-                setHistory(prev => [result.data!, ...prev.filter(h => !isSameDay(h.date, new Date()))]);
+                setHistory(prev => [
+                    result.data!,
+                    ...prev.filter(h => !isSameDay(h.date, new Date())),
+                ]);
                 toast.success('Entrada registrada.');
             } else {
                 toast.error(result.error ?? 'Error al registrar entrada.');
@@ -55,7 +77,9 @@ export default function AttendanceForm({ initialRecord, historyRecords }: Attend
             const result = await checkOutAction();
             if (result.ok && result.data) {
                 setTodayRecord(result.data);
-                setHistory(prev => prev.map(h => isSameDay(h.date, new Date()) ? result.data! : h));
+                setHistory(prev =>
+                    prev.map(h => isSameDay(h.date, new Date()) ? result.data! : h)
+                );
                 toast.success('Salida registrada.');
             } else {
                 toast.error(result.error ?? 'Error al registrar salida.');
@@ -72,10 +96,8 @@ export default function AttendanceForm({ initialRecord, historyRecords }: Attend
             <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-6 items-start w-full">
 
                 {/* PANEL IZQUIERDO */}
-                <div className="bg-white rounded-2xl  border border-neutral-200/60 p-6 space-y-5">
-                    <ClockDisplay 
-
-                    />
+                <div className="bg-white rounded-2xl border border-neutral-200/60 p-6 space-y-5">
+                    <ClockDisplay />
 
                     <div className="space-y-3">
                         {!hasCheckedIn && (

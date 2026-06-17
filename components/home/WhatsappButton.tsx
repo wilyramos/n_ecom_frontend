@@ -7,7 +7,7 @@ export default function WhatsappButton() {
     return (
         <div className="fixed bottom-6 right-6 z-50 flex items-center justify-end select-none">
             <Link
-                href="https://wa.me/51902900653?text=Hola%2C%20deseo%20recibir%20asesor%C3%ADa%20personalizada%20sobre%20un%20producto."
+                href="https://wa.me/51902900653?text=Hola%21%20Estoy%20viendo%20su%20tienda%20y%20tengo%20una%20consulta."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="
@@ -24,12 +24,10 @@ export default function WhatsappButton() {
                 "
                 aria-label="Contacto por WhatsApp"
             >
-                {/* Icono Corporativo con Rotación Sutil */}
                 <div className="flex items-center justify-center shrink-0">
                     <FaWhatsapp className="w-5 h-5 transition-transform duration-500 ease-out group-hover:rotate-12" />
                 </div>
                 
-                {/* Texto Revelado Fluidamente */}
                 <span className="text-[11px] font-bold uppercase tracking-[0.2em] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out delay-100">
                     Asesoría
                 </span>

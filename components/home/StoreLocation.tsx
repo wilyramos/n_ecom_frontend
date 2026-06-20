@@ -148,6 +148,7 @@ export default function StoreLocation() {
                 alt="Osiptel"
                 fill
                 className="object-contain"
+                sizes="(max-width: 768px) 72px, 128px"
               />
             </div>
             <div className="relative h-10 w-18 md:w-32">
@@ -156,6 +157,7 @@ export default function StoreLocation() {
                 alt="MTC"
                 fill
                 className="object-contain"
+                sizes="(max-width: 768px) 72px, 128px"
               />
             </div>
           </div>

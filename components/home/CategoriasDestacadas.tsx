@@ -49,8 +49,8 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                                     src={c.image}
                                     alt={c.nombre}
                                     fill
+                                    sizes="(max-width: 640px) 33vw, (max-width: 1280px) 25vw, 300px"
                                     className="object-cover transition-transform duration-700 group-hover:scale-102"
-
                                 />
                             ) : (
                                 <div className="flex h-full items-center justify-center text-[var(--color-text-tertiary)] opacity-20">

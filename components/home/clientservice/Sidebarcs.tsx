@@ -10,7 +10,6 @@ export default function Sidebarcs() {
         { name: "Centro de ayuda", href: "/hc" },
         { name: "Contacto y soporte", href: "/hc/contacto-y-soporte" },
         { name: "Proceso de compra", href: "/hc/proceso-de-compra" },
-        { name: "Garantías y devoluciones", href: "/hc/garantias-y-devoluciones" },
         { name: "Preguntas frecuentes", href: "/hc/preguntas-frecuentes" },
         { name: "Políticas de privacidad", href: "/hc/politicas-de-privacidad" },
     ];
@@ -31,11 +30,10 @@ export default function Sidebarcs() {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`block px-2 py-2 text-sm transition-colors ${
-                                            isActive 
-                                                ? "font-bold text-black" 
+                                        className={`block px-2 py-2 text-sm transition-colors ${isActive
+                                                ? "font-bold text-black"
                                                 : "text-gray-600 hover:text-black"
-                                        }`}
+                                            }`}
                                     >
                                         {item.name}
                                     </Link>
@@ -64,9 +62,8 @@ export default function Sidebarcs() {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`text-[10px] font-bold uppercase tracking-wide ${
-                                    isActive ? "text-black" : "text-gray-400"
-                                }`}
+                                className={`text-[10px] font-bold uppercase tracking-wide ${isActive ? "text-black" : "text-gray-400"
+                                    }`}
                             >
                                 {item.name.split(" ")[0]}
                             </Link>

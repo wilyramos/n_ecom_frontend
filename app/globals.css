@@ -12,6 +12,8 @@
   /* --- PALETA CORPORATIVA OFICIAL (MANUAL DE MARCA) --- */
   --color-brand-charcoal: #171411;
   --color-brand-silver: #cbcbcb;
+    --color-brand-silver-border: #f0f0f0; /* variante mas blanca para bordes */
+
   --color-brand-black: #0a0a0a;
   --color-brand-gris: #a0a0a0;
   --color-brand-action: #a7c7aa;
@@ -38,7 +40,7 @@
   --color-action-destructive: var(--color-brand-action);
 
   /* Bordes y Divisores */
-  --color-border-default: var(--color-brand-silver);
+  --color-border-default: var(--color-brand-silver-border);
 
   /* --- MAPPING SHADCN UI PARA INTEGRACIÓN NATIVA --- */
   --color-background: var(--color-surface-primary);

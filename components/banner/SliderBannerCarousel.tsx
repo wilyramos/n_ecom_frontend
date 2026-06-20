@@ -18,10 +18,10 @@ const responsive = {
 export default function SliderBannerCarousel({ banners }: Props) {
     if (!banners.length) return null;
 
-    const autoPlaySpeed = 5000;
+    const autoPlaySpeed = 9000; // 9 segundos
 
     return (
-        <div className="w-full mx-auto relative overflow-hidden">
+        <div className="w-full mx-auto relative">
             <div className="w-full">
                 <Carousel
                     responsive={responsive}

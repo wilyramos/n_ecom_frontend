@@ -36,7 +36,7 @@ export default function FeatureCards() {
   return (
     <section className="py-1 w-full max-w-screen-2xl mx-auto">
       <div className="w-full px-2 md:px-12">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 w-full ">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 md:gap-4 w-full ">
           {features.map(({ title, description, icon: Icon }) => (
             <div key={title} className="group block w-full">
               <Card className="w-full h-full flex flex-row items-center justify-center gap-2.5 sm:gap-3.5 px-2.5 sm:px-4 py-3 sm:py-4 transition-all duration-300 hover:bg-surface-secondary/80 border border-surface-secondary/20 rounded-xl shadow-none">
@@ -49,7 +49,7 @@ export default function FeatureCards() {
                     <span className="line-clamp-2 md:line-clamp-2">{title}</span>
                   </CardTitle>
 
-                  <CardDescription className="text-[9px] sm:text-[11px] md:text-xs text-fg-primary/60 font-medium leading-tight mt-0.5 min-h-[1.8em] flex items-start">
+                  <CardDescription className="text-[8px] sm:text-[11px] md:text-xs text-fg-primary/60 font-medium leading-tight mt-0.5 min-h-[1.8em] flex items-start">
                     <span className="line-clamp-2 md:line-clamp-2">{description}</span>
                   </CardDescription>
                 </div>

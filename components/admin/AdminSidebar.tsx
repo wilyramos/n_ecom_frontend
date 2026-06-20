@@ -8,21 +8,16 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import AdminMenu from "./AdminMenu";
 import Logo from "../ui/Logo";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import {
     LayoutDashboard, ShoppingBag, Boxes, Tags, Building2, GitFork,
     FileText, ShieldAlert, Images, Layers, Megaphone, Users,
     MonitorSmartphone, Eye, ChevronDown, ChevronRight, Fingerprint,
 } from "lucide-react";
 
-// ── Tipos ────────────────────────────────────────────────────────────────────
-
-type NavChild = { href: string; label: string; };
-type NavLink = { href?: string; icon?: ElementType; label: string; children?: NavChild[]; isExternal?: boolean; };
-type NavGroup = { groupLabel: string; items: NavLink[]; };
-type Props = { user: User; };
-
-// ── Data ─────────────────────────────────────────────────────────────────────
+type NavChild = { href: string; label: string };
+type NavLink = { href?: string; icon?: ElementType; label: string; children?: NavChild[]; isExternal?: boolean };
+type NavGroup = { groupLabel: string; items: NavLink[] };
+type Props = { user: User };
 
 const navGroups: NavGroup[] = [
     { groupLabel: "General", items: [{ href: "/admin", icon: LayoutDashboard, label: "Dashboard" }] },
@@ -32,7 +27,8 @@ const navGroups: NavGroup[] = [
             { href: "/admin/orders", icon: ShoppingBag, label: "Órdenes" },
             { href: "/admin/claims", icon: ShieldAlert, label: "Reclamaciones" },
             {
-                icon: FileText, label: "Reportes",
+                icon: FileText,
+                label: "Reportes",
                 children: [
                     { href: "/admin/reports", label: "Vista General" },
                     { href: "/admin/reports/sales", label: "Ventas" },
@@ -56,14 +52,15 @@ const navGroups: NavGroup[] = [
             { href: "/admin/slider", icon: Images, label: "Slider Banners" },
             { href: "/admin/sections", icon: Layers, label: "Secciones" },
             { href: "/admin/advertisements", icon: Megaphone, label: "Avisos Publicitarios" },
+            { href: "/admin/pages", icon: FileText, label: "Páginas" },
         ],
     },
     {
         groupLabel: "Administración",
         items: [
             { href: "/admin/users", icon: Users, label: "Usuarios" },
-            { href: "/admin/attendance", icon: FileText, label: "Asistencias" }
-        ]
+            { href: "/admin/attendance", icon: FileText, label: "Asistencias" },
+        ],
     },
     {
         groupLabel: "Accesos",
@@ -74,107 +71,141 @@ const navGroups: NavGroup[] = [
     },
 ];
 
-// ── Componente ───────────────────────────────────────────────────────────────
-
 export default function AdminSidebar({ user }: Props) {
     const pathname = usePathname();
     const [expanded, setExpanded] = useState(true);
     const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
 
     const toggleMenu = (label: string) => {
-        if (!expanded) { setExpanded(true); setTimeout(() => setOpenMenus(p => ({ ...p, [label]: true })), 150); return; }
+        if (!expanded) {
+            setExpanded(true);
+            setTimeout(() => setOpenMenus(p => ({ ...p, [label]: true })), 100);
+            return;
+        }
         setOpenMenus(p => ({ ...p, [label]: !p[label] }));
     };
 
     return (
-        <TooltipProvider>
-            <aside
-                className={cn(
-                    "relative hidden h-screen flex-col bg-white shadow-sm transition-all duration-300 md:flex",
-                    expanded ? "w-60" : "w-[72px]"
-                )}
+        <aside className={cn("relative hidden h-screen flex-col bg-white transition-all duration-200 md:flex", expanded ? "w-56" : "w-16")}>
+            {/* Toggle */}
+            <button
+                onClick={() => {
+                    setExpanded(c => !c);
+                    setOpenMenus({});
+                }}
+                className="absolute -right-3 top-7 z-50 flex h-5 w-5 items-center justify-center rounded-full border border-[var(--color-border-default)] bg-white text-zinc-400 transition-colors hover:text-[var(--color-accent-vivid)]"
             >
-                <button
-                    onClick={() => { setExpanded(c => !c); setOpenMenus({}); }}
-                    className="absolute -right-3 top-9 z-50 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-[var(--color-border-default)] bg-white text-zinc-500 shadow-sm hover:border-[var(--color-accent-vivid)]"
-                >
-                    <ChevronRight className={cn("h-3 w-3 transition-transform duration-300", expanded && "rotate-180")} />
-                </button>
+                <ChevronRight className={cn("h-3 w-3 transition-transform duration-200", expanded && "rotate-180")} />
+            </button>
 
-                <div className={cn("flex h-16 items-center px-4", expanded ? "justify-start" : "justify-center")}>
-                    <Logo />
-                </div>
+            {/* Logo */}
+            <div className={cn("flex items-center h-12 px-3", expanded ? "justify-start" : "justify-center")}>
+                <Logo />
+            </div>
 
-                <nav className="custom-scrollbar flex-1 space-y-3 overflow-y-auto px-2 py-1">
-                    {navGroups.map((group) => (
-                        <div key={group.groupLabel}>
-                            {expanded && (
-                                <p className="mb-0.5 px-3 text-[8px] font-bold text-zinc-400 select-none uppercase tracking-wider">
-                                    {group.groupLabel}
-                                </p>
-                            )}
-                            <div className="space-y-0">
-                                {group.items.map((item) => {
-                                    const { href, icon: Icon, label, children, isExternal } = item;
-                                    if (children) {
-                                        const isOpen = !!openMenus[label];
-                                        const isChildActive = children.some(c => pathname === c.href || pathname.startsWith(`${c.href}/`));
-                                        return (
-                                            <div key={label}>
-                                                <button onClick={() => toggleMenu(label)} className={cn("flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm font-medium transition-all", isChildActive ? "bg-[var(--color-accent-vivid)]/10 text-[var(--color-accent-vivid)]" : "text-zinc-600 hover:bg-zinc-100")}>
-                                                    <div className="flex items-center gap-3 overflow-hidden">
-                                                        {Icon && <Icon className={cn("h-4 w-4 shrink-0", isChildActive ? "text-[var(--color-accent-vivid)]" : "text-zinc-400")} />}
-                                                        {expanded && <span className="truncate">{label}</span>}
-                                                    </div>
-                                                    {expanded && <ChevronDown className={cn("h-3 w-3 transition-transform duration-200", isOpen && "rotate-180")} />}
-                                                </button>
-                                                <div className={cn("grid overflow-hidden transition-all", isOpen && expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
-                                                    <div className="min-h-0 pl-8 py-0.5 space-y-0.5">
+            {/* Nav */}
+            <nav className="custom-scrollbar flex-1 overflow-y-auto px-1.5 py-1.5">
+                {navGroups.map((group) => (
+                    <div key={group.groupLabel} className="mb-3">
+                        {expanded && <p className="px-2.5 mb-1 text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">{group.groupLabel}</p>}
+                        <div className="space-y-0">
+                            {group.items.map((item) => {
+                                const { href, icon: Icon, label, children, isExternal } = item;
+
+                                if (children) {
+                                    const isOpen = !!openMenus[label];
+                                    const isChildActive = children.some(c => pathname === c.href || pathname.startsWith(`${c.href}/`));
+                                    return (
+                                        <div key={label}>
+                                            <button
+                                                onClick={() => toggleMenu(label)}
+                                                className={cn(
+                                                    "w-full flex items-center justify-between gap-2 px-2.5 py-1.5 text-xs rounded transition-colors",
+                                                    isChildActive
+                                                        ? "bg-[var(--color-accent-vivid)]/10 text-[var(--color-accent-vivid)] font-medium"
+                                                        : "text-zinc-600 hover:bg-zinc-50"
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    {Icon && <Icon className={cn("w-3.5 h-3.5 flex-shrink-0", isChildActive ? "text-[var(--color-accent-vivid)]" : "text-zinc-400")} />}
+                                                    {expanded && <span className="truncate text-xs">{label}</span>}
+                                                </div>
+                                                {expanded && <ChevronDown className={cn("w-3 h-3 text-zinc-400 flex-shrink-0 transition-transform", isOpen && "rotate-180")} />}
+                                            </button>
+                                            {expanded && (
+                                                <div className={cn("grid overflow-hidden transition-all", isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+                                                    <div className="min-h-0 mt-0.5 ml-0.5 pl-6 py-0.5 space-y-0 border-l border-zinc-200">
                                                         {children.map(sub => (
-                                                            <Link key={sub.href} href={sub.href} className={cn("block text-xs py-1.5", (pathname === sub.href) ? " text-[var(--color-accent-vivid)]" : "text-zinc-500 hover:text-black")}>
+                                                            <Link
+                                                                key={sub.href}
+                                                                href={sub.href}
+                                                                className={cn(
+                                                                    "block text-[11px] px-2 py-1 rounded transition-colors",
+                                                                    pathname === sub.href
+                                                                        ? "font-semibold text-[var(--color-accent-vivid)] bg-[var(--color-accent-vivid)]/5"
+                                                                        : "text-zinc-600 hover:text-zinc-900"
+                                                                )}
+                                                            >
                                                                 {sub.label}
                                                             </Link>
                                                         ))}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    }
-                                    const isActive = href && (pathname === href || (href !== "/admin" && pathname.startsWith(href)));
-                                    return (
-                                        <Link key={label} href={href!} target={isExternal ? "_blank" : undefined} className={cn("flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-all", isActive ? "bg-[var(--color-secondary)] text-primary" : "text-zinc-600 hover:bg-zinc-100")}>
-                                            {Icon && <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-zinc-400")} />}
-                                            {expanded && <span className="truncate">{label}</span>}
-                                        </Link>
+                                            )}
+                                        </div>
                                     );
-                                })}
-                            </div>
-                        </div>
-                    ))}
-                </nav>
+                                }
 
-                <div className="shrink-0 border-t border-[var(--color-border-default)] p-3">
-                    <div className="mb-3">
-                        <Link href="/staff/attendance" target="_blank" className={cn("flex items-center gap-3 rounded-lg border border-[var(--color-accent-vivid)]/20 bg-[var(--color-accent-vivid)]/5 px-3 py-2 text-[var(--color-accent-vivid)] transition-all hover:bg-[var(--color-accent-vivid)]/10", !expanded && "justify-center px-0")}>
-                            <Fingerprint className="h-4 w-4 shrink-0" />
-                            {expanded && <span className="text-xs font-bold uppercase tracking-wider">Asistencia</span>}
-                        </Link>
-                    </div>
-
-                    <div className={cn("flex items-center gap-2", expanded ? "justify-between" : "justify-center")}>
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-accent-vivid)]/10 text-xs font-bold text-[var(--color-accent-vivid)]">
-                            {user?.nombre?.charAt(0).toUpperCase()}
+                                const isActive = href && (pathname === href || (href !== "/admin" && pathname.startsWith(href)));
+                                return (
+                                    <Link
+                                        key={label}
+                                        href={href!}
+                                        target={isExternal ? "_blank" : undefined}
+                                        className={cn(
+                                            "flex items-center gap-2 px-2.5 py-1.5 text-xs rounded transition-colors",
+                                            isActive
+                                                ? "bg-[var(--color-secondary)]/50 text-[var(--color-primary)] font-medium"
+                                                : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                                        )}
+                                    >
+                                        {Icon && <Icon className={cn("w-3.5 h-3.5 flex-shrink-0", isActive ? "text-[var(--color-primary)]" : "text-zinc-400")} />}
+                                        {expanded && <span className="truncate text-xs">{label}</span>}
+                                    </Link>
+                                );
+                            })}
                         </div>
-                        {expanded && (
-                            <div className="flex flex-1 flex-col truncate px-2">
-                                <span className="truncate text-xs font-bold">{user?.nombre}</span>
-                                <span className="truncate text-[10px] text-zinc-500">{user?.email}</span>
-                            </div>
-                        )}
-                        {expanded && <AdminMenu user={user} />}
                     </div>
+                ))}
+            </nav>
+
+            {/* Footer */}
+            <div className="border-t border-[var(--color-border-default)] px-1.5 py-2">
+                {expanded && (
+                    <Link
+                        href="/staff/attendance"
+                        target="_blank"
+                        className="flex items-center gap-2 px-2.5 py-1.5 mb-2 text-[11px] font-medium text-[var(--color-accent-vivid)] bg-[var(--color-accent-vivid)]/10 rounded border border-[var(--color-accent-vivid)]/20 hover:bg-[var(--color-accent-vivid)]/20 transition-colors"
+                    >
+                        <Fingerprint className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span className="uppercase tracking-wider">Asistencia</span>
+                    </Link>
+                )}
+                <div className={cn("flex items-center", expanded ? "gap-1.5 justify-between" : "justify-center")}>
+                    <div className="flex items-center justify-center w-7 h-7 rounded bg-[var(--color-accent-vivid)]/10 text-[10px] font-semibold text-[var(--color-accent-vivid)] flex-shrink-0">
+                        {user?.nombre?.charAt(0).toUpperCase()}
+                    </div>
+                    {expanded && (
+                        <>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-semibold text-zinc-900 truncate">{user?.nombre}</p>
+                                <p className="text-[10px] text-zinc-500 truncate">{user?.email}</p>
+                            </div>
+                            <AdminMenu user={user} />
+                        </>
+                    )}
                 </div>
-            </aside>
-        </TooltipProvider>
+            </div>
+        </aside>
     );
 }

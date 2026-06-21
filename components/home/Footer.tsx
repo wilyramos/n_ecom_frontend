@@ -12,7 +12,6 @@ const navigation = {
     ],
     soporte: [
         { label: "Centro de ayuda", href: "/hc/contacto-y-soporte" },
-        { label: "Garantías", href: "/hc/garantias-y-devoluciones" },
         { label: "Preguntas frecuentes", href: "/hc/preguntas-frecuentes" },
     ],
     legal: [

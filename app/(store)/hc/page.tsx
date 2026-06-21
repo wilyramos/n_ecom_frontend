@@ -29,14 +29,7 @@ export default function PageCentroAyuda() {
             color: "text-blue-500",
             bg: "bg-blue-100"
         },
-        {
-            title: "Reembolsos",
-            description: "Devolución de dinero",
-            href: "/hc/garantias-y-devoluciones",
-            icon: RiWallet3Line,
-            color: "text-green-500",
-            bg: "bg-green-100"
-        },
+       
         {
             title: "Soporte",
             description: "Chat en vivo 24/7",
@@ -82,7 +75,6 @@ export default function PageCentroAyuda() {
                 
                 {[
                     { title: "Preguntas frecuentes", href: "/hc/preguntas-frecuentes", icon: RiChat1Line },
-                    { title: "Garantías de productos", href: "/hc/garantias-y-devoluciones", icon: RiShieldCheckLine },
                     { title: "Políticas de privacidad", href: "/hc/politicas-de-privacidad", icon: RiFileShieldLine },
                 ].map((item, i) => (
                     <Link

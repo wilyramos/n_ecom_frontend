@@ -78,7 +78,7 @@ export default function PreguntasFrecuentesPage() {
                 <div className="p-6 bg-black text-white">
                     <h3 className="text-xs font-bold uppercase tracking-widest text-white mb-2">Garantía neoshop</h3>
                     <p className="text-sm text-gray-300 mb-4">Todos nuestros productos cuentan con respaldo oficial y garantía local.</p>
-                    <Link href="/hc/garantias-y-devoluciones" className="text-sm font-bold text-white hover:underline">
+                    <Link href="/cambios-devoluciones" className="text-sm font-bold text-white hover:underline">
                         Ver términos →
                     </Link>
                 </div>

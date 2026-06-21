@@ -44,7 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // Páginas Legales y Soporte (Baja prioridad, cambio poco frecuente)
         { url: "/hc/contacto-y-soporte", priority: 0.6, changefreq: "monthly" as ChangeFreq },
         { url: "/hc/preguntas-frecuentes", priority: 0.5, changefreq: "monthly" as ChangeFreq },
-        { url: "/hc/garantias-y-devoluciones", priority: 0.5, changefreq: "monthly" as ChangeFreq },
         { url: "/hc/politicas-de-privacidad", priority: 0.3, changefreq: "yearly" as ChangeFreq },
         { url: "/terminos-y-condiciones", priority: 0.3, changefreq: "yearly" as ChangeFreq },
         { url: "/cookies", priority: 0.3, changefreq: "yearly" as ChangeFreq },

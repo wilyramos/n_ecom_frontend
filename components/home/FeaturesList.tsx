@@ -29,12 +29,7 @@ const features: Feature[] = [
         icon: ShieldCheck,
         url: "/hc/preguntas-frecuentes"
     },
-    {
-        title: "Cambios y devoluciones",
-        description: "Garantía de satisfacción total",
-        icon: ArrowLeftRight,
-        url: "/hc/garantias-y-devoluciones"
-    },
+  
 ];
 
 export default function MinimalFeatures() {

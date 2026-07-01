@@ -12,11 +12,12 @@
   /* --- PALETA CORPORATIVA OFICIAL (MANUAL DE MARCA) --- */
   --color-brand-charcoal: #171411;
   --color-brand-silver: #cbcbcb;
-    --color-brand-silver-border: #f0f0f0; /* variante mas blanca para bordes */
+  --color-brand-silver-border: #f0f0f0; /* variante mas blanca para bordes */
 
   --color-brand-black: #0a0a0a;
   --color-brand-gris: #a0a0a0;
   --color-brand-action: #a7c7aa;
+  --color-brand-action-muted: #a7c7aa22; /* Variante translúcida para fondos limpios de selección */
 
   /* --- ESTANDARIZACIÓN SEMÁNTICA E-COMMERCE / POS --- */
   

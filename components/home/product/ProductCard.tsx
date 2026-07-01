@@ -94,7 +94,7 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
 
     return (
         <div
-            className="group relative flex flex-col bg-surface-primary  rounded-2xl overflow-hidden"
+            className="group relative flex flex-col h-full bg-surface-primary rounded-2xl overflow-hidden"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onTouchStart={handleTouchStart}
@@ -105,7 +105,7 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
             <Link href={`/productos/${product.slug}`} className="flex flex-col h-full">
 
                 {/* --- IMAGEN --- */}
-                <div className="relative w-full aspect-square bg-surface-primary overflow-hidden ">
+                <div className="relative w-full aspect-square bg-surface-primary overflow-hidden shrink-0">
                     {previewImages.length > 0 ? (
                         <div className="relative w-full h-full overflow-hidden">
                             <div className="relative w-full h-full">
@@ -172,12 +172,10 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
 
                 {/* --- INFO --- */}
                 <div className="flex flex-col flex-1 p-3 md:p-4 bg-surface-primary">
-                    <div className="flex flex-col gap-1 h-[4.5rem] md:h-[5rem]">
-
-                        <h3 className="text-md text-fg-primary leading-[1.3] line-clamp-3 min-h-[3.5rem] md:min-h-[3.5rem]">
+                    <div className="flex flex-col min-h-[2.6rem] md:min-h-[2.8rem]">
+                        <h3 className="text-xs text-fg-primary leading-[1.3] line-clamp-2 md:text-[15px] md:leading-[1.4]">
                             {product.nombre}
                         </h3>
-
                     </div>
 
                     <div className="flex items-end justify-between mt-auto pt-2 group-hover:border-border-default transition-colors">
@@ -196,14 +194,11 @@ export default function ProductCard({ product }: { product: TApiProduct }) {
                                 </span>
                             </div>
 
-
                             <div className="mt-3">
                                 <AddToCartButton product={product} />
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </Link>
         </div>

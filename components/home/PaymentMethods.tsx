@@ -15,7 +15,7 @@ export default function PaymentMethods() {
         <div className="flex items-center gap-2 md:gap-4">
             {methods.map(({ src, alt }) => (
                 <div key={alt} className="relative w-12 h-8 shrink-0">
-                    <Image src={src} alt={alt} fill className="object-contain" sizes="28px" unoptimized />
+                    <Image src={src} alt={alt} fill className="object-contain" sizes="48px" unoptimized />
                 </div>
             ))}
         </div>

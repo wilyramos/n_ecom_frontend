@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { TicketPercent, Truck, ShieldCheck, ArrowLeftRight } from "lucide-react";
+import { TicketPercent, Truck, ShieldCheck } from "lucide-react";
 
 type Feature = {
     title: string;

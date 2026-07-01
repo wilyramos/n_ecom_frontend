@@ -40,7 +40,7 @@ export default function ProductExpandableSections({ producto }: Props) {
                 <AccordionItem value="info" className="border-b border-border-default">
                     <AccordionTrigger className=" hover:no-underline group ">
                         <div className="flex items-center gap-3">
-                            <span className="text-base font tracking-tight text-fg-muted">
+                            <span className="text-base font-semibold tracking-tight text-fg-muted">
                                 Información del producto
                             </span>
                         </div>
@@ -72,7 +72,7 @@ export default function ProductExpandableSections({ producto }: Props) {
                                     <table className="w-full text-left border-collapse">
                                         <thead>
                                             <tr>
-                                                <th colSpan={2} className="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.1em] text-fg-primary border-b border-border-default bg-surface-secondary">
+                                                <th colSpan={2} className="px-5 py-4 text-xs font-bold uppercase tracking-wide text-fg-primary border-b border-border-default bg-surface-secondary">
                                                     Características
                                                 </th>
                                             </tr>
@@ -95,7 +95,7 @@ export default function ProductExpandableSections({ producto }: Props) {
                                     <table className="w-full text-left border-collapse">
                                         <thead>
                                             <tr>
-                                                <th colSpan={2} className="px-5 py-4 text-[11px] font-bold uppercase tracking-[0.1em] text-fg-primary border-b border-border-default bg-surface-secondary">
+                                                <th colSpan={2} className="px-5 py-4 text-xs font-bold uppercase tracking-wide text-fg-primary border-b border-border-default bg-surface-secondary">
                                                     <div className="flex items-center gap-2"><Package size={13} /> Físico y embalaje</div>
                                                 </th>
                                             </tr>

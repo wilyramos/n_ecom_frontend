@@ -9,6 +9,7 @@ import {
     type AdminAttendance,
     type AttendanceQuery,
 } from "@/src/schemas/attendance.schema";
+import type { AttendanceGlobalStats } from "@/src/schemas/attendance.schema";
 
 const API_URL = process.env.API_URL;
 
@@ -81,8 +82,8 @@ export const AttendanceService = {
     },
 
     getAdminReport: async (
-        query: AttendanceQuery & { search?: string } // <-- Extensión de tipos mapeada aquí
-    ): Promise<{ data: AdminAttendance[]; meta: PaginatedMeta }> => {
+        query: AttendanceQuery & { search?: string }
+    ): Promise<{ data: AdminAttendance[]; meta: PaginatedMeta; stats: AttendanceGlobalStats }> => {
         const token = await getTokenOptional();
         if (!token) throw new Error("Acceso denegado. Token no suministrado.");
 
@@ -105,7 +106,7 @@ export const AttendanceService = {
 
         const validated = parseOrThrow(PaginatedAttendanceResponseSchema, json, "getAdminReport");
 
-        return { data: validated.data, meta: validated.meta };
+        return { data: validated.data, meta: validated.meta, stats: validated.stats };
     },
 };
 
@@ -135,15 +136,15 @@ function parseOrThrow<T>(schema: ZodLike<T>, data: unknown, context: string): T 
 
 function buildParams(query: AttendanceQuery & { search?: string }): URLSearchParams {
     const params = new URLSearchParams();
-    if (query.page)      params.set("page",      String(query.page));
-    if (query.limit)     params.set("limit",     String(query.limit));
+    if (query.page) params.set("page", String(query.page));
+    if (query.limit) params.set("limit", String(query.limit));
     if (query.startDate) params.set("startDate", query.startDate);
-    if (query.endDate)   params.set("endDate",   query.endDate);
-    
+    if (query.endDate) params.set("endDate", query.endDate);
+
     // Sincronización limpia hacia la cadena de consulta del backend
     if (query.search?.trim()) {
         params.set("search", query.search.trim());
     }
-    
+
     return params;
 }

@@ -129,7 +129,6 @@ export default function CatalogMobileFilters({ filters }: Props) {
 
                 {/* Body - Horizontal Sort + Sidebar Filters */}
                 <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-6">
-                    {/* Ordenamiento Horizontal */}
                     {/* Ordenamiento */}
                     <div className="flex flex-col gap-3 pb-5 border-b border-border-default">
                         <span className="text-xs font-bold uppercase tracking-wider text-fg-primary/60">
@@ -145,20 +144,20 @@ export default function CatalogMobileFilters({ filters }: Props) {
                                         key={option.value}
                                         onClick={() => handleSortChange(option.value)}
                                         className={`
-                        px-4 py-2
-                        text-xs
-                        rounded-full
-                        border
-                        transition-all
-                        text-left
-                        break-words
-                        leading-tight
-                        max-w-full
-                        ${isActive
-                                                ? "bg-action-primary text-fg-inverse border-action-primary font-semibold"
+                                            px-4 py-2
+                                            text-xs
+                                            rounded-full
+                                            border
+                                            transition-all
+                                            text-left
+                                            break-words
+                                            leading-tight
+                                            max-w-full
+                                            ${isActive
+                                                ? "bg-[var(--color-brand-action-muted)] text-[var(--color-brand-charcoal)] border-[var(--color-brand-action)] font-bold"
                                                 : "bg-surface-primary text-fg-primary border-border-default hover:border-brand-charcoal"
                                             }
-                    `}
+                                        `}
                                     >
                                         {option.label}
                                     </button>

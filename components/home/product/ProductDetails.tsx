@@ -145,7 +145,7 @@ export default function ProductDetails({ producto }: Props) {
                 <section className="lg:col-span-6 flex flex-col  space-y-1">
                     <div className="space-y-1">
                         <header className="space-y-1 pb-2 ">
-                            <div className="flex items-center justify-between gap-2 flex-wrap text-[11px] tracking-wide uppercase font-medium">
+                            <div className="flex items-center justify-between gap-2 flex-wrap text-xs tracking-wide uppercase font-medium">
                                 <div className="flex items-center gap-1 text-fg-secondary">
                                     {producto.brand && (
                                         <Link href={`/catalogo/${producto.brand.slug}`} className="hover:text-fg-primary transition-colors">
@@ -186,18 +186,18 @@ export default function ProductDetails({ producto }: Props) {
 
                                 {hasDiscount && (
                                     <div className="flex items-center gap-2">
-                                        <span className="text-2xl text-fg-muted line-through">
+                                        <span className="text-xl md:text-2xl text-fg-muted line-through">
                                             S/ {precioComparativo!.toFixed(2)}
 
                                         </span>
-                                        <span className=" font-semibold px-2 py-0.5 bg-red-600 text-fg-inverse rounded-sm">
+                                        <span className="text-xl md:text-2xl px-2 bg-red-600 text-fg-inverse rounded-sm">
                                             −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
                                         </span>
                                     </div>
                                 )}
                                 <div className="flex items-baseline text-fg-primary">
                                     <span className="text-base font-medium mr-0.5">S/</span>
-                                    <span className="text-2xl md:text-3xl font-semibold tracking-tight">
+                                    <span className="text-xl md:text-2xl font-semibold tracking-tight">
                                         {precio.toFixed(2)}
                                     </span>
                                 </div>
@@ -225,8 +225,8 @@ export default function ProductDetails({ producto }: Props) {
 
                                 return (
                                     <fieldset key={key} className="space-y-2">
-                                        <legend className="text-md tracking-wide text-fg-muted font-bold capitalize">
-                                            {key}: {selectedAttributes[key] && <span className="text-fg-muted capitalize font-semibold  ml-1">{selectedAttributes[key]}</span>}
+                                        <legend className="text-xs font-semibold tracking-wide uppercase text-fg-muted">
+                                            {key}: {selectedAttributes[key] && <span className="text-fg-primary capitalize font-semibold  ml-1">{selectedAttributes[key]}</span>}
                                         </legend>
 
                                         {isColor ? (
@@ -346,8 +346,8 @@ export default function ProductDetails({ producto }: Props) {
                     </div>
                     <div className="pt-4 ">
                         <div className="flex flex-col gap-2 text-sm">
-
                             <a
+
                                 href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                                 target="_blank"
                                 rel="noreferrer"
@@ -382,7 +382,7 @@ export default function ProductDetails({ producto }: Props) {
 
                             {tieneComplementarios && (
                                 <section className="container mx-auto py-2 ">
-                                    <h2 className="text-md font-semibold text-fg-primary mb-4">
+                                    <h2 className="text-base font-semibold text-fg-primary mb-4">
                                         Complementa tu compra <span className="text-xs font-bold bg-red-600 text-white px-2  "> Hasta 20% de Dcto</span>
                                     </h2>
 

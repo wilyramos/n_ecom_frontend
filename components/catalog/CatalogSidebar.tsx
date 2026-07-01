@@ -90,9 +90,7 @@ export default function CatalogSidebar({ filters }: Props) {
         return () => clearTimeout(delayDebounce);
     }, [priceRangeValue, limitPrices, currentPriceRange, searchParams, router]);
 
-    // Función helper para convertir strings de almacenamiento a valores numéricos comparables (en GB)
     const sortedFilters = useMemo(() => {
-        // Helper interno para estandarizar y convertir a GB numéricos
         const parseStorageToValue = (valueStr: string): number => {
             const cleanStr = valueStr.toLowerCase().replace(/\s+/g, "");
             const match = cleanStr.match(/^(\d+(?:\.\d+)?)(gb|tb|mb)$/);
@@ -128,7 +126,7 @@ export default function CatalogSidebar({ filters }: Props) {
                             const valB = parseStorageToValue(b.value);
 
                             if (valA !== 0 || valB !== 0) {
-                                return valA - valB; // Orden numérico real basado en GB
+                                return valA - valB;
                             }
                         }
                         return a.value.localeCompare(b.value);
@@ -151,10 +149,10 @@ export default function CatalogSidebar({ filters }: Props) {
     ], [sortedFilters]);
 
     return (
-        <div className="w-full pb-12 select-none px-4 py-6 rounded-3xl">
+        <div className="w-full pb-12 select-none px-1 py-4 rounded-3xl">
             <div className="mb-6 pb-4 border-b border-border-default">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-fg-primary">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-fg-primary">
                         Filtros
                     </h2>
                     {hasFilters && (
@@ -177,9 +175,10 @@ export default function CatalogSidebar({ filters }: Props) {
 
             <Accordion
                 type="multiple"
-                className="w-full space-y-3"
+                className="w-full space-y-4"
                 defaultValue={defaultExpanded}
             >
+                {/* PRECIO */}
                 <AccordionItem value="item-price" className="border-0">
                     <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
                         Precio
@@ -192,7 +191,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                 step={10}
                                 value={priceRangeValue}
                                 onValueChange={(val) => setPriceRangeValue(val as [number, number])}
-                                className="w-full "
+                                className="w-full"
                             />
                             <div className="flex items-center justify-between text-xs font-medium text-fg-primary">
                                 <span>S/. {priceRangeValue[0]}</span>
@@ -202,6 +201,7 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionContent>
                 </AccordionItem>
 
+                {/* CATEGORÍAS */}
                 {sortedFilters.categories.length > 0 && (
                     <AccordionItem value="item-categories" className="border-0">
                         <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
@@ -216,14 +216,14 @@ export default function CatalogSidebar({ filters }: Props) {
                                             key={cat.id}
                                             onClick={() => setCategory(cat.slug)}
                                             className={cn(
-                                                "flex items-center justify-between px-3 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
+                                                "flex items-center justify-between px-4 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
                                                 active
-                                                    ? "bg-fg-action border-action-primary text-surface-primary shadow-sm"
-                                                    : "border-border-default bg-surface-primary text-fg-primary hover:border-brand-charcoal"
+                                                    ? "bg-[var(--color-brand-action-muted)] border-[var(--color-brand-action)] text-[var(--color-brand-charcoal)] font-semibold"
+                                                    : "border-border-default bg-surface-primary text-fg-primary hover:border-brand-gris"
                                             )}
                                         >
                                             <span>{cat.nombre}</span>
-                                            <span className={cn("text-[10px]", active ? "text-surface-secondary opacity-90" : "text-fg-muted")}>
+                                            <span className={cn("text-[10px]", active ? "text-[var(--color-brand-charcoal)]/70 font-semibold" : "text-fg-muted")}>
                                                 ({cat.count})
                                             </span>
                                         </button>
@@ -234,6 +234,7 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionItem>
                 )}
 
+                {/* MARCAS */}
                 {sortedFilters.brands.length > 0 && (
                     <AccordionItem value="item-brands" className="border-0">
                         <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
@@ -248,16 +249,14 @@ export default function CatalogSidebar({ filters }: Props) {
                                             key={brand.id}
                                             onClick={() => setBrand(brand.slug)}
                                             className={cn(
-                                                "flex items-center justify-between px-3 py-2 rounded-3xl border cursor-pointer transition-all duration-150",
+                                                "flex items-center justify-between px-4 py-2 rounded-3xl border cursor-pointer transition-all duration-150",
                                                 active
-                                                    ? "border-brand-charcoal bg-surface-secondary"
-                                                    : "border-border-default bg-surface-primary hover:border-brand-charcoal"
+                                                    ? "border-[var(--color-brand-charcoal)] bg-[var(--color-brand-silver-border)] font-medium"
+                                                    : "border-border-default bg-surface-primary hover:border-brand-gris"
                                             )}
                                         >
-                                            <div className="flex items-center gap-2 flex-1">
-                                                <Checkbox
-                                                    checked={active}
-                                                />
+                                            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                                <Checkbox checked={active} />
                                                 <span className="text-xs font-medium text-fg-primary truncate">
                                                     {brand.nombre}
                                                 </span>
@@ -273,6 +272,7 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionItem>
                 )}
 
+                {/* MODELOS */}
                 {sortedFilters.lines.length > 0 && (
                     <AccordionItem value="item-lines" className="border-0">
                         <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
@@ -287,15 +287,15 @@ export default function CatalogSidebar({ filters }: Props) {
                                             key={line.id}
                                             onClick={() => setLine(line.slug)}
                                             className={cn(
-                                                "flex items-center justify-between px-3 py-2 rounded-3xl cursor-pointer transition-colors duration-150",
-                                                active ? "bg-surface-secondary text-fg-primary" : "hover:bg-surface-secondary text-fg-primary"
+                                                "flex items-center justify-between px-4 py-2 rounded-3xl border cursor-pointer transition-colors duration-150",
+                                                active 
+                                                    ? "border-[var(--color-brand-charcoal)] bg-[var(--color-brand-silver-border)] font-medium" 
+                                                    : "border-border-default bg-surface-primary hover:border-brand-gris"
                                             )}
                                         >
-                                            <div className="flex items-center gap-3 flex-1">
-                                                <Checkbox
-                                                    checked={active}
-                                                />
-                                                <span className="text-xs tracking-tight truncate">
+                                            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                                <Checkbox checked={active} />
+                                                <span className="text-xs font-medium text-fg-primary truncate tracking-tight">
                                                     {line.nombre}
                                                 </span>
                                             </div>
@@ -310,6 +310,7 @@ export default function CatalogSidebar({ filters }: Props) {
                     </AccordionItem>
                 )}
 
+                {/* ATRIBUTOS DINÁMICOS */}
                 {sortedFilters.atributos.map((attr, idx) => {
                     const isColorAttr = attr.name.toLowerCase().includes("color");
                     return (
@@ -328,10 +329,10 @@ export default function CatalogSidebar({ filters }: Props) {
                                                 key={val}
                                                 onClick={() => updateFilter(attr.name, val)}
                                                 className={cn(
-                                                    "flex items-center justify-between p-2 rounded-3xl border cursor-pointer transition-all duration-150",
+                                                    "flex items-center justify-between p-2 px-4 rounded-3xl border cursor-pointer transition-all duration-150",
                                                     isChecked
-                                                        ? "bg-surface-secondary border-transparent"
-                                                        : "border-border-default hover:border-brand-charcoal bg-surface-primary"
+                                                        ? "bg-[var(--color-brand-silver-border)] border-[var(--color-brand-charcoal)]/30 font-medium"
+                                                        : "border-border-default hover:border-brand-gris bg-surface-primary"
                                                 )}
                                             >
                                                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -341,9 +342,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                                         </div>
                                                     )}
                                                     {!isColorAttr && (
-                                                        <Checkbox
-                                                            checked={isChecked}
-                                                        />
+                                                        <Checkbox checked={isChecked} />
                                                     )}
                                                     <span className="text-[11px] capitalize truncate font-medium text-fg-primary">
                                                         {val}

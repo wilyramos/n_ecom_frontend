@@ -2,13 +2,10 @@
 import Link from "next/link";
 import {
     RiHeadphoneLine,
-    RiShoppingBag3Line,
-    RiShieldCheckLine,
-    RiChat1Line,
+    RiShoppingBag3Line, RiChat1Line,
     RiFileShieldLine,
     RiArrowRightSLine,
-    RiTruckLine,
-    RiWallet3Line
+    RiTruckLine
 } from "react-icons/ri";
 
 export default function PageCentroAyuda() {

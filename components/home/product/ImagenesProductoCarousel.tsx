@@ -159,14 +159,14 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                         <>
                             <button
                                 onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-surface-primary/70 md:bg-surface-primary/50 backdrop-blur-xs text-fg-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-surface-primary active:scale-90 z-10 border border-border-default"
+                                className="absolute left-1 top-1/2 -translate-y-1/2  rounded-full bg-surface-primary/70 md:bg-surface-primary/50 backdrop-blur-xs text-fg-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-surface-primary active:scale-90 z-10 "
                                 aria-label="Anterior"
                             >
                                 <ChevronLeft size={20} strokeWidth={1.5} />
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-surface-primary/70 md:bg-surface-primary/50 backdrop-blur-xs text-fg-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-surface-primary active:scale-90 z-10 border border-border-default"
+                                className="absolute right-1 top-1/2 -translate-y-1/2  rounded-full bg-surface-primary/70 md:bg-surface-primary/50 backdrop-blur-xs text-fg-primary opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-surface-primary active:scale-90 z-10 "
                                 aria-label="Siguiente"
                             >
                                 <ChevronRight size={20} strokeWidth={1.5} />

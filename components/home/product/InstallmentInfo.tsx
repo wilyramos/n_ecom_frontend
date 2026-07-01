@@ -37,7 +37,7 @@ export default function InstallmentInfo({ price }: Props) {
         <div className="w-full space-y-2">
             {/* Métodos de pago aceptados */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
-                <span className="text-[10px] text-fg-muted uppercase tracking-wide font-semibold shrink-0">
+                <span className="text-xs text-fg-muted uppercase tracking-wide font-semibold shrink-0">
                     Métodos aceptados:
                 </span>
                 <PaymentMethods />
@@ -51,7 +51,7 @@ export default function InstallmentInfo({ price }: Props) {
                             <span className="text-sm font-medium text-fg-primary">
                                 Hasta 12 cuotas
                             </span>
-                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">
+                            <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wide">
                                 Sin intereses
                             </span>
                         </div>
@@ -79,7 +79,7 @@ export default function InstallmentInfo({ price }: Props) {
 
                         {/* Resultado */}
                         <div className="flex flex-wrap items-baseline gap-2 px-1">
-                            <span className="text-xl sm:text-2xl font-bold text-blue-700 whitespace-nowrap">
+                            <span className="text-2xl sm:text-3xl font-semibold text-blue-700 whitespace-nowrap tracking-tight">
                                 S/ {cuotaAmount.toFixed(2)}
                             </span>
                             <span className="text-xs sm:text-sm text-fg-muted whitespace-nowrap">

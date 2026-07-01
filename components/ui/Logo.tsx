@@ -20,6 +20,7 @@ export default function Logo({ color = "black", className = "h-full w-full" }: L
                     fill
                     priority
                     className="object-contain object-left"
+                    unoptimized
                 />
             </div>
         </div>

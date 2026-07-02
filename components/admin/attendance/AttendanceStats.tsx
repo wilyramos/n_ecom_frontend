@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calculator, Wallet, CalendarDays, Hourglass } from "lucide-react";
+import { formatDecimalHours } from "@/lib/utils"; // <-- Importamos la función de formato
 
 interface AttendanceStatsProps {
     records: AdminAttendance[];
@@ -24,12 +25,10 @@ export default function AttendanceStats({ records, globalStats }: AttendanceStat
     // Cantidad total de registros bajo los criterios del filtro
     const totalRegistrosRango = globalStats.globalTotalRecords;
 
-    // Promedio matemático del universo total filtrado
-    const promedioHorasGlobal = totalRegistrosRango > 0
-        ? (horasTotalesRango / totalRegistrosRango).toFixed(1)
-        : "0";
+    // Promedio matemático decimal del universo total filtrado
+    const promedioHorasDecimal = totalRegistrosRango > 0 ? horasTotalesRango / totalRegistrosRango : 0;
 
-    // Cálculo del sueldo sobre el acumulado de todas las páginas
+    // Cálculo del sueldo sobre el acumulado de todas las páginas (mantiene el valor decimal numérico interno)
     const sueldoEstimadoGlobal = parseFloat((horasTotalesRango * hourlyRate).toFixed(2));
 
     // Cuántas jornadas de la página actual permanecen abiertas (métrica de control operativa en tiempo real)
@@ -83,8 +82,11 @@ export default function AttendanceStats({ records, globalStats }: AttendanceStat
                         <Hourglass className="h-3.5 w-3.5 text-emerald-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-emerald-600">{horasTotalesRango} hrs</div>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">Promedio: {promedioHorasGlobal} h/jornada</p>
+                        {/* Se muestra con el formato estructurado de Horas y Minutos */}
+                        <div className="text-2xl font-bold text-emerald-600">{formatDecimalHours(horasTotalesRango)}</div>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Promedio: {formatDecimalHours(promedioHorasDecimal)} /jornada
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -107,7 +109,7 @@ export default function AttendanceStats({ records, globalStats }: AttendanceStat
                         <div className="space-y-0.5">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700">Parámetros Administrativos de Pago</h4>
                             <p className="text-xs text-muted-foreground">
-                                Se computará el monto por hora sobre las <strong>{horasTotalesRango} horas acumuladas reales</strong> del filtro activo.
+                                Se computará el monto por hora sobre las <strong>{formatDecimalHours(horasTotalesRango)} acumuladas reales</strong> del filtro activo.
                             </p>
                         </div>
                         <div className="flex items-center gap-2 max-w-xs w-full">

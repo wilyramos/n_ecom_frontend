@@ -91,3 +91,16 @@ export function isSameDay(
 
 export const formatTime = (date: Date | string): string =>
     new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+
+
+/**
+ * Transforma horas en formato decimal (ej. 7.87) a un formato de horas y minutos (ej. 7h 52m)
+ */
+export function formatDecimalHours(decimalHours: number): string {
+    const totalMinutes = Math.round(decimalHours * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${hours}h ${minutes}m`;
+}

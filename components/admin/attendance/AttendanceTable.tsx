@@ -12,6 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { formatDecimalHours } from "@/lib/utils"; // <-- Importar la función utilitaria
 
 interface AttendanceTableProps {
     data: AdminAttendance[];
@@ -93,7 +94,8 @@ export default function AttendanceTable({ data }: AttendanceTableProps) {
                                     {row.workHours !== undefined ? (
                                         <div className="inline-flex items-center gap-1.5 font-mono font-bold bg-zinc-50 border border-zinc-200 rounded-lg px-2.5 py-1 text-xs text-zinc-800">
                                             <Clock className="h-3.5 w-3.5 text-zinc-500" />
-                                            {row.workHours.toFixed(2)} hrs
+                                            {/* Modificado aquí para aplicar formato visual correcto */}
+                                            {formatDecimalHours(row.workHours)}
                                         </div>
                                     ) : (
                                         <span className="text-xs italic text-zinc-400">Calculando...</span>
@@ -109,7 +111,8 @@ export default function AttendanceTable({ data }: AttendanceTableProps) {
                             Total horas de los registros mostrados en esta página
                         </TableCell>
                         <TableCell className="p-4 text-right text-sm font-mono font-bold text-zinc-900">
-                            {totalHorasLote} hrs
+                            {/* Modificado aquí para aplicar formato visual correcto al total de la página */}
+                            {formatDecimalHours(totalHorasLote)}
                         </TableCell>
                     </TableRow>
                 </tfoot>

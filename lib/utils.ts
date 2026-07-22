@@ -7,14 +7,18 @@ export function cn(...inputs: ClassValue[]) {
 
 
 
-export function formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
+export function formatDate(dateString: string | Date): string {
+    if (!dateString) return "";
+    const date = typeof dateString === "string" ? new Date(dateString) : dateString;
+    
+    return date.toLocaleDateString("es-PE", {
+        timeZone: "America/Lima",
         year: "numeric",
         month: "short",
         day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
+        hour12: false,
     });
 }
 
@@ -89,8 +93,15 @@ export function isSameDay(
            new Date(b).toLocaleDateString('en-CA', opts);
 }
 
-export const formatTime = (date: Date | string): string =>
-    new Date(date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+export const formatTime = (date: Date | string): string => {
+    if (!date) return "";
+    return new Date(date).toLocaleTimeString("es-PE", {
+        timeZone: "America/Lima",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
+};
 
 
 

@@ -1,6 +1,7 @@
+// File: frontend/app/admin/orders/page.tsx
 import { getOrders } from "@/src/services/orders";
 import OrdersTable from "@/components/admin/orders/OrdersTable";
-import Pagination from "@/components/ui/Pagination";
+import DataTablePagination from "@/components/ui/DataTablePagination";
 import OrdersTableFilters from "@/components/admin/orders/OrdersTableFilters";
 import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 
@@ -18,18 +19,34 @@ type PageOrdersProps = {
     }>;
 };
 
+function getTodayDateString(): string {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Lima",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    }).formatToParts(new Date());
+
+    const year = parts.find((p) => p.type === "year")?.value;
+    const month = parts.find((p) => p.type === "month")?.value;
+    const day = parts.find((p) => p.type === "day")?.value;
+
+    return `${year}-${month}-${day}`;
+}
+
 export default async function pageOrders({ searchParams }: PageOrdersProps) {
     const params = await searchParams;
 
     const page = Number(params.page) || 1;
-    const limit = Number(params.limit) || 25;
+    const limit = Number(params.limit) || 10; // Cambiado a 10 por defecto
 
-    // Get orders from the backend
+    const fecha = params.fecha ?? getTodayDateString();
+
     const data = await getOrders({
         page,
         limit,
         pedido: params.pedido,
-        fecha: params.fecha,
+        fecha,
         fechaFin: params.fechaFin,
         estadoPago: params.estadoPago,
         estadoEnvio: params.estadoEnvio,
@@ -42,16 +59,13 @@ export default async function pageOrders({ searchParams }: PageOrdersProps) {
     const totalPages = Math.ceil(totalOrders / limit);
 
     return (
-        <AdminPageWrapper
-            title="Pedidos"
-            showBackButton={false}
-        >
+        <AdminPageWrapper title="Pedidos" showBackButton={false}>
             <div className="space-y-4">
-                <OrdersTableFilters />
+                <OrdersTableFilters initialFecha={fecha} />
 
                 {!orders ? (
                     <div className="flex flex-col">
-                        <h2 className="text-lg sm:text-xlpy-10">
+                        <h2 className="text-lg sm:text-xl py-10">
                             No hay pedidos disponibles.
                         </h2>
                     </div>
@@ -64,11 +78,13 @@ export default async function pageOrders({ searchParams }: PageOrdersProps) {
                 ) : (
                     <>
                         <OrdersTable orders={orders} />
-                        <Pagination
+                        <DataTablePagination
                             currentPage={page}
                             totalPages={totalPages}
+                            totalItems={totalOrders}
                             limit={limit}
                             pathname="/admin/orders"
+                            itemLabel="pedidos"
                         />
                     </>
                 )}

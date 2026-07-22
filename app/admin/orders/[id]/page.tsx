@@ -33,7 +33,7 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
     return (
         <AdminPageWrapper
             title={`Pedido ${order.orderNumber}`}
-          
+
             actions={
                 <div className="flex gap-2">
                     <PrintOrderButton orderId={id} />
@@ -105,7 +105,7 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
                                     <strong>Cargo ID:</strong> <code className="bg-muted px-1 py-0.5 rounded font-mono text-[11px]">{order.payment.transactionId}</code>
                                 </p>
                             )}
-                            
+
                             {/* Inyección de Campos Dinámicos de Auditoría Culqi */}
                             {order.payment.provider === 'culqi' && (
                                 <div className="mt-2 pt-2 border-t border-dashed border-muted space-y-1.5 text-xs text-muted-foreground">
@@ -117,8 +117,12 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
                                             <p className="font-mono text-base font-black text-foreground tracking-widest text-center py-0.5">{order.payment.culqiPaymentCode}</p>
                                         </div>
                                     )}
-                                    {order.payment.culqiPaidAt && <p><strong>Pago Confirmado:</strong> {formatDate(String(new Date(order.payment.culqiPaidAt * 1000)))}</p>}
-                                </div>
+                                    {order.payment.culqiPaidAt && (
+                                        <p>
+                                            <strong>Pago Confirmado:</strong>{" "}
+                                            {formatDate(new Date(order.payment.culqiPaidAt * 1000))}
+                                        </p>
+                                    )}                                </div>
                             )}
                         </div>
                     </div>
@@ -159,9 +163,9 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
                                 <TableRow key={i} className="border-b border-muted hover:bg-muted/10 transition-colors">
                                     <TableCell className="py-3 flex items-start gap-3">
                                         <div className="relative h-11 w-11 shrink-0 rounded-lg border border-border overflow-hidden bg-muted">
-                                            <Image 
-                                                src={item.imagen || "/logomini.svg"} 
-                                                alt={item.nombre || "Producto"} 
+                                            <Image
+                                                src={item.imagen || "/logomini.svg"}
+                                                alt={item.nombre || "Producto"}
                                                 fill
                                                 className="object-contain"
                                                 unoptimized={true}
@@ -221,17 +225,17 @@ export default async function OrderDetailsPage({ params }: { params: Params }) {
                         <h3 className="font-bold text-sm text-foreground border-b border-muted pb-2">Estructura Comercial</h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between text-muted-foreground">
-                                <span>Subtotal Neto:</span> 
+                                <span>Subtotal Neto:</span>
                                 <span className="font-mono">{currency} {order.subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between text-muted-foreground border-b border-muted pb-2.5">
-                                <span>Costo de Envío Logístico:</span> 
+                                <span>Costo de Envío Logístico:</span>
                                 <span className="font-mono">{currency} {order.shippingCost.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between items-center pt-1 text-foreground">
                                 <span className="font-bold text-base flex items-center gap-1">
                                     Total Recaudado <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
-                                </span> 
+                                </span>
                                 <span className="font-mono text-lg font-black text-orange-600">{currency} {order.totalPrice.toFixed(2)}</span>
                             </div>
                         </div>

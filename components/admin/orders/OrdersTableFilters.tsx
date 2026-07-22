@@ -13,13 +13,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-export default function OrdersTableFilters() {
+interface OrdersTableFiltersProps {
+    initialFecha?: string;
+}
+
+export default function OrdersTableFilters({ initialFecha = "" }: OrdersTableFiltersProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const [filters, setFilters] = useState({
         pedido: searchParams.get("pedido") || "",
-        fecha: searchParams.get("fecha") || "",
+        fecha: searchParams.has("fecha") ? searchParams.get("fecha") || "" : initialFecha,
         fechaFin: searchParams.get("fechaFin") || "",
         estadoPago: searchParams.get("estadoPago") || "",
         estadoEnvio: searchParams.get("estadoEnvio") || "",
@@ -58,17 +62,17 @@ export default function OrdersTableFilters() {
     const handleClear = () => {
         const cleared = { pedido: "", fecha: "", fechaFin: "", estadoPago: "", estadoEnvio: "", montoMin: "", montoMax: "" };
         setFilters(cleared);
-        router.push("/admin/orders");
+        router.push("/admin/orders?fecha=");
     };
 
     const hasFilters = Object.values(filters).some((v) => v !== "");
 
     return (
-        <div className="bg-card p-4  space-y-4">
+        <div className="bg-card p-4 space-y-4">
             <div className="flex justify-between items-center">
                 {hasFilters && (
                     <Button variant="ghost" size="sm" onClick={handleClear} className="h-8 text-destructive hover:text-destructive">
-                        <X className="mr-2 h-4 w-4" /> Limpiar
+                        <X className="mr-2 h-4 w-4" /> Limpiar filtros
                     </Button>
                 )}
             </div>
@@ -89,7 +93,7 @@ export default function OrdersTableFilters() {
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={filters.fecha ? new Date(filters.fecha) : undefined} onSelect={(d) => handleDateChange("fecha", d)} />
+                        <Calendar mode="single" selected={filters.fecha ? new Date(`${filters.fecha}T00:00:00`) : undefined} onSelect={(d) => handleDateChange("fecha", d)} />
                     </PopoverContent>
                 </Popover>
 
@@ -101,7 +105,7 @@ export default function OrdersTableFilters() {
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={filters.fechaFin ? new Date(filters.fechaFin) : undefined} onSelect={(d) => handleDateChange("fechaFin", d)} />
+                        <Calendar mode="single" selected={filters.fechaFin ? new Date(`${filters.fechaFin}T00:00:00`) : undefined} onSelect={(d) => handleDateChange("fechaFin", d)} />
                     </PopoverContent>
                 </Popover>
 

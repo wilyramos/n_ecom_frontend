@@ -5,8 +5,7 @@ import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 import NuevoClienteModal from "@/components/admin/users/NuevoClienteModal";
 import UserFilters from "@/components/admin/users/UserFilters";
 import UserTable from "@/components/admin/users/UserTable";
-import Pagination from "@/components/ui/Pagination";
-import { Muted } from "@/components/ui/Typography";
+import DataTablePagination from "@/components/ui/DataTablePagination";
 
 interface SearchParams {
     page?: string;
@@ -25,7 +24,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
     const params = await searchParams;
 
     const page = Math.max(1, Number(params.page ?? 1));
-    const limit = Math.max(1, Number(params.limit ?? 25));
+    const limit = Math.max(1, Number(params.limit ?? 10));
     const nombre = params.nombre?.trim() || undefined;
     const email = params.email?.trim() || undefined;
     const telefono = params.telefono?.trim() || undefined;
@@ -59,17 +58,14 @@ export default async function UsersPage({ searchParams }: PageProps) {
                 <UserTable users={users} />
 
                 {totalUsers > 0 && (
-                    <div className="flex flex-col items-center gap-3 pt-4">
-                        <Muted className="uppercase">
-                            Mostrando {users.length} de {totalUsers} usuarios activos
-                        </Muted>
-                        <Pagination
-                            currentPage={page}
-                            totalPages={totalPages}
-                            limit={limit}
-                            pathname="/admin/users"
-                        />
-                    </div>
+                    <DataTablePagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        totalItems={totalUsers}
+                        limit={limit}
+                        pathname="/admin/users"
+                        itemLabel="usuarios"
+                    />
                 )}
             </div>
         </AdminPageWrapper>

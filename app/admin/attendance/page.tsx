@@ -6,7 +6,7 @@ import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 import AttendanceFilters from "@/components/admin/attendance/AttendanceFilters";
 import AttendanceStats from "@/components/admin/attendance/AttendanceStats";
 import AttendanceTable from "@/components/admin/attendance/AttendanceTable";
-import Pagination from "@/components/ui/Pagination";
+import DataTablePagination from "@/components/ui/DataTablePagination";
 
 interface SearchParams {
     page?: string;
@@ -72,17 +72,14 @@ export default async function AdminAttendancePage({ searchParams }: PageProps) {
                 </div>
 
                 {total > 0 && (
-                    <div className="flex flex-col items-center gap-3 pt-4">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                            Mostrando {records.length} de {total} registros
-                        </p>
-                        <Pagination
-                            currentPage={page}
-                            totalPages={pages}
-                            limit={limit}
-                            pathname="/admin/attendance"
-                        />
-                    </div>
+                    <DataTablePagination
+                        currentPage={page}
+                        totalPages={pages}
+                        totalItems={total}
+                        limit={limit}
+                        pathname="/admin/attendance"
+                        itemLabel="asistencias"
+                    />
                 )}
             </div>
         </AdminPageWrapper>

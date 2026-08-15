@@ -1,43 +1,45 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+// File: frontend/components/ui/InputV2.tsx
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 interface InputV2Props extends React.ComponentProps<"input"> {
-  label: string
+  label: string;
 }
 
-function InputV2({ className, type, label, id, ...props }: InputV2Props) {
-  // Generar un id único si no se pasa uno para mantener la accesibilidad del label
-  const generatedId = React.useId()
-  const inputId = id || generatedId
+function InputV2({
+  className,
+  type,
+  label,
+  id,
+  ...props
+}: InputV2Props) {
+  const generatedId = React.useId();
+  const inputId = id || generatedId;
 
   return (
-    <div className="relative w-full group flex flex-col justify-end h-11">
+    <div className="group relative flex h-11 w-full flex-col justify-end">
       <input
         type={type}
         id={inputId}
-        placeholder=" " // CRÍTICO: Debe ser un espacio en blanco para activar peer-placeholder-shown
+        placeholder=" "
         data-slot="input"
         className={cn(
-          "peer h-11 w-full min-w-0 border bg-background border-border px-3 pt-4 pb-1 text-xs transition-all outline-none rounded-md text-foreground",
-          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-          "focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[1px]",
-          "aria-invalid:ring-destructive/20 aria-invalid:border-destructive",
+          "peer h-11 w-full min-w-0 rounded-2xl border border-slate-300 bg-white px-3.5 pt-4 pb-1 text-md text-black font-normal transition-all duration-150 outline-none hover:border-slate-400 focus-visible:border-blue-600 focus-visible:ring-1 focus-visible:ring-blue-600 aria-invalid:border-red-500 aria-invalid:ring-1 aria-invalid:ring-red-500 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 shadow-none",
           className
         )}
         {...props}
       />
+
       <label
         htmlFor={inputId}
         className={cn(
-          "absolute left-3 top-1 text-[10px] text-muted-foreground pointer-events-none transition-all origin-left select-none",
-          "peer-placeholder-shown:top-3 peer-placeholder-shown:text-xs",
-          "peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-muted-foreground"
+          "pointer-events-none absolute left-3.5 top-1 select-none origin-left text-[10px] font-medium leading-none text-slate-500 transition-all duration-150 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-xs peer-placeholder-shown:font-normal peer-focus:top-1 peer-focus:text-[10px] peer-focus:font-medium peer-focus:text-slate-600 peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[10px]"
         )}
       >
         {label}
       </label>
     </div>
-  )
+  );
 }
 
-export { InputV2 }
+export { InputV2 };

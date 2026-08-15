@@ -9,81 +9,127 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* --- PALETA CORPORATIVA OFICIAL (MANUAL DE MARCA) --- */
+  /* --- PALETA CORPORATIVA OFICIAL TIENDA / CLIENTE (MANUAL DE MARCA) --- */
   --color-brand-charcoal: #171411;
   --color-brand-silver: #cbcbcb;
-  --color-brand-silver-border: #f0f0f0; /* variante mas blanca para bordes */
+  --color-brand-silver-border: #f0f0f0;
 
   --color-brand-black: #0a0a0a;
   --color-brand-gris: #a0a0a0;
   --color-brand-action: #a7c7aa;
-  --color-brand-action-muted: #a7c7aa22; /* Variante translúcida para fondos limpios de selección */
+  --color-brand-action-muted: #a7c7aa22;
 
   /* --- ESTANDARIZACIÓN SEMÁNTICA E-COMMERCE / POS --- */
-  
-  /* Superficies */
   --color-surface-primary: #ffffff;
   --color-surface-secondary: var(--color-brand-silver);
   --color-surface-inverse: var(--color-brand-charcoal);
 
-  /* Tipografía */
   --color-fg-primary: var(--color-brand-charcoal);
   --color-fg-secondary: var(--color-brand-silver);
   --color-fg-muted: var(--color-brand-gris);
   --color-fg-action: var(--color-brand-action);
   --color-fg-inverse: #ffffff;
 
-  /* Acciones y CTAs */
   --color-action-primary: var(--color-brand-charcoal);
   --color-action-primary-hover: var(--color-brand-black);
   --color-action-secondary: var(--color-brand-silver);
   --color-action-secondary-hover: var(--color-brand-gris);
   --color-action-destructive: var(--color-brand-action);
 
-  /* Bordes y Divisores */
   --color-border-default: var(--color-brand-silver-border);
 
-  /* --- MAPPING SHADCN UI PARA INTEGRACIÓN NATIVA --- */
+  /* --- PALETA EXCLUSIVA PARA ADMIN & DASHBOARDS (CLARA, LIMPIA Y PROFESIONAL) --- */
+  
+  /* Fondos y Superficies Admin */
+  --color-admin-bg: #f8fafc;              /* Fondo general grisáceo muy suave */
+  --color-admin-card: #ffffff;            /* Fondo de tarjetas y tablas */
+  --color-admin-sidebar: #ffffff;         /* Fondo del sidebar */
+  --color-admin-sidebar-hover: #f1f5f9;   /* Hover en navegación */
+  --color-admin-subtle: #f1f5f9;          /* Fills de inputs o headers secundarios */
+
+  /* Textos y Jerarquía Admin */
+  --color-admin-fg-heading: #0f172a;      /* Texto principal / Títulos (Slate 900) */
+  --color-admin-fg-body: #334155;         /* Texto de cuerpo / Tablas (Slate 700) */
+  --color-admin-fg-muted: #64748b;        /* Subtítulos / Placeholders (Slate 500) */
+  --color-admin-fg-subtle: #94a3b8;       /* Labels menores / Metadatos (Slate 400) */
+
+  /* Bordes y Separadores Admin */
+  --color-admin-border: #e2e8f0;          /* Borde estándar de cards y tablas */
+  --color-admin-border-subtle: #f1f5f9;   /* Divisores internos suaves */
+  --color-admin-border-focus: #94a3b8;    /* Borde en foco de campos */
+
+  /* Colores de Estado Semánticos para Admin (Métricas, Badges y Alertas) */
+  
+  /* Éxito (Entregado, Aprobado, Pagado, Activo) */
+  --color-admin-success: #16a34a;
+  --color-admin-success-foreground: #14532d;
+  --color-admin-success-muted: #dcfce7;
+  --color-admin-success-border: #bbf7d0;
+
+  /* Advertencia (Pendiente, En revisión, Stock Bajo) */
+  --color-admin-warning: #d97706;
+  --color-admin-warning-foreground: #78350f;
+  --color-admin-warning-muted: #fef3c7;
+  --color-admin-warning-border: #fde68a;
+
+  /* Información (Procesando, En tránsito, Envíos) */
+  --color-admin-info: #0284c7;
+  --color-admin-info-foreground: #0c4a6e;
+  --color-admin-info-muted: #e0f2fe;
+  --color-admin-info-border: #bae6fd;
+
+  /* Error / Destructivo (Cancelado, Rechazado, Eliminado) */
+  --color-admin-danger: #dc2626;
+  --color-admin-danger-foreground: #7f1d1d;
+  --color-admin-danger-muted: #fee2e2;
+  --color-admin-danger-border: #fecaca;
+
+  /* Neutros & Tags Secundarios */
+  --color-admin-neutral: #475569;
+  --color-admin-neutral-muted: #f1f5f9;
+  --color-admin-neutral-border: #e2e8f0;
+
+  /* Destacado / Branding Admin (Indigo / Slate Premium) */
+  --color-admin-accent: #4f46e5;
+  --color-admin-accent-muted: #eef2ff;
+  --color-admin-accent-border: #c7d2fe;
+
+  /* --- MAPPING SHADCN UI COMPATIBILITY --- */
   --color-background: var(--color-surface-primary);
   --color-foreground: var(--color-fg-primary);
-  
+
   --color-card: var(--color-surface-primary);
   --color-card-foreground: var(--color-fg-primary);
-  
+
   --color-popover: var(--color-surface-primary);
   --color-popover-foreground: var(--color-fg-primary);
-  
+
   --color-primary: var(--color-action-primary);
   --color-primary-foreground: var(--color-fg-inverse);
-  
+
   --color-secondary: var(--color-action-secondary);
   --color-secondary-foreground: var(--color-fg-primary);
-  
+
   --color-muted: var(--color-surface-secondary);
   --color-muted-foreground: var(--color-fg-muted);
-  
+
   --color-accent: var(--color-surface-secondary);
   --color-accent-foreground: var(--color-fg-primary);
-  
-  --color-destructive: #dc2626; /* Rojo inteso */
+
+  --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
-  
+
   --color-border: var(--color-border-default);
   --color-input: var(--color-border-default);
   --color-ring: var(--color-brand-charcoal);
 
-  /* Color de acento vivo (Rojo inteso) */
-  --color-accent-vivid: #ff9900; /* Rojo inteso para elementos destacados */
-  --color-accent-vivid-muted: #ff990033; /* Versión translúcida para hover/active states */
+  --color-accent-vivid: #ff9900;
+  --color-accent-vivid-muted: #ff990033;
 }
 
-
-/* --- CONTENEDORES MULTIMEDIA --- */
+/* --- CONTENEDORES MULTIMEDIA TIENDA --- */
 .banner-slot {
   width: 100%;
-  /* 24/9 o 3/1 lo hará más delgado  es el ratio original del banner */
   aspect-ratio: var(--banner-ratio, 27 / 9);
-  
-  /* Reducido de 180px a 140px para que no se estire de más en celulares pequeños */
-  min-height: 140px; 
+  min-height: 140px;
 }

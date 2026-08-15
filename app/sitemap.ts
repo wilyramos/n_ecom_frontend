@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const productUrls = products.map((p) => ({
         url: `${baseUrl}/productos/${p.slug}`,
         lastModified: p.updatedAt || new Date(),
-        changeFrequency: "daily" as ChangeFreq,
+        changeFrequency: "weekly" as ChangeFreq,
         priority: 0.8,
     }));
 
@@ -35,10 +35,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 5. Páginas Estáticas del Sistema
     const staticPages = [
-        { url: "", priority: 1.0, changefreq: "daily" as ChangeFreq },         // Home
-        { url: "/catalogo", priority: 1.0, changefreq: "daily" as ChangeFreq }, // Root del catálogo
-        { url: "/ofertas", priority: 0.9, changefreq: "daily" as ChangeFreq },  // Ofertas
-        { url: "/novedades", priority: 0.9, changefreq: "daily" as ChangeFreq },
+        { url: "", priority: 1.0, changefreq: "weekly" as ChangeFreq },         // Home
+        { url: "/catalogo", priority: 1.0, changefreq: "weekly" as ChangeFreq }, // Root del catálogo
+        { url: "/ofertas", priority: 0.9, changefreq: "weekly" as ChangeFreq },  // Ofertas
+        { url: "/novedades", priority: 0.9, changefreq: "weekly" as ChangeFreq },
         { url: "/categorias", priority: 0.8, changefreq: "weekly" as ChangeFreq },
 
         // Páginas Legales y Soporte (Baja prioridad, cambio poco frecuente)

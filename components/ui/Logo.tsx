@@ -8,8 +8,8 @@ type LogoProps = {
 
 export default function Logo({ color = "black", className = "h-full w-full" }: LogoProps) {
     const logoSrc = color === "black" 
-        ? "/logo_fondo_blanco.svg" 
-        : "/logo_fondo_blanco.svg";
+        ? "/logosvg.svg" 
+        : "/logosvg.svg";
 
     return (
         <div className={`flex items-center justify-start select-none shrink-0 ${className}`}>

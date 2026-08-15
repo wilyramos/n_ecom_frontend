@@ -1,3 +1,4 @@
+// File: frontend/components/admin/orders/OrdersTable.tsx
 "use client";
 
 import type { TOrder } from "@/src/schemas";
@@ -5,108 +6,103 @@ import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import OrderStatusBadge from "@/components/ui/OrderStatusBadge";
 import PaymentStatusBadge from "@/components/ui/PaymentStatusBadge";
-
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-
-import { FaEye } from "react-icons/fa";
+  AdminTable,
+  AdminTableHead,
+  AdminTableRow,
+  AdminTableHeaderCell,
+  AdminTableCell,
+  AdminTableEmpty,
+} from "@/src/components/admin/layout/admin-table";
+import { Eye } from "lucide-react";
 
 interface OrdersTableProps {
-    orders: TOrder[];
+  orders: TOrder[];
 }
 
 export default function OrdersTable({ orders }: OrdersTableProps) {
-    if (!orders || orders.length === 0) {
-        return (
-            <div className="flex justify-center items-center py-10">
-                <h2 className="text-sm text-muted-foreground">
-                    No hay pedidos disponibles.
-                </h2>
-            </div>
-        );
-    }
-
+  if (!orders || orders.length === 0) {
     return (
-        <div className="w-full overflow-x-auto pb-2">
-            <Table className="min-w-full table-auto border-separate border-spacing-0">
-                <TableHeader>
-                    <TableRow className="">
-                        <TableHead className="p-1 text-center w-[90px] text-xs font-medium">
-                            Pedido
-                        </TableHead>
-                        <TableHead className="p-1 text-center w-[110px] text-xs font-medium">
-                            Fecha
-                        </TableHead>
-                        <TableHead className="p-1 text-center w-[120px] text-xs font-medium">
-                            Pago
-                        </TableHead>
-                        <TableHead className="p-1 text-center w-[200px] text-xs font-medium">
-                            Envío
-                        </TableHead>
-                        <TableHead className="p-1 text-center w-[90px] text-xs font-medium">
-                            Estado
-                        </TableHead>
-                        <TableHead className="p-1 text-center w-[70px] text-xs font-medium">
-                            Opciones
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                    {orders.map((order) => (
-                        <TableRow
-                            key={order._id}
-                            className="text-xs border-b hover:bg-muted/30 transition-colors"
-                        >
-                            <TableCell className="p-2 text-center font-semibold truncate">
-                                <Link
-                                    href={`/admin/orders/${order._id}`}
-                                    className="hover:underline"
-                                >
-                                    {order.orderNumber || order._id.slice(0, 8)}
-                                </Link>
-                            </TableCell>
-
-                            <TableCell className="p-2 text-center text-muted-foreground truncate">
-                                {formatDate(order.createdAt)}
-                            </TableCell>
-
-                            <TableCell className="p-2 text-center">
-                                <div className="flex flex-col items-center gap-1">
-                                    <span className="font-medium">
-                                        S/. {order.totalPrice.toFixed(2)}
-                                    </span>
-                                    <PaymentStatusBadge status={order.payment.status} />
-                                </div>
-                            </TableCell>
-
-                            <TableCell className="p-2 text-center text-muted-foreground truncate">
-                                {order.shippingAddress?.direccion},{" "}
-                                {order.shippingAddress?.distrito}
-                            </TableCell>
-
-                            <TableCell className="p-2 text-center">
-                                <OrderStatusBadge status={order.status} />
-                            </TableCell>
-
-                            <TableCell className="p-2 text-center">
-                                <Link
-                                    href={`/admin/orders/${order._id}`}
-                                    className="text-muted-foreground hover:text-foreground"
-                                >
-                                    <FaEye className="w-4 h-4" />
-                                </Link>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+      <AdminTable>
+        <tbody>
+          <AdminTableEmpty
+            title="No se encontraron pedidos"
+            description="Intenta cambiar los filtros de fecha, estado o búsqueda."
+            colSpan={6}
+          />
+        </tbody>
+      </AdminTable>
     );
+  }
+
+  return (
+    <AdminTable>
+      <AdminTableHead>
+        <tr>
+          <AdminTableHeaderCell width="120px">N° Pedido</AdminTableHeaderCell>
+          <AdminTableHeaderCell width="140px">Fecha</AdminTableHeaderCell>
+          <AdminTableHeaderCell width="150px">Total / Pago</AdminTableHeaderCell>
+          <AdminTableHeaderCell>Dirección de Envío</AdminTableHeaderCell>
+          <AdminTableHeaderCell width="120px" align="center">Estado Envío</AdminTableHeaderCell>
+          <AdminTableHeaderCell width="90px" align="right">Opciones</AdminTableHeaderCell>
+        </tr>
+      </AdminTableHead>
+      <tbody>
+        {orders.map((order) => (
+          <AdminTableRow key={order._id} id={order._id}>
+            <AdminTableCell bold>
+              <Link
+                href={`/admin/orders/${order._id}`}
+                className="text-zinc-900 hover:underline font-mono text-xs"
+              >
+                {order.orderNumber || `#${order._id.slice(-6).toUpperCase()}`}
+              </Link>
+            </AdminTableCell>
+
+            <AdminTableCell>
+              <span className="text-zinc-500 text-xs">{formatDate(order.createdAt)}</span>
+            </AdminTableCell>
+
+            <AdminTableCell>
+              <div className="flex flex-col gap-1">
+                <span className="font-semibold text-zinc-900 text-xs">
+                  S/. {order.totalPrice.toFixed(2)}
+                </span>
+                <div>
+                  <PaymentStatusBadge status={order.payment.status} />
+                </div>
+              </div>
+            </AdminTableCell>
+
+            <AdminTableCell>
+              <div className="flex flex-col text-xs text-zinc-600 max-w-[280px]">
+                <span className="font-medium text-zinc-800 truncate">
+                  {order.shippingAddress?.direccion || "Sin dirección"}
+                </span>
+                <span className="text-[11px] text-zinc-400">
+                  {order.shippingAddress?.distrito || ""}{" "}
+                  {order.shippingAddress?.departamento ? `(${order.shippingAddress.departamento})` : ""}
+                </span>
+              </div>
+            </AdminTableCell>
+
+            <AdminTableCell align="center">
+              <OrderStatusBadge status={order.status} />
+            </AdminTableCell>
+
+            <AdminTableCell align="right">
+              <Link
+                href={`/admin/orders/${order._id}`}
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-zinc-700 bg-zinc-100 hover:bg-zinc-200 rounded-md transition-colors"
+                title="Ver detalle del pedido"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Ver</span>
+              </Link>
+            </AdminTableCell>
+          </AdminTableRow>
+        ))}
+      </tbody>
+    </AdminTable>
+  );
 }

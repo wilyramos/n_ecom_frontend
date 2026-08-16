@@ -15,7 +15,7 @@ export function AdminUserMenu() {
         type="button"
       >
         <div className="h-8 w-8 rounded-lg bg-slate-900 text-white font-bold flex items-center justify-center text-xs shadow-2xs">
-          W
+          
         </div>
         <div className="hidden lg:block text-left pr-1">
           <p className="text-[10px] text-slate-400">Super Admin</p>

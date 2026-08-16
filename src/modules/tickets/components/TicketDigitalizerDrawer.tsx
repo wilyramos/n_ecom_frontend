@@ -50,6 +50,22 @@ const defaultValues = {
   filename: '',
 };
 
+/**
+ * Reemplaza la serie B001 o NVs por B002 manteniendo el correlativo (ej: B001-00164 -> B002-00164)
+ */
+function formatSerieB002(numStr: string): string {
+  if (!numStr) return '';
+  const trimmed = numStr.trim();
+  // Si ya tiene formato con guion (ej: B001-00164 o NV01-00164)
+  if (trimmed.includes('-')) {
+    const parts = trimmed.split('-');
+    const correlativo = parts.slice(1).join('-');
+    return `B002-${correlativo}`;
+  }
+  // Si es solo un número o serie pegada
+  return `B002-${trimmed}`;
+}
+
 export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: TicketDigitalizerDrawerProps) {
   const [formData, setFormData] = useState(defaultValues);
   const [isExtracting, setIsExtracting] = useState(false);
@@ -76,7 +92,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
 
       setFormData({
         tipoComprobante: initialData.tipoComprobante || 'BOLETA ELECTRÓNICA',
-        numeroNota: initialData.numeroNota || '',
+        numeroNota: formatSerieB002(initialData.numeroNota || ''),
         ...FIXED_COMPANY_DATA,
         cliente: initialData.cliente || '',
         documentoCliente: initialData.documentoCliente || '',
@@ -126,17 +142,21 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
         throw new Error(json.message || 'Error al procesar el archivo PDF');
       }
 
-      const extractedItems = Array.isArray(json.data.extracted?.items) ? json.data.extracted.items : [];
+      const extractedData = json.data.extracted || {};
+      const extractedItems = Array.isArray(extractedData.items) ? extractedData.items : [];
       const totals = recalculateTotals(extractedItems);
+      const rawNota = extractedData.numeroNota || '';
 
       setFormData({
         ...defaultValues,
-        ...json.data.extracted,
+        ...extractedData,
+        tipoComprobante: 'BOLETA ELECTRÓNICA', // Siempre por defecto BOLETA ELECTRÓNICA
+        numeroNota: formatSerieB002(rawNota), // Forzar siempre serie B002
         ...FIXED_COMPANY_DATA,
         ...totals,
         filename: json.data.filename,
       });
-      toast.success('Documento analizado e items extraídos con éxito');
+      toast.success('Documento analizado y adaptado a Boleta Electrónica con éxito');
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message || 'Fallo en la extracción del PDF');
@@ -220,10 +240,16 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
       return;
     }
 
+    // Asegurar formato B002 antes de enviar
+    const finalData = {
+      ...formData,
+      numeroNota: formatSerieB002(formData.numeroNota),
+    };
+
     startTransition(async () => {
       const res = isEditing && initialData?._id
-        ? await updateTicketAction(initialData._id, formData)
-        : await createTicketAction(formData);
+        ? await updateTicketAction(initialData._id, finalData)
+        : await createTicketAction(finalData);
 
       if (res.success) {
         toast.success(isEditing ? 'Comprobante actualizado correctamente.' : 'Comprobante guardado exitosamente.');
@@ -275,17 +301,21 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
             <AdminFormGroup label="Tipo Comprobante">
-              <AdminInput
+              <select
                 value={formData.tipoComprobante}
                 onChange={(e) => setFormData({ ...formData, tipoComprobante: e.target.value })}
-                required
-              />
+                className="w-full text-xs p-2 border border-zinc-200 rounded-lg bg-white font-medium outline-none focus:border-zinc-400 cursor-pointer"
+              >
+                <option value="BOLETA ELECTRÓNICA">BOLETA ELECTRÓNICA</option>
+                <option value="NOTA DE VENTA">NOTA DE VENTA</option>
+              </select>
             </AdminFormGroup>
+
             <AdminFormGroup label="N° Comprobante">
               <AdminInput
                 value={formData.numeroNota}
-                onChange={(e) => setFormData({ ...formData, numeroNota: e.target.value })}
-                placeholder="B001-00164 / NV01-00001"
+                onChange={(e) => setFormData({ ...formData, numeroNota: formatSerieB002(e.target.value) })}
+                placeholder="B002-00164"
                 required
               />
             </AdminFormGroup>

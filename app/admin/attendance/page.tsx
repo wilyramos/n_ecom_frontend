@@ -1,12 +1,7 @@
 // File: frontend/app/admin/attendance/page.tsx
-
 import { AttendanceService } from "@/src/services/attendance.service";
 import { AttendanceQuery, AdminAttendance, AttendanceGlobalStats } from "@/src/schemas/attendance.schema";
-import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
-import AttendanceFilters from "@/components/admin/attendance/AttendanceFilters";
-import AttendanceStats from "@/components/admin/attendance/AttendanceStats";
-import AttendanceTable from "@/components/admin/attendance/AttendanceTable";
-import DataTablePagination from "@/components/ui/DataTablePagination";
+import AdminAttendanceClient from "@/components/admin/attendance/AdminAttendanceClient";
 
 interface SearchParams {
     page?: string;
@@ -40,7 +35,7 @@ export default async function AdminAttendancePage({ searchParams }: PageProps) {
     let globalStats: AttendanceGlobalStats = {
         globalWorkHours: 0,
         globalTotalRecords: 0,
-        globalActiveDays: 0
+        globalActiveDays: 0,
     };
 
     const hasInvalidRange = query.startDate && query.endDate && new Date(query.startDate) > new Date(query.endDate);
@@ -48,7 +43,7 @@ export default async function AdminAttendancePage({ searchParams }: PageProps) {
     if (!hasInvalidRange) {
         const res = await AttendanceService.getAdminReport(query).catch((error: unknown) => {
             const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-            console.error('[AdminAttendancePage]', errorMessage);
+            console.error("[AdminAttendancePage]", errorMessage);
             return null;
         });
 
@@ -61,27 +56,14 @@ export default async function AdminAttendancePage({ searchParams }: PageProps) {
     }
 
     return (
-        <AdminPageWrapper title="Asistencias" showBackButton={false}>
-            <div className="space-y-6">
-                <AttendanceStats records={records} globalStats={globalStats} />
-
-                <AttendanceFilters current={query} />
-
-                <div className="">
-                    <AttendanceTable data={records} />
-                </div>
-
-                {total > 0 && (
-                    <DataTablePagination
-                        currentPage={page}
-                        totalPages={pages}
-                        totalItems={total}
-                        limit={limit}
-                        pathname="/admin/attendance"
-                        itemLabel="asistencias"
-                    />
-                )}
-            </div>
-        </AdminPageWrapper>
+        <AdminAttendanceClient
+            records={records}
+            total={total}
+            pages={pages}
+            page={page}
+            limit={limit}
+            globalStats={globalStats}
+            query={query}
+        />
     );
 }

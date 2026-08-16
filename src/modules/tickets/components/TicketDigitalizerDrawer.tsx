@@ -1,10 +1,11 @@
 // frontend/src/modules/tickets/components/TicketDigitalizerDrawer.tsx
 'use client';
 
-import React, { useState, useTransition } from 'react';
-import { Upload, Printer, Loader2, Save, Plus, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useTransition } from 'react';
+import { Upload, Printer, Loader2, Save, Plus, Trash2, QrCode } from 'lucide-react';
 import { toast } from 'sonner';
-import { createTicketAction } from '../admin-tickets.actions';
+import { createTicketAction, updateTicketAction } from '../admin-tickets.actions';
+import { ITicket } from '../ticket.types';
 import { AdminButton } from '@/src/components/admin/layout/admin-button';
 import { AdminFormGroup, AdminInput } from '@/src/components/admin/layout/admin-form-group';
 import { AdminFilterDrawer } from '@/src/components/admin/layout/admin-filter-drawer';
@@ -20,9 +21,9 @@ interface ITicketItemForm {
 interface TicketDigitalizerDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  initialData?: ITicket | null;
 }
 
-// Datos fijos de la empresa emisora
 const FIXED_COMPANY_DATA = {
   empresa: 'NEOSHOP IMPORTACIONES',
   rucEmpresa: '20613242784',
@@ -49,11 +50,61 @@ const defaultValues = {
   filename: '',
 };
 
-export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDrawerProps) {
+export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: TicketDigitalizerDrawerProps) {
   const [formData, setFormData] = useState(defaultValues);
   const [isExtracting, setIsExtracting] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const isEditing = Boolean(initialData?._id);
+
+  useEffect(() => {
+    if (initialData && isOpen) {
+      const items = Array.isArray(initialData.items)
+        ? initialData.items.map((i) => ({
+            descripcion: i.descripcion || '',
+            unidadMedida: i.unidadMedida || 'NIU',
+            cantidad: Number(i.cantidad) || 1,
+            precioUnitario: Number(i.precioUnitario) || 0,
+            total: Number(i.total) || Number(((Number(i.cantidad) || 1) * (Number(i.precioUnitario) || 0)).toFixed(2)),
+          }))
+        : [];
+
+      const totalMonto = Number(initialData.monto || 0);
+      const subtotal = Number((totalMonto / 1.18).toFixed(2));
+      const igv = Number((totalMonto - subtotal).toFixed(2));
+
+      setFormData({
+        tipoComprobante: initialData.tipoComprobante || 'BOLETA ELECTRÓNICA',
+        numeroNota: initialData.numeroNota || '',
+        ...FIXED_COMPANY_DATA,
+        cliente: initialData.cliente || '',
+        documentoCliente: initialData.documentoCliente || '',
+        telefonoCliente: initialData.telefonoCliente || '',
+        direccionCliente: initialData.direccionCliente || '',
+        fecha: initialData.fecha || '',
+        hora: initialData.hora || '',
+        cajero: initialData.cajero || '',
+        caja: initialData.caja || '',
+        items,
+        subtotal,
+        igv,
+        monto: totalMonto,
+        filename: '',
+      });
+    } else if (!isOpen) {
+      setFormData(defaultValues);
+    }
+  }, [initialData, isOpen]);
+
+  const recalculateTotals = (items: ITicketItemForm[]) => {
+    const sumTotal = items.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0);
+    const monto = Number(sumTotal.toFixed(2));
+    const subtotal = Number((monto / 1.18).toFixed(2));
+    const igv = Number((monto - subtotal).toFixed(2));
+
+    return { monto, subtotal, igv };
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,11 +126,14 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
         throw new Error(json.message || 'Error al procesar el archivo PDF');
       }
 
+      const extractedItems = Array.isArray(json.data.extracted?.items) ? json.data.extracted.items : [];
+      const totals = recalculateTotals(extractedItems);
+
       setFormData({
         ...defaultValues,
         ...json.data.extracted,
-        // Garantizar siempre los datos fijos del negocio emisivo
         ...FIXED_COMPANY_DATA,
+        ...totals,
         filename: json.data.filename,
       });
       toast.success('Documento analizado e items extraídos con éxito');
@@ -106,42 +160,45 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
     }
 
     updatedItems[index] = currentItem;
-    const newTotal = updatedItems.reduce((acc, curr) => acc + (curr.total || 0), 0);
+    const totals = recalculateTotals(updatedItems);
 
     setFormData({
       ...formData,
       items: updatedItems,
-      monto: Number(newTotal.toFixed(2)),
+      ...totals,
     });
   };
 
   const handleAddItem = () => {
+    const updatedItems = [
+      ...formData.items,
+      { descripcion: '', unidadMedida: 'NIU', cantidad: 1, precioUnitario: 0, total: 0 },
+    ];
+    const totals = recalculateTotals(updatedItems);
     setFormData({
       ...formData,
-      items: [
-        ...formData.items,
-        { descripcion: '', unidadMedida: 'NIU', cantidad: 1, precioUnitario: 0, total: 0 },
-      ],
+      items: updatedItems,
+      ...totals,
     });
   };
 
   const handleRemoveItem = (index: number) => {
     const updatedItems = formData.items.filter((_, idx) => idx !== index);
-    const newTotal = updatedItems.reduce((acc, curr) => acc + (curr.total || 0), 0);
+    const totals = recalculateTotals(updatedItems);
     setFormData({
       ...formData,
       items: updatedItems,
-      monto: Number(newTotal.toFixed(2)),
+      ...totals,
     });
   };
 
-  const handlePreviewBackendPdf = async () => {
+  const handlePreviewBackendPdf = async (format: 'ticket' | 'professional') => {
     try {
       setIsPreviewing(true);
       const res = await fetch('/api/tickets/preview-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, format }),
       });
 
       if (!res.ok) throw new Error('Error al generar previsualización del PDF');
@@ -158,19 +215,22 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.numeroNota || !formData.cliente) {
+    if (!formData.numeroNota.trim() || !formData.cliente.trim()) {
       toast.error('El número de comprobante y el cliente son requeridos');
       return;
     }
 
     startTransition(async () => {
-      const res = await createTicketAction(formData);
+      const res = isEditing && initialData?._id
+        ? await updateTicketAction(initialData._id, formData)
+        : await createTicketAction(formData);
+
       if (res.success) {
-        toast.success('Comprobante guardado exitosamente.');
+        toast.success(isEditing ? 'Comprobante actualizado correctamente.' : 'Comprobante guardado exitosamente.');
         setFormData(defaultValues);
         onClose();
       } else {
-        toast.error(res.message || 'Error al guardar el comprobante');
+        toast.error(res.message || 'Error al procesar el comprobante');
       }
     });
   };
@@ -183,32 +243,34 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
     <AdminFilterDrawer
       isOpen={isOpen}
       onClose={onClose}
-      title="Digitalizador Inteligente de Comprobantes"
-      description="Sube un comprobante para extraer los datos e items en formato A4."
+      title={isEditing ? `Editar Comprobante: ${initialData?.numeroNota}` : 'Digitalizador Inteligente de Comprobantes'}
+      description={isEditing ? 'Modifica los campos del comprobante y sus productos.' : 'Sube un comprobante para extraer los datos e items en formato A4.'}
       onReset={handleReset}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="border-2 border-dashed border-zinc-200 rounded-xl p-4 text-center hover:bg-zinc-50 transition-colors">
-          <input
-            type="file"
-            id="ticket-upload"
-            accept="application/pdf"
-            onChange={handleFileUpload}
-            disabled={isExtracting}
-            className="hidden"
-          />
-          <label htmlFor="ticket-upload" className="cursor-pointer flex flex-col items-center gap-1.5">
-            {isExtracting ? (
-              <Loader2 className="w-6 h-6 text-zinc-500 animate-spin" />
-            ) : (
-              <Upload className="w-6 h-6 text-zinc-500" />
-            )}
-            <span className="text-xs font-semibold text-zinc-800">
-              {isExtracting ? 'Analizando documento...' : 'Subir Comprobante en PDF'}
-            </span>
-            <span className="text-[10px] text-zinc-400">Lectura de boletas y notas de venta</span>
-          </label>
-        </div>
+        {!isEditing && (
+          <div className="border-2 border-dashed border-zinc-200 rounded-xl p-4 text-center hover:bg-zinc-50 transition-colors">
+            <input
+              type="file"
+              id="ticket-upload"
+              accept="application/pdf"
+              onChange={handleFileUpload}
+              disabled={isExtracting}
+              className="hidden"
+            />
+            <label htmlFor="ticket-upload" className="cursor-pointer flex flex-col items-center gap-1.5">
+              {isExtracting ? (
+                <Loader2 className="w-6 h-6 text-zinc-500 animate-spin" />
+              ) : (
+                <Upload className="w-6 h-6 text-zinc-500" />
+              )}
+              <span className="text-xs font-semibold text-zinc-800">
+                {isExtracting ? 'Analizando documento...' : 'Subir Comprobante en PDF'}
+              </span>
+              <span className="text-[10px] text-zinc-400">Lectura de boletas y notas de venta</span>
+            </label>
+          </div>
+        )}
 
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-2">
@@ -229,7 +291,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
             </AdminFormGroup>
           </div>
 
-          {/* Datos Empresa Emisora (Campos Fijos) */}
+          {/* Datos Empresa Emisora */}
           <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-100 space-y-2">
             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Datos Empresa (Emisor)</p>
             <div className="grid grid-cols-2 gap-2">
@@ -343,7 +405,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
 
             {formData.items.length === 0 ? (
               <div className="text-center py-4 border border-dashed rounded-lg text-xs text-zinc-400">
-                No hay productos en la lista. Sube un documento o añade uno manualmente.
+                No hay productos en la lista. Añade uno con el botón superior.
               </div>
             ) : (
               formData.items.map((item, idx) => (
@@ -383,7 +445,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
                         type="number"
                         min="1"
                         value={item.cantidad}
-                        onChange={(e) => handleItemChange(idx, 'cantidad', e.target.value)}
+                        onChange={(e) => handleItemChange(idx, 'cantidad', Number(e.target.value))}
                         className="w-full text-xs p-1 border border-zinc-200 rounded bg-white text-center outline-none"
                       />
                     </div>
@@ -393,7 +455,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
                         type="number"
                         step="0.01"
                         value={item.precioUnitario}
-                        onChange={(e) => handleItemChange(idx, 'precioUnitario', e.target.value)}
+                        onChange={(e) => handleItemChange(idx, 'precioUnitario', Number(e.target.value))}
                         className="w-full text-xs p-1 border border-zinc-200 rounded bg-white text-right outline-none"
                       />
                     </div>
@@ -414,52 +476,57 @@ export function TicketDigitalizerDrawer({ isOpen, onClose }: TicketDigitalizerDr
           </div>
 
           <div className="bg-zinc-100/70 p-3 rounded-lg space-y-1.5 border border-zinc-200/60">
-            {formData.subtotal > 0 && (
-              <div className="flex justify-between text-xs text-zinc-600">
-                <span>Subtotal:</span>
-                <span>S/ {Number(formData.subtotal).toFixed(2)}</span>
-              </div>
-            )}
-            {formData.igv > 0 && (
-              <div className="flex justify-between text-xs text-zinc-600">
-                <span>IGV (18%):</span>
-                <span>S/ {Number(formData.igv).toFixed(2)}</span>
-              </div>
-            )}
+            <div className="flex justify-between text-xs text-zinc-600">
+              <span>Op. Gravada / Subtotal:</span>
+              <span>S/ {Number(formData.subtotal).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-xs text-zinc-600">
+              <span>IGV (18%):</span>
+              <span>S/ {Number(formData.igv).toFixed(2)}</span>
+            </div>
             <div className="flex justify-between items-center text-sm font-bold text-zinc-900 border-t border-zinc-200 pt-1.5">
-              <span>Total a Pagar:</span>
+              <span>Importe Total:</span>
               <span>S/ {Number(formData.monto).toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         <div className="space-y-2 pt-2 pb-4">
-          <AdminButton
-            type="button"
-            variant="outline"
-            onClick={handlePreviewBackendPdf}
-            disabled={!formData.numeroNota || isPreviewing}
-            className="w-full flex items-center justify-center gap-1.5 h-8 text-xs font-semibold cursor-pointer"
-          >
-            {isPreviewing ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Printer className="w-3.5 h-3.5" />
-            )}
-            {isPreviewing ? 'Generando PDF...' : 'Previsualizar PDF A4 Backend'}
-          </AdminButton>
+          <div className="grid grid-cols-2 gap-2">
+            <AdminButton
+              type="button"
+              variant="outline"
+              size="sm"
+              icon={Printer}
+              onClick={() => handlePreviewBackendPdf('ticket')}
+              disabled={!formData.numeroNota || isPreviewing}
+              className="w-full h-8 text-xs font-semibold"
+            >
+              Previa Ticket
+            </AdminButton>
+
+            <AdminButton
+              type="button"
+              variant="outline"
+              size="sm"
+              icon={QrCode}
+              onClick={() => handlePreviewBackendPdf('professional')}
+              disabled={!formData.numeroNota || isPreviewing}
+              className="w-full h-8 text-xs font-semibold text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              Previa Factura/QR
+            </AdminButton>
+          </div>
 
           <AdminButton
             type="submit"
+            variant="primary"
+            size="sm"
+            icon={isPending ? Loader2 : Save}
             disabled={isPending || !formData.numeroNota}
-            className="w-full flex items-center justify-center gap-1.5 h-8 text-xs font-semibold bg-zinc-900 hover:bg-black text-white cursor-pointer"
+            className="w-full h-8 text-xs font-semibold"
           >
-            {isPending ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <Save className="w-3.5 h-3.5" />
-            )}
-            {isPending ? 'Guardando...' : 'Convertir y Guardar'}
+            {isPending ? 'Guardando...' : isEditing ? 'Guardar Cambios' : 'Convertir y Guardar'}
           </AdminButton>
         </div>
       </form>

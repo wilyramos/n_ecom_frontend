@@ -27,7 +27,9 @@ import {
   FileUp,
   Printer, Download,
   Loader2,
-  CheckSquare
+  CheckSquare,
+  QrCode,
+  Pencil
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -52,13 +54,33 @@ export default function AdminTicketsClient({
   const pathname = usePathname();
 
   const [isDigitalizerOpen, setIsDigitalizerOpen] = useState(false);
+  const [editingTicket, setEditingTicket] = useState<ITicket | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState(currentFilters.search || '');
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const openBackendPdf = (ticketId: string) => {
+  const openTicketPdf = (ticketId: string) => {
     window.open(`/api/tickets/${ticketId}/pdf`, '_blank', 'width=800,height=900');
+  };
+
+  const openProfessionalPdf = (ticketId: string) => {
+    window.open(`/api/tickets/${ticketId}/professional-pdf`, '_blank', 'width=800,height=900');
+  };
+
+  const handleOpenEdit = (ticket: ITicket) => {
+    setEditingTicket(ticket);
+    setIsDigitalizerOpen(true);
+  };
+
+  const handleOpenCreate = () => {
+    setEditingTicket(null);
+    setIsDigitalizerOpen(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setIsDigitalizerOpen(false);
+    setEditingTicket(null);
   };
 
   const handleSelectAll = () => {
@@ -77,9 +99,9 @@ export default function AdminTicketsClient({
     }
   };
 
-  const handleBulkPrint = async () => {
+  const handleBulkPrint = async (format: 'ticket' | 'professional' = 'ticket') => {
     if (selectedIds.length === 0) {
-      toast.error('Selecciona al menos un comprobante para imprimir.');
+      toast.error('Selecciona al menos un comprobante.');
       return;
     }
 
@@ -88,7 +110,7 @@ export default function AdminTicketsClient({
       const res = await fetch('/api/tickets/bulk-print', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedIds }),
+        body: JSON.stringify({ ids: selectedIds, format }),
       });
 
       if (!res.ok) throw new Error('Fallo al generar PDF unificado');
@@ -104,9 +126,9 @@ export default function AdminTicketsClient({
     }
   };
 
-  const handleBulkZipDownload = async () => {
+  const handleBulkZipDownload = async (format: 'ticket' | 'professional' = 'ticket') => {
     if (selectedIds.length === 0) {
-      toast.error('Selecciona al menos un comprobante para descargar.');
+      toast.error('Selecciona al menos un comprobante.');
       return;
     }
 
@@ -115,7 +137,7 @@ export default function AdminTicketsClient({
       const res = await fetch('/api/tickets/bulk-zip', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedIds }),
+        body: JSON.stringify({ ids: selectedIds, format }),
       });
 
       if (!res.ok) throw new Error('Fallo al generar archivo ZIP');
@@ -124,7 +146,7 @@ export default function AdminTicketsClient({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `comprobantes_${Date.now()}.zip`;
+      a.download = `comprobantes_${format}_${Date.now()}.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -173,50 +195,47 @@ export default function AdminTicketsClient({
         actions={
           <AdminButton
             type="button"
-            onClick={() => setIsDigitalizerOpen(true)}
-            className="flex items-center gap-1.5"
+            onClick={handleOpenCreate}
+            className="flex items-center gap-1.5 cursor-pointer"
           >
             <FileUp className="w-4 h-4" />
             Digitalizar Comprobante
           </AdminButton>
         }
       />
-
       {selectedIds.length > 0 && (
         <div className="bg-zinc-900 text-white px-4 py-2.5 rounded-xl flex items-center justify-between shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
             <CheckSquare className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-semibold">
-              {selectedIds.length} comprobante{selectedIds.length > 1 ? 's' : ''} seleccionado
-              {selectedIds.length > 1 ? 's' : ''}
+              {selectedIds.length} seleccionado{selectedIds.length > 1 ? 's' : ''}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={handleBulkPrint}
+              onClick={() => handleBulkPrint('ticket')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 rounded-lg text-xs font-medium transition-colors cursor-pointer"
             >
-              {isBulkProcessing ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Printer className="w-3.5 h-3.5" />
-              )}
-              Imprimir Seleccionados
+              <Printer className="w-3.5 h-3.5" /> Imprimir Ticket
             </button>
             <button
               type="button"
-              onClick={handleBulkZipDownload}
+              onClick={() => handleBulkPrint('professional')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-lg text-xs font-medium transition-colors cursor-pointer"
             >
-              {isBulkProcessing ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Download className="w-3.5 h-3.5" />
-              )}
-              Descargar ZIP
+              <QrCode className="w-3.5 h-3.5" /> Imprimir Factura / QR
+            </button>
+            <button
+              type="button"
+              onClick={() => handleBulkZipDownload('professional')}
+              disabled={isBulkProcessing || isPending}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+            >
+              {isBulkProcessing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              ZIP (QR)
             </button>
           </div>
         </div>
@@ -327,22 +346,53 @@ export default function AdminTicketsClient({
                     </AdminTableCell>
 
                     <AdminTableCell align="right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-1.5">
+                        {/* Botón Editar */}
                         <button
                           type="button"
-                          onClick={() => openBackendPdf(ticket._id)}
+                          onClick={() => handleOpenEdit(ticket)}
                           disabled={isPending}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-900 hover:bg-black disabled:opacity-50 text-white rounded-md text-xs font-medium transition-colors cursor-pointer"
-                          title="Imprimir PDF Generado en Backend"
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/60 rounded-md text-xs font-medium transition-colors cursor-pointer"
+                          title="Editar comprobante"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+
+                        {/* Opción 1: Ticket */}
+                        <button
+                          type="button"
+                          onClick={() => openTicketPdf(ticket._id)}
+                          disabled={isPending}
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-md text-xs font-medium transition-colors cursor-pointer"
+                          title="Imprimir formato Ticket A4"
                         >
                           <Printer className="w-3 h-3" />
+                        </button>
+
+                        {/* Opción 2: Formato Profesional con QR */}
+                        <button
+                          type="button"
+                          onClick={() => openProfessionalPdf(ticket._id)}
+                          disabled={isPending}
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-medium transition-colors cursor-pointer"
+                          title="Imprimir formato Factura / QR"
+                        >
+                          <QrCode className="w-3 h-3" />
                         </button>
 
                         <AdminTableActions
                           actions={[
                             {
-                              label: 'Ver PDF A4',
-                              onClick: () => openBackendPdf(ticket._id),
+                              label: 'Editar Comprobante',
+                              onClick: () => handleOpenEdit(ticket),
+                            },
+                            {
+                              label: 'Ver Formato Ticket',
+                              onClick: () => openTicketPdf(ticket._id),
+                            },
+                            {
+                              label: 'Ver Formato Factura (QR)',
+                              onClick: () => openProfessionalPdf(ticket._id),
                             },
                             {
                               label: isPending ? 'Eliminando...' : 'Eliminar Registro',
@@ -373,7 +423,8 @@ export default function AdminTicketsClient({
 
       <TicketDigitalizerDrawer
         isOpen={isDigitalizerOpen}
-        onClose={() => setIsDigitalizerOpen(false)}
+        onClose={handleCloseDrawer}
+        initialData={editingTicket}
       />
     </AdminPageContainer>
   );

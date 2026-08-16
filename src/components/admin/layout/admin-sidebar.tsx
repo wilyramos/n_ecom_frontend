@@ -47,7 +47,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           </div>
           {!isCollapsed && (
             <span className="font-extrabold text-base tracking-tight text-white whitespace-nowrap">
-              GoPhone <span className="text-slate-400 font-normal text-xs">Admin</span>
+               NeoShop <span className="text-slate-400 font-normal text-xs">Admin</span>
             </span>
           )}
         </Link>
@@ -94,7 +94,6 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           {!isCollapsed && (
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-white truncate">Administrador</p>
-              <p className="text-[10px] text-slate-400 truncate">admin@gophone.pe</p>
             </div>
           )}
         </div>

@@ -98,7 +98,7 @@ export function useCulqi({ onSuccess, onError }: UseCulqiProps) {
       try {
         const config: CulqiCheckoutConfig = {
           settings: {
-            title: orderNumber ? `Orden ${orderNumber}` : 'GOPHONE',
+            title: orderNumber ? `Orden ${orderNumber}` : 'NeoShop',
             currency: 'PEN',
             amount: amountInCents,
             ...(culqiOrderId && { order: culqiOrderId }),

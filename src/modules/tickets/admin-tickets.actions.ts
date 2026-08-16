@@ -1,3 +1,4 @@
+// frontend/src/modules/tickets/admin-tickets.actions.ts
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -54,6 +55,52 @@ export async function createTicketAction(formData: unknown): Promise<{
     return { success: true, data: responseData.data };
   } catch (error) {
     console.error('[createTicketAction Error]:', error);
+    return { success: false, message: 'Error en la conexión con el servidor.' };
+  }
+}
+
+export async function updateTicketAction(id: string, formData: unknown): Promise<{
+  success: boolean;
+  message?: string;
+  data?: ITicket;
+}> {
+  try {
+    const token = await getAuthToken();
+    if (!token) {
+      return { success: false, message: 'Sesión no autorizada o expirada.' };
+    }
+
+    const parsed = ticketFormSchema.safeParse(formData);
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: parsed.error.issues[0]?.message || 'Datos de formulario inválidos.',
+      };
+    }
+
+    const res = await fetch(`${API_URL}/tickets/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(parsed.data),
+      cache: 'no-store',
+    });
+
+    const responseData = await res.json();
+
+    if (!res.ok || !responseData.success) {
+      return {
+        success: false,
+        message: responseData.message || 'Error al actualizar el comprobante.',
+      };
+    }
+
+    revalidatePath('/admin/tickets');
+    return { success: true, data: responseData.data };
+  } catch (error) {
+    console.error('[updateTicketAction Error]:', error);
     return { success: false, message: 'Error en la conexión con el servidor.' };
   }
 }

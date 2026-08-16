@@ -118,7 +118,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
     const shippingAddress = formData.deliveryMethod === 'pickup'
       ? {
         departamento: 'Ica', provincia: 'Chincha', distrito: 'Sunampe',
-        direccion: 'Av. Oscar R. Benavides 456 (Recojo en Tienda)', numero: '', pisoDpto: '', referencia: 'Oficina Central GoPhone',
+        direccion: 'Av. Oscar R. Benavides 456 (Recojo en Tienda)', numero: '', pisoDpto: '', referencia: 'Oficina Central NeoShop',
       }
       : formData.shippingAddress;
 

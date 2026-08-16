@@ -18,7 +18,6 @@ export function AdminUserMenu() {
           W
         </div>
         <div className="hidden lg:block text-left pr-1">
-          <p className="text-xs font-semibold text-slate-900 leading-tight">Wily Ramos</p>
           <p className="text-[10px] text-slate-400">Super Admin</p>
         </div>
       </button>
@@ -32,10 +31,8 @@ export function AdminUserMenu() {
           <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 z-50 overflow-hidden divide-y divide-slate-100">
             <div className="p-3 bg-slate-50/50 space-y-1">
               <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
-                <span>Wily Ramos</span>
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               </div>
-              <p className="text-[11px] text-slate-500 truncate">wily@gophone.pe</p>
             </div>
 
             <div className="p-1 space-y-0.5">

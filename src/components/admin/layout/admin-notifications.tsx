@@ -18,7 +18,7 @@ const mockNotifications: NotificationItem[] = [
     {
         id: "1",
         title: "Nueva orden recibida",
-        message: "Orden #1024 realizada por Wily Ramos",
+        message: "Orden #1024 realizada",
         time: "Hace 5 min",
         unread: true,
         type: "order",

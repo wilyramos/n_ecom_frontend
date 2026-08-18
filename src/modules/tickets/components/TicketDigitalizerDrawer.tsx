@@ -48,21 +48,17 @@ const defaultValues = {
   igv: 0,
   monto: 0,
   filename: '',
+  originalFilename: '',
 };
 
-/**
- * Reemplaza la serie B001 o NVs por B002 manteniendo el correlativo (ej: B001-00164 -> B002-00164)
- */
 function formatSerieB002(numStr: string): string {
   if (!numStr) return '';
   const trimmed = numStr.trim();
-  // Si ya tiene formato con guion (ej: B001-00164 o NV01-00164)
   if (trimmed.includes('-')) {
     const parts = trimmed.split('-');
     const correlativo = parts.slice(1).join('-');
     return `B002-${correlativo}`;
   }
-  // Si es solo un número o serie pegada
   return `B002-${trimmed}`;
 }
 
@@ -78,12 +74,12 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
     if (initialData && isOpen) {
       const items = Array.isArray(initialData.items)
         ? initialData.items.map((i) => ({
-            descripcion: i.descripcion || '',
-            unidadMedida: i.unidadMedida || 'NIU',
-            cantidad: Number(i.cantidad) || 1,
-            precioUnitario: Number(i.precioUnitario) || 0,
-            total: Number(i.total) || Number(((Number(i.cantidad) || 1) * (Number(i.precioUnitario) || 0)).toFixed(2)),
-          }))
+          descripcion: i.descripcion || '',
+          unidadMedida: i.unidadMedida || 'NIU',
+          cantidad: Number(i.cantidad) || 1,
+          precioUnitario: Number(i.precioUnitario) || 0,
+          total: Number(i.total) || Number(((Number(i.cantidad) || 1) * (Number(i.precioUnitario) || 0)).toFixed(2)),
+        }))
         : [];
 
       const totalMonto = Number(initialData.monto || 0);
@@ -106,7 +102,8 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
         subtotal,
         igv,
         monto: totalMonto,
-        filename: '',
+        filename: initialData.filename || '',
+        originalFilename: initialData.originalFilename || '',
       });
     } else if (!isOpen) {
       setFormData(defaultValues);
@@ -150,11 +147,12 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
       setFormData({
         ...defaultValues,
         ...extractedData,
-        tipoComprobante: 'BOLETA ELECTRÓNICA', // Siempre por defecto BOLETA ELECTRÓNICA
-        numeroNota: formatSerieB002(rawNota), // Forzar siempre serie B002
+        tipoComprobante: 'BOLETA ELECTRÓNICA',
+        numeroNota: formatSerieB002(rawNota),
         ...FIXED_COMPANY_DATA,
         ...totals,
         filename: json.data.filename,
+        originalFilename: json.data.originalFilename || file.name,
       });
       toast.success('Documento analizado y adaptado a Boleta Electrónica con éxito');
     } catch (err: unknown) {
@@ -240,7 +238,6 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
       return;
     }
 
-    // Asegurar formato B002 antes de enviar
     const finalData = {
       ...formData,
       numeroNota: formatSerieB002(formData.numeroNota),

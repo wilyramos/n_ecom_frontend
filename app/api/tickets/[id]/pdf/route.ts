@@ -22,12 +22,13 @@ export async function GET(
       return new NextResponse('PDF no encontrado', { status: res.status })
     }
 
+    const contentDisposition = res.headers.get('Content-Disposition') || `inline; filename="ticket-${id}.pdf"`
     const pdfBuffer = await res.arrayBuffer()
 
     return new NextResponse(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `inline; filename="ticket-${id}.pdf"`,
+        'Content-Disposition': contentDisposition,
       },
     })
   } catch (error) {

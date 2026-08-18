@@ -1,3 +1,4 @@
+// frontend/src/modules/tickets/ticket.types.ts
 export interface ITicketItem {
   _id?: string;
   descripcion: string;
@@ -27,6 +28,8 @@ export interface ITicket {
   subtotal?: number;
   igv?: number;
   monto: number;
+  filename?: string;
+  originalFilename?: string;
   fechaDigitalizacion?: string;
   createdAt: string;
   updatedAt: string;
@@ -51,6 +54,8 @@ export interface IExtractedTicketData {
   subtotal: number;
   igv: number;
   monto: number;
+  filename?: string;
+  originalFilename?: string;
 }
 
 export interface ITicketsPagination {

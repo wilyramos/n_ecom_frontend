@@ -1,3 +1,4 @@
+// frontend/src/modules/tickets/ticket.schema.ts
 import { z } from 'zod';
 
 export const ticketItemSchema = z.object({
@@ -9,7 +10,7 @@ export const ticketItemSchema = z.object({
 });
 
 export const ticketFormSchema = z.object({
-  tipoComprobante: z.string().optional().default('NOTA DE VENTA'),
+  tipoComprobante: z.string().optional().default('BOLETA ELECTRÓNICA'),
   numeroNota: z.string().min(1, 'El número de comprobante es requerido'),
   empresa: z.string().optional().default(''),
   rucEmpresa: z.string().optional().default(''),
@@ -28,6 +29,7 @@ export const ticketFormSchema = z.object({
   igv: z.coerce.number().optional().default(0),
   monto: z.coerce.number().min(0, 'El monto total no puede ser negativo'),
   filename: z.string().optional(),
+  originalFilename: z.string().optional(),
 });
 
 export type TicketFormValues = z.infer<typeof ticketFormSchema>;

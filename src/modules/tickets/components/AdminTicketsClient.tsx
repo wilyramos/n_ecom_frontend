@@ -146,7 +146,7 @@ export default function AdminTicketsClient({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `comprobantes_${format}_${Date.now()}.zip`;
+      a.download = `comprobantes.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();

@@ -1,3 +1,5 @@
+//File: frontend/components/home/GlobalAdContainer.tsx
+
 import { AdvertisementService } from "@/src/services/advertisement-service";
 import TopBarAd from "./TopBarAd";
 import ModalPopupAd from "./ModalPopupAd";

@@ -17,7 +17,7 @@ const links = [
         iconInactive: HiOutlineUser
     },
     {
-        href: '/profile/orders',
+        href: '/profile/pedidos',
         label: 'Mis pedidos',
         iconActive: HiArchiveBox,
         iconInactive: HiOutlineArchiveBox

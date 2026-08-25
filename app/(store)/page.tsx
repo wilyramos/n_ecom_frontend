@@ -1,3 +1,5 @@
+//File: frontend/app/%28store%29/page.tsx
+
 import { Metadata } from "next";
 import { metadata as globalMetadata } from "@/app/layout";
 import ProductosDestacados from "@/components/home/ProductosDestacados";

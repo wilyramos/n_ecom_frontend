@@ -1,3 +1,4 @@
+//File: frontend/app/%28store%29/catalogo/%5B%5B...slug%5D%5D/page.tsx
 import { notFound } from "next/navigation";
 import { getCatalogData } from "@/src/services/catalog";
 import CatalogLayout from "@/components/catalog/CatalogLayout";

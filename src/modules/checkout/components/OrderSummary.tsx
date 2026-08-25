@@ -1,11 +1,9 @@
-// File: frontend/src/modules/checkout/components/OrderSummary.tsx
 'use client';
 
 import React from 'react';
 import Image from 'next/image';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useCartStore } from '@/src/store/cartStore';
-import { MdOutlineImageNotSupported } from 'react-icons/md';
 
 const MP_SURCHARGE_RATE = 0.12;
 
@@ -21,50 +19,44 @@ export default function OrderSummary() {
 
   if (cart.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-sm font-medium text-slate-500">
-          Tu carrito está vacío.
-        </p>
+      <div className="py-6 text-center text-xs text-neutral-500">
+        Tu carrito está vacío.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-transparent">
-      {/* Lista de Productos */}
-      <div className="flex-1 overflow-y-auto space-y-4 max-h-[380px] lg:max-h-none pr-2 scrollbar-thin">
+    <div className="w-full flex flex-col">
+      {/* Lista de productos */}
+      <div className="space-y-3 divide-y divide-neutral-200/60 max-h-[380px] overflow-y-auto pr-1">
         {cart.map((item) => {
           const imageSrc = item.variant?.imagenes?.[0] ?? item.imagenes?.[0];
           const price = item.variant?.precio ?? item.precio ?? 0;
           const atributos = item.variant?.atributos ? Object.values(item.variant.atributos).join(' / ') : null;
 
           return (
-            <div key={`${item._id}-${item.variant?._id ?? 'no-variant'}`} className="flex items-center gap-4">
-              <div className="relative w-16 h-16 flex-shrink-0 rounded-xl border bg-white border-slate-200 flex items-center justify-center overflow-visible">
-                {imageSrc ? (
-                  <Image src={imageSrc} alt={item.nombre} fill className="object-cover rounded-xl" sizes="64px" unoptimized />
-                ) : (
-                  <div className="flex items-center justify-center w-full h-full text-slate-300">
-                    <MdOutlineImageNotSupported size={24} />
-                  </div>
+            <div key={`${item._id}-${item.variant?._id ?? 'no-variant'}`} className="flex items-center gap-3 pt-3 first:pt-0">
+              <div className="relative w-12 h-12 flex-shrink-0 rounded border border-neutral-200 bg-white">
+                {imageSrc && (
+                  <Image src={imageSrc} alt={item.nombre} fill className="object-contain p-1" sizes="48px" unoptimized />
                 )}
-                <span className="absolute -top-0 -right-2 text-white text-xs font-medium h-5 min-w-[20px] px-1.5 rounded-full flex items-center justify-center z-20 shadow-sm bg-slate-500">
+                <span className="absolute -top-1.5 -right-1.5 text-white text-[10px] font-medium h-4 w-4 rounded-full flex items-center justify-center bg-neutral-600">
                   {item.cantidad}
                 </span>
               </div>
 
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium leading-snug truncate text-slate-900">
+                <p className="text-xs font-medium text-neutral-900 truncate">
                   {item.nombre}
-                </h4>
+                </p>
                 {atributos && (
-                  <p className="text-xs mt-0.5 truncate text-slate-500">
+                  <p className="text-[11px] text-neutral-500 truncate">
                     {atributos}
                   </p>
                 )}
               </div>
 
-              <div className="text-sm font-medium whitespace-nowrap text-slate-900">
+              <div className="text-xs font-medium text-neutral-900 tabular-nums">
                 S/ {(price * item.cantidad).toFixed(2)}
               </div>
             </div>
@@ -73,32 +65,32 @@ export default function OrderSummary() {
       </div>
 
       {/* Desglose de Totales */}
-      <div className="space-y-3 pt-6 mt-6 border-t border-slate-200">
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-slate-600">Subtotal</span>
-          <span className="font-medium text-slate-900">S/ {total.toFixed(2)}</span>
+      <div className="space-y-2 pt-4 mt-4 border-t border-neutral-200 text-xs">
+        <div className="flex justify-between text-neutral-600">
+          <span>Subtotal</span>
+          <span className="font-medium text-neutral-900 tabular-nums">S/ {total.toFixed(2)}</span>
         </div>
 
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-slate-600">Envío</span>
-          <span className="font-medium text-slate-900">
-            {shippingCost === 0 ? <span className="text-blue-600">Gratis</span> : `S/ ${shippingCost.toFixed(2)}`}
+        <div className="flex justify-between text-neutral-600">
+          <span>Envío</span>
+          <span className="font-medium text-neutral-900 tabular-nums">
+            {shippingCost === 0 ? 'Gratis' : `S/ ${shippingCost.toFixed(2)}`}
           </span>
         </div>
 
         {paymentProvider === 'mercadopago' && (
-          <div className="flex justify-between items-center text-sm animate-in fade-in duration-200">
-            <span className="text-blue-700">Recargo (12 Cuotas)</span>
-            <span className="font-medium text-slate-900">
+          <div className="flex justify-between text-neutral-600">
+            <span>Recargo pasarela (12 cuotas)</span>
+            <span className="font-medium text-neutral-900 tabular-nums">
               S/ {recargoFinanciero.toFixed(2)}
             </span>
           </div>
         )}
 
-        <div className="flex justify-between items-center pt-4 mt-4 border-t border-slate-200">
-          <span className="text-base font-medium text-slate-900">Total</span>
-          <div className="flex items-center gap-2">
-            <span className="text-2xl font-semibold text-slate-900">
+        <div className="flex justify-between items-baseline pt-3 border-t border-neutral-200">
+          <span className="text-sm font-semibold text-neutral-900">Total</span>
+          <div className="text-right">
+            <span className="text-lg font-bold text-neutral-900 tabular-nums">
               S/ {totalFinal.toFixed(2)}
             </span>
           </div>

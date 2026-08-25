@@ -1,45 +1,40 @@
+// File: frontend/components/admin/pedidos/AdminPedidosClient.tsx
+
 'use client';
 
-import React, { useState, useTransition } from 'react';
-import NextLink from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
-import { IPedido, EstadoPedido } from '@/src/modules/checkout/types/pedido.types';
+import { useState, useTransition } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { IPedido } from '@/src/modules/checkout/types/pedido.types';
 import {
-  updateAdminPedidoStatusAction,
-  updateBulkAdminPedidoStatusAction,
-} from '@/src/modules/checkout/actions/admin-pedidos.actions';
-import { exportPedidosToCSV } from '@/src/lib/export-csv';
-import { IAdminPedidosStats } from '@/src/modules/checkout/services/admin-pedidos.service';
+  IAdminPedidosParams,
+  IAdminPedidosStats,
+} from '@/src/modules/checkout/services/admin-pedidos.service';
 
-// Layouts
+// Layout & UI Components
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
 import { AdminPageHeader } from '@/src/components/admin/layout/admin-page-header';
 import { AdminCardWrapper } from '@/src/components/admin/layout/admin-card-wrapper';
 import { AdminFilterBar } from '@/src/components/admin/layout/admin-filter-bar';
 import { AdminFilterDrawer } from '@/src/components/admin/layout/admin-filter-drawer';
-import { AdminActiveFilters } from '@/src/components/admin/layout/admin-active-filters';
-import { AdminTableBulkActions } from '@/src/components/admin/layout/admin-table-bulk-actions';
-import { AdminTablePagination } from '@/src/components/admin/layout/admin-table-pagination';
-import { AdminTableActions } from '@/src/components/admin/layout/admin-table-actions';
-import { AdminMetricCard } from '@/src/components/admin/layout/admin-metric-card';
-import {
-  AdminFormGroup,
-  AdminSelect,
-  AdminInput,
-} from '@/src/components/admin/layout/admin-form-group';
+import { AdminSelect } from '@/src/components/admin/layout/admin-form-group';
 import {
   AdminTable,
   AdminTableHead,
-  AdminTableRow,
   AdminTableHeaderCell,
   AdminTableCell,
+  AdminTableEmpty,
 } from '@/src/components/admin/layout/admin-table';
+import { AdminTablePagination } from '@/src/components/admin/layout/admin-table-pagination';
+import { Badge } from '@/components/ui/badge';
+import { formatDate } from '@/lib/utils';
+import { CreditCard, Eye, Package, Truck, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CheckCircle2, Clock, DollarSign } from 'lucide-react';
+import { AdminMetricsBar } from '@/src/components/admin/layout/admin-metrics-bar';
 
-import { StatusBadge, StatusBadgeProps } from '@/components/ui/status-badge';
-import { Eye, CreditCard, Truck, Copy, Check, DollarSign, ShoppingBag, Clock, CheckCircle2 } from 'lucide-react';
-import { toast } from 'sonner';
 
-interface AdminPedidosClientProps {
+export interface AdminPedidosClientProps {
   initialData: IPedido[];
   stats: IAdminPedidosStats;
   pagination: {
@@ -48,28 +43,19 @@ interface AdminPedidosClientProps {
     limit: number;
     totalPages: number;
   };
-  currentFilters: {
-    status: string;
-    provider: string;
-    delivery: string;
-    dateFrom: string;
-    dateTo: string;
-    search: string;
-    page: number;
-    limit: number;
-  };
+  currentFilters: IAdminPedidosParams;
 }
 
 const STATUS_BADGE_MAP: Record<
-  EstadoPedido,
-  { status: StatusBadgeProps['status']; label: string }
+  string,
+  { variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }
 > = {
-  awaiting_payment: { status: 'pending', label: 'Esperando Pago' },
-  processing: { status: 'processing', label: 'En Proceso' },
-  shipped: { status: 'active', label: 'Enviado' },
-  delivered: { status: 'completed', label: 'Entregado' },
-  canceled: { status: 'cancelled', label: 'Cancelado' },
-  paid_but_out_of_stock: { status: 'outOfStock', label: 'Sin Stock' },
+  awaiting_payment: { variant: 'outline', label: 'Esperando Pago' },
+  processing: { variant: 'default', label: 'En Proceso' },
+  shipped: { variant: 'secondary', label: 'Enviado' },
+  delivered: { variant: 'default', label: 'Entregado' },
+  canceled: { variant: 'destructive', label: 'Cancelado' },
+  paid_but_out_of_stock: { variant: 'destructive', label: 'Sin Stock' },
 };
 
 export default function AdminPedidosClient({
@@ -79,459 +65,292 @@ export default function AdminPedidosClient({
   currentFilters,
 }: AdminPedidosClientProps) {
   const router = useRouter();
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [search, setSearch] = useState(currentFilters.search || '');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [, startTransition] = useTransition();
+  const [tempFilters, setTempFilters] = useState({
+    dateFrom: currentFilters.dateFrom || '',
+    dateTo: currentFilters.dateTo || '',
+  });
 
-  const [searchValue, setSearchValue] = useState<string>(currentFilters.search || '');
-  const [status, setStatus] = useState<string>(currentFilters.status || 'all');
-  const [provider, setProvider] = useState<string>(currentFilters.provider || 'all');
-  const [delivery, setDelivery] = useState<string>(currentFilters.delivery || 'all');
-  const [dateFrom, setDateFrom] = useState<string>(currentFilters.dateFrom || '');
-  const [dateTo, setDateTo] = useState<string>(currentFilters.dateTo || '');
+  const updateUrlFilters = (newParams: Record<string, string | number | undefined>) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-  const applyFilters = (overrides: Record<string, string | number | null> = {}) => {
-    const params = new URLSearchParams();
-
-    const finalSearch = overrides.search !== undefined ? overrides.search : searchValue;
-    const finalStatus = overrides.status !== undefined ? overrides.status : status;
-    const finalProvider = overrides.provider !== undefined ? overrides.provider : provider;
-    const finalDelivery = overrides.delivery !== undefined ? overrides.delivery : delivery;
-    const finalFrom = overrides.dateFrom !== undefined ? overrides.dateFrom : dateFrom;
-    const finalTo = overrides.dateTo !== undefined ? overrides.dateTo : dateTo;
-
-    const rawPage = overrides.page !== undefined ? overrides.page : currentFilters.page;
-    const finalPage = typeof rawPage === 'number' ? rawPage : Number(rawPage) || 1;
-
-    const rawLimit = overrides.limit !== undefined ? overrides.limit : currentFilters.limit;
-    const finalLimit = typeof rawLimit === 'number' ? rawLimit : Number(rawLimit) || 10;
-
-    if (finalSearch) params.set('search', String(finalSearch));
-    if (finalStatus && finalStatus !== 'all') params.set('status', String(finalStatus));
-    if (finalProvider && finalProvider !== 'all') params.set('provider', String(finalProvider));
-    if (finalDelivery && finalDelivery !== 'all') params.set('delivery', String(finalDelivery));
-    if (finalFrom) params.set('dateFrom', String(finalFrom));
-    if (finalTo) params.set('dateTo', String(finalTo));
-    if (finalPage > 1) params.set('page', String(finalPage));
-    if (finalLimit !== 10) params.set('limit', String(finalLimit));
-
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
-  const clearAllFilters = () => {
-    setSearchValue('');
-    setStatus('all');
-    setProvider('all');
-    setDelivery('all');
-    setDateFrom('');
-    setDateTo('');
-    router.push(pathname);
-  };
-
-  const activeChips = [
-    status !== 'all' && {
-      id: 'status',
-      label: 'Estado',
-      value: STATUS_BADGE_MAP[status as EstadoPedido]?.label || status,
-    },
-    provider !== 'all' && {
-      id: 'provider',
-      label: 'Pasarela',
-      value: provider.toUpperCase(),
-    },
-    delivery !== 'all' && {
-      id: 'delivery',
-      label: 'Entrega',
-      value: delivery === 'shipping' ? 'Envío' : 'Recojo',
-    },
-    dateFrom && { id: 'dateFrom', label: 'Desde', value: dateFrom },
-    dateTo && { id: 'dateTo', label: 'Hasta', value: dateTo },
-  ].filter(Boolean) as { id: string; label: string; value: string }[];
-
-  const handleRemoveChip = (id: string) => {
-    if (id === 'status') { setStatus('all'); applyFilters({ status: 'all' }); }
-    if (id === 'provider') { setProvider('all'); applyFilters({ provider: 'all' }); }
-    if (id === 'delivery') { setDelivery('all'); applyFilters({ delivery: 'all' }); }
-    if (id === 'dateFrom') { setDateFrom(''); applyFilters({ dateFrom: '' }); }
-    if (id === 'dateTo') { setDateTo(''); applyFilters({ dateTo: '' }); }
-  };
-
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedIds(e.target.checked ? initialData.map((i) => i._id) : []);
-  };
-
-  const handleSelectRow = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
-
-  const handleSingleStatusChange = (id: string, newStatus: EstadoPedido) => {
-    startTransition(async () => {
-      const res = await updateAdminPedidoStatusAction(id, newStatus);
-      if (res.success) {
-        toast.success('Estado actualizado correctamente.');
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value === undefined || value === '' || value === 'all') {
+        params.delete(key);
       } else {
-        toast.error(res.message || 'Error al actualizar.');
+        params.set(key, String(value));
       }
+    });
+
+    startTransition(() => {
+      router.push(`/admin/pedidos?${params.toString()}`);
     });
   };
 
-  const handleBulkStatusChange = (newStatus: string) => {
-    startTransition(async () => {
-      const res = await updateBulkAdminPedidoStatusAction(selectedIds, newStatus as EstadoPedido);
-      if (res.success) {
-        toast.success(res.message);
-        setSelectedIds([]);
-      } else {
-        toast.error(res.message);
-      }
+  const handleSearchSubmit = (val: string) => {
+    setSearch(val);
+    updateUrlFilters({ search: val, page: 1 });
+  };
+
+  const handleQuickFilter = (key: string, value: string) => {
+    updateUrlFilters({ [key]: value, page: 1 });
+  };
+
+  const handleApplyDrawerFilters = () => {
+    updateUrlFilters({
+      dateFrom: tempFilters.dateFrom,
+      dateTo: tempFilters.dateTo,
+      page: 1,
     });
   };
 
-  const handleCopyCode = (code: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    toast.success(`N° Orden copiado: ${code}`);
-    setTimeout(() => setCopiedCode(null), 2000);
+  const handleResetFilters = () => {
+    setSearch('');
+    setTempFilters({ dateFrom: '', dateTo: '' });
+    startTransition(() => {
+      router.push('/admin/pedidos');
+    });
   };
 
-  const handleExportCSV = () => {
-    const dataToExport =
-      selectedIds.length > 0
-        ? initialData.filter((i) => selectedIds.includes(i._id))
-        : initialData;
-
-    if (dataToExport.length === 0) {
-      toast.error('No hay datos para exportar.');
-      return;
-    }
-
-    exportPedidosToCSV(dataToExport, `pedidos_export_${new Date().toISOString().slice(0, 10)}.csv`);
-    toast.success(`Exportados ${dataToExport.length} pedidos a CSV.`);
-  };
+  const activeFilterCount = [
+    currentFilters.status && currentFilters.status !== 'all',
+    currentFilters.paymentProvider && currentFilters.paymentProvider !== 'all',
+    currentFilters.deliveryMethod && currentFilters.deliveryMethod !== 'all',
+    currentFilters.dateFrom,
+    currentFilters.dateTo,
+    currentFilters.search,
+  ].filter(Boolean).length;
 
   return (
-    <AdminPageContainer maxWidth="default" spacing="default">
+    <AdminPageContainer maxWidth="default" padding="default" spacing="default">
+      {/* Cabecera */}
       <AdminPageHeader
         title="Gestión de Pedidos"
+        actions={
+          isPending && (
+            <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Actualizando lista...</span>
+            </div>
+          )
+        }
       />
 
-      {/* ── TARJETAS DE MÉTRICAS BASADAS EN PAGOS CONFIRMADOS EN BD ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <AdminMetricCard
-          title="Recaudado (Pagos Aprobados)"
-          value={`S/ ${(stats?.totalRecaudado || 0).toFixed(2)}`}
-          icon={DollarSign}
-          description={`${stats?.totalApprovedOrders || 0} compras pagadas exitosamente`}
-        />
-        <AdminMetricCard
-          title="Total Pedidos Registrados"
-          value={pagination.total || 0}
-          icon={ShoppingBag}
-        />
-        <AdminMetricCard
-          title="Por Atender / En Proceso"
-          value={stats?.pendientesCount || 0}
-          icon={Clock}
-          description="Aguardando preparación o envío"
-        />
-        <AdminMetricCard
-          title="Entregados Exitosamente"
-          value={stats?.entregadosCount || 0}
-          icon={CheckCircle2}
-        />
-      </div>
 
-      <div className="space-y-2">
-        <AdminFilterBar
-          searchPlaceholder="Buscar por orden, email o DNI..."
-          searchValue={searchValue}
-          onSearchChange={(val) => {
-            setSearchValue(val);
-            applyFilters({ search: val, page: 1 });
-          }}
-          activeCount={activeChips.length}
-          onToggleAdvanced={() => setIsDrawerOpen(true)}
-          onRefresh={() => router.refresh()}
-          onExport={handleExportCSV}
-          onReset={clearAllFilters}
-          filters={
-            <div className="hidden sm:flex items-center gap-1.5">
-              <AdminSelect
-                value={status}
-                onChange={(e) => {
-                  setStatus(e.target.value);
-                  applyFilters({ status: e.target.value, page: 1 });
-                }}
-                className="w-36 text-xs h-7 py-0"
-              >
-                <option value="all">Todos los Estados</option>
-                <option value="awaiting_payment">Esperando Pago</option>
-                <option value="processing">En Proceso</option>
-                <option value="shipped">Enviado</option>
-                <option value="delivered">Entregado</option>
-                <option value="canceled">Cancelado</option>
-              </AdminSelect>
+      <AdminMetricsBar
+        defaultOpen={true}
+        metrics={[
+          {
+            label: 'Recaudado Total',
+            value: `S/ ${stats.totalRecaudado.toFixed(2)}`,
+            icon: DollarSign,
+          },
+          {
+            label: 'Órdenes Aprobadas',
+            value: stats.totalApprovedOrders,
+            icon: CheckCircle2,
+            hint: 'completadas',
+            hintColor: 'emerald',
+          },
+          {
+            label: 'En Preparación',
+            value: stats.enProcesoCount,
+            icon: Clock,
+            hint: 'pendientes',
+            hintColor: 'blue',
+          },
+          {
+            label: 'Por Entregar',
+            value: stats.enviadosCount,
+            icon: Truck,
+            hint: 'en ruta',
+            hintColor: 'amber',
+          },
+        ]}
+      />
 
-              <AdminSelect
-                value={provider}
-                onChange={(e) => {
-                  setProvider(e.target.value);
-                  applyFilters({ provider: e.target.value, page: 1 });
-                }}
-                className="w-36 text-xs h-7 py-0"
-              >
-                <option value="all">Todas las Pasarelas</option>
-                <option value="culqi">Culqi</option>
-                <option value="mercadopago">Mercado Pago</option>
-                <option value="transferencia">Transferencia / Yape</option>
-              </AdminSelect>
-            </div>
-          }
-        />
-
-        <AdminActiveFilters
-          items={activeChips}
-          onRemove={handleRemoveChip}
-          onClearAll={clearAllFilters}
-        />
-      </div>
-
-      <AdminCardWrapper padding="none">
-        <AdminTableBulkActions
-          selectedCount={selectedIds.length}
-          totalCount={initialData.length}
-          onClearSelection={() => setSelectedIds([])}
-          onStatusChange={handleBulkStatusChange}
-          statusOptions={[
-            { label: 'Marcar como Esperando Pago', value: 'awaiting_payment' },
-            { label: 'Marcar como En Proceso', value: 'processing' },
-            { label: 'Marcar como Enviado', value: 'shipped' },
-            { label: 'Marcar como Entregado', value: 'delivered' },
-            { label: 'Marcar como Cancelado', value: 'canceled' },
-          ]}
-        />
-
-        <AdminTable>
-          <AdminTableHead>
-            <tr>
-              <AdminTableHeaderCell width="40px" align="center">
-                <input
-                  type="checkbox"
-                  onChange={handleSelectAll}
-                  checked={selectedIds.length === initialData.length && initialData.length > 0}
-                  className="rounded border-zinc-300 cursor-pointer"
-                />
-              </AdminTableHeaderCell>
-              <AdminTableHeaderCell>N° Orden</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Fecha</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Cliente</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Entrega</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Pasarela</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Total</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Estado</AdminTableHeaderCell>
-              <AdminTableHeaderCell align="right">Acciones</AdminTableHeaderCell>
-            </tr>
-          </AdminTableHead>
-          <tbody>
-            {initialData.length === 0 ? (
-              <tr>
-                <td colSpan={9} className="text-center py-10 text-xs text-zinc-400">
-                  No se encontraron pedidos registrados.
-                </td>
-              </tr>
-            ) : (
-              initialData.map((pedido) => {
-                const isSelected = selectedIds.includes(pedido._id);
-                const badgeInfo = STATUS_BADGE_MAP[pedido.status] || {
-                  status: 'pending',
-                  label: pedido.status,
-                };
-
-                return (
-                  <AdminTableRow
-                    id={`pedido-row-${pedido._id}`}
-                    key={pedido._id} selected={isSelected}>
-                    <AdminTableCell align="center">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleSelectRow(pedido._id)}
-                        className="rounded border-zinc-300 cursor-pointer"
-                      />
-                    </AdminTableCell>
-
-                    <AdminTableCell bold>
-                      <div className="flex items-center gap-1.5">
-                        <span>#{pedido.orderNumber}</span>
-                        <button
-                          onClick={(e) => handleCopyCode(pedido.orderNumber, e)}
-                          className="text-zinc-400 hover:text-zinc-700 p-0.5 rounded transition-colors"
-                          title="Copiar N° Orden"
-                        >
-                          {copiedCode === pedido.orderNumber ? (
-                            <Check className="w-3 h-3 text-emerald-600" />
-                          ) : (
-                            <Copy className="w-3 h-3" />
-                          )}
-                        </button>
-                      </div>
-                    </AdminTableCell>
-
-                    <AdminTableCell>
-                      <span className="text-[11px] text-zinc-500 whitespace-nowrap">
-                        {new Date(pedido.createdAt).toLocaleDateString('es-PE', {
-                          day: '2-digit',
-                          month: 'short',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </span>
-                    </AdminTableCell>
-
-                    <AdminTableCell>
-                      <div>
-                        <p className="font-semibold text-zinc-900">
-                          {pedido.customerProfile?.nombre} {pedido.customerProfile?.apellidos}
-                        </p>
-                        <p className="text-[11px] text-zinc-400">{pedido.customerProfile?.email}</p>
-                      </div>
-                    </AdminTableCell>
-
-                    <AdminTableCell>
-                      <span className="inline-flex items-center gap-1 text-zinc-600">
-                        <Truck className="w-3.5 h-3.5 text-zinc-400" />
-                        {pedido.deliveryMethod === 'shipping' ? 'Envío' : 'Recojo'}
-                      </span>
-                    </AdminTableCell>
-
-                    <AdminTableCell>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-zinc-100 font-semibold text-zinc-700 uppercase">
-                        <CreditCard className="w-3 h-3" />
-                        {pedido.payment?.provider}
-                      </span>
-                    </AdminTableCell>
-
-                    <AdminTableCell bold>S/ {pedido.totalPrice?.toFixed(2)}</AdminTableCell>
-
-                    <AdminTableCell>
-                      <StatusBadge
-                        status={badgeInfo.status}
-                        label={badgeInfo.label}
-                        size="sm"
-                      />
-                    </AdminTableCell>
-
-                    <AdminTableCell align="right">
-                      <div className="flex items-center justify-end gap-1">
-                        <NextLink
-                          href={`/admin/pedidos/${pedido._id}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-900 hover:bg-black text-white rounded-md text-xs font-medium transition-colors"
-                        >
-                          <Eye className="w-3 h-3" />
-                          Ver
-                        </NextLink>
-
-                        <AdminTableActions
-                          label="Cambiar Estado"
-                          actions={[
-                            {
-                              label: 'Marcar En Proceso',
-                              onClick: () => handleSingleStatusChange(pedido._id, 'processing'),
-                            },
-                            {
-                              label: 'Marcar Enviado',
-                              onClick: () => handleSingleStatusChange(pedido._id, 'shipped'),
-                            },
-                            {
-                              label: 'Marcar Entregado',
-                              onClick: () => handleSingleStatusChange(pedido._id, 'delivered'),
-                            },
-                            {
-                              label: 'Marcar Cancelado',
-                              variant: 'destructive',
-                              onClick: () => handleSingleStatusChange(pedido._id, 'canceled'),
-                            },
-                          ]}
-                        />
-                      </div>
-                    </AdminTableCell>
-                  </AdminTableRow>
-                );
-              })
-            )}
-          </tbody>
-        </AdminTable>
-
-        <AdminTablePagination
-          currentPage={pagination.page}
-          totalPages={pagination.totalPages}
-          pageSize={currentFilters.limit}
-          totalItems={pagination.total}
-          selectedCount={selectedIds.length}
-          onPageChange={(p) => applyFilters({ page: p })}
-          onPageSizeChange={(s) => applyFilters({ limit: s, page: 1 })}
-        />
-      </AdminCardWrapper>
-
-      <AdminFilterDrawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        title="Filtros Avanzados de Pedidos"
-        onApply={() => applyFilters({ page: 1 })}
-        onReset={clearAllFilters}
-      >
-        <div className="space-y-4">
-          <AdminFormGroup label="Estado del Pedido">
-            <AdminSelect value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="all">Todos</option>
+      {/* Barra de Filtros Unificada */}
+      <AdminFilterBar
+        searchPlaceholder="Buscar por orden, cliente, DNI..."
+        searchValue={search}
+        onSearchChange={handleSearchSubmit}
+        activeCount={activeFilterCount}
+        onToggleAdvanced={() => setIsDrawerOpen(true)}
+        onReset={activeFilterCount > 0 ? handleResetFilters : undefined}
+        onRefresh={() => updateUrlFilters({})}
+        filters={
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <AdminSelect
+              value={currentFilters.status || 'all'}
+              onChange={(e) => handleQuickFilter('status', e.target.value)}
+              className="h-7 py-0 px-2 text-xs w-36"
+            >
+              <option value="all">Todos los estados</option>
               <option value="awaiting_payment">Esperando Pago</option>
               <option value="processing">En Proceso</option>
               <option value="shipped">Enviado</option>
               <option value="delivered">Entregado</option>
               <option value="canceled">Cancelado</option>
             </AdminSelect>
-          </AdminFormGroup>
 
-          <AdminFormGroup label="Pasarela de Pago">
-            <AdminSelect value={provider} onChange={(e) => setProvider(e.target.value)}>
-              <option value="all">Todas</option>
+            <AdminSelect
+              value={currentFilters.paymentProvider || 'all'}
+              onChange={(e) => handleQuickFilter('provider', e.target.value)}
+              className="h-7 py-0 px-2 text-xs w-32"
+            >
+              <option value="all">Todas las pasarelas</option>
+              <option value="powerpay">Powerpay</option>
               <option value="culqi">Culqi</option>
               <option value="mercadopago">Mercado Pago</option>
-              <option value="transferencia">Transferencia / Yape</option>
+              <option value="transferencia">Transferencia</option>
             </AdminSelect>
-          </AdminFormGroup>
 
-          <AdminFormGroup label="Método de Entrega">
-            <AdminSelect value={delivery} onChange={(e) => setDelivery(e.target.value)}>
-              <option value="all">Todos</option>
-              <option value="shipping">Envío a Domicilio</option>
-              <option value="pickup">Recojo en Tienda</option>
+            <AdminSelect
+              value={currentFilters.deliveryMethod || 'all'}
+              onChange={(e) => handleQuickFilter('delivery', e.target.value)}
+              className="h-7 py-0 px-2 text-xs w-28"
+            >
+              <option value="all">Todo tipo</option>
+              <option value="shipping">Envío</option>
+              <option value="pickup">Recojo</option>
             </AdminSelect>
-          </AdminFormGroup>
+          </div>
+        }
+      />
 
-          <AdminFormGroup label="Fecha Desde">
-            <AdminInput
+      {/* Drawer de Filtros Avanzados */}
+      <AdminFilterDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        title="Filtros de Fecha"
+        description="Filtra los pedidos generados dentro de un rango de tiempo."
+        onApply={handleApplyDrawerFilters}
+        onReset={() => setTempFilters({ dateFrom: '', dateTo: '' })}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs font-semibold text-zinc-700 block mb-1">Desde:</label>
+            <input
               type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
+              value={tempFilters.dateFrom}
+              onChange={(e) => setTempFilters((prev) => ({ ...prev, dateFrom: e.target.value }))}
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
             />
-          </AdminFormGroup>
-
-          <AdminFormGroup label="Fecha Hasta">
-            <AdminInput
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-zinc-700 block mb-1">Hasta:</label>
+            <input
               type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
+              value={tempFilters.dateTo}
+              onChange={(e) => setTempFilters((prev) => ({ ...prev, dateTo: e.target.value }))}
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
             />
-          </AdminFormGroup>
+          </div>
         </div>
       </AdminFilterDrawer>
+
+      {/* Tabla */}
+      <AdminCardWrapper padding="none">
+        <AdminTable>
+          <AdminTableHead>
+            <tr>
+              <AdminTableHeaderCell width="140px">Orden</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="160px">Fecha</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Cliente</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="110px">Entrega</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="130px">Pago</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="110px">Total</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="120px">Estado</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="80px" align="right">Acción</AdminTableHeaderCell>
+            </tr>
+          </AdminTableHead>
+
+          <tbody className="divide-y divide-zinc-100">
+            {initialData.length === 0 ? (
+              <AdminTableEmpty
+                title="No se encontraron pedidos"
+                description="No existen órdenes registradas que coincidan con los filtros seleccionados."
+                colSpan={8}
+              />
+            ) : (
+              initialData.map((ped) => {
+                const badge = STATUS_BADGE_MAP[ped.status] || {
+                  variant: 'outline',
+                  label: ped.status,
+                };
+
+                return (
+                  <tr key={ped._id} className="hover:bg-zinc-50/60 transition-colors">
+                    <AdminTableCell bold>
+                      #{ped.orderNumber}
+                    </AdminTableCell>
+
+                    <AdminTableCell>
+                      {formatDate(ped.createdAt)}
+                    </AdminTableCell>
+
+                    <AdminTableCell>
+                      <p className="font-semibold text-zinc-900 truncate max-w-[170px]">
+                        {ped.customerProfile.nombre} {ped.customerProfile.apellidos}
+                      </p>
+                      <p className="text-[10px] text-zinc-400">
+                        {ped.customerProfile.tipoDocumento}: {ped.customerProfile.numeroDocumento}
+                      </p>
+                    </AdminTableCell>
+
+                    <AdminTableCell>
+                      <span className="inline-flex items-center gap-1.5 text-zinc-700">
+                        {ped.deliveryMethod === 'pickup' ? <Package size={13} className="text-zinc-400" /> : <Truck size={13} className="text-zinc-400" />}
+                        {ped.deliveryMethod === 'pickup' ? 'Recojo' : 'Envío'}
+                      </span>
+                    </AdminTableCell>
+
+                    <AdminTableCell>
+                      <span className="inline-flex items-center gap-1.5 text-zinc-700 uppercase">
+                        <CreditCard size={13} className="text-zinc-400" />
+                        {ped.payment.provider}
+                      </span>
+                    </AdminTableCell>
+
+                    <AdminTableCell bold>
+                      S/ {ped.totalPrice.toFixed(2)}
+                    </AdminTableCell>
+
+                    <AdminTableCell>
+                      <Badge variant={badge.variant}>
+                        {badge.label}
+                      </Badge>
+                    </AdminTableCell>
+
+                    <AdminTableCell align="right">
+                      <Button asChild variant="ghost" size="sm" className="h-7 px-2 font-medium">
+                        <Link href={`/admin/pedidos/${ped._id}`}>
+                          <Eye className="w-3.5 h-3.5 mr-1" />
+                          Ver
+                        </Link>
+                      </Button>
+                    </AdminTableCell>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </AdminTable>
+
+        {/* Paginador Modular */}
+        <AdminTablePagination
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          pageSize={Number(currentFilters.limit) || 10}
+          totalItems={pagination.total}
+          onPageChange={(page) => updateUrlFilters({ page })}
+          onPageSizeChange={(limit) => updateUrlFilters({ limit, page: 1 })}
+        />
+      </AdminCardWrapper>
     </AdminPageContainer>
   );
 }

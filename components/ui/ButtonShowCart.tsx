@@ -25,7 +25,7 @@ export default function ButtonShowCart() {
             return;
         }
         setCartOpen(false);
-        router.push("/checkout");
+        router.push("/checkout-v2");
     };
 
     return (

@@ -143,10 +143,7 @@ export default function CatalogSidebar({ filters }: Props) {
     const defaultExpanded = useMemo(() => [
         "item-price",
         "item-categories",
-        "item-brands",
-        "item-lines",
-        ...sortedFilters.atributos.map((_, idx) => `attr-${idx}`)
-    ], [sortedFilters]);
+    ], []);
 
     return (
         <div className="w-full pb-12 select-none px-1 py-4 rounded-3xl">

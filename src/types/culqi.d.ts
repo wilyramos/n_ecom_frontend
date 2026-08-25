@@ -1,5 +1,3 @@
-// File: frontend/src/types/culqi.d.ts
-
 export interface ICulqiToken {
   id: string;
   type: string;
@@ -65,7 +63,13 @@ export interface CulqiCheckoutConfig {
   options: ICulqiOptions;
 }
 
-// 🚀 Propiedades tipadas de la instancia de Culqi V4 (Adiós al "any")
+export interface CulqiOrderResponse {
+  id: string;
+  object: string;
+  amount: number;
+  currency_code: string;
+}
+
 export interface ICulqiCheckoutInstance {
   open: () => void;
   close: () => void;
@@ -76,31 +80,29 @@ export interface ICulqiCheckoutInstance {
   closeEvent?: boolean | null;
 }
 
-export interface CulqiOrderResponse {
-  id: string;
-  object: string;
-  amount: number;
-  currency_code: string;
-}
+export type CulqiCheckoutConstructor = new (
+  publicKey: string,
+  config: CulqiCheckoutConfig
+) => ICulqiCheckoutInstance;
 
 export interface ICulqiGlobalObject {
+  publicKey?: string;
   token?: ICulqiToken | null;
   order?: CulqiOrderResponse | null;
   error?: ICulqiError | null;
   close?: () => void;
   closeEvent?: boolean | null;
-  isOpen?: boolean;
+  open: () => void;
+  settings: (settings: ICulqiSettings) => void;
+  options: (options: ICulqiOptions) => void;
 }
 
 declare global {
   interface Window {
-    CulqiCheckout2?: new (
-      publicKey: string,
-      config: CulqiCheckoutConfig
-    ) => ICulqiCheckoutInstance;
-
+    CulqiCheckout?: CulqiCheckoutConstructor;
+    CulqiCheckout2?: CulqiCheckoutConstructor;
     Culqi?: ICulqiGlobalObject;
-
+    CULQI_PUBLIC_KEY?: string;
     culqi?: () => void;
   }
 }

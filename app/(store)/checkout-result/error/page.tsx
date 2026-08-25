@@ -1,3 +1,5 @@
+//File: frontend/app/%28store%29/checkout-result/error/page.tsx
+
 import ErrorClient from "@/components/checkout/ErrorClient";
 
 type SearchParams = Promise<{ error?: string; orderId?: string }>;

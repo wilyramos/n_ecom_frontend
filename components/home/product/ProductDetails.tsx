@@ -1,3 +1,5 @@
+// File: frontend/components/home/product/ProductDetails.tsx
+
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -18,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import ProductExpandableSections from './ProductExpandableSections ';
 import InstallmentInfo from './InstallmentInfo';
+// import PowerpayPdp from '@/src/components/powerpay/PowerpayPdp';
 import { ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
@@ -110,7 +113,6 @@ export default function ProductDetails({ producto }: Props) {
         }
 
         const cleaned = Array.from(new Set(images.filter(img => img && img.trim() !== "")));
-
         return cleaned.length > 0 ? cleaned : ["/logoapp.png"];
     }, [selectedVariant, producto.imagenes, producto.variants]);
 
@@ -130,7 +132,6 @@ export default function ProductDetails({ producto }: Props) {
 
     const colorAtributo = !producto.variants?.length && (producto.atributos?.color || producto.atributos?.Color || producto.atributos?.COLOR || null);
 
-
     const tieneComplementarios = producto.complementarios &&
         producto.complementarios.length > 0 &&
         producto.complementarios.some(comp => typeof comp !== 'string');
@@ -142,9 +143,9 @@ export default function ProductDetails({ producto }: Props) {
                     <ImagenesProductoCarousel images={variantImages} />
                 </div>
 
-                <section className="lg:col-span-6 flex flex-col  space-y-1">
+                <section className="lg:col-span-6 flex flex-col space-y-1">
                     <div className="space-y-1">
-                        <header className="space-y-1 pb-2 ">
+                        <header className="space-y-1 pb-2">
                             <div className="flex items-center justify-between gap-2 flex-wrap text-xs tracking-wide uppercase font-medium">
                                 <div className="flex items-center gap-1 text-fg-secondary">
                                     {producto.brand && (
@@ -183,12 +184,10 @@ export default function ProductDetails({ producto }: Props) {
                             )}
 
                             <div className="flex items-center gap-3 pt-2 flex-wrap">
-
                                 {hasDiscount && (
                                     <div className="flex items-center gap-2">
                                         <span className="text-xl md:text-2xl text-fg-muted line-through">
                                             S/ {precioComparativo!.toFixed(2)}
-
                                         </span>
                                         <span className="text-xl md:text-2xl px-2 bg-red-600 text-fg-inverse rounded-sm">
                                             −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
@@ -202,10 +201,6 @@ export default function ProductDetails({ producto }: Props) {
                                     </span>
                                 </div>
 
-
-
-
-
                                 {stock === 0 && (
                                     <span className="text-xs font-medium text-fg-primary bg-surface-secondary px-2.5 py-1 rounded-sm">
                                         Sin stock
@@ -214,9 +209,15 @@ export default function ProductDetails({ producto }: Props) {
                             </div>
                         </header>
 
-                        <div className="py-4">
+                        {/* Widget Oficial Powerpay PDP (Calcula cuotas en tiempo real según el precio actual) */}
+                        <div className="py-2">
+                            {/* <PowerpayPdp price={precio} /> */}
+                        </div>
+
+                        <div className="py-1">
                             {precio > 100 && <InstallmentInfo price={precio} />}
                         </div>
+
                         <div className="space-y-5">
                             {Object.entries(allAttributes).map(([key]) => {
                                 const availableValues = getAvailableValues(key);
@@ -226,7 +227,7 @@ export default function ProductDetails({ producto }: Props) {
                                 return (
                                     <fieldset key={key} className="space-y-2">
                                         <legend className="text-xs font-semibold tracking-wide uppercase text-fg-muted">
-                                            {key}: {selectedAttributes[key] && <span className="text-fg-primary capitalize font-semibold  ml-1">{selectedAttributes[key]}</span>}
+                                            {key}: {selectedAttributes[key] && <span className="text-fg-primary capitalize font-semibold ml-1">{selectedAttributes[key]}</span>}
                                         </legend>
 
                                         {isColor ? (
@@ -244,7 +245,7 @@ export default function ProductDetails({ producto }: Props) {
                                                             disabled={outOfStock}
                                                             title={val}
                                                             className={cn(
-                                                                "relative flex  items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-surface-primary cursor-pointer",
+                                                                "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-surface-primary cursor-pointer",
                                                                 selected
                                                                     ? "border-fg-primary ring-1 ring-fg-primary"
                                                                     : "border-border-default hover:border-fg-primary",
@@ -331,7 +332,6 @@ export default function ProductDetails({ producto }: Props) {
                                 <AddProductToCart
                                     product={producto}
                                     variant={selectedVariant ?? undefined}
-
                                 />
                             </div>
                             <div className="flex-1 w-full">
@@ -344,10 +344,10 @@ export default function ProductDetails({ producto }: Props) {
                             </div>
                         </div>
                     </div>
-                    <div className="pt-4 ">
+
+                    <div className="pt-4">
                         <div className="flex flex-col gap-2 text-sm">
                             <a
-
                                 href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                                 target="_blank"
                                 rel="noreferrer"
@@ -355,8 +355,6 @@ export default function ProductDetails({ producto }: Props) {
                             >
                                 Consultar por WhatsApp
                             </a>
-
-
 
                             <div className="p-4 flex flex-row justify-between items-center rounded-2xl border border-border">
                                 <div className="text-sm font-semibold tracking-tighter text-[var(--color-text-primary)] flex flex-row items-center gap-2">
@@ -368,7 +366,7 @@ export default function ProductDetails({ producto }: Props) {
                                         href="/cambios-devoluciones"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs text-[var(--color-text-secondary)]  hover:text-[var(--color-text-primary)] transition-colors whitespace-nowrap"
+                                        className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors whitespace-nowrap"
                                     >
                                         Ver más detalles
                                     </Link>
@@ -379,13 +377,11 @@ export default function ProductDetails({ producto }: Props) {
                         </div>
 
                         <section>
-
                             {tieneComplementarios && (
-                                <section className="container mx-auto py-2 ">
+                                <section className="container mx-auto py-2">
                                     <h2 className="text-base font-semibold text-fg-primary mb-4">
-                                        Complementa tu compra <span className="text-xs font-bold bg-red-600 text-white px-2  "> Hasta 20% de Dcto</span>
+                                        Complementa tu compra <span className="text-xs font-bold bg-red-600 text-white px-2"> Hasta 20% de Dcto</span>
                                     </h2>
-
 
                                     <section className="max-w-screen-2xl mx-auto px-4">
                                         <div className="pt-8 space-y-4">
@@ -398,7 +394,7 @@ export default function ProductDetails({ producto }: Props) {
                                                         <Link
                                                             key={comp._id}
                                                             href={`/productos/${comp.slug}`}
-                                                            className="group flex flex-col justify-between p-3 transition-all  hover:border-fg-primary bg-surface-primary rounded-2xl border border-border-default"
+                                                            className="group flex flex-col justify-between p-3 transition-all hover:border-fg-primary bg-surface-primary rounded-2xl border border-border-default"
                                                         >
                                                             <div className="space-y-3">
                                                                 <div className="relative aspect-square overflow-hidden rounded bg-surface-primary w-full">
@@ -430,21 +426,13 @@ export default function ProductDetails({ producto }: Props) {
                                 </section>
                             )}
                         </section>
-
                     </div>
-
-
                 </section>
-
-
             </article>
 
-            <div className="mt-8">
-            </div>
+            <div className="mt-8"></div>
 
-
-
-            <div className="md:hidden fixed bottom-0 left-0 w-full bg-surface-primary p-4  shadow-lg z-50">
+            <div className="md:hidden fixed bottom-0 left-0 w-full bg-surface-primary p-4 shadow-lg z-50">
                 <AddProductToCart
                     product={producto}
                     variant={allAttributesSelected ? selectedVariant ?? undefined : undefined}

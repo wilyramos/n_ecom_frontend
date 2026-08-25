@@ -1,4 +1,5 @@
-// File: frontend/src/modules/checkout/components/form-sections/CustomerInfo.tsx
+//File: frontend/src/modules/checkout/components/form-sections/CustomerInfo.tsx
+
 'use client';
 
 import React from 'react';
@@ -18,27 +19,20 @@ export default function CustomerInfo({ isAuth }: CustomerInfoProps) {
 
   return (
     <section>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-     
-          <h2 className="text-base font-semibold text-black tracking-tight">Contacto</h2>
-        </div>
-
+      <div className="flex justify-between items-center mb-2.5">
+        <h2 className="text-sm font-semibold text-neutral-900">Contacto</h2>
         {!isAuth && (
-          <div className="text-xs text-slate-600 font-medium">
-            <span>¿Tienes cuenta? </span>
-            <button 
-              type="button" 
-              onClick={() => router.push('/auth/login?redirect=/checkout-v2')}
-              className="text-slate-900 font-bold hover:underline focus:outline-none ml-0.5 transition-colors"
-            >
-              Iniciar sesión
-            </button>
-          </div>
+          <button 
+            type="button" 
+            onClick={() => router.push('/auth/login?redirect=/checkout-v2')}
+            className="text-xs text-neutral-600 hover:text-neutral-900 underline focus:outline-none"
+          >
+            Iniciar sesión
+          </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div className="sm:col-span-2">
           <InputV2 
             label="Correo electrónico" type="email"
@@ -57,11 +51,9 @@ export default function CustomerInfo({ isAuth }: CustomerInfoProps) {
             {...register('customerProfile.apellidos')} aria-invalid={!!errors.customerProfile?.apellidos}
           />
         </div>
-        
-        {/* Selector reutilizable con SelectV2 */}
         <div>
           <SelectV2
-            label="Tipo de Documento"
+            label="Documento"
             {...register('customerProfile.tipoDocumento')}
             aria-invalid={!!errors.customerProfile?.tipoDocumento}
           >
@@ -71,14 +63,12 @@ export default function CustomerInfo({ isAuth }: CustomerInfoProps) {
             <option value="PASAPORTE">Pasaporte</option>
           </SelectV2>
         </div>
-
         <div>
           <InputV2 
-            label="Número de Documento" type="text"
+            label="Número de documento" type="text"
             {...register('customerProfile.numeroDocumento')} aria-invalid={!!errors.customerProfile?.numeroDocumento}
           />
         </div>
-        
         <div className="sm:col-span-2">
           <InputV2 
             label="Teléfono móvil" type="tel"

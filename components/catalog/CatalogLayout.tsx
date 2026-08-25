@@ -1,3 +1,5 @@
+//File: frontend/components/catalog/CatalogLayout.tsx
+
 "use client";
 
 import type { CatalogResponse } from "@/src/schemas/catalog";

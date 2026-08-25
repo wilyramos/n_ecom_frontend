@@ -6,7 +6,7 @@ import { reorderSliderBannersAction, type ReorderItem } from "@/actions/slider-a
 import type { SliderBanner }  from "@/src/schemas/slider.schema";
 import BannerRow              from "./BannerRow";
 import EmptyStateSlider       from "./EmptyStateSlider";
-import Alert                  from "@/components/ui/Alert";
+import {Alert}                  from "@/components/ui/Alert";
 import { Table, TableHeader, TableHead, TableBody } from "@/components/ui/table";
 
 interface SliderTableProps {
@@ -76,13 +76,16 @@ export default function SliderTable({ banners }: SliderTableProps) {
     return (
         <div className="space-y-3">
             {errorMsg && (
-                <Alert variant="error" mode="banner" onDismiss={() => setErrorMsg(null)}>
+                <Alert 
+
+                >
+                
                     {errorMsg}
                 </Alert>
             )}
 
             {isPending && (
-                <Alert variant="info" mode="banner">
+                <Alert >
                     Guardando nuevo orden…
                 </Alert>
             )}

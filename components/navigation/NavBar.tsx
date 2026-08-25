@@ -10,16 +10,16 @@ import { HiOutlineUserCircle } from "react-icons/hi2";
 export default function NavBar() {
     return (
         <NavBarClient>
-            <div 
-                id="navbar-fixed" 
-                className="h-20 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300"
+            <div
+                id="navbar-fixed"
+                className="h-18 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300"
             >
                 <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative h-full">
 
                     {/* Mobile: Logo centrado */}
-                    <div className="md:hidden absolute left-1/2 -translate-x-1/2 h-14 w-40">
-                        <Link href="/" className="flex items-center w-full h-full">
-                            <Logo color="black" />
+                    <div className="md:hidden absolute left-1/2 -translate-x-1/2 top-0 bottom-0 flex items-center justify-center">
+                        <Link href="/" className="flex items-center">
+                            <Logo color="black" className="h-8 w-32" />
                         </Link>
                     </div>
 
@@ -29,9 +29,9 @@ export default function NavBar() {
                     </div>
 
                     {/* Desktop: Logo a la izquierda ocupando espacio */}
-                    <div className="hidden md:flex items-center flex-1 h-16 max-w-[250px]">
-                        <Link href="/" className="flex items-center w-full h-full">
-                            <Logo color="black" />
+                    <div className="hidden md:flex items-center flex-1 h-full max-w-[250px]">
+                        <Link href="/" className="flex items-center">
+                            <Logo color="black" className="h-10 w-44" />
                         </Link>
                     </div>
 

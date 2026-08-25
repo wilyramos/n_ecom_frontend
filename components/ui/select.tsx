@@ -31,9 +31,10 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm shadow-sm transition-colors outline-none",
+        "flex w-full items-center justify-between gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors outline-none",
         "data-[placeholder]:text-fg-muted [&_svg]:text-fg-muted",
-        "focus:ring-2 focus:ring-ring focus:border-ring",
+        "hover:bg-brand-action-muted hover:border-brand-action/40",
+        "focus-visible:ring-1 focus-visible:ring-ring focus-visible:border-ring",
         "disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8",
         className
       )}
@@ -58,7 +59,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md",
+          "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           className
         )}
@@ -88,8 +89,9 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none select-none",
-        "focus:bg-accent focus:text-accent-foreground",
+        "relative flex w-full cursor-pointer items-center rounded-lg py-1.5 pl-8 pr-2 text-sm text-foreground outline-none select-none transition-colors",
+        "focus:bg-brand-action-muted focus:text-foreground",
+        "data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -97,7 +99,7 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
     >
       <span className="absolute left-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4" />
+          <CheckIcon className="size-4 text-brand-charcoal" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

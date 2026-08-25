@@ -15,9 +15,9 @@ export default function CatalogMobileSort() {
     const currentSort = searchParams.get("sort") || "recientes";
 
     return (
-        <div className="relative flex items-center bg-surface-primary text-fg-primary select-none rounded-3xl">
+        <div className="relative flex items-center bg-surface-primary text-fg-primary select-none rounded-full">
             <div className="absolute left-3 z-10 pointer-events-none">
-                <ArrowUpDown className="w-3.5 h-3.5 text-fg-secondary" />
+                <ArrowUpDown className="w-3.5 h-3.5 text-fg-muted" />
             </div>
 
             <Select
@@ -31,11 +31,11 @@ export default function CatalogMobileSort() {
                         border border-border-default
                         bg-surface-primary
                         text-fg-primary
-                        focus:ring-0 focus:outline-none
-                        hover:bg-surface-secondary
-                        transition-colors
+                        hover:bg-brand-action-muted hover:border-brand-action/40
+                        focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none
+                        transition-colors duration-150
                         w-auto
-                        cursor-pointer rounded-3xl
+                        cursor-pointer rounded-full
                     "
                 >
                     <SelectValue placeholder="Ordenar" />
@@ -43,35 +43,47 @@ export default function CatalogMobileSort() {
 
                 <SelectContent
                     align="end"
-                    className="bg-surface-primary border border-border-default rounded-xl p-1 text-fg-primary"
+                    className="bg-surface-primary border border-border-default rounded-xl p-1 text-fg-primary shadow-md"
                 >
-                    {/* RELEVANCIA */}
-                    <SelectItem value="relevancia" className="rounded-lg text-[13px] cursor-pointer focus:bg-surface-secondary focus:text-fg-primary">
+                    <SelectItem 
+                        value="relevancia" 
+                        className="rounded-lg text-[13px] cursor-pointer text-fg-primary hover:bg-brand-action-muted focus:bg-brand-action-muted focus:text-fg-primary data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold"
+                    >
                         Relevancia
                     </SelectItem>
 
-                    {/* RECIENTES */}
-                    <SelectItem value="recientes" className="rounded-lg text-[13px] cursor-pointer focus:bg-surface-secondary focus:text-fg-primary">
+                    <SelectItem 
+                        value="recientes" 
+                        className="rounded-lg text-[13px] cursor-pointer text-fg-primary hover:bg-brand-action-muted focus:bg-brand-action-muted focus:text-fg-primary data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold"
+                    >
                         Más Recientes
                     </SelectItem>
 
-                  
-
-                    {/* DESCUENTO */}
-                    <SelectItem value="discount" className="rounded-lg text-[13px] cursor-pointer focus:bg-surface-secondary focus:text-fg-primary">
+                    <SelectItem 
+                        value="discount" 
+                        className="rounded-lg text-[13px] cursor-pointer text-fg-primary hover:bg-brand-action-muted focus:bg-brand-action-muted focus:text-fg-primary data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold"
+                    >
                         Mayor Descuento
                     </SelectItem>
 
-                    {/* PRECIO */}
-                    <SelectItem value="price-asc" className="rounded-lg text-[13px] cursor-pointer focus:bg-surface-secondary focus:text-fg-primary">
+                    <SelectItem 
+                        value="price-asc" 
+                        className="rounded-lg text-[13px] cursor-pointer text-fg-primary hover:bg-brand-action-muted focus:bg-brand-action-muted focus:text-fg-primary data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold"
+                    >
                         Menor Precio
                     </SelectItem>
-                    <SelectItem value="price-desc" className="rounded-lg text-[13px] cursor-pointer focus:bg-surface-secondary focus:text-fg-primary">
+
+                    <SelectItem 
+                        value="price-desc" 
+                        className="rounded-lg text-[13px] cursor-pointer text-fg-primary hover:bg-brand-action-muted focus:bg-brand-action-muted focus:text-fg-primary data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold"
+                    >
                         Mayor Precio
                     </SelectItem>
 
-                    {/* ALFABÉTICO */}
-                    <SelectItem value="name-asc" className="rounded-lg text-[13px] cursor-pointer focus:bg-surface-secondary focus:text-fg-primary">
+                    <SelectItem 
+                        value="name-asc" 
+                        className="rounded-lg text-[13px] cursor-pointer text-fg-primary hover:bg-brand-action-muted focus:bg-brand-action-muted focus:text-fg-primary data-[state=checked]:bg-brand-action-muted data-[state=checked]:font-semibold"
+                    >
                         Nombre: A - Z
                     </SelectItem>
                 </SelectContent>

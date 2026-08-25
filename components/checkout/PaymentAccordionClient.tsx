@@ -17,7 +17,7 @@ type PaymentAccordionClientProps = {
     mercadopagoTotal: number;
     waMessage: string;
     currentMethod: string;
-    checkoutCulqiComponent: React.ReactNode;
+    checkoutCulqiComponent?: React.ReactNode;
     checkoutMercadoPagoComponent: React.ReactNode;
 };
 

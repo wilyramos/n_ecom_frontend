@@ -37,7 +37,7 @@ export default function ShopNowButton({ product, variant, disabled, isSelectionI
         // 3. Acción
         addToCart(product, variant);
         toast.success("Producto añadido al carrito");
-        router.push("/checkout");
+        router.push("/checkout-v2");
     };
 
     return (

@@ -50,6 +50,9 @@ export const checkoutSchema = z
       method: z.string().optional(),
       paymentCode: z.string().optional(),
     }),
+    acceptTerms: z.literal(true, {
+      errorMap: () => ({ message: 'Debes aceptar los términos y condiciones para continuar.' }),
+    }),
   })
   .superRefine((data, ctx) => {
     if (data.deliveryMethod === 'shipping') {

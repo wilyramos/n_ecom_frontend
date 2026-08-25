@@ -1,7 +1,5 @@
-// File: frontend/components/ui/SelectV2.tsx
 import { cn } from "@/lib/utils";
 import * as React from "react";
-import { ChevronDown } from "lucide-react";
 
 interface SelectV2Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
@@ -13,12 +11,15 @@ export const SelectV2 = React.forwardRef<HTMLSelectElement, SelectV2Props>(
     const selectId = id || generatedId;
 
     return (
-      <div className="relative w-full group flex flex-col justify-end h-11">
+      <div className="relative w-full">
         <select
           id={selectId}
           ref={ref}
           className={cn(
-            "peer h-11 w-full min-w-0 rounded-2xl border border-slate-300 bg-white px-3.5 pt-4 pb-1 text-md text-black font-normal outline-none appearance-none cursor-pointer transition-all duration-150 hover:border-slate-400 focus-visible:border-blue-600 focus-visible:ring-1 focus-visible:ring-blue-600 aria-invalid:border-red-500 aria-invalid:ring-1 aria-invalid:ring-red-500 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 shadow-none",
+            "peer h-10 w-full rounded-md border border-neutral-300 bg-white px-3 pt-3.5 pb-1 text-xs text-neutral-900 outline-none transition-colors appearance-none cursor-pointer",
+            "hover:border-neutral-400 focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900",
+            "aria-invalid:border-red-500 aria-invalid:ring-1 aria-invalid:ring-red-500",
+            "disabled:bg-neutral-50 disabled:text-neutral-400",
             className
           )}
           {...props}
@@ -27,14 +28,10 @@ export const SelectV2 = React.forwardRef<HTMLSelectElement, SelectV2Props>(
         </select>
         <label
           htmlFor={selectId}
-          className="pointer-events-none absolute left-3.5 top-1 select-none text-[10px] font-medium leading-none text-slate-500 transition-all duration-150 peer-focus:text-slate-600"
+          className="pointer-events-none absolute left-3 top-1 text-[9px] font-normal text-neutral-500 transition-all peer-focus:text-neutral-700"
         >
           {label}
         </label>
-        <ChevronDown
-          size={16}
-          className="pointer-events-none absolute right-3.5 top-3.5 text-slate-500 transition-colors group-hover:text-slate-700"
-        />
       </div>
     );
   }

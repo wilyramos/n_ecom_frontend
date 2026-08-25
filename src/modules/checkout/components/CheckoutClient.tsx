@@ -1,9 +1,10 @@
 // File: frontend/src/modules/checkout/components/CheckoutClient.tsx
 'use client';
 
-import { useTransition, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Script from 'next/script';
-import { useForm, FormProvider, Path } from 'react-hook-form';
+import Link from 'next/link';
+import { useForm, FormProvider, Path, Controller } from 'react-hook-form';
 import { checkoutSchema, CheckoutFormData } from '../schemas/checkout.schema';
 import CustomerInfo from './form-sections/CustomerInfo';
 import ShippingInfo from './form-sections/ShippingInfo';
@@ -15,10 +16,10 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/src/store/cartStore';
 import { useCulqi } from '../hooks/useCulqi';
 import { toast } from 'sonner';
-import { Loader2, ShoppingBag, Lock } from 'lucide-react';
-import { IPedido } from '../types/pedido.types';
+import { Loader2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import PowerpayCheckoutWidget from '@/src/components/powerpay/PowerpayCheckoutWidget';
 
 interface CheckoutClientProps {
   initialCustomerData: {
@@ -35,10 +36,11 @@ const MP_SURCHARGE_RATE = 0.12;
 
 export default function CheckoutClient({ initialCustomerData, isAuth }: CheckoutClientProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { cart, total, clearCart } = useCartStore();
 
-  const pedidoGuardadoRef = useRef<IPedido | null>(null);
+  // Guardamos solo el número de orden activo para saber a quién aplicar el cobro al retornar el token.
+  const activeOrderNumberRef = useRef<string | null>(null);
 
   const methods = useForm<CheckoutFormData>({
     defaultValues: {
@@ -55,7 +57,8 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         departamento: '', provincia: '', distrito: '', direccion: '', numero: '', pisoDpto: '', referencia: '',
       },
       invoiceInfo: { type: 'boleta', documentNumber: '', businessName: '' },
-      payment: { provider: 'mercadopago', method: 'online', paymentCode: '' },
+      payment: { provider: 'culqi', method: 'online', paymentCode: '' },
+      acceptTerms: true,
     },
   });
 
@@ -67,28 +70,30 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const totalFinalCalculado = total + shippingCost + recargoFinanciero;
 
   const handleCulqiTokenSuccess = useCallback(async (tokenOrOrderId: string) => {
-    const pedidoActual = pedidoGuardadoRef.current;
-    if (!pedidoActual) {
-      toast.error('No se encontró una orden previa activa para cobrar.');
+    const orderNumber = activeOrderNumberRef.current;
+    if (!orderNumber) {
+      toast.error('No se encontró una orden activa.');
       return;
     }
 
-    startTransition(async () => {
-      try {
-        const resultadoCargo = await procesarCargoCulqiAction(pedidoActual.orderNumber, tokenOrOrderId);
+    setIsSubmitting(true);
+    try {
+      const resultadoCargo = await procesarCargoCulqiAction(orderNumber, tokenOrOrderId);
 
-        if (resultadoCargo.success) {
-          toast.success('Pago confirmado exitosamente.');
-          clearCart();
-          router.push(`/checkout-result/success/${pedidoActual.orderNumber}`);
-        } else {
-          toast.error(resultadoCargo.message || 'El pago fue rechazado.');
-          router.push(`/checkout-result/failure?order=${pedidoActual.orderNumber}`);
-        }
-      } catch {
-        toast.error('Error al procesar la confirmación del pago.');
+      if (resultadoCargo.success) {
+        const isPendingOrder = tokenOrOrderId.startsWith('ord_');
+        toast.success(isPendingOrder ? 'Código de pago generado.' : 'Pago confirmado exitosamente.');
+        clearCart();
+        router.push(`/checkout-result/success/${orderNumber}`);
+      } else {
+        toast.error(resultadoCargo.message || 'El pago fue rechazado.');
+        router.push(`/checkout-result/failure?order=${orderNumber}`);
       }
-    });
+    } catch {
+      toast.error('Error al procesar la confirmación del pago.');
+    } finally {
+      setIsSubmitting(false);
+    }
   }, [clearCart, router]);
 
   const { isScriptLoaded, isProcessing: isCulqiProcessing, openCulqiModal, handleScriptLoad, handleScriptError } = useCulqi({
@@ -102,29 +107,20 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
     }
 
     const parsed = checkoutSchema.safeParse(formData);
-
     if (!parsed.success) {
       parsed.error.issues.forEach((issue) => {
-        methods.setError(issue.path.join('.') as Path<CheckoutFormData>, {
-          type: 'manual',
-          message: issue.message,
-        });
+        methods.setError(issue.path.join('.') as Path<CheckoutFormData>, { type: 'manual', message: issue.message });
       });
-      toast.error('Por favor, completa los campos obligatorios.');
+      toast.error('Por favor, completa los campos requeridos y acepta los términos.');
       document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    const shippingAddress = formData.deliveryMethod === 'pickup'
-      ? {
-        departamento: 'Ica', provincia: 'Chincha', distrito: 'Sunampe',
-        direccion: 'Av. Oscar R. Benavides 456 (Recojo en Tienda)', numero: '', pisoDpto: '', referencia: 'Oficina Central NeoShop',
-      }
-      : formData.shippingAddress;
-
     const orderPayload = {
       ...parsed.data,
-      shippingAddress,
+      shippingAddress: formData.deliveryMethod === 'pickup'
+        ? { departamento: 'Lima', provincia: 'Lima', distrito: 'Santiago de Surco', direccion: 'Av. Caminos del Inca 257 (Recojo en Tienda)', numero: '', pisoDpto: '', referencia: 'Tienda Oficial' }
+        : formData.shippingAddress,
       invoiceInfo: parsed.data.invoiceInfo?.type === 'factura' ? parsed.data.invoiceInfo : undefined,
       items: cart.map((item) => ({
         productId: item._id,
@@ -144,130 +140,129 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       },
     };
 
-    startTransition(async () => {
-      // 🚀 VERIFICAR SI YA HAY UNA ORDEN CREADA ACTIVA PARA NO DUPLICAR
-      let pedidoCreado = pedidoGuardadoRef.current;
-      let culqiOrderIdExtraido: string | undefined = undefined;
+    setIsSubmitting(true);
 
-      // Solo si NO hay orden guardada previamente (o si la pasarela cambió), llamamos al backend para crear.
-      if (!pedidoCreado || pedidoCreado.payment.provider !== formData.payment.provider) {
-        const response = await crearPedidoAction(orderPayload);
+    try {
+      // 1 intento = 1 nuevo pedido en BD = 1 nuevo ord_ de Culqi.
+      // Esta es la implementación estándar para garantizar que el modal no reciba IDs caducados.
+      const response = await crearPedidoAction(orderPayload);
 
-        if (!response.success || !response.data) {
-          toast.error(response.message || 'No se pudo crear el pedido.');
-          return;
-        }
-
-        pedidoCreado = response.data.pedido;
-        pedidoGuardadoRef.current = pedidoCreado;
-        culqiOrderIdExtraido = response.data.culqiOrderId || undefined;
-      } else {
-        // Si ya teníamos la orden, simplemente extraemos su ID de la pasarela que guardó el backend antes.
-        culqiOrderIdExtraido = pedidoCreado.payment.gatewayOrderId && pedidoCreado.payment.gatewayOrderId.startsWith('ord_')
-          ? pedidoCreado.payment.gatewayOrderId
-          : undefined;
+      if (!response.success || !response.data) {
+        toast.error(response.message || 'No se pudo crear el pedido.');
+        setIsSubmitting(false);
+        return;
       }
+
+      const pedidoCreado = response.data.pedido;
+      const culqiOrderId = response.data.culqiOrderId || '1';
+      const initPointUrl = response.data.initPoint;
+
+      // Almacenar en ref solo para recuperar al devolver el token
+      activeOrderNumberRef.current = pedidoCreado.orderNumber;
 
       if (formData.payment.provider === 'culqi') {
         const amountInCents = Math.round(totalFinalCalculado * 100);
-
         openCulqiModal(
           amountInCents,
-          { email: formData.customerProfile.email },
+          {
+            email: formData.customerProfile.email,
+            first_name: formData.customerProfile.nombre,
+            last_name: formData.customerProfile.apellidos,
+            phone_number: formData.customerProfile.telefono,
+          },
           pedidoCreado.orderNumber,
-          culqiOrderIdExtraido
+          culqiOrderId
         );
-
-      } else if (formData.payment.provider === 'mercadopago') {
+        // Desbloqueamos UI para permitir cerrar el modal y reintentar un nuevo pedido.
+        setIsSubmitting(false);
+      } else if (formData.payment.provider === 'mercadopago' || formData.payment.provider === 'powerpay') {
         clearCart();
-        // NOTA: Para no romper MP, si cambian de pasarela a MP, el backend genera uno nuevo arriba.
-        // Aquí no se guarda `initPoint` en el ref, así que si ya estaba creado MP, habría que refactorizarlo un poco
-        // pero por ahora enfoquémonos en Culqi que es el que falla.
-        if (pedidoCreado.payment.gatewayOrderId?.includes('http')) {
-          window.location.href = pedidoCreado.payment.gatewayOrderId;
+        if (initPointUrl) {
+          window.location.href = initPointUrl;
         } else {
-          // En caso de emergencia, reenviamos para que genere el link de nuevo (Solo aplica si el usuario baila entre MP y Culqi)
-          const responseFallback = await crearPedidoAction(orderPayload);
-          if (responseFallback.success && responseFallback.data?.initPoint) {
-            window.location.href = responseFallback.data.initPoint;
-          }
+          toast.error('Error al redirigir al portal de pago.');
+          setIsSubmitting(false);
         }
       } else {
-        toast.success('Pedido registrado correctamente.');
+        toast.success('Pedido registrado.');
         clearCart();
         router.push(`/checkout-v2/success/${pedidoCreado.orderNumber}`);
       }
-    });
+    } catch (e) {
+      console.error(e);
+      toast.error('Ocurrió un error inesperado al procesar la solicitud.');
+      setIsSubmitting(false);
+    }
   };
 
   const isCulqiWaiting = paymentProvider === 'culqi' && !isScriptLoaded;
-  const isFormLocked = isPending || isCulqiProcessing || cart.length === 0 || isCulqiWaiting;
+  const isFormLocked = isSubmitting || isCulqiProcessing || cart.length === 0 || isCulqiWaiting;
 
   return (
     <FormProvider {...methods}>
-      <Script
-        src="https://js.culqi.com/checkout-js"
-        strategy="afterInteractive"
-        onLoad={handleScriptLoad}
-        onError={handleScriptError}
-      />
+      <Script src="https://checkout.culqi.com/js/v4" strategy="afterInteractive" onLoad={handleScriptLoad} onError={handleScriptError} />
 
-      {/* Contenedor Principal Split-Screen */}
-      <div className="w-full flex flex-col lg:flex-row lg:min-h-[calc(100vh-73px)]">
-
-        {/* Acordeón Móvil (Solo visible en pantallas pequeñas) */}
-        <div className="block lg:hidden w-full bg-slate-50 border-b border-slate-200">
+      <div className="w-full flex flex-col lg:flex-row min-h-[calc(100vh-57px)]">
+        <div className="block lg:hidden w-full bg-[#FAFAFA] border-b border-neutral-200">
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="summary" className="border-b-0">
-              <AccordionTrigger className="px-4 py-4 hover:no-underline transition-colors">
-                <div className="flex items-center justify-between w-full pr-2 text-sm">
-                  <div className="flex items-center gap-2 font-medium text-blue-600">
-                    <ShoppingBag size={18} />
-                    <span>Mostrar resumen del pedido</span>
-                  </div>
-                  <div className="font-semibold text-slate-900 text-base">
-                    <span>S/ {totalFinalCalculado.toFixed(2)}</span>
-                  </div>
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <div className="flex items-center justify-between w-full pr-2 text-xs font-medium text-neutral-800">
+                  <span>Mostrar resumen de compra</span>
+                  <span className="font-semibold text-neutral-900 text-sm">S/ {totalFinalCalculado.toFixed(2)}</span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-4 pt-4 pb-6 bg-white border-t border-slate-200">
+              <AccordionContent className="px-4 pb-6 pt-2 bg-white border-t border-neutral-100">
                 <OrderSummary />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
 
-        {/* Columna Izquierda (Formulario) */}
-        <div className="w-full lg:w-1/2 xl:w-[55%] bg-white flex justify-center lg:justify-end lg:border-r lg:border-slate-200">
-          <div className="w-full max-w-xl px-4 sm:px-6 lg:pr-12 xl:pr-16 py-8 lg:py-12">
-            <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8 lg:space-y-10">
-
+        <div className="w-full lg:w-[58%] bg-white flex justify-center lg:justify-end lg:border-r lg:border-neutral-200">
+          <div className="w-full max-w-xl px-4 sm:px-8 lg:pr-14 py-8 sm:py-10">
+            <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
               <CustomerInfo isAuth={isAuth} />
               <ShippingInfo />
-              <PaymentSelector />
+              <div>
+                <PaymentSelector />
+                {paymentProvider === 'powerpay' && <div className="mt-3"><PowerpayCheckoutWidget total={totalFinalCalculado} /></div>}
+              </div>
               <InvoiceInfo />
-
               <div className="pt-2">
-                <Button
-                  type="submit"
-                  disabled={isFormLocked}
-                  size="lg"
-                  className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl text-base transition-colors gap-2 shadow-sm"
-                >
-                  {isPending || isCulqiProcessing ? (
-                    <>
-                      <Loader2 className="animate-spin" size={20} />
-                      <span>Procesando pago seguro...</span>
-                    </>
+                <Controller
+                  control={methods.control}
+                  name="acceptTerms"
+                  render={({ field, fieldState: { error } }) => (
+                    <div className="space-y-1.5">
+                      <label className="flex items-start gap-2.5 cursor-pointer select-none group">
+                        <input type="checkbox" checked={field.value} onChange={(e) => field.onChange(e.target.checked)} className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 focus:ring-offset-0 transition-colors cursor-pointer" />
+                        <span className="text-xs text-neutral-600 leading-relaxed group-hover:text-neutral-900 transition-colors">
+                          He leído y acepto los <Link href="/terminos-y-condiciones" target="_blank" className="font-medium text-neutral-900 underline underline-offset-2 hover:text-black">términos y condiciones</Link> y las políticas de privacidad de la tienda.
+                        </span>
+                      </label>
+                      {error && <p className="text-[11px] text-red-600 font-medium pl-6">{error.message}</p>}
+                    </div>
+                  )}
+                />
+              </div>
+
+              <div className="pt-1">
+                <Button type="submit" disabled={isFormLocked} className="w-full h-12 bg-neutral-900 hover:bg-black text-white font-medium rounded-lg text-sm transition-all duration-150 disabled:opacity-50 shadow-sm cursor-pointer">
+                  {isSubmitting || isCulqiProcessing ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="animate-spin" size={16} />
+                      <span>Procesando pedido...</span>
+                    </div>
                   ) : isCulqiWaiting ? (
-                    <>
-                      <Loader2 className="animate-spin" size={20} />
-                      <span>Cargando pasarela...</span>
-                    </>
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="animate-spin" size={16} />
+                      <span>Conectando pasarela segura...</span>
+                    </div>
                   ) : (
                     <div className="flex items-center justify-center gap-2">
-                      <Lock size={18} className="text-blue-100" />
-                      <span>Pagar ahora • S/ {totalFinalCalculado.toFixed(2)}</span>
+                      <Lock size={15} />
+                      <span>Pagar S/ {totalFinalCalculado.toFixed(2)}</span>
                     </div>
                   )}
                 </Button>
@@ -276,15 +271,11 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
           </div>
         </div>
 
-        {/* Columna Derecha (Resumen - Solo visible en Desktop) */}
-        <div className="hidden lg:flex w-full lg:w-1/2 xl:w-[45%] bg-slate-50 justify-start">
-          <div className="w-full max-w-lg px-6 lg:pl-12 xl:pl-16 py-12 relative">
-            <div className="sticky top-12">
-              <OrderSummary />
-            </div>
+        <div className="hidden lg:flex w-full lg:w-[42%] bg-[#F5F5F7] justify-start">
+          <div className="w-full max-w-md px-8 lg:pl-12 py-10 sticky top-[57px] h-fit">
+            <OrderSummary />
           </div>
         </div>
-
       </div>
     </FormProvider>
   );

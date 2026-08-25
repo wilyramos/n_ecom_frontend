@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { Info, ImageIcon, Link as LinkIcon, DollarSign, Palette, RotateCcw, Calendar } from "lucide-react";
-import Alert from "@/components/ui/Alert";
+import { Alert } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -131,7 +131,7 @@ export default function SliderForm({
     return (
         <div className="space-y-4">
             {generalError && (
-                <Alert variant="error" mode="banner">{generalError}</Alert>
+                <Alert >{generalError}</Alert>
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-2">

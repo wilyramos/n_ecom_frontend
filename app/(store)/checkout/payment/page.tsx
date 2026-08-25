@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { getOrder } from "@/src/services/orders";
 import type { TOrder } from "@/src/schemas";
-import CheckoutCulqi from "@/components/checkout/culqi/CheckoutCulqi";
+// import CheckoutCulqi from "@/components/checkout/culqi/CheckoutCulqi";
 import CheckoutMercadoPago from "@/components/checkout/mercadopago/CheckoutMercadoPago";
 import PaymentAccordionClient from "@/components/checkout/PaymentAccordionClient";
 
@@ -33,15 +33,15 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
 
     // Cálculos de pasarela
     const culqiTotal = order.totalPrice * (1 + CULQI_TRANSACTION_FEE);
-    
+
     // Aplicación de la fórmula reversa para Mercado Pago
     const mercadopagoTotal = (order.totalPrice + MP_FIXED_FEE_WITH_IGV) / (1 - MP_TOTAL_PERCENTAGE_FEE_WITH_IGV);
 
-    const completeCulqiOrder = {
-        ...normalizedOrder,
-        totalPrice: culqiTotal,
-        culqiOrderId: order.payment?.culqiOrderId,
-    } as TOrder & { culqiOrderId?: string };
+    // const completeCulqiOrder = {
+    //     ...normalizedOrder,
+    //     totalPrice: culqiTotal,
+    //     culqiOrderId: order.payment?.culqiOrderId,
+    // } as TOrder & { culqiOrderId?: string };
 
     const completeMPOrder = {
         ...normalizedOrder,
@@ -60,7 +60,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
             mercadopagoTotal={mercadopagoTotal}
             waMessage={waMessage}
             currentMethod={method || "transferencia"}
-            checkoutCulqiComponent={<CheckoutCulqi order={completeCulqiOrder} />}
+            // checkoutCulqiComponent={<CheckoutCulqi order={completeCulqiOrder} />}
             checkoutMercadoPagoComponent={<CheckoutMercadoPago order={completeMPOrder} />}
         />
     );

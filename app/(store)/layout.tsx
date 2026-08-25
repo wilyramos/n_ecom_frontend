@@ -1,9 +1,12 @@
+// File: frontend/app/(store)/layout.tsx
+
 import Footer from "@/components/home/Footer";
 import NavBar from "@/components/navigation/NavBar";
 import { metadata as globalMetadata } from "@/app/layout";
 import type { Metadata } from "next";
 import WhatsappButton from "@/components/home/WhatsappButton";
 import ScrollToTop from "@/components/navigation/ScrollToTop";
+import PowerpayHeader from "@/src/components/powerpay/PowerpayHeader";
 
 export const metadata: Metadata = {
     ...globalMetadata,
@@ -41,12 +44,14 @@ export default function layout({ children }: { children: React.ReactNode }) {
     return (
         <>
             <ScrollToTop /> 
+
+            <PowerpayHeader />
+
             <section className="flex flex-col min-h-screen">
                 <header className="w-full z-50 sticky top-0">
                     <NavBar />
                 </header>
 
-                {/* El flujo principal arranca sin padding superior fijo para que cada página maneje su desfase (pt-20) */}
                 <main className="flex-1">
                     {children}
                 </main>

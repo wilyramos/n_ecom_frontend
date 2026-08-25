@@ -1,4 +1,4 @@
-//File: frontend/app/admin/pedidos/page.tsx
+// File: frontend/app/admin/pedidos/page.tsx
 
 import React from 'react';
 import { redirect } from 'next/navigation';
@@ -6,6 +6,7 @@ import { verifySession } from '@/src/auth/dal';
 import {
   getAdminPedidos,
   getAdminPedidosStats,
+  IAdminPedidosParams,
 } from '@/src/modules/checkout/services/admin-pedidos.service';
 import AdminPedidosClient from '@/components/admin/pedidos/AdminPedidosClient';
 
@@ -30,30 +31,20 @@ export default async function AdminPedidosPage({ searchParams }: PedidosPageProp
   }
 
   const query = await searchParams;
-  const page = Number(query.page) || 1;
-  const limit = Number(query.limit) || 10;
-  const status = query.status || 'all';
-  const provider = query.provider || 'all';
-  const delivery = query.delivery || 'all';
-  const dateFrom = query.dateFrom || '';
-  const dateTo = query.dateTo || '';
-  const search = query.search || '';
 
-  // Consultar la lista paginada y las métricas estadísticas en paralelo
+  const currentFilters: IAdminPedidosParams = {
+    page: Number(query.page) || 1,
+    limit: Number(query.limit) || 10,
+    status: query.status || 'all',
+    paymentProvider: query.provider || 'all',
+    deliveryMethod: query.delivery || 'all',
+    dateFrom: query.dateFrom || '',
+    dateTo: query.dateTo || '',
+    search: query.search || '',
+  };
+
   const [pedidosResponse, statsResponse] = await Promise.all([
-    getAdminPedidos(
-      {
-        page,
-        limit,
-        status,
-        paymentProvider: provider,
-        deliveryMethod: delivery,
-        dateFrom,
-        dateTo,
-        search,
-      },
-      session.token
-    ),
+    getAdminPedidos(currentFilters, session.token),
     getAdminPedidosStats(session.token),
   ]);
 
@@ -74,21 +65,12 @@ export default async function AdminPedidosPage({ searchParams }: PedidosPageProp
       pagination={
         pedidosResponse?.pagination || {
           total: 0,
-          page: 1,
-          limit: 10,
+          page: currentFilters.page || 1,
+          limit: currentFilters.limit || 10,
           totalPages: 1,
         }
       }
-      currentFilters={{
-        status,
-        provider,
-        delivery,
-        dateFrom,
-        dateTo,
-        search,
-        page,
-        limit,
-      }}
+      currentFilters={currentFilters}
     />
   );
 }

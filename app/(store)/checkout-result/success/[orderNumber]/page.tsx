@@ -111,8 +111,8 @@ export default async function SuccessPage({ params }: SuccessPageProps) {
               {isRejected && 'Pago no procesado'}
             </h1>
             <p className="text-xs text-[var(--color-fg-muted)] max-w-sm mx-auto">
-              {isApproved && 'Tu transacción ha sido validada. Estamos coordinando la preparación del pedido.'}
-              {isPending && 'Tu orden fue creada y estamos a la espera de la confirmación de pago.'}
+              {isApproved && 'Tu transacción ha sido validada. Recibirás un correo con los detalles de tu compra y el comprobante de pago.'}
+              {isPending && 'Tu orden fue creada y estamos a la espera de la confirmación de pago. Te notificaremos por correo cuando se confirme.'}
               {isRejected && 'La operación no pudo ser autorizada por el emisor o el medio de pago.'}
             </p>
           </div>

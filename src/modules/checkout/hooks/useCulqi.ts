@@ -47,6 +47,9 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const checkoutRef = useRef<ICulqiCheckoutInstance | null>(null);
   const tokenHandledRef = useRef<boolean>(false);
+  
+  // 🔴 NUEVA REFERENCIA: Almacenará el ID de la orden diferida (CIP/QR) sin cerrar el modal
+  const deferredOrderIdRef = useRef<string | null>(null);
 
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
@@ -128,7 +131,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           try {
             payload = JSON.parse(payload) as unknown;
           } catch {
-            // Se mantiene como string si no es JSON serializado
+            // Se mantiene como string plano si no es JSON
           }
         }
 
@@ -143,7 +146,12 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           data?.name === 'checkout_close';
 
         if (isCloseAction) {
-          handleCloseReceived();
+          // 🔴 Validamos si el usuario cerró el modal DESPUÉS de haber generado el CIP/QR
+          if (deferredOrderIdRef.current) {
+            handleSuccessReceived(deferredOrderIdRef.current);
+          } else {
+            handleCloseReceived();
+          }
         }
       } catch (e: unknown) {
         console.warn('Error leyendo postMessage de Culqi:', e);
@@ -159,7 +167,11 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         document.querySelector('iframe[src*="culqi.com"]');
 
       if (!culqiContainer && isProcessing && !tokenHandledRef.current) {
-        handleCloseReceived();
+        if (deferredOrderIdRef.current) {
+          handleSuccessReceived(deferredOrderIdRef.current);
+        } else {
+          handleCloseReceived();
+        }
       }
     }, 600);
 
@@ -167,7 +179,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       window.removeEventListener('message', handleMessage);
       clearInterval(interval);
     };
-  }, [isProcessing, handleCloseReceived]);
+  }, [isProcessing, handleCloseReceived, handleSuccessReceived]);
 
   const openCulqiModal = useCallback(
     (amountInCents: number, clientData: ICulqiClient, orderNumber?: string, culqiOrderId?: string) => {
@@ -177,19 +189,18 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         return;
       }
 
-      // 🔴 LIMPIEZA FORZADA DE DOM PARA EVITAR REUSO DE ÓRDENES ANTIGUAS EN CULQI V4
+      // 🔴 Limpieza rigurosa antes de instanciar un nuevo Checkout
       const existingContainer = document.getElementById('culqi-container') || document.querySelector('.culqi-checkout-container');
       if (existingContainer) {
         existingContainer.remove();
       }
-      
-      // Limpiar rastro global
       if (window.Culqi) {
         window.Culqi.order = null;
         window.Culqi.token = null;
       }
 
       tokenHandledRef.current = false;
+      deferredOrderIdRef.current = null; // Reiniciar referencia
       setIsProcessing(true);
 
       const config: CulqiCheckoutConfig = {
@@ -206,17 +217,27 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       const eventHandler = (instance: CulqiInstance) => {
         try {
           if (instance.token) {
+            // Pagos con tarjeta / tokenizado directo -> procesar de inmediato
             handleSuccessReceived(instance.token.id);
             instance.token = null;
           } else if (instance.order) {
-            handleSuccessReceived(instance.order.id);
-            instance.order = null;
+            // 🔴 FLUJO QR / BANCA MÓVIL (CIP) 🔴
+            // NO CERRAMOS EL MODAL AQUÍ. Permitimos que Culqi muestre su pantalla final.
+            deferredOrderIdRef.current = instance.order.id;
+            instance.order = null; 
+            // El proceso se retomará cuando el usuario dispare `instance.closeEvent`
           } else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
           } else if (instance.closeEvent) {
-            handleCloseReceived();
             instance.closeEvent = false;
+            if (deferredOrderIdRef.current) {
+              // Si el usuario ya vio el QR y le da clic a "Cerrar" en Culqi
+              handleSuccessReceived(deferredOrderIdRef.current);
+            } else {
+              // Si el usuario cierra el modal sin pagar
+              handleCloseReceived();
+            }
           }
         } catch (error: unknown) {
           console.error('Error en callback culqi:', error);

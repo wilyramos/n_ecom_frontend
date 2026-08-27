@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/src/store/cartStore';
 import { useCulqi } from '../hooks/useCulqi';
 import { toast } from 'sonner';
-import { Loader2, Lock } from 'lucide-react';
+import { Loader2, Lock, Info } from 'lucide-react'; // <-- Agregado 'Info'
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PowerpayCheckoutWidget from '@/src/components/powerpay/PowerpayCheckoutWidget';
@@ -231,6 +231,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   return (
     <FormProvider {...methods}>
       <Script
+        id="culqi-checkout-v4"
         src="https://checkout.culqi.com/js/v4"
         strategy="afterInteractive"
         onLoad={handleScriptLoad}
@@ -259,8 +260,11 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         <div className="w-full lg:w-[58%] bg-white flex justify-center lg:justify-end lg:border-r lg:border-neutral-200">
           <div className="w-full max-w-xl px-4 sm:px-8 lg:pr-14 py-8 sm:py-10">
             <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
+              
               <CustomerInfo isAuth={isAuth} />
+              
               <ShippingInfo />
+              
               <div>
                 <PaymentSelector />
                 {paymentProvider === 'powerpay' && (
@@ -269,7 +273,20 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
                   </div>
                 )}
               </div>
+              
               <InvoiceInfo />
+
+              {/* 🔴 NUEVO: Mensaje de transparencia y claridad para el usuario */}
+              <div className="bg-blue-50/60 border border-blue-100 rounded-lg p-3.5 sm:p-4 flex gap-3 items-start">
+                <Info className="text-blue-600 mt-0.5 flex-shrink-0" size={18} />
+                <div className="space-y-1">
+                  <h4 className="text-xs font-semibold text-blue-900">Emisión de Comprobante</h4>
+                  <p className="text-[11px] text-blue-800/80 leading-relaxed">
+                    Tu comprobante de pago electrónico será emitido automáticamente utilizando los <strong>datos personales y el domicilio</strong> que has registrado en este formulario. Se enviará una copia a tu correo electrónico una vez confirmado el pago.
+                  </p>
+                </div>
+              </div>
+
               <div className="pt-2">
                 <Controller
                   control={methods.control}

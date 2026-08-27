@@ -1,4 +1,3 @@
-// frontend/src/components/admin/tickets/AdminTicketsClient.tsx
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -25,11 +24,13 @@ import {
 
 import {
   FileUp,
-  Printer, Download,
+  Printer,
+  Download,
   Loader2,
   CheckSquare,
   QrCode,
-  Pencil
+  Pencil,
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -187,7 +188,6 @@ export default function AdminTicketsClient({
     });
   };
 
-
   return (
     <AdminPageContainer maxWidth="default" spacing="default">
       <AdminPageHeader
@@ -242,7 +242,7 @@ export default function AdminTicketsClient({
       )}
 
       <AdminFilterBar
-        searchPlaceholder="Buscar por cliente o N° comprobante..."
+        searchPlaceholder="Buscar por pedido, cliente o N° comprobante..."
         searchValue={searchValue}
         onSearchChange={(val) => {
           setSearchValue(val);
@@ -270,6 +270,8 @@ export default function AdminTicketsClient({
                 />
               </AdminTableHeaderCell>
               <AdminTableHeaderCell>N° Comprobante</AdminTableHeaderCell>
+
+              <AdminTableHeaderCell>N° Pedido / Archivo</AdminTableHeaderCell>
               <AdminTableHeaderCell>Fecha / Hora</AdminTableHeaderCell>
               <AdminTableHeaderCell>Cliente</AdminTableHeaderCell>
               <AdminTableHeaderCell>Productos / Items</AdminTableHeaderCell>
@@ -282,7 +284,7 @@ export default function AdminTicketsClient({
               <AdminTableEmpty
                 title="No se encontraron comprobantes"
                 description="Sube un archivo PDF para digitalizar notas de venta o boletas."
-                colSpan={7}
+                colSpan={8}
               />
             ) : (
               initialData.map((ticket) => {
@@ -298,12 +300,24 @@ export default function AdminTicketsClient({
                         className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer"
                       />
                     </AdminTableCell>
+
+
+
                     <AdminTableCell bold>
                       <div className="flex flex-col">
                         <span className="text-[10px] text-zinc-400 font-semibold tracking-wider uppercase">
                           {ticket.tipoComprobante || 'COMPROBANTE'}
                         </span>
                         <span className="text-zinc-900">{ticket.numeroNota}</span>
+                      </div>
+                    </AdminTableCell>
+
+                    <AdminTableCell bold>
+                      <div className="flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                        <span className="font-mono text-xs font-semibold text-zinc-800 tracking-tight">
+                          {ticket.originalFilename || '--'}
+                        </span>
                       </div>
                     </AdminTableCell>
 
@@ -347,7 +361,6 @@ export default function AdminTicketsClient({
 
                     <AdminTableCell align="right">
                       <div className="flex items-center justify-end gap-1.5">
-                        {/* Botón Editar */}
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(ticket)}
@@ -358,7 +371,6 @@ export default function AdminTicketsClient({
                           <Pencil className="w-3 h-3" />
                         </button>
 
-                        {/* Opción 1: Ticket */}
                         <button
                           type="button"
                           onClick={() => openTicketPdf(ticket._id)}
@@ -369,7 +381,6 @@ export default function AdminTicketsClient({
                           <Printer className="w-3 h-3" />
                         </button>
 
-                        {/* Opción 2: Formato Profesional con QR */}
                         <button
                           type="button"
                           onClick={() => openProfessionalPdf(ticket._id)}

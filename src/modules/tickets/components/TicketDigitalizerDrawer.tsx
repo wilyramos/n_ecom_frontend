@@ -1,4 +1,3 @@
-// frontend/src/modules/tickets/components/TicketDigitalizerDrawer.tsx
 'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
@@ -51,6 +50,11 @@ const defaultValues = {
   originalFilename: '',
 };
 
+function cleanFileName(val?: string): string {
+  if (!val) return '';
+  return val.replace(/\.pdf$/i, '').trim();
+}
+
 function formatSerieB002(numStr: string): string {
   if (!numStr) return '';
   const trimmed = numStr.trim();
@@ -74,12 +78,12 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
     if (initialData && isOpen) {
       const items = Array.isArray(initialData.items)
         ? initialData.items.map((i) => ({
-          descripcion: i.descripcion || '',
-          unidadMedida: i.unidadMedida || 'NIU',
-          cantidad: Number(i.cantidad) || 1,
-          precioUnitario: Number(i.precioUnitario) || 0,
-          total: Number(i.total) || Number(((Number(i.cantidad) || 1) * (Number(i.precioUnitario) || 0)).toFixed(2)),
-        }))
+            descripcion: i.descripcion || '',
+            unidadMedida: i.unidadMedida || 'NIU',
+            cantidad: Number(i.cantidad) || 1,
+            precioUnitario: Number(i.precioUnitario) || 0,
+            total: Number(i.total) || Number(((Number(i.cantidad) || 1) * (Number(i.precioUnitario) || 0)).toFixed(2)),
+          }))
         : [];
 
       const totalMonto = Number(initialData.monto || 0);
@@ -103,7 +107,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
         igv,
         monto: totalMonto,
         filename: initialData.filename || '',
-        originalFilename: initialData.originalFilename || '',
+        originalFilename: cleanFileName(initialData.originalFilename || ''),
       });
     } else if (!isOpen) {
       setFormData(defaultValues);
@@ -152,7 +156,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
         ...FIXED_COMPANY_DATA,
         ...totals,
         filename: json.data.filename,
-        originalFilename: json.data.originalFilename || file.name,
+        originalFilename: cleanFileName(json.data.originalFilename || file.name),
       });
       toast.success('Documento analizado y adaptado a Boleta Electrónica con éxito');
     } catch (err: unknown) {
@@ -241,6 +245,7 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
     const finalData = {
       ...formData,
       numeroNota: formatSerieB002(formData.numeroNota),
+      originalFilename: cleanFileName(formData.originalFilename),
     };
 
     startTransition(async () => {
@@ -296,24 +301,37 @@ export function TicketDigitalizerDrawer({ isOpen, onClose, initialData }: Ticket
         )}
 
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <AdminFormGroup label="Tipo Comprobante">
-              <select
-                value={formData.tipoComprobante}
-                onChange={(e) => setFormData({ ...formData, tipoComprobante: e.target.value })}
-                className="w-full text-xs p-2 border border-zinc-200 rounded-lg bg-white font-medium outline-none focus:border-zinc-400 cursor-pointer"
-              >
-                <option value="BOLETA ELECTRÓNICA">BOLETA ELECTRÓNICA</option>
-                <option value="NOTA DE VENTA">NOTA DE VENTA</option>
-              </select>
-            </AdminFormGroup>
+          {/* Identificadores del Comprobante y Pedido */}
+          <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-100 space-y-2">
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Identificación del Documento</p>
+            <div className="grid grid-cols-2 gap-2">
+              <AdminFormGroup label="Tipo Comprobante">
+                <select
+                  value={formData.tipoComprobante}
+                  onChange={(e) => setFormData({ ...formData, tipoComprobante: e.target.value })}
+                  className="w-full text-xs p-2 border border-zinc-200 rounded-lg bg-white font-medium outline-none focus:border-zinc-400 cursor-pointer"
+                >
+                  <option value="BOLETA ELECTRÓNICA">BOLETA ELECTRÓNICA</option>
+                  <option value="NOTA DE VENTA">NOTA DE VENTA</option>
+                </select>
+              </AdminFormGroup>
 
-            <AdminFormGroup label="N° Comprobante">
+              <AdminFormGroup label="N° Comprobante">
+                <AdminInput
+                  value={formData.numeroNota}
+                  onChange={(e) => setFormData({ ...formData, numeroNota: formatSerieB002(e.target.value) })}
+                  placeholder="B002-00164"
+                  required
+                />
+              </AdminFormGroup>
+            </div>
+
+            <AdminFormGroup label="N° Pedido (Nombre del archivo)">
               <AdminInput
-                value={formData.numeroNota}
-                onChange={(e) => setFormData({ ...formData, numeroNota: formatSerieB002(e.target.value) })}
-                placeholder="B002-00164"
-                required
+                value={formData.originalFilename}
+                onChange={(e) => setFormData({ ...formData, originalFilename: cleanFileName(e.target.value) })}
+                placeholder="Ej: 260815000617-001"
+                className="font-mono text-xs"
               />
             </AdminFormGroup>
           </div>

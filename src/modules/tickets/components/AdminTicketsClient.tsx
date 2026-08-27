@@ -196,46 +196,46 @@ export default function AdminTicketsClient({
           <AdminButton
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 cursor-pointer"
+            className="flex items-center gap-1.5 cursor-pointer h-7 text-xs px-2.5"
           >
-            <FileUp className="w-4 h-4" />
+            <FileUp className="w-3.5 h-3.5" />
             Digitalizar Comprobante
           </AdminButton>
         }
       />
 
       {selectedIds.length > 0 && (
-        <div className="bg-zinc-900 text-white px-3 py-2 rounded-lg flex items-center justify-between shadow-sm animate-in fade-in duration-200">
+        <div className="bg-zinc-900 text-white px-2.5 py-1.5 rounded-md flex items-center justify-between shadow-sm animate-in fade-in duration-200">
           <div className="flex items-center gap-1.5">
-            <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-xs font-semibold">
+            <CheckSquare className="w-3 h-3 text-emerald-400" />
+            <span className="text-[11px] font-semibold">
               {selectedIds.length} seleccionado{selectedIds.length > 1 ? 's' : ''}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => handleBulkPrint('ticket')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 rounded text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 rounded text-[11px] font-medium transition-colors cursor-pointer"
             >
-              <Printer className="w-3 h-3" /> Ticket
+              <Printer className="w-2.5 h-2.5" /> Ticket
             </button>
             <button
               type="button"
               onClick={() => handleBulkPrint('professional')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded text-[11px] font-medium transition-colors cursor-pointer"
             >
-              <QrCode className="w-3 h-3" /> Factura/QR
+              <QrCode className="w-2.5 h-2.5" /> Factura/QR
             </button>
             <button
               type="button"
               onClick={() => handleBulkZipDownload('professional')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded text-xs font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded text-[11px] font-medium transition-colors cursor-pointer"
             >
-              {isBulkProcessing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+              {isBulkProcessing ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Download className="w-2.5 h-2.5" />}
               ZIP
             </button>
           </div>
@@ -261,22 +261,22 @@ export default function AdminTicketsClient({
         <AdminTable>
           <AdminTableHead>
             <tr>
-              <AdminTableHeaderCell width="32px">
+              <AdminTableHeaderCell width="28px">
                 <input
                   type="checkbox"
                   checked={initialData.length > 0 && selectedIds.length === initialData.length}
                   onChange={handleSelectAll}
                   disabled={isPending}
-                  className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3.5 w-3.5"
+                  className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3 w-3 align-middle"
                 />
               </AdminTableHeaderCell>
-              <AdminTableHeaderCell width="150px">N° Comprobante</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="160px">N° Pedido (Archivo)</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="110px">Fecha / Hora</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="180px">Cliente</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="120px">N° Comprobante</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="140px">Pedido (Archivo)</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="115px">Fecha / Hora</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="160px">Cliente</AdminTableHeaderCell>
               <AdminTableHeaderCell>Items</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="95px" align="right">Total</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="115px" align="right">Acciones</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="85px" align="right">Total</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="95px" align="right">Acciones</AdminTableHeaderCell>
             </tr>
           </AdminTableHead>
           <tbody>
@@ -290,23 +290,23 @@ export default function AdminTicketsClient({
               initialData.map((ticket) => {
                 const isSelected = selectedIds.includes(ticket._id);
                 return (
-                  <AdminTableRow key={ticket._id} id={ticket._id} selected={isSelected} className="hover:bg-zinc-50/60">
+                  <AdminTableRow key={ticket._id} id={ticket._id} selected={isSelected}>
                     <AdminTableCell>
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleSelectOne(ticket._id)}
                         disabled={isPending}
-                        className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3.5 w-3.5"
+                        className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3 w-3 align-middle"
                       />
                     </AdminTableCell>
 
                     <AdminTableCell bold>
-                      <div className="flex flex-col leading-tight">
-                        <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wide">
-                          {ticket.tipoComprobante || 'BOLETA'}
+                      <div className="flex items-center gap-1">
+                        <span className="text-[8px] px-1 py-0.2 bg-zinc-100 text-zinc-500 font-bold uppercase rounded tracking-tight">
+                          {ticket.tipoComprobante || 'BOL'}
                         </span>
-                        <span className="text-xs font-semibold text-zinc-900">{ticket.numeroNota}</span>
+                        <span className="text-[11px] font-semibold text-zinc-900">{ticket.numeroNota}</span>
                       </div>
                     </AdminTableCell>
 
@@ -315,90 +315,88 @@ export default function AdminTicketsClient({
                         type="button"
                         onClick={() => openProfessionalPdf(ticket._id)}
                         disabled={isPending}
-                        className="group flex items-center gap-1.5 leading-tight text-left hover:text-blue-600 transition-colors cursor-pointer p-0.5 -m-0.5 rounded focus:outline-none"
-                        title="Abrir comprobante en formato Factura/QR"
+                        className="group flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer text-left focus:outline-none"
+                        title={ticket.originalFilename}
                       >
-                        <div className="p-1 rounded bg-zinc-100 group-hover:bg-blue-50 text-zinc-500 group-hover:text-blue-600 transition-colors shrink-0">
-                          <FileText className="w-3 h-3" />
-                        </div>
-                        <span className=" text-xs font-semibold text-zinc-900 group-hover:text-blue-600 truncate max-w-[160px]" title={ticket.originalFilename}>
+                        <FileText className="w-2.5 h-2.5 text-zinc-400 group-hover:text-blue-600 shrink-0" />
+                        <span className="text-[11px] font-medium text-zinc-800 group-hover:text-blue-600 truncate max-w-[130px]">
                           {ticket.originalFilename || '--'}
                         </span>
                       </button>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <div className="flex flex-col text-[11px] leading-tight text-zinc-600">
-                        <span>{ticket.fecha || '-'}</span>
-                        <span className="text-[10px] text-zinc-400">{ticket.hora || ''}</span>
-                      </div>
+                      <span className="text-[10px] text-zinc-600">
+                        {ticket.fecha || '-'} <span className="text-zinc-400 font-normal">{ticket.hora || ''}</span>
+                      </span>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <div className="flex flex-col leading-tight max-w-[170px]">
-                        <span className="text-xs font-medium text-zinc-900 truncate" title={ticket.cliente}>
+                      <div className="flex items-baseline gap-1 max-w-[160px]">
+                        <span className="text-[11px] font-medium text-zinc-900 truncate" title={ticket.cliente}>
                           {ticket.cliente}
                         </span>
-                        <span className="text-[10px] text-zinc-400">
-                          {ticket.documentoCliente ? `Doc: ${ticket.documentoCliente}` : 'S/D'}
-                        </span>
+                        {ticket.documentoCliente && (
+                          <span className="text-[9px] text-zinc-400 shrink-0">
+                            ({ticket.documentoCliente})
+                          </span>
+                        )}
                       </div>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <div className="max-w-[220px] leading-tight">
+                      <div className="max-w-[200px] flex items-center gap-1">
                         {ticket.items && ticket.items.length > 0 ? (
                           <>
-                            <p className="text-[11px] text-zinc-800 font-medium truncate" title={ticket.items[0].descripcion}>
+                            <span className="text-[11px] text-zinc-700 truncate" title={ticket.items[0].descripcion}>
                               {ticket.items[0].descripcion}
-                            </p>
-                            <span className="text-[10px] text-zinc-400 font-normal">
-                              {ticket.items[0].cantidad} {ticket.items[0].unidadMedida || 'NIU'}
-                              {ticket.items.length > 1 && ` (+${ticket.items.length - 1})`}
+                            </span>
+                            <span className="text-[9px] text-zinc-400 shrink-0">
+                              ({ticket.items[0].cantidad}{ticket.items.length > 1 ? ` +${ticket.items.length - 1}` : ''})
                             </span>
                           </>
                         ) : (
-                          <span className="text-[11px] text-zinc-400">Sin items</span>
+                          <span className="text-[10px] text-zinc-400">Sin items</span>
                         )}
                       </div>
                     </AdminTableCell>
 
                     <AdminTableCell align="right" bold>
-                      <span className="text-xs font-bold text-zinc-900">
+                      <span className="text-[11px] font-bold text-zinc-900">
                         S/ {Number(ticket.monto || 0).toFixed(2)}
                       </span>
                     </AdminTableCell>
 
                     <AdminTableCell align="right">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-0.5">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(ticket)}
                           disabled={isPending}
-                          className="p-1 text-amber-700 hover:bg-amber-100 rounded border border-amber-200/50 transition-colors cursor-pointer"
+                          className="w-5 h-5 flex items-center justify-center text-amber-700 hover:bg-amber-100 rounded transition-colors cursor-pointer"
                           title="Editar"
                         >
-                          <Pencil className="w-3 h-3" />
+                          <Pencil className="w-2.5 h-2.5" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => openTicketPdf(ticket._id)}
                           disabled={isPending}
-                          className="p-1 text-zinc-700 hover:bg-zinc-200 bg-zinc-100 rounded transition-colors cursor-pointer"
+                          className="w-5 h-5 flex items-center justify-center text-zinc-700 hover:bg-zinc-200 bg-zinc-100 rounded transition-colors cursor-pointer"
                           title="Ticket"
                         >
-                          <Printer className="w-3 h-3" />
+                          <Printer className="w-2.5 h-2.5" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => openProfessionalPdf(ticket._id)}
                           disabled={isPending}
-                          className="p-1 text-white hover:bg-blue-700 bg-blue-600 rounded transition-colors cursor-pointer"
+                          className="w-5 h-5 flex items-center justify-center text-white hover:bg-blue-700 bg-blue-600 rounded transition-colors cursor-pointer"
                           title="Factura QR"
                         >
-                          <QrCode className="w-3 h-3" />
+                          <QrCode className="w-2.5 h-2.5" />
                         </button>
 
                         <AdminTableActions

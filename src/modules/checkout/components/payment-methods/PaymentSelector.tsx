@@ -61,7 +61,7 @@ export default function PaymentSelector() {
             </label>
 
             {/* Powerpay */}
-            {/* <label
+            <label
               className={cn(
                 "flex items-center justify-between p-3.5 cursor-pointer transition-colors",
                 field.value === 'powerpay' ? "bg-neutral-50/60" : "hover:bg-neutral-50/30"
@@ -86,7 +86,7 @@ export default function PaymentSelector() {
               <div className="h-5 w-14 relative flex items-center justify-center">
                 <Image src="/payments/powerpay.svg" alt="Powerpay" width={52} height={16} className="object-contain" />
               </div>
-            </label> */}
+            </label>
 
             {/* Mercado Pago */}
             {/* <label

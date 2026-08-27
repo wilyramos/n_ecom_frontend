@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import ProductExpandableSections from './ProductExpandableSections ';
 import InstallmentInfo from './InstallmentInfo';
-// import PowerpayPdp from '@/src/components/powerpay/PowerpayPdp';
+import PowerpayPdp from '@/src/components/powerpay/PowerpayPdp';
 import { ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 
@@ -211,7 +211,7 @@ export default function ProductDetails({ producto }: Props) {
 
                         {/* Widget Oficial Powerpay PDP (Calcula cuotas en tiempo real según el precio actual) */}
                         <div className="py-2">
-                            {/* <PowerpayPdp price={precio} /> */}
+                            <PowerpayPdp price={precio} />
                         </div>
 
                         <div className="py-1">

@@ -13,7 +13,7 @@ export default function OrderSummary() {
   const paymentProvider = useWatch({ control, name: 'payment.provider' });
   const deliveryMethod = useWatch({ control, name: 'deliveryMethod' });
 
-  const shippingCost = deliveryMethod === 'shipping' ? 15 : 0;
+  const shippingCost = deliveryMethod === 'shipping' ? 0 : 0;
   const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
   const totalFinal = total + shippingCost + recargoFinanciero;
 
@@ -74,7 +74,7 @@ export default function OrderSummary() {
         <div className="flex justify-between text-neutral-600">
           <span>Envío</span>
           <span className="font-medium text-neutral-900 tabular-nums">
-            {shippingCost === 0 ? 'Gratis' : `S/ ${shippingCost.toFixed(2)}`}
+            Gratis
           </span>
         </div>
 

@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/src/store/cartStore';
 import { useCulqi } from '../hooks/useCulqi';
 import { toast } from 'sonner';
-import { Loader2, Lock, Info } from 'lucide-react'; // <-- Agregado 'Info'
+import { Loader2, Lock, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PowerpayCheckoutWidget from '@/src/components/powerpay/PowerpayCheckoutWidget';
@@ -70,7 +70,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const paymentProvider = methods.watch('payment.provider');
   const deliveryMethod = methods.watch('deliveryMethod');
 
-  const shippingCost = deliveryMethod === 'shipping' ? 15 : 0;
+  const shippingCost = deliveryMethod === 'shipping' ? 0 : 0;
   const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
   const totalFinalCalculado = total + shippingCost + recargoFinanciero;
 
@@ -282,7 +282,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
                 <div className="space-y-1">
                   <h4 className="text-xs font-semibold text-gray-900">Emisión de Comprobante</h4>
                   <p className="text-[11px] text-gray-800/80 leading-relaxed">
-                    Tu comprobante de pago electrónico será emitido automáticamente utilizando los <strong>datos personales y el domicilio</strong> que has registrado en este formulario. Se enviará una copia a tu correo electrónico una vez confirmado el pago.
+                    Tu comprobante de pago electrónico será emitido utilizando los <strong>datos personales y el domicilio</strong> que has registrado en este formulario.
                   </p>
                 </div>
               </div>

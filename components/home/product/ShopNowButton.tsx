@@ -1,55 +1,51 @@
-// ShopNowButton.tsx
-'use client';
+// File: frontend/components/home/product/ShopNowButton.tsx
+"use client";
 
-import { ProductWithCategoryResponse, VariantCart } from "@/src/schemas";
-import { useCartStore } from "@/src/store/cartStore";
-import { IoBagCheckOutline } from "react-icons/io5";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { IoBagCheckOutline } from "react-icons/io5";
+
+import { useCartStore } from "@/src/store/cartStore";
+import { ProductWithCategoryResponse, VariantCart } from "@/src/schemas";
 import { Button } from "@/components/ui/button";
 
 interface Props {
-    product: ProductWithCategoryResponse;
-    variant?: VariantCart;
-    disabled?: boolean;
-    // Nueva prop para forzar la validación desde el padre si es necesario
-    isSelectionIncomplete?: boolean; 
+  product: ProductWithCategoryResponse;
+  variant?: VariantCart;
+  disabled?: boolean;
+  isSelectionIncomplete?: boolean;
 }
 
 export default function ShopNowButton({ product, variant, disabled, isSelectionIncomplete }: Props) {
-    const { addToCart } = useCartStore();
-    const router = useRouter();
-    const stock = variant?.stock ?? product.stock ?? 0;
+  const { addToCart } = useCartStore();
+  const router = useRouter();
+  const stock = variant?.stock ?? product.stock ?? 0;
 
-    const handleClick = () => {
-        // 1. Validar variantes
-        if (isSelectionIncomplete) {
-            toast.error("Por favor, selecciona las opciones (color, etc.) antes de continuar.");
-            return;
-        }
+  const handleClick = () => {
+    if (isSelectionIncomplete) {
+      toast.error("Por favor, selecciona las opciones (color, etc.) antes de continuar.");
+      return;
+    }
 
-        // 2. Validar stock
-        if (stock <= 0) {
-            toast.error("Lo sentimos, esta opción no tiene stock disponible.");
-            return;
-        }
+    if (stock <= 0) {
+      toast.error("Lo sentimos, esta opción no tiene stock disponible.");
+      return;
+    }
 
-        // 3. Acción
-        addToCart(product, variant);
-        toast.success("Producto añadido al carrito");
-        router.push("/checkout-v2");
-    };
+    addToCart(product, variant);
+    toast.success("Producto añadido al carrito");
+    router.push("/checkout-v2");
+  };
 
-    return (
-        <Button
-            onClick={handleClick}
-            // Mantenemos el botón habilitado para poder mostrar el toast de error al clickear
-            disabled={disabled && stock <= 0} 
-            variant={stock <= 0 ? "accent" : "accent"}
-            className="w-full"
-        >
-            <IoBagCheckOutline className="mr-2" size={18} />
-            {stock <= 0 ? "Agotado" : "Comprar ahora"}
-        </Button>
-    );
+  return (
+    <Button
+      onClick={handleClick}
+      disabled={disabled && stock <= 0}
+      variant="accent"
+      className="w-full"
+    >
+      <IoBagCheckOutline className="mr-2" size={18} />
+      {stock <= 0 ? "Agotado" : "Comprar ahora"}
+    </Button>
+  );
 }

@@ -1,4 +1,4 @@
-//File: frontend/app/%28store%29/page.tsx
+// File: frontend/app/(store)/page.tsx
 
 import { Metadata } from "next";
 import { metadata as globalMetadata } from "@/app/layout";
@@ -11,6 +11,7 @@ import StoreLocation from "@/components/home/StoreLocation";
 import BrandsList from "@/components/home/BrandsList";
 import HomepageSectionsWrapper from "@/components/home/sections/HomepageSectionsWrapper";
 import GlobalAdContainer from "@/components/home/GlobalAdContainer";
+import PowerpayBanner from "@/src/components/powerpay/PowerpayBanner";
 
 export const metadata: Metadata = {
     ...globalMetadata,
@@ -48,11 +49,9 @@ export const metadata: Metadata = {
     }
 };
 
-
 export default function HomePage() {
     return (
         <div className="w-full">
-          
             <GlobalAdContainer />
 
             <section>
@@ -61,6 +60,10 @@ export default function HomePage() {
 
             <section>
                 <FeatureCards />
+            </section>
+
+            <section className="container mx-auto px-4 md:px-6 my-4">
+                <PowerpayBanner />
             </section>
 
             <section>
@@ -74,7 +77,8 @@ export default function HomePage() {
             <section className="my-5">
                 <BrandsList />
             </section>
-              <section>
+
+            <section>
                 <HomepageSectionsWrapper />
             </section>
 
@@ -85,8 +89,6 @@ export default function HomePage() {
             <section>
                 <StoreLocation />
             </section>
-
-          
         </div>
     );
 }

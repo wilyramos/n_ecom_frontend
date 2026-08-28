@@ -62,12 +62,14 @@ export default function HomePage() {
                 <FeatureCards />
             </section>
 
-            <section className="container mx-auto px-4 md:px-6 my-4">
-                <PowerpayBanner />
-            </section>
+
 
             <section>
                 <CategoriasDestacadasWrapper />
+            </section>
+
+                        <section className="max-w-7xl container mx-auto px-4 md:px-6 my-4">
+                <PowerpayBanner />
             </section>
 
             <section>

@@ -16,6 +16,7 @@ import ImagenesProductoCarousel from "./ImagenesProductoCarousel";
 import ProductExpandableSections from "./ProductExpandableSections";
 import ColorCircle from "@/components/ui/ColorCircle";
 import PowerpayPdp from "@/src/components/powerpay/PowerpayPdp";
+import PaymentMethods from "../PaymentMethods";
 
 import {
   Select,
@@ -67,13 +68,13 @@ export default function ProductDetails({ producto }: Props) {
 
   const updateSelectedVariant = (attrKey: string, attrValue: string | null) => {
     const newAttributes = { ...selectedAttributes };
-    
+
     if (attrValue === null || newAttributes[attrKey] === attrValue) {
       delete newAttributes[attrKey];
     } else {
       newAttributes[attrKey] = attrValue;
     }
-    
+
     setSelectedAttributes(newAttributes);
 
     const matchedVariant = producto.variants?.find((v) =>
@@ -204,7 +205,7 @@ export default function ProductDetails({ producto }: Props) {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="flex items-baseline text-fg-primary">
                   <span className="text-base font-medium mr-0.5">S/</span>
                   <span className="text-xl md:text-2xl font-semibold tracking-tight">
@@ -356,6 +357,14 @@ export default function ProductDetails({ producto }: Props) {
                   isSelectionIncomplete={isSelectionIncomplete}
                 />
               </div>
+            </div>
+
+            {/* Métodos de Pago */}
+            <div className="pt-4 flex flex-col gap-2">
+              <span className="text-xs text-fg-secondary font-medium uppercase tracking-wide">
+                Medios de pago aceptados
+              </span>
+              <PaymentMethods />
             </div>
           </div>
 

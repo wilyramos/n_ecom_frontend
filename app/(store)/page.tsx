@@ -1,3 +1,4 @@
+
 // File: frontend/app/(store)/page.tsx
 
 import { Metadata } from "next";
@@ -54,21 +55,24 @@ export default function HomePage() {
         <div className="w-full">
             <GlobalAdContainer />
 
-            <section>
+            {/* Envolvemos en un flex column para controlar el flujo natural en móviles */}
+            <section className="relative w-full flex flex-col">
                 <CarruselPrincipal />
+
+            
+                <div className="relative md:absolute bottom-0 md:bottom-6 left-0 w-full z-20 pointer-events-none -mt-4 md:mt-0">
+                    <div className="pointer-events-auto">
+                        <FeatureCards />
+                    </div>
+                </div>
             </section>
 
-            <section>
-                <FeatureCards />
-            </section>
-
-
-
-            <section>
+            {/* Ajustamos el margen superior para que no choque en móviles */}
+            <section className="mt-4 md:mt-12">
                 <CategoriasDestacadasWrapper />
             </section>
 
-                        <section className="max-w-7xl container mx-auto px-4 md:px-6 my-4">
+            <section className="max-w-7xl container mx-auto px-4 md:px-6 my-4">
                 <PowerpayBanner />
             </section>
 

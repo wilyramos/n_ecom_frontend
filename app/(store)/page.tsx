@@ -68,7 +68,7 @@ export default function HomePage() {
             </section>
 
             {/* Ajustamos el margen superior para que no choque en móviles */}
-            <section className="mt-4 md:mt-12">
+            <section>
                 <CategoriasDestacadasWrapper />
             </section>
 

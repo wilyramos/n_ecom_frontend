@@ -60,7 +60,7 @@ export default function HomePage() {
                 <CarruselPrincipal />
 
             
-                <div className="relative md:absolute bottom-0 md:bottom-6 left-0 w-full z-20 pointer-events-none -mt-4 md:mt-0">
+                <div className="relative md:absolute bottom-0 md:bottom-0 left-0 w-full z-20 pointer-events-none -mt-4 md:mt-0">
                     <div className="pointer-events-auto">
                         <FeatureCards />
                     </div>

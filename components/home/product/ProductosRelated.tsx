@@ -11,7 +11,7 @@ export default async function ProductosRelated({ slug }: { slug: string }) {
 
     return (
         <section className=" flex flex-col  mx-auto ">
-            <h2 className="text-lg font-semibold  tracking-tighter text-[var(--color-text-primary)] ">
+            <h2 className="text-lg font-medium text-[var(--color-text-primary)] ">
 Productos similares            </h2>
             <div>
             </div>

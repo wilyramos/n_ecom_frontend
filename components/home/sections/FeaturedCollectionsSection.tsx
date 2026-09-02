@@ -11,10 +11,10 @@ interface FeaturedCollectionsSectionProps {
 
 export default function FeaturedCollectionsSection({ section, columns }: FeaturedCollectionsSectionProps) {
     return (
-        <section className="space-y-6">
+        <section className="space-y-4">
             <SectionHeader title={section.title} />
             <div
-                className="grid gap-4"
+                className="grid gap-2"
                 style={{
                     gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, ${Math.floor(100 / columns) - 2}%), 1fr))`
                 }}
@@ -22,9 +22,10 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                 {section.blocks.map((block: SectionBlock, idx) => {
                     const FeaturedBlockContent = (
                         <div
-                            className="group relative block overflow-hidden "
+                            className="group relative block overflow-hidden"
                             style={{
-                                aspectRatio: columns <= 2 ? "16/7" : columns === 3 ? "4/3" : "1/1"
+                                // Ratios de aspecto ajustados para hacer las tarjetas menos altas
+                                aspectRatio: columns <= 2 ? "21/9" : columns === 3 ? "16/9" : "4/3"
                             }}
                         >
                             {block.imageUrl ? (
@@ -33,7 +34,8 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                                     alt={block.title || "Colección"}
                                     fill
                                     sizes={`(max-width: 640px) 100vw, ${Math.floor(100 / columns)}vw`}
-                                    className="object-contain transition-transform duration-700 group-hover:scale-101"
+                                    // Añadido padding (p-4) para hacer la imagen más pequeña dentro de su contenedor
+                                    className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
                                     priority={idx < 3}
                                     unoptimized={true}
                                 />
@@ -42,21 +44,20 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                             )}
 
                             {/* Gradiente sutil para legibilidad del texto */}
-                            <div className="absolute inset-0 bg-gradient-to-t " />
+                            <div className="absolute inset-0 bg-gradient-to-t" />
 
-                            <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col items-start gap-1">
+                            {/* Padding y tamaños de texto reducidos */}
+                            <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start gap-1">
                                 {block.title && (
-                                    <h3 className="text-white font-black text-lg uppercase tracking-[0.1em]">
+                                    <h3 className="text-white font-black text-base uppercase tracking-[0.1em]">
                                         {block.title}
                                     </h3>
                                 )}
                                 {block.subtitle && (
-                                    <p className="text-white/80 text-xs font-medium uppercase tracking-widest mt-1 line-clamp-1">
+                                    <p className="text-white/80 text-[10px] font-medium uppercase tracking-widest mt-1 line-clamp-1">
                                         {block.subtitle}
                                     </p>
                                 )}
-
-
                             </div>
                         </div>
                     );

@@ -37,7 +37,7 @@ export default function FeatureCards() {
       <div className="w-full p-2 md:px-6">
         
         {/* CONTENEDOR PRINCIPAL LIQUID GLASS - OSCURECIDO Y SATURADO */}
-        <div className="w-full rounded-2xl bg-black/20 backdrop-blur-sm  py-3 px-2 sm:px-6">
+        <div className="w-full rounded-2xl bg-black/10 backdrop-blur-xs  py-2 px-1 sm:px-3">
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
             {features.map(({ title, description, icon: Icon }) => (

@@ -14,7 +14,7 @@ export default function HeaderReviews({ title, viewAllHref }: Props) {
         <div className="w-full mb-4 select-none flex items-center justify-between gap-2">
 
             {/* Título */}
-            <h2 className="text-lg md:text-xl font-semibold tracking-tight text-fg-muted">
+            <h2 className="text-lg md:text-xl font-medium text-fg-muted">
                 {title}
             </h2>
 

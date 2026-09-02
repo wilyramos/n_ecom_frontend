@@ -149,12 +149,12 @@ export default function ProductDetails({ producto }: Props) {
     <>
       <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto bg-surface-primary px-4 py-4 rounded-lg">
         {/* Imagen y Carrusel */}
-        <div className="lg:col-span-6 w-full">
+        <div className="lg:col-span-7 w-full">
           <ImagenesProductoCarousel images={variantImages} />
         </div>
 
         {/* Detalles del Producto */}
-        <section className="lg:col-span-6 flex flex-col space-y-1">
+        <section className="lg:col-span-5 flex flex-col space-y-1">
           <div className="space-y-1">
             <header className="space-y-1 pb-2">
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs tracking-wide uppercase font-medium">
@@ -179,7 +179,7 @@ export default function ProductDetails({ producto }: Props) {
                 )}
               </div>
 
-              <h1 className="text-xl md:text-2xl font-normal text-fg-primary tracking-tight leading-tight">
+              <h1 className="text-xl md:text-2xl font-medium text-fg-primary tracking-tight leading-tight">
                 {producto.nombre}
               </h1>
 
@@ -375,7 +375,7 @@ export default function ProductDetails({ producto }: Props) {
                 href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
                 target="_blank"
                 rel="noreferrer"
-                className="text-fg-muted hover:text-fg-primary transition-colors"
+                className="text-fg-secondary hover:text-fg-primary transition-colors font-medium"
               >
                 Consultar por WhatsApp
               </a>

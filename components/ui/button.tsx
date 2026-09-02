@@ -10,13 +10,13 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    "bg-primary text-primary-foreground shadow-sm hover:bg-action-primary-hover",
+                    "bg-primary text-primary-foreground hover:bg-action-primary-hover",
                 primary:
-                    "bg-primary text-primary-foreground shadow-sm hover:bg-action-primary-hover",
+                    "bg-primary text-primary-foreground hover:bg-action-primary-hover",
                 accent:
-                    "bg-fg-action text-fg-inverse shadow-sm hover:bg-fg-action/90",
+                    "bg-fg-action text-fg-inverse hover:bg-fg-action/90",
                 secondary:
-                    "bg-secondary text-secondary-foreground border border-border shadow-sm hover:bg-action-secondary-hover",
+                    "bg-secondary text-secondary-foreground border border-border hover:bg-action-secondary-hover",
                 outline:
                     "bg-transparent text-foreground border border-border hover:bg-secondary hover:text-secondary-foreground",
                 ghost:
@@ -24,11 +24,11 @@ const buttonVariants = cva(
                 link:
                     "text-primary underline-offset-4 hover:underline",
                 success:
-                    "bg-background text-foreground border border-border shadow-sm hover:bg-secondary",
+                    "bg-background text-foreground border border-border hover:bg-secondary",
                 warning:
-                    "bg-fg-action text-fg-inverse shadow-sm hover:bg-fg-action/90",
+                    "bg-fg-action text-fg-inverse hover:bg-fg-action/90",
                 destructive:
-                    "bg-fg-action text-destructive-foreground shadow-sm hover:bg-destructive/90",
+                    "bg-fg-action text-destructive-foreground hover:bg-destructive/90",
             },
             size: {
                 default: "h-10 px-4 py-2",

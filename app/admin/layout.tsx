@@ -1,3 +1,5 @@
+//File: frontend/app/admin/layout.tsx
+
 import { verifySession } from '@/src/auth/dal';
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import MobileSidebar from '@/components/admin/MobileSidebar';

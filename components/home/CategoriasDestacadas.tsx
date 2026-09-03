@@ -25,7 +25,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
     };
 
     return (
-        <section className="relative max-w-7xl mx-auto px-4 md:px-8 py-4">
+        <section className="relative max-w-7xl mx-auto px-4 md:px-8 py-2">
             <Carousel
                 responsive={responsive}
                 infinite

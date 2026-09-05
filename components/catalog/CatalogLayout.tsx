@@ -1,4 +1,4 @@
-//File: frontend/components/catalog/CatalogLayout.tsx
+// frontend/components/catalog/CatalogLayout.tsx
 
 "use client";
 
@@ -8,6 +8,7 @@ import CatalogMobileFilters from "./CatalogMobileFilters";
 import CatalogSidebar from "./CatalogSidebar";
 import CatalogGrid from "./CatalogGrid";
 import CatalogPagination from "./CatalogPagination";
+import PowerpayBanner from "@/src/components/powerpay/PowerpayBanner";
 
 interface CatalogLayoutProps {
     products: CatalogResponse['products'];
@@ -61,14 +62,14 @@ export default function CatalogLayout({
             {/* MOBILE STICKY FILTER BAR */}
             <div
                 className="
-        lg:hidden
-        sticky
-        top-[70px]
-        z-20
-        bg-surface-primary/95
-        backdrop-blur-md
-        border-b border-border-default
-    "
+            lg:hidden
+            sticky
+            top-[70px]
+            z-20
+            bg-surface-primary/95
+            backdrop-blur-md
+            border-b border-border-default
+        "
             >
                 <div className="container mx-auto px-4 md:px-6 py-2">
                     <CatalogMobileFilters filters={filters} />
@@ -99,6 +100,11 @@ export default function CatalogLayout({
                             </div>
                         )}
                     </main>
+                </div>
+
+                {/* POWERPAY BANNER */}
+                <div className="mt-12 md:mt-16 border-t border-border-default pt-8 pb-4">
+                    <PowerpayBanner />
                 </div>
             </div>
         </section>

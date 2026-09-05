@@ -81,7 +81,7 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                                 style={{
                                     color: accent,
                                     background: `${accent}22`,
-                                    border: `1px solid ${accent}40`,
+                                    border: ``,
                                 }}
                             >
                                 {subtitle}

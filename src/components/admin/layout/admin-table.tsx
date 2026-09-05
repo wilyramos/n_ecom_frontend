@@ -15,7 +15,7 @@ export function AdminTable({
 }) {
   return (
     <div className="overflow-x-auto w-full">
-      <table className={cn("w-full text-left text-[11px] border-collapse", className)}>
+      <table className={cn("w-full text-left text-xs sm:text-[13px] border-collapse", className)}>
         {children}
       </table>
     </div>
@@ -24,7 +24,7 @@ export function AdminTable({
 
 export function AdminTableHead({ children }: { children: React.ReactNode }) {
   return (
-    <thead className="bg-zinc-50/90 border-b border-zinc-200/80 text-zinc-500 font-medium tracking-tight">
+    <thead className="bg-admin-subtle/80 border-b border-admin-border text-admin-fg-muted font-semibold tracking-wide">
       {children}
     </thead>
   );
@@ -64,22 +64,22 @@ export function AdminTableRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "border-b border-zinc-100 last:border-none transition-colors font-medium text-zinc-700 relative",
-        selected ? "bg-zinc-50/90" : "hover:bg-zinc-50/60",
-        isDragging && "opacity-50 bg-zinc-100 z-10 shadow-sm",
+        "border-b border-admin-border-subtle last:border-none transition-colors font-normal text-admin-fg-body relative",
+        selected ? "bg-admin-accent-muted/40" : "hover:bg-admin-subtle/50",
+        isDragging && "opacity-60 bg-admin-subtle z-10 shadow-md",
         className
       )}
     >
       {isDraggable && (
-        <td className="p-1 w-6 text-center align-middle">
+        <td className="px-2 py-1.5 w-8 text-center align-middle">
           <button
             type="button"
             {...attributes}
             {...listeners}
-            className="p-0.5 text-zinc-400 hover:text-zinc-700 cursor-grab active:cursor-grabbing rounded hover:bg-zinc-100 transition-colors"
+            className="p-1 text-admin-fg-subtle hover:text-admin-fg-heading cursor-grab active:cursor-grabbing rounded-md hover:bg-admin-subtle transition-colors"
             title="Arrastrar para reordenar"
           >
-            <GripVertical className="w-3 h-3" />
+            <GripVertical className="w-3.5 h-3.5" />
           </button>
         </td>
       )}
@@ -106,7 +106,10 @@ export function AdminTableHeaderCell({
   return (
     <th
       style={{ width }}
-      className={cn("px-2 py-1.5 whitespace-nowrap text-zinc-500 font-semibold text-[11px] uppercase tracking-wider", alignClass)}
+      className={cn(
+        "px-3 py-2 whitespace-nowrap text-admin-fg-muted font-semibold text-[11px] sm:text-xs uppercase tracking-wider",
+        alignClass
+      )}
     >
       {children}
     </th>
@@ -133,9 +136,9 @@ export function AdminTableCell({
   return (
     <td
       className={cn(
-        "px-2 py-1 align-middle whitespace-nowrap text-[11px] leading-tight",
+        "px-3 py-2 align-middle whitespace-nowrap leading-normal",
         alignClass,
-        bold && "font-semibold text-zinc-900",
+        bold && "font-semibold text-admin-fg-heading",
         className
       )}
     >
@@ -156,9 +159,9 @@ export function AdminTableEmpty({
   return (
     <tr>
       <td colSpan={colSpan} className="py-8 text-center">
-        <div className="space-y-0.5">
-          <p className="text-[11px] font-semibold text-zinc-900">{title}</p>
-          <p className="text-[10px] text-zinc-500 max-w-sm mx-auto">{description}</p>
+        <div className="space-y-1">
+          <p className="text-sm font-semibold text-admin-fg-heading">{title}</p>
+          <p className="text-xs text-admin-fg-muted max-w-sm mx-auto">{description}</p>
         </div>
       </td>
     </tr>

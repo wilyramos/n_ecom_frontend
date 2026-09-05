@@ -1,3 +1,4 @@
+// frontend/src/modules/tickets/components/AdminTicketsClient.tsx
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -31,6 +32,8 @@ import {
   QrCode,
   Pencil,
   FileText,
+  Eye, 
+  Package
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -191,51 +194,53 @@ export default function AdminTicketsClient({
   return (
     <AdminPageContainer maxWidth="default" spacing="default">
       <AdminPageHeader
-        title="Comprobantes y Notas de Venta"
+        title="Comprobantes"
         actions={
           <AdminButton
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 cursor-pointer h-7 text-xs px-2.5"
+            className="flex items-center gap-1.5 cursor-pointer h-8 text-xs font-medium px-4 shadow-sm"
           >
-            <FileUp className="w-3.5 h-3.5" />
+            <FileUp className="w-4 h-4" />
             Digitalizar Comprobante
           </AdminButton>
         }
       />
 
       {selectedIds.length > 0 && (
-        <div className="bg-zinc-900 text-white px-2.5 py-1.5 rounded-md flex items-center justify-between shadow-sm animate-in fade-in duration-200">
-          <div className="flex items-center gap-1.5">
-            <CheckSquare className="w-3 h-3 text-emerald-400" />
-            <span className="text-[11px] font-semibold">
+        <div className="bg-zinc-900 text-white px-4 py-2.5 rounded-lg flex items-center justify-between shadow-lg shadow-zinc-900/10 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-2">
+            <div className="bg-emerald-500/20 p-1 rounded">
+              <CheckSquare className="w-4 h-4 text-emerald-400" />
+            </div>
+            <span className="text-sm font-medium">
               {selectedIds.length} seleccionado{selectedIds.length > 1 ? 's' : ''}
             </span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => handleBulkPrint('ticket')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 rounded text-[11px] font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 rounded-md text-xs font-medium transition-colors cursor-pointer"
             >
-              <Printer className="w-2.5 h-2.5" /> Ticket
+              <Printer className="w-3.5 h-3.5" /> Ticket
             </button>
             <button
               type="button"
               onClick={() => handleBulkPrint('professional')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded text-[11px] font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 rounded-md text-xs font-medium transition-colors cursor-pointer"
             >
-              <QrCode className="w-2.5 h-2.5" /> Factura/QR
+              <QrCode className="w-3.5 h-3.5" /> Factura/QR
             </button>
             <button
               type="button"
               onClick={() => handleBulkZipDownload('professional')}
               disabled={isBulkProcessing || isPending}
-              className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded text-[11px] font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-md text-xs font-medium transition-colors cursor-pointer"
             >
-              {isBulkProcessing ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Download className="w-2.5 h-2.5" />}
+              {isBulkProcessing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
               ZIP
             </button>
           </div>
@@ -261,22 +266,22 @@ export default function AdminTicketsClient({
         <AdminTable>
           <AdminTableHead>
             <tr>
-              <AdminTableHeaderCell width="28px">
+              <AdminTableHeaderCell width="40px" align="center">
                 <input
                   type="checkbox"
                   checked={initialData.length > 0 && selectedIds.length === initialData.length}
                   onChange={handleSelectAll}
                   disabled={isPending}
-                  className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3 w-3 align-middle"
+                  className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3.5 w-3.5 align-middle"
                 />
               </AdminTableHeaderCell>
-              <AdminTableHeaderCell width="120px">N° Comprobante</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="140px">Pedido (Archivo)</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="115px">Fecha / Hora</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="160px">Cliente</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Items</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="85px" align="right">Total</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="95px" align="right">Acciones</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="130px">Comprobante</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="180px">Archivo de Origen</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="120px">Fecha / Hora</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="180px">Cliente</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="180px">Items</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="100px" align="right">Total</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="140px" align="right">Acciones</AdminTableHeaderCell>
             </tr>
           </AdminTableHead>
           <tbody>
@@ -291,22 +296,24 @@ export default function AdminTicketsClient({
                 const isSelected = selectedIds.includes(ticket._id);
                 return (
                   <AdminTableRow key={ticket._id} id={ticket._id} selected={isSelected}>
-                    <AdminTableCell>
+                    <AdminTableCell align="center">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleSelectOne(ticket._id)}
                         disabled={isPending}
-                        className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3 w-3 align-middle"
+                        className="rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer h-3.5 w-3.5 transition-all"
                       />
                     </AdminTableCell>
 
-                    <AdminTableCell bold>
-                      <div className="flex items-center gap-1">
-                        <span className="text-[8px] px-1 py-0.2 bg-zinc-100 text-zinc-500 font-bold uppercase rounded tracking-tight">
+                    <AdminTableCell>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className={`text-[8px] p-1 border border-gray-200 font-bold uppercase`}>
                           {ticket.tipoComprobante || 'BOL'}
                         </span>
-                        <span className="text-[11px] font-semibold text-zinc-900">{ticket.numeroNota}</span>
+                        <span className="text-[12px] font-semibold text-zinc-900 tracking-tight">
+                          {ticket.numeroNota}
+                        </span>
                       </div>
                     </AdminTableCell>
 
@@ -315,111 +322,128 @@ export default function AdminTicketsClient({
                         type="button"
                         onClick={() => openProfessionalPdf(ticket._id)}
                         disabled={isPending}
-                        className="group flex items-center gap-1 hover:text-blue-600 transition-colors cursor-pointer text-left focus:outline-none"
+                        className="group flex items-center gap-1 w-full max-w-[170px] cursor-pointer hover:border-blue-200 transition-colors text-left focus:outline-none"
                         title={ticket.originalFilename}
                       >
-                        <FileText className="w-2.5 h-2.5 text-zinc-400 group-hover:text-blue-600 shrink-0" />
-                        <span className="text-[11px] font-medium text-zinc-800 group-hover:text-blue-600 truncate max-w-[130px]">
-                          {ticket.originalFilename || '--'}
+                        <div className="bg-white p-1 rounded shadow-sm border border-zinc-100 group-hover:border-blue-100 shrink-0">
+                          <FileText className="w-2 h-2 text-zinc-400 group-hover:text-blue-500" />
+                        </div>
+                        <span className="text-[11px] font-medium text-zinc-600 group-hover:text-blue-700 truncate flex-1">
+                          {ticket.originalFilename || 'Sin archivo'}
                         </span>
+                        <Eye className="w-3 h-3 text-zinc-400 opacity-0 group-hover:opacity-100 group-hover:text-blue-600 transition-opacity shrink-0" />
                       </button>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <span className="text-[10px] text-zinc-600">
-                        {ticket.fecha || '-'} <span className="text-zinc-400 font-normal">{ticket.hora || ''}</span>
-                      </span>
+                      <div className="flex flex-col gap-0.5">
+                        <div className="flex gap-1 text-zinc-800">
+                          <span className="text-[11px] font-medium">{ticket.fecha || '-'}</span>
+                        </div>
+                        {ticket.hora && (
+                          <span className="text-[10px] text-zinc-500">{ticket.hora}</span>
+                        )}
+                      </div>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <div className="flex items-baseline gap-1 max-w-[160px]">
-                        <span className="text-[11px] font-medium text-zinc-900 truncate" title={ticket.cliente}>
-                          {ticket.cliente}
-                        </span>
+                      <div className="flex flex-col gap-0.5 max-w-[170px]">
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px] font-medium text-zinc-900 truncate" title={ticket.cliente}>
+                            {ticket.cliente || 'Sin cliente'}
+                          </span>
+                        </div>
                         {ticket.documentoCliente && (
-                          <span className="text-[9px] text-zinc-400 shrink-0">
-                            ({ticket.documentoCliente})
+                          <span className="text-[10px] text-zinc-500">
+                            Doc: {ticket.documentoCliente}
                           </span>
                         )}
                       </div>
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <div className="max-w-[200px] flex items-center gap-1">
+                      <div className="flex items-center gap-1.5 max-w-[170px]">
+                        <Package className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                         {ticket.items && ticket.items.length > 0 ? (
                           <>
-                            <span className="text-[11px] text-zinc-700 truncate" title={ticket.items[0].descripcion}>
+                            <span className="text-[11px] text-zinc-600 truncate" title={ticket.items[0].descripcion}>
                               {ticket.items[0].descripcion}
                             </span>
-                            <span className="text-[9px] text-zinc-400 shrink-0">
-                              ({ticket.items[0].cantidad}{ticket.items.length > 1 ? ` +${ticket.items.length - 1}` : ''})
-                            </span>
+                            {ticket.items.length > 1 && (
+                              <span className="inline-flex items-center justify-center px-1.5 py-0.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-600 text-[9px] font-bold shrink-0">
+                                +{ticket.items.length - 1}
+                              </span>
+                            )}
                           </>
                         ) : (
-                          <span className="text-[10px] text-zinc-400">Sin items</span>
+                          <span className="text-[11px] text-zinc-400 italic">Sin items</span>
                         )}
                       </div>
                     </AdminTableCell>
 
-                    <AdminTableCell align="right" bold>
-                      <span className="text-[11px] font-bold text-zinc-900">
-                        S/ {Number(ticket.monto || 0).toFixed(2)}
-                      </span>
+                    <AdminTableCell align="right">
+                      <div className="flex flex-col items-end justify-center">
+                        <span className="text-[12px] font-bold text-zinc-900 leading-none">
+                          S/ {Number(ticket.monto || 0).toFixed(2)}
+                        </span>
+                      </div>
                     </AdminTableCell>
 
                     <AdminTableCell align="right">
-                      <div className="flex items-center justify-end gap-0.5">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(ticket)}
                           disabled={isPending}
-                          className="w-5 h-5 flex items-center justify-center text-amber-700 hover:bg-amber-100 rounded transition-colors cursor-pointer"
+                          className="w-7 h-7 flex items-center justify-center rounded text-zinc-500 hover:text-amber-700 hover:bg-amber-50 border border-transparent hover:border-amber-200 transition-all cursor-pointer"
                           title="Editar"
                         >
-                          <Pencil className="w-2.5 h-2.5" />
+                          <Pencil className="w-3.5 h-3.5" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => openTicketPdf(ticket._id)}
                           disabled={isPending}
-                          className="w-5 h-5 flex items-center justify-center text-zinc-700 hover:bg-zinc-200 bg-zinc-100 rounded transition-colors cursor-pointer"
-                          title="Ticket"
+                          className="w-7 h-7 flex items-center justify-center rounded text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 border border-transparent hover:border-zinc-200 transition-all cursor-pointer"
+                          title="Imprimir Ticket"
                         >
-                          <Printer className="w-2.5 h-2.5" />
+                          <Printer className="w-3.5 h-3.5" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => openProfessionalPdf(ticket._id)}
                           disabled={isPending}
-                          className="w-5 h-5 flex items-center justify-center text-white hover:bg-blue-700 bg-blue-600 rounded transition-colors cursor-pointer"
+                          className="w-7 h-7 flex items-center justify-center rounded text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 border border-blue-100 hover:border-blue-600 transition-all cursor-pointer shadow-sm"
                           title="Factura QR"
                         >
-                          <QrCode className="w-2.5 h-2.5" />
+                          <QrCode className="w-3.5 h-3.5" />
                         </button>
 
-                        <AdminTableActions
-                          actions={[
-                            {
-                              label: 'Editar Comprobante',
-                              onClick: () => handleOpenEdit(ticket),
-                            },
-                            {
-                              label: 'Ver Formato Ticket',
-                              onClick: () => openTicketPdf(ticket._id),
-                            },
-                            {
-                              label: 'Ver Formato Factura (QR)',
-                              onClick: () => openProfessionalPdf(ticket._id),
-                            },
-                            {
-                              label: isPending ? 'Eliminando...' : 'Eliminar Registro',
-                              variant: 'destructive',
-                              onClick: () => handleDelete(ticket._id),
-                            },
-                          ]}
-                        />
+                        <div className="ml-1 pl-1 border-l border-zinc-200">
+                          <AdminTableActions
+                            actions={[
+                              {
+                                label: 'Editar Comprobante',
+                                onClick: () => handleOpenEdit(ticket),
+                              },
+                              {
+                                label: 'Ver Formato Ticket',
+                                onClick: () => openTicketPdf(ticket._id),
+                              },
+                              {
+                                label: 'Ver Formato Factura (QR)',
+                                onClick: () => openProfessionalPdf(ticket._id),
+                              },
+                              {
+                                label: isPending ? 'Eliminando...' : 'Eliminar Registro',
+                                variant: 'destructive',
+                                onClick: () => handleDelete(ticket._id),
+                              },
+                            ]}
+                          />
+                        </div>
                       </div>
                     </AdminTableCell>
                   </AdminTableRow>

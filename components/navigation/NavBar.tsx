@@ -17,9 +17,18 @@ export default function NavBar() {
                 <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative h-full">
 
                     {/* Mobile: Logo centrado */}
-                    <div className="md:hidden absolute left-1/2 -translate-x-1/2 top-0 bottom-0 flex items-center justify-center">
-                        <Link href="/" className="flex items-center">
-                            <Logo color="black" className="h-8 w-32" />
+                    <div className="md:hidden absolute left-1/2 top-0 bottom-0 flex items-center justify-center -ml-16">
+                        {/* Cambiar -translate-x-1/2 por -ml-[50%] del ancho */}
+                        <Link href="/">
+                            <Logo
+                                color="black"
+                                className="h-8 w-32"
+                                // Añadir estilos inline para Safari
+                                style={{
+                                    WebkitFontSmoothing: 'antialiased',
+                                    willChange: 'transform',
+                                }}
+                            />
                         </Link>
                     </div>
 

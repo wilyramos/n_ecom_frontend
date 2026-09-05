@@ -6,7 +6,6 @@ import { metadata as globalMetadata } from "@/app/layout";
 import type { Metadata } from "next";
 import WhatsappButton from "@/components/home/WhatsappButton";
 import ScrollToTop from "@/components/navigation/ScrollToTop";
-import PowerpayHeader from "@/src/components/powerpay/PowerpayHeader";
 
 export const metadata: Metadata = {
     ...globalMetadata,
@@ -45,7 +44,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
         <>
             <ScrollToTop /> 
 
-            <PowerpayHeader />
+            {/* <PowerpayHeader /> */}
 
             <section className="flex flex-col min-h-screen">
                 <header className="w-full z-50 sticky top-0">

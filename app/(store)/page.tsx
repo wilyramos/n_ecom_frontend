@@ -58,8 +58,6 @@ export default function HomePage() {
             <section className="relative w-full flex flex-col">
                 <CarruselPrincipal />
 
-            
-               
             </section>
 
              <div className="">

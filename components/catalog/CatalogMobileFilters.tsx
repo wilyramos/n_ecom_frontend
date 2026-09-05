@@ -168,9 +168,7 @@ export default function CatalogMobileFilters({ filters }: Props) {
 
                     {/* Filtros */}
                     <div className="flex flex-col gap-3">
-                        <span className="text-xs font-bold uppercase tracking-wider text-fg-primary/60">
-                            Filtros
-                        </span>
+                     
                         <CatalogSidebar filters={filters} />
                     </div>
                 </div>

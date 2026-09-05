@@ -38,7 +38,7 @@ export default function CatalogHeader({
 
                                 {isLast ? (
                                     <span
-                                        className="text-[var(--color-fg-primary)] font-medium"
+                                        className="text-fg-secondary font-medium"
                                         aria-current="page"
                                     >
                                         {crumb.label}
@@ -64,7 +64,7 @@ export default function CatalogHeader({
             {/* Title */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-baseline gap-3">
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--color-fg-primary)] uppercase">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-fg-secondary uppercase">
                         {title}
                     </h1>
 

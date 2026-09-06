@@ -14,8 +14,8 @@ export default function Logo({
     style // ← Destructura el style
 }: LogoProps) {
     const logoSrc = color === "black" 
-        ? "/logosvg.svg" 
-        : "/logosvg.svg";
+        ? "/logo_fondo_blanco_v3.svg" 
+        : "/logo_fondo_blanco_v3.svg";
 
     return (
         <div 

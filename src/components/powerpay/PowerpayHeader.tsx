@@ -1,3 +1,5 @@
+//File: frontend/src/components/powerpay/PowerpayHeader.tsx
+
 'use client';
 
 import React from "react";

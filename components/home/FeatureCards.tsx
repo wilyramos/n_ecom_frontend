@@ -33,7 +33,7 @@ const features: Feature[] = [
 
 export default function FeatureCards() {
   return (
-    <section className="py-1 w-full max-w-screen-2xl mx-auto">
+    <section className="pb-0.5 pt-2 md:py-1 w-full max-w-screen-2xl mx-auto">
       <div className="w-full py-1 px-1 md:px-6">
         
         {/* CONTENEDOR PRINCIPAL LIQUID GLASS - OSCURECIDO Y SATURADO */}

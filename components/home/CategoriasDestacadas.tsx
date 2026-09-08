@@ -3,7 +3,7 @@
 import Carousel from "react-multi-carousel";
 import Image from "next/image";
 import Link from "next/link";
-import { ImageOff, ArrowRight } from "lucide-react";
+import { ImageOff } from "lucide-react";
 import type { CategoryListResponse } from "@/src/schemas";
 import { routes } from "@/lib/routes";
 
@@ -62,14 +62,11 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                         {/* Textos: Jerarquía Pequeño/Normal */}
                         <div className="mt-1 px-1 space-y-0.5">
 
-                            <div className="flex items-center text-center justify-between">
+                            <div className="flex items-center text-center justify-center">
                                 <h3 className="text-xs md:text-base text-[var(--color-text-primary)]">
                                     {c.nombre}
                                 </h3>
-                                <ArrowRight
-                                    size={14}
-                                    className="text-[var(--color-action-primary)] opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
-                                />
+                              
                             </div>
                         </div>
                     </Link>

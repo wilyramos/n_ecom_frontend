@@ -33,7 +33,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                 arrows={false}
                 renderButtonGroupOutside
                 // customButtonGroup={<AbsoluteHeaderWrapper />}
-                itemClass="px-1 py-4"
+                itemClass="px-1 md:py-4"
                 partialVisible
             >
                 {categorias.map(c => (

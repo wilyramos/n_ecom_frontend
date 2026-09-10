@@ -74,6 +74,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
   const totalFinalCalculado = total + shippingCost + recargoFinanciero;
 
+  // 🔴 VALIDACIÓN STRICTA Y REDIRECCIÓN AL VERIFICADOR
   const handleCulqiTokenSuccess = useCallback(
     async (tokenOrOrderId: string) => {
       const orderNumber = activeOrderNumberRef.current;
@@ -86,26 +87,20 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       try {
         const resultadoCargo = await procesarCargoCulqiAction(orderNumber, tokenOrOrderId);
 
-        if (resultadoCargo.success) {
-          const estadoPago = resultadoCargo.data?.status;
-
-          if (estadoPago === 'approved') {
-            toast.success('Pago confirmado exitosamente.');
-            clearCart();
-            router.push(`/checkout-result/success/${orderNumber}`);
-          } else if (estadoPago === 'pending') {
-            toast.success('Código de pago generado.');
-            clearCart();
-            router.push(`/checkout-result/success/${orderNumber}`);
-          } else {
-            toast.error('La transacción fue procesada pero no aprobada. Intenta con otro método.');
-          }
-        } else {
+        // Si el backend rechaza de inmediato (ej: Tarjeta sin fondos, Error 400 de Culqi)
+        if (!resultadoCargo.success) {
           toast.error(resultadoCargo.message || 'El pago fue rechazado. Revisa tu tarjeta e intenta nuevamente.');
+          setIsSubmitting(false);
+          return;
         }
+
+        // Si la orden fue procesada (sea exitosa o pago diferido), limpiamos carrito y vamos a Verifying.
+        // La página "Verifying" será la única responsable de enrutar a success, pending o failure.
+        clearCart();
+        router.push(`/checkout-result/verifying?orderNumber=${orderNumber}`);
+        
       } catch {
         toast.error('Error de conexión al verificar el pago con el servidor.');
-      } finally {
         setIsSubmitting(false);
       }
     },
@@ -121,9 +116,8 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   } = useCulqi({
     onSuccess: handleCulqiTokenSuccess,
     onError: (errorMessage) => {
-      // El error ya se maneja internamente con toast en el hook, 
-      // pero esta función permite limpieza adicional si es necesario.
-      console.warn('Transacción denegada en frontend:', errorMessage);
+      // Los fallos locales del banco (ej. tarjeta bloqueada detectada por el modal) ya levantan un toast en el hook.
+      console.warn('Transacción denegada o abortada en frontend:', errorMessage);
     },
     onClose: () => {
       toast.info('Cancelaste el proceso de pago. Puedes volver a intentarlo cuando desees.');
@@ -226,7 +220,8 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       } else {
         toast.success('Pedido registrado.');
         clearCart();
-        router.push(`/checkout-v2/success/${pedidoCreado.orderNumber}`);
+        // Redirige al verifying universalmente
+        router.push(`/checkout-result/verifying?orderNumber=${pedidoCreado.orderNumber}`);
       }
     } catch (e) {
       console.error(e);

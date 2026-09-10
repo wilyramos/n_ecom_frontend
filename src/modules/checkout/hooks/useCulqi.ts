@@ -1,3 +1,4 @@
+// File: frontend/src/modules/checkout/hooks/useCulqi.ts
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -19,6 +20,11 @@ interface UseCulqiProps {
 }
 
 type CulqiInstance = ICulqiCheckoutInstance | ICulqiGlobalObject;
+
+// Extensión segura para incluir la propiedad charge de Culqi V4 sin modificar globalmente y sin usar 'any'
+type ExtendedCulqiInstance = CulqiInstance & {
+  charge?: { id: string } | null;
+};
 
 const DEFAULT_OPTIONS: ICulqiOptions = {
   lang: 'es',
@@ -105,7 +111,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       closeCulqiModal();
       setIsProcessing(false);
 
-      // Prioridad al user_message emitido por el procesador bancario a través de Culqi
       const message = errorObj.user_message || 'El emisor de la tarjeta rechazó la operación.';
       toast.error(message);
       if (onErrorRef.current) onErrorRef.current(message);
@@ -194,7 +199,8 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       if (window.Culqi) {
         window.Culqi.order = null;
         window.Culqi.token = null;
-        window.Culqi.charge = null;
+        const extendedCulqi = window.Culqi as ExtendedCulqiInstance;
+        extendedCulqi.charge = null;
       }
 
       tokenHandledRef.current = false;
@@ -212,29 +218,35 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         options: DEFAULT_OPTIONS,
       };
 
-      const eventHandler = (instance: CulqiInstance) => {
+      const eventHandler = (rawInstance: CulqiInstance) => {
         try {
-          // 1. Cobro directo auto-procesado por Culqi v4 (chr_...)
+          const instance = rawInstance as ExtendedCulqiInstance;
+
+          // 1. CARGO AUTOMÁTICO V4 (Aquí se captura si el 3DS fue exitoso)
           if (instance.charge) {
             handleSuccessReceived(instance.charge.id);
             instance.charge = null;
           } 
-          // 2. Tokenización manual (tkn_...)
-          else if (instance.token) {
-            handleSuccessReceived(instance.token.id);
-            instance.token = null;
-          } 
-          // 3. Orden diferida como PagoEfectivo / CIP (ord_...)
+          // 2. ORDEN DIFERIDA (PagoEfectivo, CIP)
           else if (instance.order) {
             deferredOrderIdRef.current = instance.order.id;
             instance.order = null; 
           } 
-          // 4. Fallos del banco emisor capturados nativamente en Modal
+          // 3. FALLOS (Fondos insuficientes, 3DS cancelado, tarjeta bloqueada)
           else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
           } 
-          // 5. Cierre forzado por el usuario
+          // 4. TOKENIZACIÓN INTERMEDIA (Ignoramos para no matar el modal de 3DS)
+          else if (instance.token) {
+            if (!culqiOrderId) {
+              handleSuccessReceived(instance.token.id);
+            } else {
+              console.log('Token generado. Esperando a que Culqi procese 3DS y el cargo automático...');
+            }
+            instance.token = null;
+          } 
+          // 5. CIERRE DEL USUARIO
           else if (instance.closeEvent) {
             instance.closeEvent = false;
             if (deferredOrderIdRef.current) {

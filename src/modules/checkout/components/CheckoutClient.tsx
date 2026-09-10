@@ -87,9 +87,8 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         const resultadoCargo = await procesarCargoCulqiAction(orderNumber, tokenOrOrderId);
 
         if (resultadoCargo.success) {
-          // Validación ESTRICTA basada en la respuesta de la API, no en suposiciones del frontend
           const estadoPago = resultadoCargo.data?.status;
-          
+
           if (estadoPago === 'approved') {
             toast.success('Pago confirmado exitosamente.');
             clearCart();
@@ -99,13 +98,10 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
             clearCart();
             router.push(`/checkout-result/success/${orderNumber}`);
           } else {
-            toast.error('La transacción fue procesada pero no aprobada.');
-            // NO redirigir. Permitir reintento en el mismo formulario.
+            toast.error('La transacción fue procesada pero no aprobada. Intenta con otro método.');
           }
         } else {
-          // Muestra el error EXACTO devuelto por el banco a través de la API
           toast.error(resultadoCargo.message || 'El pago fue rechazado. Revisa tu tarjeta e intenta nuevamente.');
-          // NO redirigir a failure. El usuario se queda en la vista y puede cambiar de tarjeta.
         }
       } catch {
         toast.error('Error de conexión al verificar el pago con el servidor.');
@@ -125,7 +121,9 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   } = useCulqi({
     onSuccess: handleCulqiTokenSuccess,
     onError: (errorMessage) => {
-      toast.error(errorMessage || 'No se pudo completar la transacción.');
+      // El error ya se maneja internamente con toast en el hook, 
+      // pero esta función permite limpieza adicional si es necesario.
+      console.warn('Transacción denegada en frontend:', errorMessage);
     },
     onClose: () => {
       toast.info('Cancelaste el proceso de pago. Puedes volver a intentarlo cuando desees.');
@@ -288,7 +286,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
               
               <InvoiceInfo />
 
-              {/* 🔴 NUEVO: Mensaje de transparencia y claridad para el usuario */}
               <div className="bg-blue-50/60 border border-blue-100 rounded-lg p-3.5 sm:p-4 flex gap-3 items-start">
                 <Info className="text-gray-500 mt-0.5 flex-shrink-0" size={18} />
                 <div className="space-y-1">

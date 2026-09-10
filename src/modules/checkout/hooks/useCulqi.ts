@@ -48,7 +48,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
   const checkoutRef = useRef<ICulqiCheckoutInstance | null>(null);
   const tokenHandledRef = useRef<boolean>(false);
   
-  // 🔴 NUEVA REFERENCIA: Almacenará el ID de la orden diferida (CIP/QR) sin cerrar el modal
   const deferredOrderIdRef = useRef<string | null>(null);
 
   const onSuccessRef = useRef(onSuccess);
@@ -107,7 +106,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       closeCulqiModal();
       setIsProcessing(false);
 
-      const message = errorObj.user_message || errorObj.merchant_message || 'Transacción denegada.';
+      const message = errorObj.user_message || 'El emisor de la tarjeta rechazó la operación.';
       toast.error(message);
       if (onErrorRef.current) onErrorRef.current(message);
     },
@@ -146,7 +145,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           data?.name === 'checkout_close';
 
         if (isCloseAction) {
-          // 🔴 Validamos si el usuario cerró el modal DESPUÉS de haber generado el CIP/QR
           if (deferredOrderIdRef.current) {
             handleSuccessReceived(deferredOrderIdRef.current);
           } else {
@@ -189,7 +187,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         return;
       }
 
-      // 🔴 Limpieza rigurosa antes de instanciar un nuevo Checkout
       const existingContainer = document.getElementById('culqi-container') || document.querySelector('.culqi-checkout-container');
       if (existingContainer) {
         existingContainer.remove();
@@ -200,7 +197,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       }
 
       tokenHandledRef.current = false;
-      deferredOrderIdRef.current = null; // Reiniciar referencia
+      deferredOrderIdRef.current = null;
       setIsProcessing(true);
 
       const config: CulqiCheckoutConfig = {
@@ -217,25 +214,19 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       const eventHandler = (instance: CulqiInstance) => {
         try {
           if (instance.token) {
-            // Pagos con tarjeta / tokenizado directo -> procesar de inmediato
             handleSuccessReceived(instance.token.id);
             instance.token = null;
           } else if (instance.order) {
-            // 🔴 FLUJO QR / BANCA MÓVIL (CIP) 🔴
-            // NO CERRAMOS EL MODAL AQUÍ. Permitimos que Culqi muestre su pantalla final.
             deferredOrderIdRef.current = instance.order.id;
             instance.order = null; 
-            // El proceso se retomará cuando el usuario dispare `instance.closeEvent`
           } else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
           } else if (instance.closeEvent) {
             instance.closeEvent = false;
             if (deferredOrderIdRef.current) {
-              // Si el usuario ya vio el QR y le da clic a "Cerrar" en Culqi
               handleSuccessReceived(deferredOrderIdRef.current);
             } else {
-              // Si el usuario cierra el modal sin pagar
               handleCloseReceived();
             }
           }

@@ -8,6 +8,18 @@ export interface ICulqiToken {
   active?: boolean;
 }
 
+export interface ICulqiCharge {
+  id: string;
+  object: string;
+  amount: number;
+  currency_code: string;
+  outcome?: {
+    type: string;
+    code: string;
+  };
+  [key: string]: unknown;
+}
+
 export interface ICulqiError {
   type: string;
   merchant_message: string;
@@ -76,6 +88,7 @@ export interface ICulqiCheckoutInstance {
   culqi?: () => void;
   token?: ICulqiToken | null;
   order?: CulqiOrderResponse | null;
+  charge?: ICulqiCharge | null; // 🔴 Añadido para soportar cobro directo en v4
   error?: ICulqiError | null;
   closeEvent?: boolean | null;
 }
@@ -89,6 +102,7 @@ export interface ICulqiGlobalObject {
   publicKey?: string;
   token?: ICulqiToken | null;
   order?: CulqiOrderResponse | null;
+  charge?: ICulqiCharge | null; // 🔴 Añadido para soportar cobro directo en v4
   error?: ICulqiError | null;
   close?: () => void;
   closeEvent?: boolean | null;

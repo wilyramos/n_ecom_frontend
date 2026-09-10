@@ -1,4 +1,3 @@
-// File: frontend/src/modules/checkout/hooks/useCulqi.ts
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -106,6 +105,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       closeCulqiModal();
       setIsProcessing(false);
 
+      // Prioridad al user_message emitido por el procesador bancario a través de Culqi
       const message = errorObj.user_message || 'El emisor de la tarjeta rechazó la operación.';
       toast.error(message);
       if (onErrorRef.current) onErrorRef.current(message);
@@ -194,6 +194,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       if (window.Culqi) {
         window.Culqi.order = null;
         window.Culqi.token = null;
+        window.Culqi.charge = null;
       }
 
       tokenHandledRef.current = false;
@@ -213,16 +214,28 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
       const eventHandler = (instance: CulqiInstance) => {
         try {
-          if (instance.token) {
+          // 1. Cobro directo auto-procesado por Culqi v4 (chr_...)
+          if (instance.charge) {
+            handleSuccessReceived(instance.charge.id);
+            instance.charge = null;
+          } 
+          // 2. Tokenización manual (tkn_...)
+          else if (instance.token) {
             handleSuccessReceived(instance.token.id);
             instance.token = null;
-          } else if (instance.order) {
+          } 
+          // 3. Orden diferida como PagoEfectivo / CIP (ord_...)
+          else if (instance.order) {
             deferredOrderIdRef.current = instance.order.id;
             instance.order = null; 
-          } else if (instance.error) {
+          } 
+          // 4. Fallos del banco emisor capturados nativamente en Modal
+          else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
-          } else if (instance.closeEvent) {
+          } 
+          // 5. Cierre forzado por el usuario
+          else if (instance.closeEvent) {
             instance.closeEvent = false;
             if (deferredOrderIdRef.current) {
               handleSuccessReceived(deferredOrderIdRef.current);

@@ -1,3 +1,5 @@
+//File: frontend/app/%28store%29/checkout-result/verifying/page.tsx
+
 "use client";
 
 import { useEffect, useState, use } from "react";

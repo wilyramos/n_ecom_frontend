@@ -1,3 +1,5 @@
+//File: frontend/app/%28store%29/checkout-result/resultado/page.tsx
+
 import { redirect } from "next/navigation";
 import { getOrder } from "@/src/services/orders";
 import Link from "next/link";

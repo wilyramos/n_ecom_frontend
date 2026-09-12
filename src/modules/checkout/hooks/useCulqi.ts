@@ -22,6 +22,8 @@ type CulqiInstance = ICulqiCheckoutInstance | ICulqiGlobalObject;
 
 type ExtendedCulqiInstance = CulqiInstance & {
   charge?: { id: string } | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  order?: any; 
 };
 
 const DEFAULT_OPTIONS: ICulqiOptions = {
@@ -50,7 +52,10 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const checkoutRef = useRef<ICulqiCheckoutInstance | null>(null);
   const tokenHandledRef = useRef<boolean>(false);
+  
+  // Rastreadores de órdenes diferidas (PagoEfectivo / CIP)
   const deferredOrderIdRef = useRef<string | null>(null);
+  const providedOrderIdRef = useRef<string | null>(null); 
 
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
@@ -92,7 +97,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const handleSuccessReceived = useCallback(
     (id: string) => {
-      // console.log(`🎯 [useCulqi] handleSuccessReceived disparado con ID: ${id}`);
+      console.log(`✅ [useCulqi] Resolviendo éxito en el frontend para ID: ${id}`);
       if (tokenHandledRef.current) return;
       tokenHandledRef.current = true;
       closeCulqiModal();
@@ -111,7 +116,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       setIsProcessing(false);
 
       const message = errorObj.user_message || 'El emisor de la tarjeta rechazó la operación.';
-      console.warn('⚠️ [useCulqi] Mensaje de error a mostrar al usuario:', message);
       toast.error(message);
       if (onErrorRef.current) onErrorRef.current(message);
     },
@@ -124,6 +128,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
     if (onCloseRef.current) onCloseRef.current();
   }, []);
 
+  // 🔴 ESCUCHADOR GLOBAL DE MENSAJES (postMessage)
   useEffect(() => {
     if (!isProcessing) return;
 
@@ -132,35 +137,72 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         let payload: unknown = event.data;
 
         if (typeof payload === 'string') {
-          try {
-            payload = JSON.parse(payload) as unknown;
-          } catch {}
+          try { payload = JSON.parse(payload) as unknown; } catch {}
         }
 
         const data = typeof payload === 'object' && payload !== null ? (payload as Record<string, unknown>) : null;
 
+        // 🔴 LA LÍNEA MÁGICA: Agregamos object === 'closeCheckout' a la validación
         const isCloseAction =
           payload === 'checkout_close' ||
           payload === 'close' ||
           data?.action === 'close' ||
           data?.type === 'culqi.close' ||
           data?.event === 'checkout_closed' ||
-          data?.name === 'checkout_close';
+          data?.name === 'checkout_close' ||
+          data?.object === 'closeCheckout'; // <--- ESTO DETECTA EL BOTÓN "DE ACUERDO"
 
-        if (isCloseAction) {
-          if (deferredOrderIdRef.current) {
-            handleSuccessReceived(deferredOrderIdRef.current);
-          } else {
+        const isOrderSuccess = data?.action === 'order_pending' || data?.type === 'order_success' || data?.event === 'order_created';
+
+        if (isCloseAction || isOrderSuccess) {
+          // console.log(`🛑 [useCulqi postMessage] Acción de cierre/éxito detectada.`);
+          const targetId = deferredOrderIdRef.current || providedOrderIdRef.current;
+          
+          if (targetId && targetId.startsWith('ord_')) {
+            handleSuccessReceived(targetId);
+          } else if (isCloseAction) {
             handleCloseReceived();
           }
         }
       } catch (e: unknown) {
-        console.warn('⚠️ [useCulqi] Error leyendo postMessage de Culqi:', e);
+        console.warn(e);
+        // console.warn('⚠️ [useCulqi] Error leyendo postMessage de Culqi:', e);
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
+  }, [isProcessing, handleCloseReceived, handleSuccessReceived]);
+
+  // Fallback visual (Polling)
+  useEffect(() => {
+    if (!isProcessing) return;
+    let fallbackInterval: NodeJS.Timeout;
+
+    // Le damos 2 segundos de gracia al modal para aparecer antes de empezar a vigilar
+    const timeoutId = setTimeout(() => {
+      fallbackInterval = setInterval(() => {
+        const culqiContainer = document.querySelector('.culqi-checkout-container') || document.getElementById('culqi-container');
+        if (culqiContainer) {
+          const isHidden = window.getComputedStyle(culqiContainer).display === 'none';
+          if (isHidden) {
+            // console.log("🕵️‍♂️ [useCulqi Fallback] El modal de Culqi se detectó oculto físicamente.");
+            const targetId = deferredOrderIdRef.current || providedOrderIdRef.current;
+            if (targetId && targetId.startsWith('ord_')) {
+              handleSuccessReceived(targetId);
+            } else {
+              handleCloseReceived();
+            }
+            clearInterval(fallbackInterval);
+          }
+        }
+      }, 1000);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (fallbackInterval) clearInterval(fallbackInterval);
+    };
   }, [isProcessing, handleCloseReceived, handleSuccessReceived]);
 
   const openCulqiModal = useCallback(
@@ -171,9 +213,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         return;
       }
 
-      const existingContainer = document.getElementById('culqi-container') || document.querySelector('.culqi-checkout-container');
-      if (existingContainer) existingContainer.remove();
-      
       if (window.Culqi) {
         window.Culqi.order = null;
         window.Culqi.token = null;
@@ -183,6 +222,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
       tokenHandledRef.current = false;
       deferredOrderIdRef.current = null;
+      providedOrderIdRef.current = culqiOrderId || null; 
       setIsProcessing(true);
 
       const config: CulqiCheckoutConfig = {
@@ -196,47 +236,39 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         options: DEFAULT_OPTIONS,
       };
 
-
       const eventHandler = (rawInstance: CulqiInstance) => {
         try {
           const instance = rawInstance as ExtendedCulqiInstance;
 
-          // 1. CARGO AUTO (Si Culqi lograra procesarlo directo)
           if (instance.charge) {
-            // console.log(`💰 [useCulqi] CARGO DIRECTO: ${instance.charge.id}`);
             handleSuccessReceived(instance.charge.id);
             instance.charge = null;
           } 
-          // 2. ORDEN DIFERIDA (PagoEfectivo / CIP)
           else if (instance.order) {
-            // console.log(`📦 [useCulqi] ORDEN DIFERIDA: ${instance.order.id}. Esperando cierre...`);
-            deferredOrderIdRef.current = instance.order.id;
+            const orderId = typeof instance.order === 'string' ? instance.order : (instance.order.id || instance.order.order_number);
+            if (orderId) deferredOrderIdRef.current = orderId;
             instance.order = null; 
           } 
-          // 3. ERRORES DE TARJETA Y SEGURIDAD
           else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
           } 
-          // 4. TOKENIZACIÓN (Tarjetas)
           else if (instance.token) {
-            // 🔴 CORRECCIÓN: Siempre capturamos el token y lo enviamos al backend.
-            // Es el backend quien hará el cobro (POST /charges).
-            // console.log(`🔑 [useCulqi] TOKEN GENERADO: ${instance.token.id}. Enviándolo al backend para procesar el cargo...`);
             handleSuccessReceived(instance.token.id);
             instance.token = null;
           } 
-          // 5. CIERRE MANUAL DEL CLIENTE
           else if (instance.closeEvent) {
             instance.closeEvent = false;
-            if (deferredOrderIdRef.current) {
-              handleSuccessReceived(deferredOrderIdRef.current);
+            const targetId = deferredOrderIdRef.current || providedOrderIdRef.current;
+            if (targetId && targetId.startsWith('ord_')) {
+              handleSuccessReceived(targetId);
             } else {
               handleCloseReceived();
             }
           }
         } catch (error: unknown) {
-          console.error('⚠️ [useCulqi] Error manejando evento de Culqi:', error);
+          console.warn(error);
+          // console.error('⚠️ [useCulqi] Error manejando evento de Culqi:', error);
           handleCloseReceived();
         }
       };

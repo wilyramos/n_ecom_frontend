@@ -7,6 +7,8 @@ import ToastNotification from "@/components/ui/ToastNotification";
 import { redirect } from 'next/navigation';
 import Logo from '@/components/ui/Logo';
 import { Inter } from "next/font/google";
+import ScrollToTop from "@/components/navigation/ScrollToTop";
+
 
 const inter = Inter({
     subsets: ["latin"],
@@ -18,7 +20,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     if (user.rol !== 'administrador') redirect("/profile");
 
     return (
+
+        <>
+        
         <div className={inter.className}>
+            <ScrollToTop />
             {/* MOBILE TOPBAR FIXED */}
             <div className="md:hidden fixed top-0 inset-x-0 z-40 h-12 px-2 border-b border-slate-200 bg-white flex items-center justify-between">
                 <div className="flex items-center">
@@ -47,5 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
             <ToastNotification />
         </div>
+
+        </>
     );
 }

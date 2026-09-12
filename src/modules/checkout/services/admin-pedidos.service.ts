@@ -8,6 +8,7 @@ export interface IAdminPedidosParams {
   page?: number;
   limit?: number;
   status?: EstadoPedido | string;
+  paymentStatus?: string; // 
   paymentProvider?: string;
   deliveryMethod?: string;
   dateFrom?: string;
@@ -48,6 +49,7 @@ export async function getAdminPedidos(
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.status && params.status !== 'all') queryParams.append('status', params.status);
+    if (params.paymentStatus && params.paymentStatus !== 'all') queryParams.append('paymentStatus', params.paymentStatus); // 👈 nuevo
     if (params.paymentProvider && params.paymentProvider !== 'all') queryParams.append('paymentProvider', params.paymentProvider);
     if (params.deliveryMethod && params.deliveryMethod !== 'all') queryParams.append('deliveryMethod', params.deliveryMethod);
     if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);

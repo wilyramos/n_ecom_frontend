@@ -1,5 +1,3 @@
-// File: frontend/app/admin/pedidos/page.tsx
-
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { verifySession } from '@/src/auth/dal';
@@ -15,6 +13,7 @@ interface PedidosPageProps {
     page?: string;
     limit?: string;
     status?: string;
+    paymentStatus?: string;
     provider?: string;
     delivery?: string;
     dateFrom?: string;
@@ -36,6 +35,7 @@ export default async function AdminPedidosPage({ searchParams }: PedidosPageProp
     page: Number(query.page) || 1,
     limit: Number(query.limit) || 10,
     status: query.status || 'all',
+    paymentStatus: query.paymentStatus || 'all',
     paymentProvider: query.provider || 'all',
     deliveryMethod: query.delivery || 'all',
     dateFrom: query.dateFrom || '',

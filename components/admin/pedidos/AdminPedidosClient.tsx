@@ -1,5 +1,3 @@
-// File: frontend/components/admin/pedidos/AdminPedidosClient.tsx
-
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -32,7 +30,6 @@ import { CreditCard, Eye, Package, Truck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Clock, DollarSign } from 'lucide-react';
 import { AdminMetricsBar } from '@/src/components/admin/layout/admin-metrics-bar';
-
 
 export interface AdminPedidosClientProps {
   initialData: IPedido[];
@@ -118,6 +115,7 @@ export default function AdminPedidosClient({
 
   const activeFilterCount = [
     currentFilters.status && currentFilters.status !== 'all',
+    currentFilters.paymentStatus && currentFilters.paymentStatus !== 'all',
     currentFilters.paymentProvider && currentFilters.paymentProvider !== 'all',
     currentFilters.deliveryMethod && currentFilters.deliveryMethod !== 'all',
     currentFilters.dateFrom,
@@ -139,7 +137,6 @@ export default function AdminPedidosClient({
           )
         }
       />
-
 
       <AdminMetricsBar
         defaultOpen={true}
@@ -184,6 +181,19 @@ export default function AdminPedidosClient({
         onRefresh={() => updateUrlFilters({})}
         filters={
           <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Filtro: Estado de Pago */}
+            <AdminSelect
+              value={currentFilters.paymentStatus || 'all'}
+              onChange={(e) => handleQuickFilter('paymentStatus', e.target.value)}
+              className="h-7 py-0 px-2 text-xs w-36 font-semibold text-emerald-700 bg-emerald-50/40 border-emerald-200"
+            >
+              <option value="all">Cobro: Todos</option>
+              <option value="approved">Solo Pagadas</option>
+              <option value="pending">Pendiente de Pago</option>
+              <option value="rejected">Rechazadas / Fallidas</option>
+            </AdminSelect>
+
+            {/* Filtro: Estado Logístico */}
             <AdminSelect
               value={currentFilters.status || 'all'}
               onChange={(e) => handleQuickFilter('status', e.target.value)}
@@ -197,6 +207,7 @@ export default function AdminPedidosClient({
               <option value="canceled">Cancelado</option>
             </AdminSelect>
 
+            {/* Filtro: Pasarela */}
             <AdminSelect
               value={currentFilters.paymentProvider || 'all'}
               onChange={(e) => handleQuickFilter('provider', e.target.value)}
@@ -209,6 +220,7 @@ export default function AdminPedidosClient({
               <option value="transferencia">Transferencia</option>
             </AdminSelect>
 
+            {/* Filtro: Método de Entrega */}
             <AdminSelect
               value={currentFilters.deliveryMethod || 'all'}
               onChange={(e) => handleQuickFilter('delivery', e.target.value)}
@@ -310,10 +322,21 @@ export default function AdminPedidosClient({
                     </AdminTableCell>
 
                     <AdminTableCell>
-                      <span className="inline-flex items-center gap-1.5 text-zinc-700 uppercase">
-                        <CreditCard size={13} className="text-zinc-400" />
-                        {ped.payment.provider}
-                      </span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="inline-flex items-center gap-1.5 text-zinc-700 uppercase font-medium">
+                          <CreditCard size={13} className="text-zinc-400" />
+                          {ped.payment.provider}
+                        </span>
+                        <span className={`text-[10px] font-semibold uppercase ${
+                          ped.payment.status === 'approved'
+                            ? 'text-emerald-600'
+                            : ped.payment.status === 'rejected'
+                            ? 'text-red-600'
+                            : 'text-amber-600'
+                        }`}>
+                          {ped.payment.status === 'approved' ? 'Pagado' : ped.payment.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
+                        </span>
+                      </div>
                     </AdminTableCell>
 
                     <AdminTableCell bold>

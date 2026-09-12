@@ -1,91 +1,96 @@
-// File: frontend/components/checkout/PendingClient.tsx
+//File: frontend/components/checkout/PendingClient.tsx
+
 'use client';
 
 import { useEffect } from 'react';
 import { useCartStore } from '@/src/store/cartStore';
-import { useCheckoutStore } from '@/src/store/checkoutStore';
-import type { TOrderPopulated } from '@/src/schemas';
+import { IPedido } from '@/src/modules/checkout/types/pedido.types';
 import Link from 'next/link';
 
 import { BsHourglassSplit, BsTruck, BsFileEarmarkText, BsCreditCard, BsClipboardCheck, BsQrCode } from 'react-icons/bs';
 import { FiArrowLeftCircle } from 'react-icons/fi';
 
-export default function PendingClient({ order }: { order: TOrderPopulated }) {
+interface PendingClientProps {
+    order: IPedido;
+}
+
+export default function PendingClient({ order }: PendingClientProps) {
     const clearCart = useCartStore((state) => state.clearCart);
-    const clearCheckout = useCheckoutStore((state) => state.clearCheckout);
 
     useEffect(() => {
         if (order?.payment?.status === 'pending') {
             clearCart();
-            clearCheckout();
         }
-    }, [order, clearCart, clearCheckout]);
+    }, [order, clearCart]);
 
     return (
-        <div className="flex items-center justify-center px-4 py-20 bg-[var(--color-background)]">
-            <div className="w-full max-w-lg p-10 text-center bg-[var(--color-card)] rounded-2xl border border-[var(--color-border)] shadow-sm">
-                <BsHourglassSplit className="text-amber-500 text-7xl mx-auto mb-6 animate-pulse" />
+        <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-[#FAFAFA]">
+            <div className="w-full max-w-xl p-8 sm:p-10 text-center bg-white rounded-3xl border border-neutral-200 shadow-sm">
                 
-                <h1 className="text-3xl font-semibold text-[var(--color-foreground)] mb-2 flex items-center justify-center gap-2">
-                    Pago pendiente
+                <BsHourglassSplit className="text-orange-500 text-6xl mx-auto mb-6 animate-pulse" />
+                
+                <h1 className="text-2xl sm:text-3xl font-semibold text-neutral-900 mb-2 flex items-center justify-center gap-2 tracking-tight">
+                    Pago en proceso
                 </h1>
                 
-                <p className="text-[var(--color-muted-foreground)] text-sm mb-8 tracking-wide">
-                    Tu código o instrucción de pago ha sido generado. Completa la acción en tu app bancaria o agente autorizado.
+                <p className="text-neutral-500 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
+                    Tu código de pago ha sido generado. Completa la acción en tu app bancaria o agente autorizado para confirmar tu compra.
                 </p>
 
-                {/* Mostrar código CIP si existe (PagoEfectivo) */}
-                {order.payment?.culqiPaymentCode && (
-                    <div className="mb-8 p-6 bg-[var(--color-accent)] rounded-xl border border-[var(--color-border)] flex flex-col items-center gap-2">
-                        <BsQrCode className="text-3xl text-[var(--color-primary)] mb-1" />
-                        <span className="text-xs text-[var(--color-muted-foreground)] uppercase font-semibold tracking-wider">Código CIP de PagoEfectivo</span>
-                        <span className="text-2xl font-mono font-bold tracking-widest text-[var(--color-foreground)] bg-[var(--color-card)] px-4 py-1.5 rounded-lg border border-[var(--color-border)]">
-                            {order.payment.culqiPaymentCode}
+                {/* Mostrar código CIP si existe (PagoEfectivo / Cuotéalo) */}
+                {order.payment?.paymentCode && (
+                    <div className="mb-8 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 flex flex-col items-center gap-2">
+                        <BsQrCode className="text-3xl text-orange-500 mb-1" />
+                        <span className="text-[10px] text-orange-600/80 uppercase font-bold tracking-widest">Código de Pago (CIP)</span>
+                        <span className="text-2xl sm:text-3xl font-mono font-bold tracking-widest text-neutral-900 bg-white px-6 py-2.5 rounded-xl border border-orange-200 select-all">
+                            {order.payment.paymentCode}
                         </span>
                     </div>
                 )}
 
                 {/* Detalles con íconos */}
-                <div className="text-left text-sm text-[var(--color-foreground)] space-y-4 border-t border-[var(--color-border)] pt-6">
-                    <p className="flex items-center gap-2">
-                        <BsClipboardCheck className="text-[var(--color-muted-foreground)]" />
-                        <span className="text-[var(--color-muted-foreground)]">Número de orden:</span>
-                        <span className="font-medium">{order.orderNumber}</span>
+                <div className="text-left text-sm text-neutral-700 space-y-4 border-t border-neutral-100 pt-6">
+                    <p className="flex items-center gap-3">
+                        <BsClipboardCheck className="text-neutral-400 text-lg" />
+                        <span className="text-neutral-500 w-32">Número de orden:</span>
+                        <span className="font-mono font-semibold text-neutral-900">#{order.orderNumber}</span>
                     </p>
-                    <p className="flex items-center gap-2">
-                        <BsCreditCard className="text-[var(--color-muted-foreground)]" />
-                        <span className="text-[var(--color-muted-foreground)]">Estado del pago:</span>
-                        <span className="text-amber-500 font-medium">
+                    <p className="flex items-center gap-3">
+                        <BsCreditCard className="text-neutral-400 text-lg" />
+                        <span className="text-neutral-500 w-32">Estado del pago:</span>
+                        <span className="text-orange-600 font-semibold uppercase text-xs">
                             {order.payment?.status || "Pendiente"}
                         </span>
                     </p>
-                    <p className="flex items-center gap-2">
-                        <BsFileEarmarkText className="text-[var(--color-muted-foreground)]" />
-                        <span className="text-[var(--color-muted-foreground)]">Total a pagar:</span>
-                        <span className="font-medium">{order.currency} {order.totalPrice.toFixed(2)}</span>
+                    <p className="flex items-center gap-3">
+                        <BsFileEarmarkText className="text-neutral-400 text-lg" />
+                        <span className="text-neutral-500 w-32">Total a pagar:</span>
+                        <span className="font-medium text-neutral-900">S/ {order.totalPrice.toFixed(2)}</span>
                     </p>
-                    <p className="flex items-center gap-2">
-                        <BsTruck className="text-[var(--color-muted-foreground)]" />
-                        <span className="text-[var(--color-muted-foreground)]">Estado del envío:</span>
-                        <span className="font-medium">{order.status}</span>
+                    <p className="flex items-center gap-3">
+                        <BsTruck className="text-neutral-400 text-lg" />
+                        <span className="text-neutral-500 w-32">Método de entrega:</span>
+                        <span className="font-medium text-neutral-900">
+                            {order.deliveryMethod === 'pickup' ? 'Recojo en tienda' : 'Envío a domicilio'}
+                        </span>
                     </p>
                 </div>
 
                 {/* Acciones */}
-                <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+                <div className="mt-8 pt-4 flex flex-col sm:flex-row items-center gap-3">
                     <Link
-                        href={`/productos`}
-                        className="w-full sm:w-auto border border-[var(--color-border)] text-[var(--color-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-accent)] transition flex items-center justify-center gap-2"
+                        href="/"
+                        className="w-full sm:flex-1 bg-white border border-neutral-200 text-neutral-700 h-12 rounded-full text-xs font-medium hover:bg-neutral-50 transition flex items-center justify-center gap-2"
                     >
-                        <FiArrowLeftCircle className="text-lg" />
-                        Ir al catálogo
+                        <FiArrowLeftCircle size={16} />
+                        Volver a la tienda
                     </Link>
                     <Link
-                        href="/profile/orders"
-                        className="w-full sm:w-auto bg-[var(--color-primary)] text-[var(--color-primary-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-action-primary-hover)] transition flex items-center justify-center gap-2 shadow-sm"
+                        href="/profile/pedidos"
+                        className="w-full sm:flex-1 bg-neutral-900 text-white h-12 rounded-full text-xs font-medium hover:bg-black transition flex items-center justify-center gap-2"
                     >
-                        <BsClipboardCheck className="text-lg" />
-                        Ver mis pedidos
+                        <BsClipboardCheck size={16} />
+                        Ver mis compras
                     </Link>
                 </div>
             </div>

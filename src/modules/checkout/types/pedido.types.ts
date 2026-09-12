@@ -1,5 +1,3 @@
-// File: frontend/src/modules/checkout/types/pedido.types.ts
-
 export type TipoDocumento = 'DNI' | 'CE' | 'RUC' | 'PASAPORTE' | 'OTRO';
 export type TipoComprobante = 'boleta' | 'factura';
 export type MetodoEntrega = 'shipping' | 'pickup';
@@ -55,9 +53,10 @@ export interface IInfoPago {
   method?: string;
   gatewayOrderId?: string;
   transactionId?: string;
-  paymentCode?: string;
+  paymentCode?: string; // 🔴 Aquí viene el CIP
   status: EstadoPago;
   paidAt?: string;
+  gatewayData?: Record<string, unknown>; // 🔴 Agregado sin 'any'
 }
 
 export interface IPedido {

@@ -1,5 +1,3 @@
-//File: frontend/src/modules/checkout/actions/checkout.actions.ts
-
 'use server';
 
 import { checkoutSchema, CheckoutFormData } from '../schemas/checkout.schema';
@@ -82,7 +80,9 @@ export async function crearPedidoAction(
   }
 }
 
-export async function procesarCargoCulqiAction(orderNumber: string, culqiToken: string) {
+// 🔴 CORRECCIÓN: Se añade el tercer argumento opcional "parameters3DS"
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function procesarCargoCulqiAction(orderNumber: string, culqiToken: string, parameters3DS?: any) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('ecommerce-token')?.value;
@@ -94,7 +94,8 @@ export async function procesarCargoCulqiAction(orderNumber: string, culqiToken: 
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
       },
-      body: JSON.stringify({ orderNumber, culqiToken }),
+      // 🔴 Enviamos también parameters3DS si existe
+      body: JSON.stringify({ orderNumber, culqiToken, parameters3DS }),
       cache: 'no-store',
     });
 

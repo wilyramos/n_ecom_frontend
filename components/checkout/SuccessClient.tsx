@@ -22,8 +22,8 @@ export default function SuccessClient({ order }: { order: TOrderPopulated }) {
     }, [order, clearCart, clearCheckout]);
 
     return (
-        <div className="flex items-center justify-center px-4 py-20 bg-[var(--color-background)]">
-            <div className="w-full max-w-lg p-10 text-center bg-[var(--color-card)] rounded-2xl border border-[var(--color-border)] shadow-sm">
+        <div className="flex items-center justify-center px-4 py-10 ">
+            <div className="w-full max-w-lg p-10 text-center  ">
                 <BsCheckCircle className="text-[var(--color-action-destructive)] text-7xl mx-auto mb-6" />
                 
                 <h1 className="text-3xl font-semibold text-[var(--color-foreground)] mb-2 flex items-center justify-center gap-2">
@@ -36,7 +36,7 @@ export default function SuccessClient({ order }: { order: TOrderPopulated }) {
                 </p>
 
                 {/* Detalles con íconos */}
-                <div className="text-left text-sm text-[var(--color-foreground)] space-y-4 border-t border-[var(--color-border)] pt-6">
+                <div className="text-left text-sm text-[var(--color-foreground)] space-y-4  pt-6">
                     <p className="flex items-center gap-2">
                         <BsClipboardCheck className="text-[var(--color-muted-foreground)]" />
                         <span className="text-[var(--color-muted-foreground)]">Número de orden:</span>
@@ -65,14 +65,14 @@ export default function SuccessClient({ order }: { order: TOrderPopulated }) {
                 <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
                     <Link
                         href={`/productos`}
-                        className="w-full sm:w-auto border border-[var(--color-border)] text-[var(--color-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-accent)] transition flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto  text-[var(--color-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-accent)] transition flex items-center justify-center gap-2"
                     >
                         <FiArrowLeftCircle className="text-lg" />
                         Seguir comprando
                     </Link>
                     <Link
                         href="/profile/orders"
-                        className="w-full sm:w-auto bg-[var(--color-primary)] text-[var(--color-primary-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-action-primary-hover)] transition flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full sm:w-auto bg-[var(--color-primary)] text-[var(--color-primary-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-action-primary-hover)] transition flex items-center justify-center gap-2 "
                     >
                         <BsClipboardCheck className="text-lg" />
                         Ver mis pedidos

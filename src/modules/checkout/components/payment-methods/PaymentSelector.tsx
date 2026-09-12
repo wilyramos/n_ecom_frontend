@@ -1,3 +1,5 @@
+//File: frontend/src/modules/checkout/components/payment-methods/PaymentSelector.tsx
+
 'use client';
 
 import Image from 'next/image';
@@ -12,7 +14,9 @@ export default function PaymentSelector() {
   return (
     <section>
       <div className="mb-2.5">
-        <h2 className="text-sm font-semibold text-neutral-900">Pago</h2>
+        <h2 className="text-sm font-semibold text-neutral-900">
+          Método de pago
+        </h2>
       </div>
 
       <Controller
@@ -41,7 +45,9 @@ export default function PaymentSelector() {
                 >
                   {field.value === 'culqi' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                 </div>
-                <span className="text-xs font-medium text-neutral-900">Tarjeta</span>
+                <span className="text-xs font-medium text-neutral-900">
+                  Tarjetas y billeteras digitales
+                </span>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -78,7 +84,9 @@ export default function PaymentSelector() {
                   {field.value === 'powerpay' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-neutral-900">Powerpay</span>
+                  <span className="text-xs font-medium text-neutral-900">Powerpay
+                    <span className="ml-1 text-[10px] font-normal text-neutral-500">(Pago en cuotas)</span>
+                  </span>
 
                 </div>
               </div>

@@ -29,7 +29,7 @@ const HINT_COLORS = {
 
 export function AdminMetricsBar({
   metrics,
-  defaultOpen = true,
+  defaultOpen = false,
   className,
 }: AdminMetricsBarProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);

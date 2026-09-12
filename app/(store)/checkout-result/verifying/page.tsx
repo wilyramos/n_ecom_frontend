@@ -1,4 +1,3 @@
-// File: frontend/app/(shop)/checkout-result/verifying/page.tsx
 "use client";
 
 import { useEffect, useState, use } from "react";
@@ -12,7 +11,7 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
     const resolvedSearchParams = use(searchParams);
     const orderNumber = typeof resolvedSearchParams.orderNumber === "string" ? resolvedSearchParams.orderNumber : null;
 
-    const [message, setMessage] = useState("Sincronizando transacciones de compra de forma segura...");
+    const [message, setMessage] = useState("Confirmando estado de la transacción de forma segura...");
 
     useEffect(() => {
         if (!orderNumber) {
@@ -21,24 +20,24 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
         }
 
         let attempts = 0;
-        const maxAttempts = 8; // 20 segundos de gracia para Webhooks
+        const maxAttempts = 10; // 25 segundos de gracia para Webhooks / 3DS
 
         const pollStatus = async () => {
             try {
-                // 🔴 Endpoint corregido apuntando a /pedidos/tracking/
                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pedidos/tracking/${orderNumber}`, {
                     cache: "no-store",
                 });
 
                 if (!res.ok) return;
                 const data = await res.json();
-                const order = data.data; // El nuevo backend envuelve en "data"
+                const order = data.data;
 
                 if (!order) return;
 
                 const status = order.status;
                 const paymentStatus = order.payment?.status;
 
+                // 1. PAGO APROBADO DEFINITIVO
                 if (paymentStatus === "approved" || status === "processing" || status === "paid_but_out_of_stock") {
                     clearInterval(interval);
                     setMessage("¡Pago confirmado con éxito!");
@@ -46,17 +45,19 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
                     return;
                 }
 
-                if (paymentStatus === "rejected" || status === "canceled") {
+                // 2. PAGO RECHAZADO / CANCELADO (Ej: 3DS fallido, o webhook de Culqi denegado)
+                if (paymentStatus === "rejected" || paymentStatus === "refunded" || status === "canceled") {
                     clearInterval(interval);
-                    setMessage("La operación ha sido declinada o cancelada.");
-                    router.push(`/checkout-result/failure?order=${order.orderNumber}&reason=rejected`);
+                    setMessage("La operación ha sido declinada por el banco.");
+                    router.push(`/checkout-result/failure?order=${order.orderNumber}`);
                     return;
                 }
 
-                if (status === "awaiting_payment" && attempts >= 2 && order.payment?.provider === "culqi") {
+                // 3. PENDIENTE DE PAGO (PagoEfectivo, Cuotéalo, CIP generados)
+                if (paymentStatus === "pending" && order.payment?.paymentCode) {
                     clearInterval(interval);
                     setMessage("Código de pago generado con éxito.");
-                    router.push(`/checkout-result/success/${order.orderNumber}`);
+                    router.push(`/checkout-result/pending?orderNumber=${order.orderNumber}`);
                     return;
                 }
 
@@ -67,7 +68,8 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
             attempts++;
             if (attempts >= maxAttempts) {
                 clearInterval(interval);
-                router.push(`/checkout-result/success/${orderNumber}`); // Se enviará al success donde validará
+                // Si agota el tiempo (red muy lenta), enviamos a success para que su SSR valide y decida.
+                router.push(`/checkout-result/success/${orderNumber}`); 
             }
         };
 
@@ -78,7 +80,7 @@ export default function VerifyingPageCheckout({ searchParams }: { searchParams: 
     }, [orderNumber, router]);
 
     return (
-        <div className="h-[80vh] w-full flex flex-col items-center justify-center bg-[#FAFAFA] px-4">
+        <div className="min-h-[80vh] w-full flex flex-col items-center justify-center bg-[#FAFAFA] px-4">
             <div className="max-w-md w-full text-center space-y-6 p-8 border border-neutral-200 rounded-3xl bg-white shadow-sm flex flex-col items-center">
                 <Loader2 className="h-10 w-10 text-neutral-900 animate-spin" />
                 <div className="space-y-2">

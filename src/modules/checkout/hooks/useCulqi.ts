@@ -1,4 +1,3 @@
-// File: frontend/src/modules/checkout/hooks/useCulqi.ts
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
@@ -21,7 +20,6 @@ interface UseCulqiProps {
 
 type CulqiInstance = ICulqiCheckoutInstance | ICulqiGlobalObject;
 
-// Extensión segura para incluir la propiedad charge de Culqi V4 sin modificar globalmente y sin usar 'any'
 type ExtendedCulqiInstance = CulqiInstance & {
   charge?: { id: string } | null;
 };
@@ -52,7 +50,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const checkoutRef = useRef<ICulqiCheckoutInstance | null>(null);
   const tokenHandledRef = useRef<boolean>(false);
-  
   const deferredOrderIdRef = useRef<string | null>(null);
 
   const onSuccessRef = useRef(onSuccess);
@@ -89,12 +86,13 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         window.Culqi.close();
       }
     } catch (e: unknown) {
-      console.warn('⚠️ Error al cerrar modal de Culqi:', e);
+      console.warn('⚠️ [useCulqi] Error al forzar cierre del modal de Culqi:', e);
     }
   }, []);
 
   const handleSuccessReceived = useCallback(
     (id: string) => {
+      // console.log(`🎯 [useCulqi] handleSuccessReceived disparado con ID: ${id}`);
       if (tokenHandledRef.current) return;
       tokenHandledRef.current = true;
       closeCulqiModal();
@@ -106,12 +104,14 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const handleErrorReceived = useCallback(
     (errorObj: ICulqiError) => {
+      console.error('💥 [useCulqi] Modal de Culqi emitió un error:', errorObj);
       if (tokenHandledRef.current) return;
       tokenHandledRef.current = true;
       closeCulqiModal();
       setIsProcessing(false);
 
       const message = errorObj.user_message || 'El emisor de la tarjeta rechazó la operación.';
+      console.warn('⚠️ [useCulqi] Mensaje de error a mostrar al usuario:', message);
       toast.error(message);
       if (onErrorRef.current) onErrorRef.current(message);
     },
@@ -134,9 +134,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         if (typeof payload === 'string') {
           try {
             payload = JSON.parse(payload) as unknown;
-          } catch {
-            // Se mantiene como string plano si no es JSON
-          }
+          } catch {}
         }
 
         const data = typeof payload === 'object' && payload !== null ? (payload as Record<string, unknown>) : null;
@@ -157,31 +155,12 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           }
         }
       } catch (e: unknown) {
-        console.warn('Error leyendo postMessage de Culqi:', e);
+        console.warn('⚠️ [useCulqi] Error leyendo postMessage de Culqi:', e);
       }
     };
 
     window.addEventListener('message', handleMessage);
-
-    const interval = setInterval(() => {
-      const culqiContainer =
-        document.getElementById('culqi-container') ||
-        document.querySelector('.culqi-checkout-container') ||
-        document.querySelector('iframe[src*="culqi.com"]');
-
-      if (!culqiContainer && isProcessing && !tokenHandledRef.current) {
-        if (deferredOrderIdRef.current) {
-          handleSuccessReceived(deferredOrderIdRef.current);
-        } else {
-          handleCloseReceived();
-        }
-      }
-    }, 600);
-
-    return () => {
-      window.removeEventListener('message', handleMessage);
-      clearInterval(interval);
-    };
+    return () => window.removeEventListener('message', handleMessage);
   }, [isProcessing, handleCloseReceived, handleSuccessReceived]);
 
   const openCulqiModal = useCallback(
@@ -193,9 +172,8 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
       }
 
       const existingContainer = document.getElementById('culqi-container') || document.querySelector('.culqi-checkout-container');
-      if (existingContainer) {
-        existingContainer.remove();
-      }
+      if (existingContainer) existingContainer.remove();
+      
       if (window.Culqi) {
         window.Culqi.order = null;
         window.Culqi.token = null;
@@ -218,35 +196,37 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         options: DEFAULT_OPTIONS,
       };
 
+
       const eventHandler = (rawInstance: CulqiInstance) => {
         try {
           const instance = rawInstance as ExtendedCulqiInstance;
 
-          // 1. CARGO AUTOMÁTICO V4 (Aquí se captura si el 3DS fue exitoso)
+          // 1. CARGO AUTO (Si Culqi lograra procesarlo directo)
           if (instance.charge) {
+            // console.log(`💰 [useCulqi] CARGO DIRECTO: ${instance.charge.id}`);
             handleSuccessReceived(instance.charge.id);
             instance.charge = null;
           } 
-          // 2. ORDEN DIFERIDA (PagoEfectivo, CIP)
+          // 2. ORDEN DIFERIDA (PagoEfectivo / CIP)
           else if (instance.order) {
+            // console.log(`📦 [useCulqi] ORDEN DIFERIDA: ${instance.order.id}. Esperando cierre...`);
             deferredOrderIdRef.current = instance.order.id;
             instance.order = null; 
           } 
-          // 3. FALLOS (Fondos insuficientes, 3DS cancelado, tarjeta bloqueada)
+          // 3. ERRORES DE TARJETA Y SEGURIDAD
           else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
           } 
-          // 4. TOKENIZACIÓN INTERMEDIA (Ignoramos para no matar el modal de 3DS)
+          // 4. TOKENIZACIÓN (Tarjetas)
           else if (instance.token) {
-            if (!culqiOrderId) {
-              handleSuccessReceived(instance.token.id);
-            } else {
-              console.log('Token generado. Esperando a que Culqi procese 3DS y el cargo automático...');
-            }
+            // 🔴 CORRECCIÓN: Siempre capturamos el token y lo enviamos al backend.
+            // Es el backend quien hará el cobro (POST /charges).
+            // console.log(`🔑 [useCulqi] TOKEN GENERADO: ${instance.token.id}. Enviándolo al backend para procesar el cargo...`);
+            handleSuccessReceived(instance.token.id);
             instance.token = null;
           } 
-          // 5. CIERRE DEL USUARIO
+          // 5. CIERRE MANUAL DEL CLIENTE
           else if (instance.closeEvent) {
             instance.closeEvent = false;
             if (deferredOrderIdRef.current) {
@@ -256,7 +236,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
             }
           }
         } catch (error: unknown) {
-          console.error('Error en callback culqi:', error);
+          console.error('⚠️ [useCulqi] Error manejando evento de Culqi:', error);
           handleCloseReceived();
         }
       };

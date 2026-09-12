@@ -36,7 +36,7 @@ export function AdminActiveFilters({
           {item.value}
           <button
             onClick={() => onRemove(item.id)}
-            className="p-0.5 hover:bg-slate-200 rounded-full transition-colors"
+            className="p-0.5 hover:bg-slate-200 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-3 h-3 text-slate-500" />
           </button>
@@ -44,7 +44,7 @@ export function AdminActiveFilters({
       ))}
       <button
         onClick={onClearAll}
-        className="text-xs font-semibold text-slate-500 hover:text-slate-900 underline ml-2"
+        className="text-xs font-semibold text-slate-500 hover:text-slate-900 underline ml-2 cursor-pointer"
       >
         Limpiar todo
       </button>

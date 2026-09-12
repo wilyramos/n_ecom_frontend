@@ -1,43 +1,45 @@
+// File: frontend/components/admin/products/ProductsTable.tsx
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import ProductMenuAction from "./ProductMenuActionts";
 import { useColumnFilter } from "@/hooks/useColumnFilter";
-
-import type { ProductsAPIResponse } from "@/src/schemas";
-import type { CategoryListResponse } from "@/src/schemas";
+import type { ProductsAPIResponse, CategoryListResponse } from "@/src/schemas";
 
 import {
-    Table,
-    TableHeader,
-    TableBody,
-    TableRow,
-    TableHead,
-    TableCell,
-} from "@/components/ui/table";
+    AdminTableHead,
+    AdminTableHeaderCell,
+    AdminTableCell,
+    AdminTableEmpty,
+} from "@/src/components/admin/layout/admin-table";
+import { AdminTablePagination } from "@/src/components/admin/layout/admin-table-pagination";
+import { AdminFilterBar } from "@/src/components/admin/layout/admin-filter-bar";
+import { AdminSelect } from "@/src/components/admin/layout/admin-form-group";
+import { AdminActiveFilters } from "@/src/components/admin/layout/admin-active-filters";
+import StatusBadge from "@/components/ui/status-badge";
 
-import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectTrigger,
-    SelectValue,
-    SelectContent,
-    SelectItem,
-} from "@/components/ui/select";
-
-export default function ProductsTable({ 
-    products, 
-    categories,
-    itemsPerPage = 10 
-}: {
+interface ProductsTableProps {
     products: ProductsAPIResponse | null;
     categories: CategoryListResponse;
+    currentPage?: number;
     itemsPerPage?: number;
-}) {
+}
+
+export default function ProductsTable({
+    products,
+    categories,
+    currentPage = 1,
+    itemsPerPage = 10,
+}: ProductsTableProps) {
     const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const [searchQuery, setSearchQuery] = useState(() => searchParams.get("query") || "");
 
     const nameFilter = useColumnFilter("nombre");
     const skuFilter = useColumnFilter("sku");
@@ -47,240 +49,276 @@ export default function ProductsTable({
     const destacadoFilter = useColumnFilter("esDestacado");
     const categoryFilter = useColumnFilter("category");
 
-    // Lógica para limitar a 10 (o itemsPerPage)
-    const displayProducts = products?.products.slice(0, itemsPerPage) ?? [];
-    const noProducts = !products || displayProducts.length === 0;
+    const productList = products?.products ?? [];
+    const totalProducts = Number(products?.totalProducts ?? 0);
+    const totalPages = Math.max(1, Number(products?.totalPages ?? 1));
+    const activePage = Number(products?.currentPage ?? currentPage);
 
-    const clearFilters = () => {
-        [
-            nameFilter,
-            skuFilter,
-            priceSort,
-            stockSort,
-            activeFilter,
-            destacadoFilter,
-            categoryFilter,
-        ].forEach((f) => f.reset());
+    const updateUrlParams = (updater: (params: URLSearchParams) => void) => {
+        const params = new URLSearchParams(searchParams.toString());
+        updater(params);
+        router.push(`${pathname}?${params.toString()}`);
+    };
 
-        router.replace(window.location.pathname);
+    const handleSearch = (value: string) => {
+        setSearchQuery(value);
+        updateUrlParams((params) => {
+            if (value.trim()) {
+                params.set("query", value);
+            } else {
+                params.delete("query");
+            }
+            params.set("page", "1");
+        });
+    };
+
+    const handlePageChange = (page: number) => {
+        updateUrlParams((params) => {
+            params.set("page", page.toString());
+        });
+    };
+
+    const handlePageSizeChange = (size: number) => {
+        updateUrlParams((params) => {
+            params.set("limit", size.toString());
+            params.set("page", "1");
+        });
+    };
+
+    const activeFiltersList = [
+        nameFilter.value && { id: "nombre", label: "Nombre", value: nameFilter.value },
+        skuFilter.value && { id: "sku", label: "SKU", value: skuFilter.value },
+        priceSort.value && {
+            id: "precioSort",
+            label: "Precio",
+            value: priceSort.value === "asc" ? "Menor a Mayor" : "Mayor a Menor",
+        },
+        stockSort.value && {
+            id: "stockSort",
+            label: "Stock",
+            value: stockSort.value === "asc" ? "Menor a Mayor" : "Mayor a Menor",
+        },
+        categoryFilter.value && {
+            id: "category",
+            label: "Categoría",
+            value: categories.find((c) => c._id === categoryFilter.value)?.nombre || categoryFilter.value,
+        },
+        activeFilter.value && {
+            id: "isActive",
+            label: "Estado",
+            value: activeFilter.value === "true" ? "Activos" : "Inactivos",
+        },
+        destacadoFilter.value && {
+            id: "esDestacado",
+            label: "Destacado",
+            value: destacadoFilter.value === "true" ? "Destacados" : "No Destacados",
+        },
+    ].filter(Boolean) as { id: string; label: string; value: string }[];
+
+    const handleRemoveFilter = (id: string) => {
+        if (id === "nombre") nameFilter.reset();
+        if (id === "sku") skuFilter.reset();
+        if (id === "precioSort") priceSort.reset();
+        if (id === "stockSort") stockSort.reset();
+        if (id === "category") categoryFilter.reset();
+        if (id === "isActive") activeFilter.reset();
+        if (id === "esDestacado") destacadoFilter.reset();
+
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete(id);
+        params.set("page", "1");
+        router.replace(`${pathname}?${params.toString()}`);
+    };
+
+    const clearAllFilters = () => {
+        nameFilter.reset();
+        skuFilter.reset();
+        priceSort.reset();
+        stockSort.reset();
+        activeFilter.reset();
+        destacadoFilter.reset();
+        categoryFilter.reset();
+        setSearchQuery("");
+        router.replace(pathname);
     };
 
     return (
-        <div className="w-full h-full overflow-auto pb-2 text-xs text-zinc-600 bg-gray-50">
-            <div className="flex justify-end my-1 pr-1">
-                <button
-                    onClick={clearFilters}
-                    className="text-[11px] font-semibold text-zinc-600 hover:text-black"
-                >
-                    Limpiar filtros
-                </button>
+        <div className="w-full flex flex-col">
+            {/* Filtros superiores */}
+            <div className="p-3 border-b border-slate-200 bg-white space-y-2">
+                <AdminFilterBar
+                    searchPlaceholder="Buscar por nombre o descripción..."
+                    searchValue={searchQuery}
+                    onSearchChange={handleSearch}
+                    activeCount={activeFiltersList.length}
+                    onReset={clearAllFilters}
+                    className="border-0 p-0 shadow-none bg-transparent"
+                    filters={
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                            <AdminSelect
+                                value={categoryFilter.value || ""}
+                                onChange={(e) => {
+                                    categoryFilter.setValue(e.target.value);
+                                    handlePageChange(1);
+                                }}
+                                className="h-8 text-xs w-36 border-slate-200"
+                            >
+                                <option value="">Categoría: Todas</option>
+                                {categories.map((c) => (
+                                    <option key={c._id} value={c._id}>
+                                        {c.nombre}
+                                    </option>
+                                ))}
+                            </AdminSelect>
+
+                            <AdminSelect
+                                value={activeFilter.value || ""}
+                                onChange={(e) => {
+                                    activeFilter.setValue(e.target.value);
+                                    handlePageChange(1);
+                                }}
+                                className="h-8 text-xs w-28 border-slate-200"
+                            >
+                                <option value="">Estado: Todos</option>
+                                <option value="true">Activos</option>
+                                <option value="false">Inactivos</option>
+                            </AdminSelect>
+
+                            <AdminSelect
+                                value={destacadoFilter.value || ""}
+                                onChange={(e) => {
+                                    destacadoFilter.setValue(e.target.value);
+                                    handlePageChange(1);
+                                }}
+                                className="h-8 text-xs w-32 border-slate-200"
+                            >
+                                <option value="">Destacado: Todos</option>
+                                <option value="true">Destacados</option>
+                                <option value="false">No Destacados</option>
+                            </AdminSelect>
+                        </div>
+                    }
+                />
+
+                <AdminActiveFilters
+                    items={activeFiltersList}
+                    onRemove={handleRemoveFilter}
+                    onClearAll={clearAllFilters}
+                />
             </div>
 
-            <Table className="min-w-full table-auto border-separate border-spacing-0 text-zinc-600">
-                <TableHeader className="bg-gray-50 border-b sticky top-0 shadow-sm">
-                    <TableRow>
-                        {[
-                            nameFilter,
-                            skuFilter,
-                            priceSort,
-                            stockSort,
-                            categoryFilter,
-                            activeFilter,
-                            destacadoFilter,
-                        ].map((filter, i) => (
-                            <TableHead
-                                key={i}
-                                className="p-1 text-center bg-gray-50 text-zinc-600"
-                            >
-                                {i === 0 && (
-                                    <Input
-                                        placeholder="Nombre"
-                                        value={nameFilter.value}
-                                        onChange={(e) => nameFilter.setValue(e.target.value)}
-                                        className="h-8 text-xs focus:border-black bg-gray-50 text-black placeholder:text-zinc-400"
-                                    />
-                                )}
-                                {i === 1 && (
-                                    <Input
-                                        placeholder="SKU"
-                                        value={skuFilter.value}
-                                        onChange={(e) => skuFilter.setValue(e.target.value)}
-                                        className="h-8 text-xs focus:border-black bg-gray-50 text-black placeholder:text-zinc-400"
-                                    />
-                                )}
-                                {i === 2 && (
-                                    <Select
-                                        value={priceSort.value || undefined}
-                                        onValueChange={priceSort.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Precio" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-50 text-black">
-                                            <SelectItem value="asc">Asc</SelectItem>
-                                            <SelectItem value="desc">Desc</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                                {i === 3 && (
-                                    <Select
-                                        value={stockSort.value || undefined}
-                                        onValueChange={stockSort.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Stock" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-50 text-black">
-                                            <SelectItem value="asc">Asc</SelectItem>
-                                            <SelectItem value="desc">Desc</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                                {i === 4 && (
-                                    <Select
-                                        value={categoryFilter.value || undefined}
-                                        onValueChange={categoryFilter.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Categoría" />
-                                        </SelectTrigger>
-                                        <SelectContent className="max-h-60 overflow-auto bg-gray-50 text-black">
-                                            {categories.map((c) => (
-                                                <SelectItem key={c._id} value={c._id}>
-                                                    {c.nombre}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                                {i === 5 && (
-                                    <Select
-                                        value={activeFilter.value || undefined}
-                                        onValueChange={activeFilter.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Estado" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-50 text-black">
-                                            <SelectItem value="true">Activos</SelectItem>
-                                            <SelectItem value="false">Inactivos</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                                {i === 6 && (
-                                    <Select
-                                        value={destacadoFilter.value || undefined}
-                                        onValueChange={destacadoFilter.setValue}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs bg-gray-50 text-black">
-                                            <SelectValue placeholder="Destacado" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-gray-50 text-black">
-                                            <SelectItem value="true">Sí</SelectItem>
-                                            <SelectItem value="false">No</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            </TableHead>
-                        ))}
-
-                        <TableHead className="p-1 text-xs w-[80px] text-zinc-600 bg-gray-50">
-                            Acciones
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                    {noProducts ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={8}
-                                className="text-center py-6 text-sm text-zinc-600"
-                            >
-                                No se encontraron productos.
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        displayProducts.map((p) => (
-                            <TableRow
-                                key={p._id}
-                                className="text-xs border-b hover:bg-gray-50"
-                            >
-                                <TableCell className="p-2 w-[230px] text-black">
-                                    <Link
-                                        href={`/admin/products/${p._id}`}
-                                        className="flex flex-col md:flex-row gap-1"
-                                    >
-                                        {p.imagenes?.[0] ? (
-                                            <div className="h-8 w-8">
-                                                <Image
-                                                    src={p.imagenes[0]}
-                                                    alt={p.nombre}
-                                                    width={30}
-                                                    height={30}
-                                                    className="rounded border bg-gray-50 object-cover"
-                                                    quality={1}
-                                                />
+            {/* Scroll horizontal único para la tabla */}
+            <div className="w-full overflow-x-auto">
+                <table className="w-full text-left text-xs sm:text-[13px] border-collapse min-w-[800px]">
+                    <AdminTableHead>
+                        <tr>
+                            <AdminTableHeaderCell width="320px">Producto</AdminTableHeaderCell>
+                            <AdminTableHeaderCell width="140px">SKU</AdminTableHeaderCell>
+                            <AdminTableHeaderCell width="110px" align="right">Precio</AdminTableHeaderCell>
+                            <AdminTableHeaderCell width="100px" align="center">Stock</AdminTableHeaderCell>
+                            <AdminTableHeaderCell width="100px" align="center">Estado</AdminTableHeaderCell>
+                            <AdminTableHeaderCell width="110px" align="center">Destacado</AdminTableHeaderCell>
+                            <AdminTableHeaderCell width="70px" align="right">Acciones</AdminTableHeaderCell>
+                        </tr>
+                    </AdminTableHead>
+                    <tbody className="divide-y divide-slate-100 bg-white">
+                        {productList.length === 0 ? (
+                            <AdminTableEmpty
+                                title="No se encontraron productos"
+                                description="Intenta modificar los filtros o los términos de búsqueda."
+                                colSpan={7}
+                            />
+                        ) : (
+                            productList.map((p) => (
+                                <tr key={p._id} className="hover:bg-slate-50/70 transition-colors">
+                                    <AdminTableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 shrink-0 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center">
+                                                {p.imagenes?.[0] ? (
+                                                    <Image
+                                                        src={p.imagenes[0]}
+                                                        alt={p.nombre}
+                                                        width={40}
+                                                        height={40}
+                                                        className="h-full w-full object-contain"
+                                                        quality={60}
+                                                        unoptimized
+                                                    />
+                                                ) : (
+                                                    <span className="text-[10px] text-slate-400 font-medium">S/I</span>
+                                                )}
                                             </div>
-                                        ) : (
-                                            <div className="h-8 w-8 flex items-center justify-center rounded border bg-gray-100 text-zinc-400 text-[10px]">
-                                                no image
+                                            <div className="min-w-0 flex-1 space-y-0.5">
+                                                <Link
+                                                    href={`/admin/products/${p._id}`}
+                                                    className="text-xs font-semibold text-slate-900 hover:underline block truncate"
+                                                >
+                                                    {p.nombre}
+                                                </Link>
+                                                {p.isFrontPage && (
+                                                    <span className="inline-block text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                                                        FrontPage
+                                                    </span>
+                                                )}
                                             </div>
-                                        )}
-                                        <span className="line-clamp-3 max-w-[180px] text-black">
-                                            {p.isFrontPage && (<span className="italic mr-1 text-orange-400 font-bold">[FrontPage]</span>)}{p.nombre}
+                                        </div>
+                                    </AdminTableCell>
+
+                                    <AdminTableCell>
+                                        <span className="text-xs text-slate-600 font-mono">
+                                            {p.sku || "—"}
                                         </span>
-                                    </Link>
-                                </TableCell>
+                                    </AdminTableCell>
 
-                                <TableCell className="p-2 text-center w-[120px] text-zinc-600">
-                                    {p.sku}
-                                </TableCell>
+                                    <AdminTableCell align="right" bold>
+                                        S/ {p.precio?.toFixed(2)}
+                                    </AdminTableCell>
 
-                                <TableCell className="p-2 text-center w-[90px] text-black">
-                                    S/{p.precio?.toFixed(2)}
-                                </TableCell>
+                                    <AdminTableCell align="center">
+                                        <span className="text-xs font-medium text-slate-700">
+                                            {p.stock ?? 0}
+                                        </span>
+                                    </AdminTableCell>
 
-                                <TableCell className="p-2 text-center w-[90px] text-black">
-                                    {p.stock}
-                                </TableCell>
+                                    <AdminTableCell align="center">
+                                        <StatusBadge
+                                            size="sm"
+                                            status={p.isActive ? "active" : "draft"}
+                                            label={p.isActive ? "Activo" : "Inactivo"}
+                                        />
+                                    </AdminTableCell>
 
-                                <TableCell className="p-2 text-center w-[130px] text-zinc-600">
-                                    -
-                                </TableCell>
+                                    <AdminTableCell align="center">
+                                        {p.esDestacado ? (
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                                                Destacado
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs text-slate-400">—</span>
+                                        )}
+                                    </AdminTableCell>
 
-                                <TableCell className="p-2 text-center w-[60px]">
-                                    {p.isActive ? (
-                                        <div className="flex items-center justify-center gap-1 rounded bg-green-100 text-green-600 px-1 py-0.5 text-[10px] font-semibold">
-                                            Activo
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center gap-1 rounded bg-red-100 text-red-600 px-1 py-0.5 text-[10px] font-semibold">
-                                            Inactivo
-                                        </div>
-                                    )}
-                                </TableCell>
+                                    <AdminTableCell align="right">
+                                        <ProductMenuAction productId={p._id} slug={p.slug} />
+                                    </AdminTableCell>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
 
-                                <TableCell className="p-2 text-center w-[60px]">
-                                    {p.esDestacado ? (
-                                        <div className="flex items-center justify-center gap-1 rounded bg-green-100 text-green-600 px-1 py-0.5 text-[10px] font-semibold">
-                                            Destacado
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center gap-1 rounded bg-gray-100 text-gray-600 px-1 py-0.5 text-[10px] font-semibold">
-                                            No Destacado
-                                        </div>
-                                    )}
-                                </TableCell>
-
-                                <TableCell className="p-2 text-center w-[80px]">
-                                    <ProductMenuAction productId={p._id} slug={p.slug} />
-                                </TableCell>
-                            </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+            {/* Paginación */}
+            <div className="w-full shrink-0 border-t border-slate-200">
+                <AdminTablePagination
+                    currentPage={activePage}
+                    totalPages={totalPages}
+                    pageSize={itemsPerPage}
+                    totalItems={totalProducts}
+                    onPageChange={handlePageChange}
+                    onPageSizeChange={handlePageSizeChange}
+                />
+            </div>
         </div>
     );
 }

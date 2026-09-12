@@ -29,7 +29,6 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-
     const [history, setHistory] = useState<string[]>([]);
     useEffect(() => setHistory(getSearchHistory()), []);
 
@@ -76,10 +75,10 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
     };
 
     return (
-        <div className="relative w-full">
+        <div className="relative w-full" ref={dropdownRef}>
             <form ref={formRef} onSubmit={handleSubmit} className="w-full">
                 <div className="relative flex items-center">
-                    <div className="absolute left-3 text-fg-secondary pointer-events-none">
+                    <div className="absolute left-3 text-brand-gris pointer-events-none">
                         <Search size={18} />
                     </div>
 
@@ -94,7 +93,7 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
                         placeholder="Buscar productos, marcas..."
                         onFocus={() => setIsOpen(true)}
                         autoFocus
-                        className="pl-10 pr-10 bg-surface-primary text-fg-primary border-border-default focus-visible:ring-action-primary"
+                        className="pl-10 pr-10 bg-background text-brand-charcoal  placeholder:text-brand-gris  focus-visible:ring-brand-charcoal/20"
                     />
 
                     {query && (
@@ -105,7 +104,7 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
                                 setResults([]);
                                 inputRef.current?.focus();
                             }}
-                            className="absolute right-3 text-fg-secondary hover:text-fg-primary transition-colors"
+                            className="absolute right-3 text-brand-gris hover:text-brand-charcoal transition-colors cursor-pointer"
                         >
                             <X size={16} />
                         </button>
@@ -117,11 +116,11 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
             {isOpen && (
                 <div
                     ref={dropdownRef}
-                    className="absolute top-[calc(100%+8px)] left-0 w-full bg-surface-primary border border-border-default z-50 max-h-[calc(100vh-240px)] shadow-lg rounded-md overflow-y-auto"
+                    className="absolute top-[calc(100%+8px)] left-0 w-full bg-background  z-50 max-h-[calc(100vh-240px)]  overflow-y-auto"
                 >
                     <div className="p-4">
                         {loading && (
-                            <div className="flex flex-col items-center justify-center py-6 text-fg-secondary">
+                            <div className="flex flex-col items-center justify-center py-6 text-brand-gris">
                                 <Loader2 className="animate-spin mb-2" size={20} />
                                 <span className="text-xs font-medium">Buscando...</span>
                             </div>
@@ -129,7 +128,7 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
 
                         {!loading && !query && (
                             <div>
-                                <h4 className="text-xs font-semibold text-fg-secondary uppercase mb-3 flex items-center gap-2 tracking-wider">
+                                <h4 className="text-xs font-semibold text-brand-gris uppercase mb-3 flex items-center gap-2 tracking-wider">
                                     {history.length > 0 ? "Recientes" : "Sugerencias"}
                                 </h4>
                                 <div className="flex flex-wrap gap-2">
@@ -141,7 +140,7 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
                                                 setQuery(term);
                                                 inputRef.current?.focus();
                                             }}
-                                            className="px-3 py-1.5 bg-surface-secondary/20 hover:bg-surface-secondary text-xs text-fg-primary rounded transition-colors"
+                                            className="px-3 py-1.5 bg-brand-silver-border/40 hover:bg-brand-silver-border text-xs text-brand-charcoal rounded-lg transition-colors cursor-pointer"
                                         >
                                             {term}
                                         </button>
@@ -152,15 +151,15 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
 
                         {!loading && results.length > 0 && (
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between border-b border-border-default pb-2">
-                                    <h3 className="font-semibold text-xs uppercase tracking-wider text-fg-secondary">Resultados</h3>
+                                <div className="flex items-center justify-between border-b border-brand-silver-border pb-2">
+                                    <h3 className="font-semibold text-xs uppercase tracking-wider text-brand-gris">Resultados</h3>
                                     <Link
                                         href={`/productos?query=${encodeURIComponent(query)}`}
                                         onClick={() => {
                                             saveHistory(query.trim());
                                             onSearchComplete?.();
                                         }}
-                                        className="flex items-center gap-1 text-xs text-action-primary font-bold hover:text-action-primary-hover transition-colors"
+                                        className="flex items-center gap-1 text-xs text-brand-charcoal font-bold hover:text-brand-black transition-colors"
                                     >
                                         Ver todos <ArrowRight size={12} />
                                     </Link>
@@ -174,8 +173,8 @@ export default function ButtonSearchFormStore({ onSearchComplete }: Props) {
                         )}
 
                         {!loading && query && results.length === 0 && (
-                            <div className="text-center py-6 text-fg-secondary">
-                                <p className="text-sm font-medium text-fg-primary">
+                            <div className="text-center py-6 text-brand-gris">
+                                <p className="text-sm font-medium text-brand-charcoal">
                                     Sin resultados para <span className="italic">{query}</span>
                                 </p>
                             </div>

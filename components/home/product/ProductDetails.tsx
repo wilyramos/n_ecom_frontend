@@ -147,317 +147,308 @@ export default function ProductDetails({ producto }: Props) {
 
   return (
     <>
-      <article className="grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-7xl mx-auto bg-surface-primary px-4 py-4 rounded-lg">
+      <article className="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto bg-background px-4 py-4 rounded-lg">
         {/* Imagen y Carrusel */}
         <div className="lg:col-span-7 w-full">
           <ImagenesProductoCarousel images={variantImages} />
         </div>
 
         {/* Detalles del Producto */}
-        <section className="lg:col-span-5 flex flex-col space-y-1">
-          <div className="space-y-1">
-            <header className="space-y-1 pb-2">
-              <div className="flex items-center justify-between gap-2 flex-wrap text-xs tracking-wide uppercase font-medium">
-                <div className="flex items-center gap-1 text-fg-secondary">
-                  {producto.brand && (
-                    <Link href={`/catalogo/${producto.brand.slug}`} className="hover:text-fg-primary transition-colors">
-                      {producto.brand.nombre}
-                    </Link>
-                  )}
-                  {producto.brand && producto.line && <span>/</span>}
-                  {producto.line && typeof producto.line === "object" && (
-                    <Link href={`/catalogo/${producto.line.slug}`} className="hover:text-fg-primary transition-colors">
-                      {producto.line.nombre}
-                    </Link>
-                  )}
-                </div>
-
-                {(selectedVariant?.sku || producto.sku) && (
-                  <span className="text-fg-secondary font-normal normal-case">
-                    SKU: {selectedVariant?.sku || producto.sku}
-                  </span>
+        <section className="lg:col-span-5 flex flex-col space-y-4">
+          <header className="space-y-1.5 pb-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap text-xs tracking-wide uppercase font-medium">
+              <div className="flex items-center gap-1 text-brand-gris">
+                {producto.brand && (
+                  <Link href={`/catalogo/${producto.brand.slug}`} className="hover:text-brand-charcoal transition-colors">
+                    {producto.brand.nombre}
+                  </Link>
+                )}
+                {producto.brand && producto.line && <span>/</span>}
+                {producto.line && typeof producto.line === "object" && (
+                  <Link href={`/catalogo/${producto.line.slug}`} className="hover:text-brand-charcoal transition-colors">
+                    {producto.line.nombre}
+                  </Link>
                 )}
               </div>
 
-              <h1 className="text-xl md:text-2xl font-medium text-fg-primary tracking-tight leading-tight">
-                {producto.nombre}
-              </h1>
+              {(selectedVariant?.sku || producto.sku) && (
+                <span className="text-brand-gris font-normal normal-case">
+                  SKU: {selectedVariant?.sku || producto.sku}
+                </span>
+              )}
+            </div>
 
-              {!producto.variants?.length && colorAtributo && (
-                <div className="flex items-center gap-2 pt-1">
-                  <span className="text-xs text-fg-secondary">Color:</span>
-                  <div className="flex items-center gap-1.5">
-                    {(Array.isArray(colorAtributo) ? colorAtributo : [colorAtributo]).map((c) => (
-                      <ColorCircle key={c} color={c} size={16} />
-                    ))}
-                  </div>
+            <h1 className="text-xl md:text-2xl font-medium text-brand-charcoal tracking-tight leading-tight">
+              {producto.nombre}
+            </h1>
+
+            {!producto.variants?.length && colorAtributo && (
+              <div className="flex items-center gap-2 pt-1">
+                <span className="text-xs text-brand-gris">Color:</span>
+                <div className="flex items-center gap-1.5">
+                  {(Array.isArray(colorAtributo) ? colorAtributo : [colorAtributo]).map((c) => (
+                    <ColorCircle key={c} color={c} size={16} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 pt-2 flex-wrap">
+              {hasDiscount && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xl md:text-2xl text-brand-gris line-through">
+                    S/ {precioComparativo!.toFixed(2)}
+                  </span>
+                  <span className="text-xl md:text-2xl px-2 bg-destructive text-destructive-foreground font-normal text-brand-silver-border">
+                    −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
+                  </span>
                 </div>
               )}
 
-              <div className="flex items-center gap-3 pt-2 flex-wrap">
-                {hasDiscount && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl md:text-2xl text-fg-muted line-through">
-                      S/ {precioComparativo!.toFixed(2)}
-                    </span>
-                    <span className="text-xl md:text-2xl px-2 bg-red-600 text-fg-inverse rounded-sm">
-                      −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex items-baseline text-fg-primary">
-                  <span className="text-base font-medium mr-0.5">S/</span>
-                  <span className="text-xl md:text-2xl font-semibold tracking-tight">
-                    {precio.toFixed(2)}
-                  </span>
-                </div>
-
-                {stock === 0 && (
-                  <span className="text-xs font-medium text-fg-primary bg-surface-secondary px-2.5 py-1 rounded-sm">
-                    Sin stock
-                  </span>
-                )}
+              <div className="flex items-baseline text-brand-charcoal">
+                <span className="text-base font-medium mr-0.5">S/</span>
+                <span className="text-xl md:text-2xl font-semibold tracking-tight">
+                  {precio.toFixed(2)}
+                </span>
               </div>
-            </header>
 
-            {/* Widget Oficial Powerpay PDP */}
-            <div className="py-2">
-              <PowerpayPdp price={precio} />
+              {stock === 0 && (
+                <span className="text-xs font-medium text-brand-charcoal bg-brand-silver-border px-2.5 py-1 rounded-sm">
+                  Sin stock
+                </span>
+              )}
             </div>
+          </header>
 
-            {/* Variantes y Atributos */}
-            <div className="space-y-5">
-              {Object.entries(allAttributes).map(([key]) => {
-                const availableValues = getAvailableValues(key);
-                const isColor = key.toLowerCase() === "color";
-                const useDropdown = !isColor && availableValues.length > MAX_VISIBLE_OPTIONS;
+          {/* Widget Oficial Powerpay PDP */}
+          <div>
+            <PowerpayPdp price={precio} />
+          </div>
 
-                return (
-                  <fieldset key={key} className="space-y-2">
-                    <legend className="text-xs font-semibold tracking-wide uppercase text-fg-muted">
-                      {key}:{" "}
-                      {selectedAttributes[key] && (
-                        <span className="text-fg-primary capitalize font-semibold ml-1">
-                          {selectedAttributes[key]}
-                        </span>
-                      )}
-                    </legend>
+          {/* Variantes y Atributos */}
+          <div className="space-y-4">
+            {Object.entries(allAttributes).map(([key]) => {
+              const availableValues = getAvailableValues(key);
+              const isColor = key.toLowerCase() === "color";
+              const useDropdown = !isColor && availableValues.length > MAX_VISIBLE_OPTIONS;
 
-                    {isColor ? (
-                      <div className="flex flex-wrap gap-3">
-                        {availableValues.map((val) => {
-                          const outOfStock = isOptionOutOfStock(key, val);
-                          const selected = selectedAttributes[key] === val;
-                          const variantForValue = producto.variants?.find((v) => v.atributos[key] === val);
+              return (
+                <fieldset key={key} className="space-y-2">
+                  <legend className="text-xs font-semibold tracking-wide uppercase text-brand-gris">
+                    {key}:{" "}
+                    {selectedAttributes[key] && (
+                      <span className="text-brand-charcoal capitalize font-semibold ml-1">
+                        {selectedAttributes[key]}
+                      </span>
+                    )}
+                  </legend>
 
-                          return (
-                            <button
-                              type="button"
-                              key={val}
-                              onClick={() => !outOfStock && updateSelectedVariant(key, val)}
-                              disabled={outOfStock}
-                              title={val}
-                              className={cn(
-                                "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-surface-primary cursor-pointer",
-                                selected ? "border-fg-primary ring-1 ring-fg-primary" : "border-border-default hover:border-fg-primary",
-                                outOfStock && "opacity-55 cursor-not-allowed"
-                              )}
-                            >
-                              <div className={cn("relative w-7 h-7 rounded-full border border-border-default overflow-hidden shrink-0", outOfStock && "grayscale brightness-90")}>
-                                <ColorCircle color={variantForValue?.atributos[key] || val} size={28} />
-                                {outOfStock && (
-                                  <span className="absolute inset-0 flex items-center justify-center z-10">
-                                    <div className="w-[120%] border-t border-fg-secondary -rotate-45" />
-                                  </span>
-                                )}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : useDropdown ? (
-                      <Select
-                        value={selectedAttributes[key] || ""}
-                        onValueChange={(val) => updateSelectedVariant(key, val)}
-                      >
-                        <SelectTrigger className="w-full max-w-xs border-border-default bg-surface-primary text-fg-primary text-sm h-10 rounded-md">
-                          <SelectValue placeholder="Seleccionar opción" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-surface-primary border-border-default text-fg-primary ">
-                          {availableValues.map((val) => {
-                            const outOfStock = isOptionOutOfStock(key, val);
-                            return (
-                              <SelectItem
-                                key={val}
-                                value={val}
-                                disabled={outOfStock}
-                                className={cn(
-                                  "cursor-pointer text-sm",
-                                  outOfStock && "opacity-40 line-through text-fg-secondary"
-                                )}
-                              >
-                                {val}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {availableValues.map((val) => {
-                          const outOfStock = isOptionOutOfStock(key, val);
-                          const selected = selectedAttributes[key] === val;
-                          return (
-                            <button
-                              type="button"
-                              key={val}
-                              onClick={() => !outOfStock && updateSelectedVariant(key, val)}
-                              disabled={outOfStock}
-                              className={cn(
-                                "h-9 px-4 text-xs font-medium border  transition-all relative overflow-hidden cursor-pointer",
-                                selected
-                                  ? "border-fg-primary ring-1 ring-fg-primary bg-surface-primary text-fg-primary"
-                                  : outOfStock
-                                  ? "border-border-default bg-surface-secondary text-fg-muted cursor-not-allowed line-through"
-                                  : "border-border-default bg-surface-primary text-fg-primary hover:border-fg-primary"
-                              )}
-                            >
-                              <span className={cn("block", outOfStock && "line-through decoration-fg-muted")}>
-                                {val}
-                              </span>
+                  {isColor ? (
+                    <div className="flex flex-wrap gap-3">
+                      {availableValues.map((val) => {
+                        const outOfStock = isOptionOutOfStock(key, val);
+                        const selected = selectedAttributes[key] === val;
+                        const variantForValue = producto.variants?.find((v) => v.atributos[key] === val);
+
+                        return (
+                          <button
+                            type="button"
+                            key={val}
+                            onClick={() => !outOfStock && updateSelectedVariant(key, val)}
+                            disabled={outOfStock}
+                            title={val}
+                            className={cn(
+                              "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-background cursor-pointer",
+                              selected ? "border-brand-charcoal ring-1 ring-brand-charcoal" : "border-brand-silver-border hover:border-brand-charcoal",
+                              outOfStock && "opacity-55 cursor-not-allowed"
+                            )}
+                          >
+                            <div className={cn("relative w-7 h-7 rounded-full border border-brand-silver-border overflow-hidden shrink-0", outOfStock && "grayscale brightness-90")}>
+                              <ColorCircle color={variantForValue?.atributos[key] || val} size={28} />
                               {outOfStock && (
-                                <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                  <div className="w-[110%] -rotate-[15deg]" />
+                                <span className="absolute inset-0 flex items-center justify-center z-10">
+                                  <div className="w-[120%] border-t border-brand-gris -rotate-45" />
                                 </span>
                               )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </fieldset>
-                );
-              })}
-            </div>
-
-            {/* Acciones de Compra */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-              <div className="hidden md:block flex-1 w-full">
-                <AddProductToCart
-                  product={producto}
-                  variant={selectedVariant ?? undefined}
-                />
-              </div>
-              <div className="flex-1 w-full">
-                <ShopNowButton
-                  disabled={stock <= 0}
-                  product={producto}
-                  variant={selectedVariant ?? undefined}
-                  isSelectionIncomplete={isSelectionIncomplete}
-                />
-              </div>
-            </div>
-
-            {/* Métodos de Pago */}
-            <div className="pt-4 flex flex-col gap-2">
-              <span className="text-xs text-fg-secondary font-medium uppercase tracking-wide">
-                Medios de pago aceptados
-              </span>
-              <PaymentMethods />
-            </div>
-          </div>
-
-          {/* Información Adicional */}
-          <div className="pt-4">
-            <div className="flex flex-col gap-2 text-sm">
-              <a
-                href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-fg-secondary hover:text-fg-primary transition-colors font-medium"
-              >
-                Consultar por WhatsApp
-              </a>
-
-              <div className="p-4 flex flex-row justify-between items-center  border border-border-default">
-                <div className="text-sm font-semibold tracking-tighter text-fg-primary flex flex-row items-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-fg-action shrink-0" />
-                  1 año de garantía
-                </div>
-                <div>
-                  <Link
-                    href="/cambios-devoluciones"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-fg-secondary hover:text-fg-primary transition-colors whitespace-nowrap"
-                  >
-                    Ver más detalles
-                  </Link>
-                </div>
-              </div>
-
-              <ProductExpandableSections producto={producto} />
-            </div>
-
-            {/* Productos Complementarios */}
-            <section>
-              {tieneComplementarios && (
-                <section className="container mx-auto py-2">
-                  <h2 className="text-base font-semibold text-fg-primary mb-4">
-                    Complementa tu compra{" "}
-                    <span className="text-xs font-bold bg-red-600 text-white px-2">Hasta 20% de Dcto</span>
-                  </h2>
-
-                  <section className="max-w-screen-2xl mx-auto px-4">
-                    <div className="pt-8 space-y-4">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {producto.complementarios.map((comp) => {
-                          const isPopulated = typeof comp !== "string";
-                          if (!isPopulated) return null;
-
-                          return (
-                            <Link
-                              key={comp._id}
-                              href={`/productos/${comp.slug}`}
-                              className="group flex flex-col justify-between p-3 transition-all hover:border-fg-primary bg-surface-primary  border border-border-default"
-                            >
-                              <div className="space-y-3">
-                                <div className="relative aspect-square overflow-hidden rounded bg-surface-primary w-full">
-                                  <Image
-                                    src={comp.imagenes?.[0] || "/logo.png"}
-                                    alt={comp.nombre}
-                                    fill
-                                    className="object-contain p-1 transition-transform duration-300 group-hover:scale-103"
-                                    unoptimized
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <h4 className="text-xs font-medium text-fg-primary leading-tight line-clamp-2 uppercase tracking-tight">
-                                    {comp.nombre}
-                                  </h4>
-                                </div>
-                              </div>
-                              <p className="text-sm font-semibold text-fg-primary pt-2">
-                                S/ {comp.precio.toFixed(2)}
-                              </p>
-                            </Link>
-                          );
-                        })}
-                      </div>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
-                  </section>
-                </section>
-              )}
-            </section>
+                  ) : useDropdown ? (
+                    <Select
+                      value={selectedAttributes[key] || ""}
+                      onValueChange={(val) => updateSelectedVariant(key, val)}
+                    >
+                      <SelectTrigger className="w-full max-w-xs border-brand-silver-border bg-background text-brand-charcoal text-sm h-10 rounded-md">
+                        <SelectValue placeholder="Seleccionar opción" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background border-brand-silver-border text-brand-charcoal">
+                        {availableValues.map((val) => {
+                          const outOfStock = isOptionOutOfStock(key, val);
+                          return (
+                            <SelectItem
+                              key={val}
+                              value={val}
+                              disabled={outOfStock}
+                              className={cn(
+                                "cursor-pointer text-sm",
+                                outOfStock && "opacity-40 line-through text-brand-gris"
+                              )}
+                            >
+                              {val}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {availableValues.map((val) => {
+                        const outOfStock = isOptionOutOfStock(key, val);
+                        const selected = selectedAttributes[key] === val;
+                        return (
+                          <button
+                            type="button"
+                            key={val}
+                            onClick={() => !outOfStock && updateSelectedVariant(key, val)}
+                            disabled={outOfStock}
+                            className={cn(
+                              "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden cursor-pointer",
+                              selected
+                                ? "border-brand-charcoal ring-1 ring-brand-charcoal bg-background text-brand-charcoal font-semibold"
+                                : outOfStock
+                                ? "border-brand-silver-border bg-brand-silver-border/30 text-brand-gris cursor-not-allowed line-through"
+                                : "border-brand-silver-border bg-background text-brand-charcoal hover:border-brand-charcoal"
+                            )}
+                          >
+                            <span className={cn("block", outOfStock && "line-through decoration-brand-gris")}>
+                              {val}
+                            </span>
+                            {outOfStock && (
+                              <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <div className="w-[110%] -rotate-[15deg]" />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </fieldset>
+              );
+            })}
           </div>
+
+          {/* Acciones de Compra */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+            <div className="hidden md:block flex-1 w-full">
+              <AddProductToCart
+                product={producto}
+                variant={selectedVariant ?? undefined}
+              />
+            </div>
+            <div className="flex-1 w-full">
+              <ShopNowButton
+                disabled={stock <= 0}
+                product={producto}
+                variant={selectedVariant ?? undefined}
+                isSelectionIncomplete={isSelectionIncomplete}
+              />
+            </div>
+          </div>
+
+          {/* Métodos de Pago */}
+          <div className="pt-2 flex flex-col gap-2">
+            <span className="text-xs text-brand-gris font-medium uppercase tracking-wider">
+              Medios de pago aceptados
+            </span>
+            <PaymentMethods />
+          </div>
+
+          {/* Información y Confianza */}
+          <div className="pt-1 flex flex-col gap-3">
+            {/* Tarjeta de Garantía */}
+            <div className="flex items-center justify-between p-3 rounded-xl border border-brand-silver-border bg-background">
+              <div className="flex items-center gap-2.5 text-sm font-semibold text-brand-charcoal">
+                <ShieldCheck className="w-5 h-5 text-brand-action shrink-0" />
+                <span>1 año de garantía</span>
+              </div>
+              <Link
+                href="/cambios-devoluciones"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-brand-gris hover:text-brand-charcoal transition-colors underline-offset-2 hover:underline whitespace-nowrap"
+              >
+                Ver más detalles
+              </Link>
+            </div>
+
+            {/* Enlace de Consulta */}
+            <a
+              href={`https://wa.me/51902900653?text=Consulta%20${encodeURIComponent(producto.nombre)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center text-xs font-medium text-brand-gris hover:text-brand-charcoal transition-colors py-1"
+            >
+              ¿Tienes dudas? Consultar por WhatsApp
+            </a>
+
+            {/* Fichas Plegables */}
+            <ProductExpandableSections producto={producto} />
+          </div>
+
+          {/* Productos Complementarios */}
+          {tieneComplementarios && (
+            <div className="pt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <h2 className="text-sm md:text-base font-semibold text-brand-charcoal">
+                  Complementa tu compra
+                </h2>
+                <span className="text-[10px] font-bold uppercase bg-destructive text-destructive-foreground px-2 py-0.5 rounded-sm">
+                  Hasta 20% Dcto
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {producto.complementarios.map((comp) => {
+                  const isPopulated = typeof comp !== "string";
+                  if (!isPopulated) return null;
+
+                  return (
+                    <Link
+                      key={comp._id}
+                      href={`/productos/${comp.slug}`}
+                      className="group flex flex-col justify-between p-3 rounded-xl transition-all hover:border-brand-charcoal bg-background border border-brand-silver-border"
+                    >
+                      <div className="space-y-2.5">
+                        <div className="relative aspect-square overflow-hidden rounded-lg bg-background w-full">
+                          <Image
+                            src={comp.imagenes?.[0] || "/logo.png"}
+                            alt={comp.nombre}
+                            fill
+                            className="object-contain p-1 transition-transform duration-300 group-hover:scale-105"
+                            unoptimized
+                          />
+                        </div>
+                        <h4 className="text-xs font-medium text-brand-charcoal leading-snug line-clamp-2 uppercase tracking-tight">
+                          {comp.nombre}
+                        </h4>
+                      </div>
+                      <p className="text-sm font-bold text-brand-charcoal pt-2">
+                        S/ {comp.precio.toFixed(2)}
+                      </p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </section>
       </article>
 
-      <div className="mt-8"></div>
-
       {/* Floating Action Bar para Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 w-full bg-surface-primary p-4 shadow-lg z-50">
+      <div className="md:hidden fixed bottom-0 left-0 w-full bg-background border-t border-brand-silver-border p-4 shadow-lg z-50">
         <AddProductToCart
           product={producto}
           variant={allAttributesSelected ? selectedVariant ?? undefined : undefined}

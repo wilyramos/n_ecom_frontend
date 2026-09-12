@@ -19,11 +19,11 @@ export default function ProductResultSearch({ item }: Props) {
             href={`/productos/${item.slug}`}
             className="
                 group relative flex flex-col p-3 rounded-2xl transition-all duration-300
-                bg-transparent hover:bg-[var(--store-surface-hover)]
+                bg-transparent hover:bg-brand-silver-border/50
             "
         >
-            {/* --- IMAGEN CON FONDO "ATHENS GRAY" --- */}
-            <div className="relative aspect-square w-full mb-3">
+            {/* Imagen del producto */}
+            <div className="relative aspect-square w-full mb-3 rounded-xl bg-brand-silver-border/30 overflow-hidden">
                 {imagen ? (
                     <Image
                         src={imagen}
@@ -33,17 +33,17 @@ export default function ProductResultSearch({ item }: Props) {
                         className="object-contain p-3 transition-transform duration-500 group-hover:scale-105 mix-blend-multiply"
                     />
                 ) : (
-                    <div className="flex items-center justify-center w-full h-full text-[var(--store-text-muted)]">
+                    <div className="flex items-center justify-center w-full h-full text-brand-gris">
                         <MdOutlineImageNotSupported size={20} />
                     </div>
                 )}
 
-                {/* Badge de Oferta: Minimalista, usando tu color primario invertido o texto sólido */}
+                {/* Badge de Oferta */}
                 {tieneDescuento && (
                     <div className="absolute top-2 left-2">
                         <span className="
                             inline-block px-1.5 py-0.5 rounded
-                            bg-[var(--store-surface)] text-[var(--store-text)] 
+                            bg-brand-action text-brand-charcoal
                             text-[9px] font-bold uppercase tracking-wider
                         ">
                             Oferta
@@ -52,28 +52,28 @@ export default function ProductResultSearch({ item }: Props) {
                 )}
             </div>
 
-            {/* --- INFORMACIÓN --- */}
+            {/* Información */}
             <div className="flex flex-col gap-1.5">
-                {/* Marca: Texto Muted + Tracking Apple */}
+                {/* Marca */}
                 {item.brand && (
-                    <span className="text-[9px] font-bold text-[var(--store-text-muted)] uppercase tracking-[0.15em] truncate">
-                        {typeof item.brand === 'object' ? item.brand.nombre : ''}
+                    <span className="text-[9px] font-bold text-brand-gris uppercase tracking-[0.15em] truncate">
+                        {typeof item.brand === "object" ? item.brand.nombre : ""}
                     </span>
                 )}
 
-                {/* Título: Seminegro */}
-                <h4 className="text-xs font-medium text-[var(--store-text)] line-clamp-2 leading-snug min-h-[2.4em]">
+                {/* Título */}
+                <h4 className="text-xs font-medium text-brand-charcoal line-clamp-2 leading-snug min-h-[2.4em]">
                     {item.nombre}
                 </h4>
 
                 {/* Precios */}
                 <div className="flex items-baseline gap-2 mt-auto">
-                    <span className="text-sm font-bold text-[var(--store-text)]">
+                    <span className="text-sm font-bold text-brand-charcoal">
                         S/ {precio.toFixed(2)}
                     </span>
 
                     {tieneDescuento && (
-                        <span className="text-[10px] text-[var(--store-text-muted)] line-through decoration-[var(--store-text-muted)]">
+                        <span className="text-[10px] text-brand-gris line-through">
                             S/ {item.precioComparativo?.toFixed(2)}
                         </span>
                     )}

@@ -2,19 +2,23 @@
 "use client";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useState, useTransition }    from "react";
-import { useDebouncedCallback }                    from "use-debounce";
-import { Search, X }                              from "lucide-react";
-import { Input }                                  from "@/components/ui/input";
+import { useCallback, useState, useTransition } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import { Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
-    Select, SelectTrigger, SelectValue,
-    SelectContent, SelectItem,
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
 interface Filters {
-    search?:   string;
+    search?: string;
     isActive?: string;
+    layout?: string;
 }
 
 interface SliderFiltersProps {
@@ -22,8 +26,8 @@ interface SliderFiltersProps {
 }
 
 export default function SliderFilters({ filters }: SliderFiltersProps) {
-    const router       = useRouter();
-    const pathname     = usePathname();
+    const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
     const [searchValue, setSearchValue] = useState(filters.search ?? "");
@@ -61,9 +65,9 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
     };
 
     return (
-        <div className={`flex items-center gap-2 ${isPending ? "opacity-60 pointer-events-none" : ""}`}>
+        <div className={`flex flex-wrap items-center gap-2.5 ${isPending ? "opacity-60 pointer-events-none" : ""}`}>
             {/* Búsqueda */}
-            <div className="relative flex-1 min-w-[180px] max-w-xs">
+            <div className="relative flex-1 min-w-[200px] max-w-xs">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <Input
                     type="text"
@@ -84,12 +88,29 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
                 )}
             </div>
 
-            {/* Estado */}
+            {/* Filtro por Layout */}
+            <Select
+                value={filters.layout ?? "all"}
+                onValueChange={(v) => setParam("layout", v === "all" ? undefined : v)}
+            >
+                <SelectTrigger className="w-44">
+                    <SelectValue placeholder="Tipo de Layout" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todos los layouts</SelectItem>
+                    <SelectItem value="default">Texto + Imagen (Default)</SelectItem>
+                    <SelectItem value="media-left">Imagen a la Izquierda</SelectItem>
+                    <SelectItem value="background-media">Fondo Completo</SelectItem>
+                    <SelectItem value="image-only">Solo Imagen</SelectItem>
+                </SelectContent>
+            </Select>
+
+            {/* Filtro por Estado */}
             <Select
                 value={filters.isActive ?? "all"}
                 onValueChange={(v) => setParam("isActive", v === "all" ? undefined : v)}
             >
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-36">
                     <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>

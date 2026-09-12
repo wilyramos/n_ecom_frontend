@@ -1,13 +1,22 @@
+// File: frontend/components/admin/products/ProductsResult.tsx
+
 import { getProductsByAdmin } from "@/src/services/products";
 import ProductsTable from "@/components/admin/products/ProductsTable";
-import DataTablePagination from "@/components/ui/DataTablePagination";
 import { getCategories } from "@/src/services/categorys";
+import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapper";
 
 type ProductsResultProps = {
     currentPage: number;
     itemsPerPage: number;
     params: {
         query?: string;
+        nombre?: string;
+        sku?: string;
+        category?: string;
+        isActive?: string;
+        esDestacado?: string;
+        precioSort?: "asc" | "desc";
+        stockSort?: "asc" | "desc";
     };
 };
 
@@ -24,27 +33,14 @@ export default async function ProductsResultsAdmin({
 
     const categories = await getCategories();
 
-    const totalProducts = productsData?.totalProducts ?? 0;
-    const totalPages = productsData?.totalPages ?? 1;
-
     return (
-        <div className="flex flex-col flex-1 min-h-0 space-y-4">
-            <div className="flex-1 min-h-0 overflow-hidden">
-                <ProductsTable
-                    products={productsData}
-                    categories={categories}
-                    itemsPerPage={itemsPerPage}
-                />
-            </div>
-
-            <DataTablePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalItems={totalProducts}
-                limit={itemsPerPage}
-                pathname="/admin/products"
-                itemLabel="productos"
+        <AdminCardWrapper padding="none" className="border-slate-200 bg-white shadow-xs">
+            <ProductsTable
+                products={productsData}
+                categories={categories}
+                currentPage={productsData?.currentPage ?? currentPage}
+                itemsPerPage={itemsPerPage}
             />
-        </div>
+        </AdminCardWrapper>
     );
 }

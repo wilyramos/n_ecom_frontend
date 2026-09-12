@@ -1,56 +1,39 @@
-'use client'
+// File: frontend/components/admin/products/ProductMenuActionts.tsx
+"use client";
 
-import Link from 'next/link'
-import { Pencil, ExternalLink } from 'lucide-react'
-import { SlOptions } from "react-icons/sl"
-
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import DeleteProductForm from './DeleteProductButton'
+import { useRouter } from "next/navigation";
+import { Pencil, ExternalLink, Trash2 } from "lucide-react";
+import { AdminTableActions, type ActionItem } from "@/src/components/admin/layout/admin-table-actions";
 
 interface Props {
-    productId: string
-    slug: string
+    productId: string;
+    slug: string;
 }
 
 export default function ProductMenuAction({ productId, slug }: Props) {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none focus:ring-2 focus:ring-ring">
-                    <SlOptions className="w-4 h-4" />
-                </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                    <Link href={`/admin/products/${productId}`}>
-                        <Pencil className="size-4" />
-                        <span>Editar</span>
-                    </Link>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem asChild>
-                    <Link href={`/productos/${slug}`} target="_blank">
-                        <ExternalLink className="size-4" />
-                        <span>Ver en tienda</span>
-                    </Link>
-                </DropdownMenuItem>
+    const router = useRouter();
 
-                <DropdownMenuSeparator />
+    const actions: ActionItem[] = [
+        {
+            label: "Editar",
+            icon: Pencil,
+            onClick: () => router.push(`/admin/products/${productId}`),
+        },
+        {
+            label: "Ver en tienda",
+            icon: ExternalLink,
+            onClick: () => window.open(`/productos/${slug}`, "_blank"),
+        },
+        {
+            label: "Eliminar",
+            icon: Trash2,
+            variant: "destructive",
+            onClick: () => {
+                // Invocar la lógica de eliminación existente
+                router.push(`/admin/products/${productId}?action=delete`);
+            },
+        },
+    ];
 
-                <DropdownMenuItem variant="destructive" asChild>
-                    {/* Asegúrate que tu componente DeleteProductForm 
-                        esté adaptado para ser disparado desde un item o 
-                        simplificado para renderizar solo el botón de acción */}
-                    <DeleteProductForm productId={productId} />
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
+    return <AdminTableActions actions={actions} label="Acciones de producto" />;
 }

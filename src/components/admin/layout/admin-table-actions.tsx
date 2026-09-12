@@ -35,7 +35,7 @@ export function AdminTableActions({ actions, label }: AdminTableActionsProps) {
         <AdminButton
           variant="ghost"
           size="icon"
-          className="h-7 w-7 text-zinc-500 hover:text-zinc-900"
+          className="h-7 w-7 text-slate-500 hover:text-slate-900 cursor-pointer"
           title="Opciones"
         >
           <MoreHorizontal className="w-4 h-4" />
@@ -45,14 +45,14 @@ export function AdminTableActions({ actions, label }: AdminTableActionsProps) {
 
       <DropdownMenuContent
         align="end"
-        className="w-44 bg-white border border-zinc-200/80 rounded-xl shadow-lg p-1 text-xs z-50"
+        className="w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-1 text-xs z-50"
       >
         {label && (
           <>
-            <DropdownMenuLabel className="px-2 py-1 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+            <DropdownMenuLabel className="px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
               {label}
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="h-px bg-zinc-100 my-1" />
+            <DropdownMenuSeparator className="h-px bg-slate-100 my-1" />
           </>
         )}
 
@@ -68,7 +68,7 @@ export function AdminTableActions({ actions, label }: AdminTableActionsProps) {
               className={`flex items-center gap-2 px-2 py-1.5 rounded-lg font-medium cursor-pointer transition-colors outline-none ${
                 isDestructive
                   ? "text-rose-600 hover:bg-rose-50 focus:bg-rose-50"
-                  : "text-zinc-700 hover:bg-zinc-100 focus:bg-zinc-100"
+                  : "text-slate-700 hover:bg-slate-100 focus:bg-slate-100"
               }`}
             >
               {Icon && <Icon className="w-3.5 h-3.5 shrink-0" />}

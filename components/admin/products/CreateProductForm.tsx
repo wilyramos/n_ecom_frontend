@@ -1,50 +1,57 @@
-"use client"
+// File: frontend/components/admin/products/CreateProductForm.tsx
+"use client";
 
-import { useActionState, useEffect } from 'react'
-import ProductForm from './ProductForm'
-import { useRouter } from 'next/navigation'
-import { createProduct } from '@/actions/product/add-product-action'
-import { toast } from 'sonner'
-import type { CategoryListResponse, ProductWithCategoryResponse } from '@/src/schemas'
-import type { TBrand } from '@/src/schemas/brands'
-import type { ProductLine } from '@/src/schemas/line.schema' // Importamos tipo Line
-import { Button } from '@/components/ui/button'
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Plus, Loader2 } from "lucide-react";
+
+import ProductForm from "./ProductForm";
+import { createProduct } from "@/actions/product/add-product-action";
+import type { CategoryListResponse, ProductWithCategoryResponse } from "@/src/schemas";
+import type { TBrand } from "@/src/schemas/brands";
+import type { ProductLine } from "@/src/schemas/line.schema";
+import { AdminButton } from "@/src/components/admin/layout/admin-button";
 
 interface CreateProductFormProps {
     categorias: CategoryListResponse;
     brands: TBrand[];
-    lines: ProductLine[]; // Nueva prop
-    initialData?: ProductWithCategoryResponse
+    lines: ProductLine[];
+    initialData?: ProductWithCategoryResponse;
 }
 
-export default function CreateProductForm({ categorias, brands, lines, initialData }: CreateProductFormProps) {
-
+export default function CreateProductForm({
+    categorias,
+    brands,
+    lines,
+    initialData,
+}: CreateProductFormProps) {
     const router = useRouter();
 
-    const [state, dispatch] = useActionState(createProduct, {
+    const [state, dispatch, isPending] = useActionState(createProduct, {
         errors: [],
-        success: ""
+        success: "",
     });
 
     useEffect(() => {
         if (state.success) {
-            toast.success(state.success)
-            router.push("/admin/products")
+            toast.success(state.success);
+            router.push("/admin/products");
         }
-        if (state.errors) {
+        if (state.errors && state.errors.length > 0) {
             state.errors.forEach((error) => {
-                toast.error(error)
-            })
+                toast.error(error);
+            });
         }
-    }, [state, router])
+    }, [state, router]);
 
     const categoriasOrdenadas = [...categorias].sort((a, b) =>
-        a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+        a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
     );
 
     return (
         <form
-            className="flex flex-col gap-2 w-full max-w-7xl mx-auto mt-8"
+            className="w-full space-y-6 pb-20"
             noValidate
             action={dispatch}
         >
@@ -52,19 +59,46 @@ export default function CreateProductForm({ categorias, brands, lines, initialDa
                 product={initialData}
                 categorias={categoriasOrdenadas}
                 brands={brands}
-                lines={lines} // Pasamos las líneas
+                lines={lines}
             />
 
-            <div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center pointer-events-none">
-                <Button
-                    type='submit'
-                    className="pointer-events-auto"
+            {/* Barra flotante inferior estandarizada */}
+            <div className="fixed bottom-4 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
+                <div className="pointer-events-auto flex items-center gap-3 bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-800 shadow-xl">
+                    <AdminButton
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => router.push("/admin/products")}
+                        disabled={isPending}
+                        className="text-slate-300 hover:text-white hover:bg-slate-800 text-xs"
+                    >
+                        Cancelar
+                    </AdminButton>
 
-                >
-                    Crear producto
-                </Button>
+                    <div className="h-4 w-px bg-slate-700" />
 
+                    <AdminButton
+                        type="submit"
+                        variant="primary"
+                        size="sm"
+                        disabled={isPending}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs shadow-xs"
+                    >
+                        {isPending ? (
+                            <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Creando...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Guardar Producto</span>
+                            </>
+                        )}
+                    </AdminButton>
+                </div>
             </div>
         </form>
-    )
+    );
 }

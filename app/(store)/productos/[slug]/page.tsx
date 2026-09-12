@@ -20,19 +20,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     const image = product.imagenes?.[0] || 'https://www.neoshopimportaciones.com/favicon.ico';
     const url = `https://www.neoshopimportaciones.com/productos/${product.slug}`;
 
-    // ← Usar metaTitle/metaDescription si existen, sino fallback automático
-
-    // concatene el nombre y siempre añadir al final del title " | Neoshop" para mantener la marca consistente
-    const title = product.metaTitle?.trim()        ? `${product.metaTitle.trim()} | Neoshop`
+    const title = product.metaTitle?.trim()
+        ? `${product.metaTitle.trim()} | Neoshop`
         : `${product.nombre} | Neoshop`;
-
 
     const description = product.metaDescription?.trim()
         || (product.descripcion
             ? product.descripcion.replace(/<[^>]+>/g, '').slice(0, 160)
             : 'Descubre nuestros productos en neoshop. Calidad y tecnología a tu alcance.');
 
-    // Fusionar tags del producto con keywords base
     const productTags = product.tags ?? [];
     const keywords = [
         product.nombre,

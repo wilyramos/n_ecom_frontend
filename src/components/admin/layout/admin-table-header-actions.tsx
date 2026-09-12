@@ -30,7 +30,7 @@ export function AdminTableHeaderActions({
       <div className="flex items-center gap-2">
         {hasSelection ? (
           <>
-            <span className="text-xs font-semibold text-zinc-900 mr-1">
+            <span className="text-xs font-semibold text-slate-900 mr-1">
               {selectedCount} seleccionado(s)
             </span>
             {onBulkStatusChange && (

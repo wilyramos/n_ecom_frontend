@@ -24,7 +24,7 @@ export function AdminTable({
 
 export function AdminTableHead({ children }: { children: React.ReactNode }) {
   return (
-    <thead className="bg-admin-subtle/80 border-b border-admin-border text-admin-fg-muted font-semibold tracking-wide">
+    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide">
       {children}
     </thead>
   );
@@ -64,9 +64,9 @@ export function AdminTableRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "border-b border-admin-border-subtle last:border-none transition-colors font-normal text-admin-fg-body relative",
-        selected ? "bg-admin-accent-muted/40" : "hover:bg-admin-subtle/50",
-        isDragging && "opacity-60 bg-admin-subtle z-10 shadow-md",
+        "border-b border-slate-100 last:border-none transition-colors font-normal text-slate-700 relative",
+        selected ? "bg-slate-100/80" : "hover:bg-slate-50/60",
+        isDragging && "opacity-60 bg-slate-100 z-10 shadow-md",
         className
       )}
     >
@@ -76,7 +76,7 @@ export function AdminTableRow({
             type="button"
             {...attributes}
             {...listeners}
-            className="p-1 text-admin-fg-subtle hover:text-admin-fg-heading cursor-grab active:cursor-grabbing rounded-md hover:bg-admin-subtle transition-colors"
+            className="p-1 text-slate-400 hover:text-slate-700 cursor-grab active:cursor-grabbing rounded-md hover:bg-slate-200/50 transition-colors"
             title="Arrastrar para reordenar"
           >
             <GripVertical className="w-3.5 h-3.5" />
@@ -107,7 +107,7 @@ export function AdminTableHeaderCell({
     <th
       style={{ width }}
       className={cn(
-        "px-3 py-2 whitespace-nowrap text-admin-fg-muted font-semibold text-[11px] sm:text-xs uppercase tracking-wider",
+        "px-3 py-2.5 whitespace-nowrap text-slate-500 font-semibold text-[11px] sm:text-xs uppercase tracking-wider",
         alignClass
       )}
     >
@@ -136,9 +136,9 @@ export function AdminTableCell({
   return (
     <td
       className={cn(
-        "px-3 py-2 align-middle whitespace-nowrap leading-normal",
+        "px-3 py-2.5 align-middle whitespace-nowrap leading-normal text-slate-800",
         alignClass,
-        bold && "font-semibold text-admin-fg-heading",
+        bold && "font-semibold text-slate-900",
         className
       )}
     >
@@ -160,8 +160,8 @@ export function AdminTableEmpty({
     <tr>
       <td colSpan={colSpan} className="py-8 text-center">
         <div className="space-y-1">
-          <p className="text-sm font-semibold text-admin-fg-heading">{title}</p>
-          <p className="text-xs text-admin-fg-muted max-w-sm mx-auto">{description}</p>
+          <p className="text-sm font-semibold text-slate-900">{title}</p>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">{description}</p>
         </div>
       </td>
     </tr>

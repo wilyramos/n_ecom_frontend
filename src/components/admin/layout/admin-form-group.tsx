@@ -11,7 +11,7 @@ interface AdminFormGroupProps {
 export function AdminFormGroup({ label, children }: AdminFormGroupProps) {
   return (
     <div className="space-y-1">
-      <label className="text-xs font-medium text-zinc-700 block">{label}</label>
+      <label className="text-xs font-medium text-slate-700 block">{label}</label>
       {children}
     </div>
   );
@@ -25,7 +25,7 @@ export function AdminSelect({
   return (
     <select
       className={cn(
-        "w-full h-8 border border-zinc-200/80 rounded-lg px-2.5 text-xs bg-white text-zinc-800 font-medium outline-none focus:border-zinc-400 transition-colors",
+        "w-full h-8 border border-slate-200 rounded-lg px-2.5 text-xs bg-white text-slate-800 font-medium outline-none focus:border-slate-400 transition-colors",
         className
       )}
       {...props}
@@ -42,7 +42,7 @@ export function AdminInput({
   return (
     <input
       className={cn(
-        "w-full border border-zinc-200/80 rounded-lg px-2.5 py-1.5 text-xs text-zinc-900 outline-none focus:border-zinc-400 transition-colors",
+        "w-full border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 outline-none focus:border-slate-400 transition-colors",
         className
       )}
       {...props}

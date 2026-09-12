@@ -1,4 +1,3 @@
-// File: frontend/components/home/product/FeaturedCollectionsSection.tsx
 import { SectionResponse, SectionBlock } from "@/src/schemas/section.schema";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,21 +20,13 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
             >
                 {section.blocks.map((block: SectionBlock, idx) => {
                     const FeaturedBlockContent = (
-                        <div
-                            className="group relative block overflow-hidden"
-                            style={{
-                                // Ratios de aspecto ajustados para hacer las tarjetas menos altas
-                                aspectRatio: columns <= 2 ? "21/9" : columns === 3 ? "16/9" : "4/3"
-                            }}
-                        >
+                        <div className="group relative block w-full aspect-[4/1] overflow-hidden">
                             {block.imageUrl ? (
                                 <Image
                                     src={block.imageUrl}
                                     alt={block.title || "Colección"}
                                     fill
-                                    sizes={`(max-width: 640px) 100vw, ${Math.floor(100 / columns)}vw`}
-                                    // Añadido padding (p-4) para hacer la imagen más pequeña dentro de su contenedor
-                                    className="object-contain p-4 transition-transform duration-700 group-hover:scale-105"
+                                    className="object-contain w-full h-full"
                                     priority={idx < 3}
                                     unoptimized={true}
                                 />
@@ -43,10 +34,7 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                                 <div className="w-full h-full bg-gradient-to-br from-background-secondary to-muted" />
                             )}
 
-                            {/* Gradiente sutil para legibilidad del texto */}
-                            <div className="absolute inset-0 bg-gradient-to-t" />
 
-                            {/* Padding y tamaños de texto reducidos */}
                             <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start gap-1">
                                 {block.title && (
                                     <h3 className="text-white font-black text-base uppercase tracking-[0.1em]">
@@ -54,7 +42,7 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                                     </h3>
                                 )}
                                 {block.subtitle && (
-                                    <p className="text-white/80 text-[10px] font-medium uppercase tracking-widest mt-1 line-clamp-1">
+                                    <p className="text-white/80 text-[10px] font-medium uppercase tracking-widest line-clamp-1">
                                         {block.subtitle}
                                     </p>
                                 )}
@@ -63,11 +51,15 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                     );
 
                     return block.linkTo ? (
-                        <Link key={block._id || idx} href={block.linkTo} className="block outline-none focus-visible:ring-2 focus-visible:ring-action-cta rounded-[var(--radius-lg)]">
+                        <Link
+                            key={block._id || idx}
+                            href={block.linkTo}
+                            className="block outline-none focus-visible:ring-2 focus-visible:ring-action-cta rounded-[var(--radius-lg)] overflow-hidden"
+                        >
                             {FeaturedBlockContent}
                         </Link>
                     ) : (
-                        <div key={block._id || idx} className="block">
+                        <div key={block._id || idx} className="block overflow-hidden">
                             {FeaturedBlockContent}
                         </div>
                     );

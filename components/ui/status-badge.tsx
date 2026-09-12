@@ -36,11 +36,10 @@ const statusBadgeVariants = cva(
 
 export interface StatusBadgeProps
   extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof statusBadgeVariants> {
+  VariantProps<typeof statusBadgeVariants> {
   asChild?: boolean;
   label?: string;
   showDot?: boolean;
-  pulseDot?: boolean;
 }
 
 export function StatusBadge({
@@ -49,8 +48,6 @@ export function StatusBadge({
   size,
   asChild = false,
   label,
-  showDot = true,
-  pulseDot = false,
   children,
   ...props
 }: StatusBadgeProps) {
@@ -62,14 +59,7 @@ export function StatusBadge({
       className={cn(statusBadgeVariants({ status, size }), className)}
       {...props}
     >
-      {showDot && (
-        <span className="relative flex h-1.5 w-1.5 shrink-0">
-          {pulseDot && (
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-50" />
-          )}
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-current" />
-        </span>
-      )}
+      
       {label || children}
     </Comp>
   );

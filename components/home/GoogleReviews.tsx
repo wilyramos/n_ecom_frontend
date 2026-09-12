@@ -53,13 +53,12 @@ const reviews = [
     },
 ];
 
-// Paleta suave para los avatares fallback
 const avatarPalette = [
-    { bg: "bg-blue-50 border border-blue-200", text: "text-blue-700" },
-    { bg: "bg-emerald-50 border border-emerald-200", text: "text-emerald-700" },
-    { bg: "bg-rose-50 border border-rose-200", text: "text-rose-700" },
-    { bg: "bg-violet-50 border border-violet-200", text: "text-violet-700" },
-    { bg: "bg-amber-50 border border-amber-200", text: "text-amber-700" },
+    { bg: "bg-brand-silver-border border border-brand-silver", text: "text-brand-charcoal" },
+    { bg: "bg-brand-action-muted border border-brand-action/40", text: "text-brand-charcoal" },
+    { bg: "bg-brand-silver/20 border border-brand-silver", text: "text-brand-charcoal" },
+    { bg: "bg-brand-action/15 border border-brand-action/30", text: "text-brand-charcoal" },
+    { bg: "bg-brand-silver-border/60 border border-brand-silver", text: "text-brand-charcoal" },
 ];
 
 function getInitials(name: string): string {
@@ -70,7 +69,6 @@ function getInitials(name: string): string {
         .join("")
         .toUpperCase();
 }
-
 
 function StarRating({ count = 5 }: { count?: number }) {
     return (
@@ -104,7 +102,7 @@ function Avatar({ src, name, index }: AvatarProps) {
 
     if (isValidUrl) {
         return (
-            <div className="relative w-10 h-10 shrink-0 rounded-full overflow-hidden ring-2 ring-border-default">
+            <div className="relative w-10 h-10 shrink-0 rounded-full overflow-hidden ring-2 ring-brand-silver-border">
                 <Image
                     src={src}
                     alt={name}
@@ -149,41 +147,36 @@ function ReviewCard({
         review.reviewUrl !== "";
 
     return (
-        /* Altura fija para que todas las cards sean iguales */
-        <div className="h-[220px] bg-surface-primary border border-border-default rounded-2xl p-5 flex flex-col gap-3">
-            {/* Header: avatar + nombre + logo Google */}
+        <div className="h-[220px] bg-background border border-brand-silver-border rounded-2xl p-5 flex flex-col gap-3">
             <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3">
                     <Avatar src={review.profilePhotoUrl} name={review.name} index={index} />
                     <div className="min-w-0">
-                        <p className="text-sm font-semibold text-fg-primary leading-tight truncate max-w-[140px]">
+                        <p className="text-sm font-semibold text-brand-charcoal leading-tight truncate max-w-[140px]">
                             {review.name}
                         </p>
-                        <p className="text-xs text-fg-muted mt-0.5">{review.date}</p>
+                        <p className="text-xs text-brand-gris mt-0.5">{review.date}</p>
                     </div>
                 </div>
 
-                {/* Google logo + enlace externo */}
                 <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
                     {hasValidLink && (
                         <a
                             href={review.reviewUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-fg-muted hover:text-fg-primary transition-colors"
+                            className="text-brand-gris hover:text-brand-charcoal transition-colors"
                             aria-label={`Ver reseña de ${review.name} en Google`}
                         >
-                            <ExternalLink size={13}  className="text-gray-200"/>
+                            <ExternalLink size={13} className="text-brand-silver hover:text-brand-charcoal transition-colors" />
                         </a>
                     )}
                 </div>
             </div>
 
-            {/* Estrellas */}
             <StarRating />
 
-            {/* Texto de la reseña — clamp a 3 líneas para altura uniforme */}
-            <p className="text-sm text-fg-primary leading-relaxed line-clamp-3 flex-1">
+            <p className="text-sm text-brand-charcoal leading-relaxed line-clamp-3 flex-1">
                 {review.text}
             </p>
         </div>
@@ -198,7 +191,7 @@ export default function GoogleReviews() {
     };
 
     return (
-        <section className="w-full max-w-7xl mx-auto relative pt-12 pb-6 px-4 md:px-8 ">
+        <section className="w-full max-w-7xl mx-auto relative pt-12 pb-6 px-4 md:px-8">
             <Carousel
                 responsive={responsive}
                 infinite

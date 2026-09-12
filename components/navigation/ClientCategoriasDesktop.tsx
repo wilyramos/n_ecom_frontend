@@ -5,7 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import type { CategoryResponse } from "@/src/schemas";
 import { routes } from "@/lib/routes";
-import { cn } from "@/lib/utils"; // Importante para combinar clases limpiamente
+import { cn } from "@/lib/utils";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -13,7 +13,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    navigationMenuTriggerStyle // Importamos los estilos base del trigger
+    navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 
 export default function ClientCategoriasDesktop({ categories }: { categories: CategoryResponse[] }) {
@@ -41,13 +41,12 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                     return (
                         <NavigationMenuItem key={cat._id}>
                             {hasSubcategories ? (
-                                // Si tiene subcategorías, mantiene el comportamiento de menú desplegable
                                 <>
-                                    <NavigationMenuTrigger className="text-fg-muted">
+                                    <NavigationMenuTrigger className="text-brand-gris hover:text-brand-charcoal data-[state=open]:text-brand-charcoal bg-transparent">
                                         {cat.nombre}
                                     </NavigationMenuTrigger>
 
-                                    <NavigationMenuContent className="border border-border-default shadow-xl rounded-md overflow-hidden p-4 bg-surface-primary w-[400px]">
+                                    <NavigationMenuContent className="border border-brand-silver-border shadow-xl rounded-md overflow-hidden p-4 bg-background w-[400px]">
                                         <ul className="grid grid-cols-2 gap-1">
                                             {sub.map((subcat) => (
                                                 <ListItem
@@ -60,13 +59,12 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                                     </NavigationMenuContent>
                                 </>
                             ) : (
-                                // Si NO tiene subcategorías, se transforma en un Link directo y clickeable
                                 <NavigationMenuLink asChild>
                                     <Link
                                         href={routes.catalog({ category: cat.slug })}
                                         className={cn(
                                             navigationMenuTriggerStyle(),
-                                            "bg-transparent border-none text-fg-muted hover:text-action-primary transition-colors font-medium text-sm px-3 py-2"
+                                            "bg-transparent border-none text-brand-gris hover:text-brand-charcoal transition-colors font-medium text-sm px-3 py-2"
                                         )}
                                     >
                                         {cat.nombre}
@@ -87,9 +85,9 @@ function ListItem({ title, href }: { title: string; href: string }) {
             <NavigationMenuLink asChild>
                 <Link
                     href={href}
-                    className="group/link flex items-center px-3 py-2 rounded-md hover:bg-surface-secondary/70 transition-all duration-150 border border-transparent hover:border-border-default/60"
+                    className="group/link flex items-center px-3 py-2 rounded-md hover:bg-brand-silver-border/60 transition-all duration-150 border border-transparent hover:border-brand-silver-border"
                 >
-                    <span className="text-xs font-medium text-fg-muted transition-colors">
+                    <span className="text-xs font-medium text-brand-gris group-hover/link:text-brand-charcoal transition-colors">
                         {title}
                     </span>
                 </Link>

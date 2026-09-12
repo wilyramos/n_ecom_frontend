@@ -12,10 +12,10 @@ interface Props extends ButtonGroupProps {
 
 export default function HeaderConTituloConControles({ title, viewAllHref }: Props) {
     return (
-        <div className="w-full mb-4 text-fg-primary select-none flex items-center justify-between gap-2">
+        <div className="w-full mb-4 text-brand-charcoal select-none flex items-center justify-between gap-2">
 
             {/* Título */}
-            <h2 className="text-lg md:text-xl font-medium text-fg-muted">
+            <h2 className="text-lg md:text-xl font-medium text-brand-gris">
                 {title}
             </h2>
 
@@ -23,7 +23,7 @@ export default function HeaderConTituloConControles({ title, viewAllHref }: Prop
             {viewAllHref && (
                 <Link
                     href={viewAllHref}
-                    className="hidden md:flex items-center gap-1 text-sm text-fg-muted hover:text-fg-secondary transition-colors whitespace-nowrap"
+                    className="hidden md:flex items-center gap-1 text-sm text-brand-gris hover:text-brand-charcoal transition-colors whitespace-nowrap"
                 >
                     Ver más
                 </Link>
@@ -33,7 +33,7 @@ export default function HeaderConTituloConControles({ title, viewAllHref }: Prop
             {viewAllHref && (
                 <Link
                     href={viewAllHref}
-                    className="md:hidden flex items-center gap-0.5 text-xs font-medium text-fg-primary hover:text-fg-secondary transition-colors whitespace-nowrap shrink-0"
+                    className="md:hidden flex items-center gap-0.5 text-xs font-medium text-brand-charcoal hover:text-brand-gris transition-colors whitespace-nowrap shrink-0"
                 >
                     Ver todo <ChevronRight size={12} strokeWidth={2.5} />
                 </Link>

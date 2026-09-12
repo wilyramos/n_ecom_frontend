@@ -11,12 +11,11 @@ type Props = {
 };
 
 export default async function ProductPageServer({ producto }: Props) {
-
     if (!producto) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] text-center py-10 space-y-4">
-                <h1 className="text-2xl font-bold text-[var(--store-text)]">Producto no encontrado</h1>
-                <p className="text-[var(--store-text-muted)]">El producto que buscas no existe o ha sido retirado.</p>
+                <h1 className="text-2xl font-bold text-brand-charcoal">Producto no encontrado</h1>
+                <p className="text-brand-gris">El producto que buscas no existe o ha sido retirado.</p>
             </div>
         );
     }
@@ -25,7 +24,6 @@ export default async function ProductPageServer({ producto }: Props) {
         { label: "Catálogo", href: routes.catalog() }
     ];
 
-    // 1. Agregar Categoría
     if (producto.categoria && typeof producto.categoria === 'object') {
         breadcrumbSegments.push({
             label: producto.categoria.nombre,
@@ -33,7 +31,6 @@ export default async function ProductPageServer({ producto }: Props) {
         });
     }
 
-    // 2. Agregar Marca (acumulando categoría si existe)
     if (producto.brand && typeof producto.brand === 'object') {
         breadcrumbSegments.push({
             label: producto.brand.nombre,
@@ -44,7 +41,6 @@ export default async function ProductPageServer({ producto }: Props) {
         });
     }
 
-    // 3. Agregar Línea (acumulando anteriores)
     if (producto.line && typeof producto.line === 'object') {
         breadcrumbSegments.push({
             label: producto.line.nombre,
@@ -56,16 +52,13 @@ export default async function ProductPageServer({ producto }: Props) {
         });
     }
 
-
     return (
         <>
-            {/* Título oculto para SEO (H1 debe ser único y descriptivo) */}
             <h1 className="sr-only">
                 {producto.nombre} - neoshop
             </h1>
 
             <section className="container mx-auto px-2 md:px-6 pt-1">
-                {/* Navegación de migas de pan */}
                 <Breadcrumbs
                     items={breadcrumbSegments}
                     current={producto.nombre}
@@ -78,14 +71,10 @@ export default async function ProductPageServer({ producto }: Props) {
                 </div>
             </section>
 
-          
-
-            {/* Productos Relacionados (Por Línea/Marca) */}
             <section className="container mx-auto px-4 md:px-6 py-4">
                 <ProductosRelated slug={producto.slug} />
             </section>
 
-            {/* Vistos Recientemente (Client Component) */}
             <section className="container mx-auto px-4 md:px-6 py-4">
                 <RecentViewed currentProduct={producto} />
             </section>

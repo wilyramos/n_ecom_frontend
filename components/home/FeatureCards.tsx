@@ -36,23 +36,23 @@ export default function FeatureCards() {
     <section className="pb-0.5 pt-2 md:py-1 w-full max-w-screen-2xl mx-auto">
       <div className="w-full py-1 px-1 md:px-6">
         
-        {/* CONTENEDOR PRINCIPAL LIQUID GLASS - OSCURECIDO Y SATURADO */}
-        <div className="w-full  sm:px-3">
+        {/* CONTENEDOR PRINCIPAL */}
+        <div className="w-full sm:px-3">
           
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
             {features.map(({ title, description, icon: Icon }) => (
               <div key={title} className="group block w-full">
                 
-                <div className="w-full h-full flex flex-row items-center justify-center gap-2.5 px-1 transition-all duration-300 rounded-2xl bg-black/5 backdrop-blur-3xl  py-2 text-fg-muted">
+                <div className="w-full h-full flex flex-row items-center justify-center gap-2.5 px-1 transition-all duration-300 rounded-2xl bg-brand-silver/10 text-brand-silver  py-1 ">
                   
                   {/* Ícono en blanco */}
-                  <div className="flex-shrink-0  drop-shadow-md transition-transform duration-300 group-hover:scale-110">
-                    <Icon className="w-6 h-6 sm:w-10 sm:h-10" strokeWidth={1.5} />
+                  <div className="flex-shrink-0   transition-transform duration-300 group-hover:scale-110">
+                    <Icon className="w-6 h-6 sm:w-10 sm:h-10 " strokeWidth={1.5} />
                   </div>
 
                   {/* Textos en blanco */}
-                  <div className="flex flex-col min-w-0 text-center justify-center h-full drop-shadow-md">
-                    <span className="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wide line-clamp-2 min-h-[1.8em] flex items-center">
+                  <div className="flex flex-col min-w-0 text-center justify-center h-full  ">
+                    <span className="text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wide line-clamp-2 min-h-[1.8em] flex items-center ">
                       <span className="line-clamp-2 md:line-clamp-2">{title}</span>
                     </span>
 

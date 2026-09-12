@@ -1,4 +1,4 @@
-//File: frontend/components/home/PaymentMethods.tsx
+// File: frontend/components/home/PaymentMethods.tsx
 
 import Image from "next/image";
 

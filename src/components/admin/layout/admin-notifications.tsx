@@ -49,7 +49,7 @@ export function AdminNotifications() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen((prev) => !prev)}
-                className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative"
+                className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative cursor-pointer"
                 aria-label="Notificaciones"
                 type="button"
             >
@@ -80,7 +80,8 @@ export function AdminNotifications() {
                             {unreadCount > 0 && (
                                 <button
                                     onClick={markAllAsRead}
-                                    className="text-[11px] text-slate-500 hover:text-slate-900 flex items-center gap-1 transition-colors"
+                                    className="text-[11px] text-slate-500 hover:text-slate-900 flex items-center gap-1 transition-colors cursor-pointer"
+                                    type="button"
                                 >
                                     <Check className="w-3 h-3" />
                                     Marcar leídas
@@ -99,8 +100,9 @@ export function AdminNotifications() {
                                         key={item.id}
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
-                                        className={`flex items-start gap-3 p-3 text-xs transition-colors hover:bg-slate-50 ${item.unread ? "bg-slate-50/60" : ""
-                                            }`}
+                                        className={`flex items-start gap-3 p-3 text-xs transition-colors hover:bg-slate-50 ${
+                                            item.unread ? "bg-slate-50/60" : ""
+                                        }`}
                                     >
                                         <div className="p-2 rounded-lg bg-slate-100 text-slate-700 shrink-0 mt-0.5">
                                             {item.type === "order" ? (

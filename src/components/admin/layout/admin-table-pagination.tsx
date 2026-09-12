@@ -29,17 +29,17 @@ export function AdminTablePagination({
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-zinc-100 bg-white rounded-b-xl text-xs text-zinc-600">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 bg-white rounded-b-xl text-xs text-slate-600 shadow-xs">
       {/* Conteo de Selección e Ítems */}
       <div className="flex items-center gap-3">
         {selectedCount > 0 ? (
-          <span className="font-semibold text-zinc-900 bg-zinc-100 px-2 py-0.5 rounded-md">
+          <span className="font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
             {selectedCount} seleccionado(s)
           </span>
         ) : (
           <span>
-            Mostrando <strong className="text-zinc-900">{startItem}-{endItem}</strong> de{" "}
-            <strong className="text-zinc-900">{totalItems}</strong> resultados
+            Mostrando <strong className="text-slate-900">{startItem}-{endItem}</strong> de{" "}
+            <strong className="text-slate-900">{totalItems}</strong> resultados
           </span>
         )}
       </div>
@@ -47,7 +47,7 @@ export function AdminTablePagination({
       {/* Controles de Navegación y Páginas */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-zinc-500 hidden md:inline">Filas por página:</span>
+          <span className="text-slate-500 hidden md:inline">Filas por página:</span>
           <AdminSelect
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -61,7 +61,7 @@ export function AdminTablePagination({
           </AdminSelect>
         </div>
 
-        <span className="font-medium text-zinc-700">
+        <span className="font-medium text-slate-700">
           Página {currentPage} de {Math.max(1, totalPages)}
         </span>
 
@@ -73,7 +73,7 @@ export function AdminTablePagination({
             disabled={currentPage <= 1}
             title="Primera página"
           >
-            <ChevronsLeft className="w-3.5 h-3.5 text-zinc-600" />
+            <ChevronsLeft className="w-3.5 h-3.5 text-slate-600" />
           </AdminButton>
           <AdminButton
             variant="outline"
@@ -82,7 +82,7 @@ export function AdminTablePagination({
             disabled={currentPage <= 1}
             title="Página anterior"
           >
-            <ChevronLeft className="w-3.5 h-3.5 text-zinc-600" />
+            <ChevronLeft className="w-3.5 h-3.5 text-slate-600" />
           </AdminButton>
           <AdminButton
             variant="outline"
@@ -91,7 +91,7 @@ export function AdminTablePagination({
             disabled={currentPage >= totalPages}
             title="Página siguiente"
           >
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
+            <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
           </AdminButton>
           <AdminButton
             variant="outline"
@@ -100,7 +100,7 @@ export function AdminTablePagination({
             disabled={currentPage >= totalPages}
             title="Última página"
           >
-            <ChevronsRight className="w-3.5 h-3.5 text-zinc-600" />
+            <ChevronsRight className="w-3.5 h-3.5 text-slate-600" />
           </AdminButton>
         </div>
       </div>

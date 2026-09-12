@@ -10,9 +10,7 @@ import { cn } from "@/lib/utils";
 import AdminMenu from "./AdminMenu";
 import Logo from "../ui/Logo";
 import {
-    LayoutDashboard,
-    ShoppingBag,
-    ReceiptText,
+    LayoutDashboard, ReceiptText,
     Boxes,
     Tags,
     Building2,
@@ -33,7 +31,7 @@ import {
     FolderKanban,
     Settings2,
     Globe,
-    Truck,
+    Truck
 } from "lucide-react";
 
 type NavChild = { 
@@ -61,7 +59,6 @@ const navGroups: NavGroup[] = [
         items: [
             { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
             { href: "/admin/pedidos", icon: Truck, label: "Pedidos Web", tag: "NUEVO" },
-            { href: "/admin/orders", icon: ShoppingBag, label: "Órdenes" },
             { href: "/admin/tickets-v2", icon: ReceiptText, label: "Comprobantes" },
             { href: "/admin/products", icon: Boxes, label: "Productos" },
         ],
@@ -146,7 +143,7 @@ export default function AdminSidebar({ user }: Props) {
                     setExpanded((c) => !c);
                     setOpenMenus({});
                 }}
-                className="absolute -right-3 top-6 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-admin-border bg-admin-card text-admin-fg-muted shadow-xs transition-all hover:bg-admin-info-muted hover:text-admin-info hover:border-admin-info-border focus:outline-none cursor-pointer"
+                className="absolute -right-3 top-6 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-admin-border bg-admin-card text-admin-fg-muted shadow-xs transition-all hover:bg-slate-100 hover:text-slate-900 focus:outline-none cursor-pointer"
                 aria-label={expanded ? "Contraer menú" : "Expandir menú"}
             >
                 <ChevronLeft
@@ -155,18 +152,30 @@ export default function AdminSidebar({ user }: Props) {
             </button>
 
             {/* Header / Brand Logo */}
-            <div className="flex items-center border-b border-admin-border px-3.5 bg-admin-card">
-                <div className={cn("flex w-full items-center", expanded ? "justify-start" : "justify-center")}>
-                    <Logo />
-                </div>
-            </div>
+          {/* Header / Brand Logo */}
+<div className="flex h-16 items-center border-b border-admin-border px-3.5">
+    <Link
+        href="/admin"
+        className={cn(
+            "flex w-full items-center transition-all duration-200",
+            expanded ? "justify-start px-1" : "justify-center"
+        )}
+    >
+        <Logo
+            className={cn(
+                "transition-all duration-300",
+                expanded ? "h-8 w-36" : "h-7 w-7"
+            )}
+        />
+    </Link>
+</div>
 
             {/* Navigation List */}
             <nav className="custom-scrollbar flex-1 overflow-y-auto px-2.5 py-3 space-y-3.5 bg-admin-sidebar">
                 {navGroups.map((group) => (
                     <div key={group.groupLabel} className="space-y-1">
                         {expanded && (
-                            <p className="px-2.5 text-[10px] font-bold tracking-wider text-admin-fg-subtle uppercase">
+                            <p className="px-2.5 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                                 {group.groupLabel}
                             </p>
                         )}
@@ -190,8 +199,8 @@ export default function AdminSidebar({ user }: Props) {
                                                 className={cn(
                                                     "group flex w-full items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-all duration-150 cursor-pointer",
                                                     isChildActive
-                                                        ? "bg-admin-info-muted text-admin-info font-semibold"
-                                                        : "text-admin-fg-body hover:bg-admin-info-muted/50 hover:text-admin-info"
+                                                        ? "bg-slate-100 text-slate-900 font-semibold"
+                                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                                 )}
                                             >
                                                 <div className="flex items-center gap-2.5 min-w-0">
@@ -199,7 +208,7 @@ export default function AdminSidebar({ user }: Props) {
                                                         <Icon
                                                             className={cn(
                                                                 "h-4 w-4 shrink-0 transition-colors",
-                                                                isChildActive ? "text-admin-info" : "text-admin-info group-hover:text-admin-info"
+                                                                isChildActive ? "text-slate-900" : "text-slate-500 group-hover:text-slate-900"
                                                             )}
                                                         />
                                                     )}
@@ -208,8 +217,8 @@ export default function AdminSidebar({ user }: Props) {
                                                 {expanded && (
                                                     <ChevronDown
                                                         className={cn(
-                                                            "h-3.5 w-3.5 shrink-0 text-admin-fg-subtle transition-transform duration-200",
-                                                            isOpen && "rotate-180 text-admin-info"
+                                                            "h-3.5 w-3.5 shrink-0 text-slate-400 transition-transform duration-200",
+                                                            isOpen && "rotate-180 text-slate-900"
                                                         )}
                                                     />
                                                 )}
@@ -222,7 +231,7 @@ export default function AdminSidebar({ user }: Props) {
                                                         isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                                                     )}
                                                 >
-                                                    <div className="min-h-0 ml-4 space-y-0.5 border-l border-admin-info-border py-1 pl-3">
+                                                    <div className="min-h-0 ml-4 space-y-0.5 border-l border-slate-200 py-1 pl-3">
                                                         {children.map((sub) => {
                                                             const isSubActive =
                                                                 pathname === sub.href ||
@@ -237,8 +246,8 @@ export default function AdminSidebar({ user }: Props) {
                                                                     className={cn(
                                                                         "flex items-center justify-between rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors",
                                                                         isSubActive
-                                                                            ? "bg-admin-info text-white font-semibold shadow-xs"
-                                                                            : "text-admin-fg-muted hover:bg-admin-info-muted/60 hover:text-admin-info"
+                                                                            ? "bg-slate-900 text-white font-semibold shadow-xs"
+                                                                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                                                                     )}
                                                                 >
                                                                     <div className="flex items-center gap-2 min-w-0">
@@ -246,7 +255,7 @@ export default function AdminSidebar({ user }: Props) {
                                                                             <SubIcon
                                                                                 className={cn(
                                                                                     "h-3 w-3 shrink-0",
-                                                                                    isSubActive ? "text-white" : "text-admin-info"
+                                                                                    isSubActive ? "text-white" : "text-slate-500"
                                                                                 )}
                                                                             />
                                                                         )}
@@ -277,8 +286,8 @@ export default function AdminSidebar({ user }: Props) {
                                         className={cn(
                                             "group flex items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium transition-all duration-150",
                                             isActive
-                                                ? "bg-admin-info text-white shadow-xs font-semibold"
-                                                : "text-admin-fg-body hover:bg-admin-info-muted/50 hover:text-admin-info"
+                                                ? "bg-slate-900 text-white shadow-xs font-semibold"
+                                                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                         )}
                                     >
                                         <div className="flex items-center gap-2.5 min-w-0">
@@ -286,7 +295,7 @@ export default function AdminSidebar({ user }: Props) {
                                                 <Icon
                                                     className={cn(
                                                         "h-4 w-4 shrink-0 transition-colors",
-                                                        isActive ? "text-white" : "text-admin-info"
+                                                        isActive ? "text-white" : "text-slate-500 group-hover:text-slate-900"
                                                     )}
                                                 />
                                             )}
@@ -300,7 +309,7 @@ export default function AdminSidebar({ user }: Props) {
                                                         "text-[9px] font-bold px-1.5 py-0.2 rounded border",
                                                         isActive
                                                             ? "bg-white/20 text-white border-transparent"
-                                                            : "bg-admin-info-muted text-admin-info border-admin-info-border"
+                                                            : "bg-slate-100 text-slate-700 border-slate-200"
                                                     )}>
                                                         {tag}
                                                     </span>
@@ -308,7 +317,7 @@ export default function AdminSidebar({ user }: Props) {
                                                 {isExternal && (
                                                     <ExternalLink className={cn(
                                                         "h-3 w-3",
-                                                        isActive ? "text-white" : "text-admin-fg-subtle group-hover:text-admin-info"
+                                                        isActive ? "text-white" : "text-slate-400 group-hover:text-slate-900"
                                                     )} />
                                                 )}
                                             </div>
@@ -327,7 +336,7 @@ export default function AdminSidebar({ user }: Props) {
                     <Link
                         href="/staff/attendance"
                         target="_blank"
-                        className="flex items-center justify-center gap-2 rounded-lg border border-admin-info-border bg-admin-info-muted/30 px-3 py-1.5 text-xs font-semibold text-admin-info shadow-2xs transition-all hover:bg-admin-info hover:text-white"
+                        className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-900 hover:text-white"
                     >
                         <Fingerprint className="h-3.5 w-3.5" />
                         <span>Marcar Asistencia</span>
@@ -340,17 +349,17 @@ export default function AdminSidebar({ user }: Props) {
                         expanded ? "gap-2 justify-between" : "justify-center"
                     )}
                 >
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-admin-info text-[11px] font-bold text-white shadow-2xs">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-bold text-white shadow-2xs">
                         {user?.nombre?.charAt(0).toUpperCase() || "A"}
                     </div>
 
                     {expanded && (
                         <>
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-xs font-semibold text-admin-fg-heading leading-tight">
+                                <p className="truncate text-xs font-semibold text-slate-900 leading-tight">
                                     {user?.nombre || "Administrador"}
                                 </p>
-                                <p className="truncate text-[10px] text-admin-fg-muted leading-tight">
+                                <p className="truncate text-[10px] text-slate-500 leading-tight">
                                     {user?.email || "admin@sistema.pe"}
                                 </p>
                             </div>

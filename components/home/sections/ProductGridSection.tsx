@@ -25,7 +25,6 @@ export default function ProductGridSection({ section, columns }: ProductGridSect
                         ? (block.productId as ProductRef)
                         : null;
 
-                    // ── 1. RENDERIZADO DE IMAGEN / BANNER SIMPLE ──
                     if (!product) {
                         if (!block.imageUrl) return null;
 
@@ -33,17 +32,18 @@ export default function ProductGridSection({ section, columns }: ProductGridSect
                             <Link
                                 key={block._id || idx}
                                 href={block.linkTo || "#"}
-                                className="group block aspect-square  overflow-hidden relative shadow-xs border border-border"
+                                className="group block w-full aspect-[4/1] overflow-hidden relative "
                             >
                                 <Image
                                     src={block.imageUrl}
                                     alt={block.title || "Banner promocional"}
                                     fill
                                     sizes={`(max-width: 640px) 100vw, ${Math.floor(100 / columns)}vw`}
-                                    className="object-cover transition-transform "
+                                    className="object-contain w-full h-full transition-transform"
+                                    unoptimized
                                 />
                                 {(block.title || block.subtitle) && (
-                                    <div className="absolute inset-0 ">
+                                    <div className="absolute inset-0 p-4 flex flex-col justify-end bg-black/30">
                                         {block.title && (
                                             <h3 className="text-white text-lg font-black uppercase tracking-wider">
                                                 {block.title}
@@ -60,12 +60,10 @@ export default function ProductGridSection({ section, columns }: ProductGridSect
                         );
                     }
 
-                    // ── 2. RENDERIZADO USANDO EL COMPONENTE PRODUCTCARD REUTILIZABLE ──
-                    // Moldeamos de forma segura el ProductRef a una firma parcial compatible con TApiProduct
                     const castedProduct = product as unknown as TApiProduct;
 
                     return (
-                        <div key={block._id || idx} className="h-full border border-border overflow-hidden ">
+                        <div key={block._id || idx} className="h-full border border-border overflow-hidden">
                             <ProductCard product={castedProduct} />
                         </div>
                     );

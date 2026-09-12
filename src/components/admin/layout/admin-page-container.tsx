@@ -1,4 +1,4 @@
-//File: frontend/src/components/admin/layout/admin-page-container.tsx
+// File: frontend/src/components/admin/layout/admin-page-container.tsx
 
 import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -14,14 +14,14 @@ const pageContainerVariants = cva(
                 narrow: "max-w-4xl",
             },
             padding: {
-                default: "p-4 sm:p-6 lg:p-8",
-                compact: "p-3 sm:p-4 lg:p-6",
+                default: "p-4 sm:p-5 lg:p-6",
+                compact: "p-3 sm:p-4",
                 none: "p-0",
             },
             spacing: {
-                default: "space-y-6",
-                compact: "space-y-4",
-                loose: "space-y-8",
+                default: "space-y-4 sm:space-y-5",
+                compact: "space-y-3",
+                loose: "space-y-6",
                 none: "space-y-0",
             },
         },
@@ -35,7 +35,7 @@ const pageContainerVariants = cva(
 
 interface AdminPageContainerProps
     extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof pageContainerVariants> { }
+        VariantProps<typeof pageContainerVariants> { }
 
 export function AdminPageContainer({
     children,

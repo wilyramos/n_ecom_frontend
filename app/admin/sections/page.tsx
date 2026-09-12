@@ -1,10 +1,8 @@
-//File: frontend/app/admin/sections/page.tsx
-
+// File: frontend/app/admin/sections/page.tsx
 import { getAdminSections } from "@/src/services/section-service";
-import AdminPageWrapper from "@/components/admin/AdminPageWrapper";
 import SectionFiltersComponent from "@/components/admin/sections/SectionFiltersComponent";
 import SectionTableList from "@/components/admin/sections/SectionTableList";
-import Pagination from "@/components/ui/Pagination";
+import SectionPaginationWrapper from "@/components/admin/sections/SectionPaginationWrapper";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import type { SectionType } from "@/src/schemas/section.schema";
@@ -25,11 +23,8 @@ export default async function AdminSectionsPage({ searchParams }: PageProps) {
 
     const page = Math.max(1, Number(params.page ?? 1));
     const limit = Math.max(1, Number(params.limit ?? 10));
-
-    // Mapeo controlado de parámetros según los tipos válidos de sección
     const typeFilter = params.type?.trim() as SectionType | undefined;
 
-    // Consumo del servicio del módulo de secciones pasando la paginación para el admin
     const res = await getAdminSections(page, limit);
 
     const sections = res?.data || [];
@@ -37,46 +32,47 @@ export default async function AdminSectionsPage({ searchParams }: PageProps) {
     const pages = Math.max(1, Number(res?.meta?.pages ?? 1));
 
     return (
-        <AdminPageWrapper
-            title="Secciones de la Tienda"
-           
-            showBackButton={false}
-            actions={
+        <div className="space-y-6 p-6">
+            {/* Header directo */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                        Secciones de la Tienda
+                    </h1>
+                  
+                </div>
+
                 <Link
                     href="/admin/sections/new"
-                    className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-slate-800"
                 >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
                     Nueva Sección
                 </Link>
-            }
-        >
-            <div className="space-y-5">
-                {/* Filtros adaptados para el tipo de componente y el estado de la sección */}
-                <SectionFiltersComponent 
+            </div>
+
+            {/* Contenido principal */}
+            <div className="space-y-4">
+                <SectionFiltersComponent
                     filters={{
                         type: typeFilter,
-                        isActive: params.isActive
-                    }} 
+                        isActive: params.isActive,
+                    }}
                 />
 
-                {/* Tabla/Lista interactiva que soporta ordenamiento e inactivación */}
-                <SectionTableList initialSections={sections} />
+                <div className="flex flex-col">
+                    <SectionTableList initialSections={sections} />
 
-                {total > 0 && (
-                    <div className="flex flex-col items-center gap-3 pt-6 border-t border-border">
-                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                            Mostrando {sections.length} de {total} secciones configuradas
-                        </p>
-                        <Pagination
+                    {total > 0 && (
+                        <SectionPaginationWrapper
                             currentPage={page}
                             totalPages={pages}
-                            limit={limit}
-                            pathname="/admin/sections"
+                            pageSize={limit}
+                            totalItems={total}
                         />
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </AdminPageWrapper>
+        </div>
     );
 }

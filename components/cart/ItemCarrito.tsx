@@ -31,7 +31,7 @@ export default function ItemCarrito({ item }: { item: CartItem }) {
             </Link>
 
             <div className="flex gap-3 items-center">
-                <Link href={productHref} className="relative w-14 h-14 flex-shrink-0 overflow-hidden bg-secondary rounded-sm block">
+                <Link href={productHref} className="relative w-14 h-14 flex-shrink-0 overflow-hidden block">
                     {imageSrc ? (
                         <Image
                             src={imageSrc}

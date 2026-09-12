@@ -30,7 +30,7 @@ const storeImages = [
 const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full text-black transition-all hover:bg-white hover:scale-110"
+    className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-charcoal backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
   >
     <ChevronLeft size={20} />
   </button>
@@ -39,7 +39,7 @@ const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
 const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full text-black transition-all hover:bg-white hover:scale-110"
+    className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-charcoal backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
   >
     <ChevronRight size={20} />
   </button>
@@ -47,7 +47,7 @@ const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
 
 export default function StoreLocation() {
   return (
-    <section className="py-6 text-fg-primary">
+    <section className="py-6 text-brand-charcoal">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Grid Principal */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-stretch">
@@ -62,28 +62,28 @@ export default function StoreLocation() {
             {/* Info */}
             <div className="space-y-2 pb-4">
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-fg-action text-fg-inverse">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-action text-brand-charcoal">
                   <MapPin size={18} />
                 </div>
                 <div className="leading-tight">
-                  <p className="text-sm font-semibold text-fg-primary/70">
+                  <p className="text-sm font-semibold text-brand-gris">
                     Av caminos del inca 257-Surco
                   </p>
-                  <p className="text-sm font-bold text-fg-primary">
+                  <p className="text-sm font-bold text-brand-silver">
                     Piso 3 - Tda 326
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-fg-action text-fg-inverse">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-action text-brand-charcoal">
                   <Clock size={18} />
                 </div>
                 <div className="leading-tight">
-                  <p className="text-sm font-semibold text-fg-primary/70">
+                  <p className="text-sm font-semibold text-brand-gris">
                     Lunes a Sábado
                   </p>
-                  <p className="text-sm font-bold text-fg-primary">
+                  <p className="text-sm font-bold text-brand-silver">
                     11:00 am a 8:00 pm
                   </p>
                 </div>
@@ -91,7 +91,7 @@ export default function StoreLocation() {
             </div>
 
             {/* MAPA */}
-            <div className="flex-1 overflow-hidden rounded-2xl">
+            <div className="flex-1 overflow-hidden rounded-2xl border border-brand-silver-border">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.71171804938!2d-76.9945115!3d-12.1318464!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105b8178cd39e33%3A0x633512e09153574c!2sAv.%20Caminos%20del%20Inca%20257%2C%20Santiago%20de%20Surco%2015038!5e0!3m2!1ses-419!2spe!4v1717684000000!5m2!1ses-419!2spe"
                 className="h-full w-full border-0"
@@ -102,7 +102,7 @@ export default function StoreLocation() {
           </div>
 
           {/* COLUMNA DERECHA */}
-          <div className="h-[500px] overflow-hidden rounded-2xl">
+          <div className="h-[500px] overflow-hidden rounded-2xl border border-brand-silver-border">
             <Carousel
               responsive={responsive}
               infinite
@@ -136,8 +136,8 @@ export default function StoreLocation() {
         </div>
 
         {/* SECCIÓN INFERIOR - MARCAS AUTORIZADAS */}
-        <div className="mt-8 flex flex-row items-center justify-between gap-6 border-t border-fg-primary/10 pt-6">
-          <p className="text-base md:text-2xl font-bold text-fg-primary/60 text-center md:text-left">
+        <div className="mt-8 flex flex-row items-center justify-between gap-6 border-t border-brand-silver-border pt-6">
+          <p className="text-base md:text-2xl font-bold text-brand-gris text-center md:text-left">
             Autorizado por:
           </p>
 

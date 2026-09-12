@@ -1,20 +1,26 @@
+// File: frontend/app/auth/forgot-password/page.tsx
+
 import ForgotPasswordForm from "@/components/auth/ForgotPasswordForm";
 import Link from "next/link";
 
-export default function pageForgotPassword() {
+export default function PageForgotPassword() {
     return (
-        <div className="w-full max-w-md p-6">
-            <h1 className="text-3xl font-semibold text-center">Recuperar Contraseña</h1>
-            <p className="text-gray-600  py-2">Ingresa tu correo electrónico para recibir el enlace</p>
+        <div className="w-full max-w-sm mx-auto p-6">
+            <h1 className="text-2xl font-bold tracking-tight text-center text-slate-900">
+                Recuperar Contraseña
+            </h1>
+            <p className="mt-1 text-xs text-center text-slate-500">
+                Ingresa tu correo electrónico para recibir el enlace
+            </p>
 
             <ForgotPasswordForm />
 
-            <nav className="text-sm text-gray-600 mt-4 text-center space-y-2">
+            <nav className="text-xs text-slate-500 mt-6 text-center space-y-1.5">
                 <p>
                     ¿Ya tienes una cuenta?{" "}
                     <Link
                         href="/auth/login"
-                        className="text-indigo-800 font-black hover:underline"
+                        className="font-semibold text-slate-900 hover:underline"
                     >
                         Inicia sesión
                     </Link>
@@ -23,7 +29,7 @@ export default function pageForgotPassword() {
                     ¿No tienes una cuenta?{" "}
                     <Link
                         href="/auth/registro"
-                        className="text-indigo-800 font-black hover:underline"
+                        className="font-semibold text-slate-900 hover:underline"
                     >
                         Regístrate
                     </Link>

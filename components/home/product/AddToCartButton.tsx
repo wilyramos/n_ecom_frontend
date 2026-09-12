@@ -35,9 +35,9 @@ export default function AddToCartButton({ product }: Props) {
         <Button
             onClick={handleClick}
             disabled={isOutOfStock}
-            variant={isOutOfStock ? "destructive" : "accent"}
+            variant={isOutOfStock ? "secondary" : "accent"}
             size="sm"
-            className="w-full gap-2 text-xs md:text-sm rounded-2xl "
+            className="w-full gap-2 text-xs md:text-sm rounded-2xl cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
             <ShoppingCart size={14} />
             {isOutOfStock ? "Agotado" : "Comprar"}

@@ -1,10 +1,11 @@
+// File: components/admin/sections/SectionTableList.tsx
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { SectionResponse, SECTION_TYPE_LABELS } from "@/src/schemas/section.schema";
 import { reorderSectionsAction, deleteSectionAction } from "@/actions/section-action";
-import { Edit2, Trash2, GripVertical, Eye, EyeOff, MoreVertical } from "lucide-react";
+import { Edit2, Trash2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,13 +19,40 @@ import {
 } from "@/components/ui/dialog";
 
 // Dnd-kit imports
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
-export default function SectionTableList({ initialSections }: { initialSections: SectionResponse[] }) {
+// Layout components
+import {
+    AdminTable,
+    AdminTableHead,
+    AdminTableHeaderCell,
+    AdminTableRow,
+    AdminTableCell,
+    AdminTableEmpty,
+} from "@/src/components/admin/layout/admin-table";
+import { AdminTableActions } from "@/src/components/admin/layout/admin-table-actions";
+import { cn } from "@/lib/utils";
+
+export default function SectionTableList({
+    initialSections,
+}: {
+    initialSections: SectionResponse[];
+}) {
+    const router = useRouter();
     const [sections, setSections] = useState<SectionResponse[]>(initialSections);
     const [sectionToDelete, setSectionToDelete] = useState<SectionResponse | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -34,9 +62,17 @@ export default function SectionTableList({ initialSections }: { initialSections:
         setIsMounted(true);
     }, []);
 
+    useEffect(() => {
+        setSections(initialSections);
+    }, [initialSections]);
+
     const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+        useSensor(PointerSensor, {
+            activationConstraint: { distance: 5 },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
     );
 
     const handleDragEnd = async (event: DragEndEvent) => {
@@ -45,15 +81,16 @@ export default function SectionTableList({ initialSections }: { initialSections:
 
         const oldIndex = sections.findIndex((s) => s._id === active.id);
         const newIndex = sections.findIndex((s) => s._id === over.id);
+        if (oldIndex === -1 || newIndex === -1) return;
+
         const reorderedArray = arrayMove(sections, oldIndex, newIndex);
-        
         setSections(reorderedArray);
 
         const payload = reorderedArray.map((s, i) => ({ id: s._id, order: i + 1 }));
         const result = await reorderSectionsAction(payload);
-        
+
         if (!result.ok) {
-            toast.error("Error al guardar orden");
+            toast.error("Error al guardar el orden");
             setSections(initialSections);
         }
     };
@@ -63,87 +100,156 @@ export default function SectionTableList({ initialSections }: { initialSections:
         setIsDeleting(true);
         const result = await deleteSectionAction(sectionToDelete._id);
         setIsDeleting(false);
+
         if (result.ok) {
-            toast.success("Eliminado");
+            toast.success("Sección eliminada");
             setSections((prev) => prev.filter((s) => s._id !== sectionToDelete._id));
             setSectionToDelete(null);
         } else {
-            toast.error(result.error);
+            toast.error(result.error || "No se pudo eliminar la sección");
         }
     };
 
-    if (!isMounted) return null; // Previene error de hidratación
+    if (!isMounted) return null;
 
     return (
-        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <Table>
-                    <TableHeader className="bg-muted/40">
-                        <TableRow>
-                            <TableHead className="w-12"></TableHead>
-                            <TableHead>Título</TableHead>
-                            <TableHead>Slug</TableHead>
-                            <TableHead>Tipo</TableHead>
-                            <TableHead className="text-center">Elementos</TableHead>
-                            <TableHead className="text-center">Estado</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <SortableContext items={sections.map((s) => s._id)} strategy={verticalListSortingStrategy}>
-                        <TableBody>
-                            {sections.map((section) => (
-                                <SortableRow key={section._id} section={section} onDelete={() => setSectionToDelete(section)} />
-                            ))}
-                        </TableBody>
-                    </SortableContext>
-                </Table>
-            </DndContext>
+        <>
+            <div className="rounded-xl border border-slate-200 bg-white shadow-2xs overflow-hidden">
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                >
+                    <AdminTable>
+                        <AdminTableHead>
+                            <tr>
+                                <AdminTableHeaderCell width="40px" />
+                                <AdminTableHeaderCell>Título</AdminTableHeaderCell>
+                                <AdminTableHeaderCell>Slug</AdminTableHeaderCell>
+                                <AdminTableHeaderCell>Tipo</AdminTableHeaderCell>
+                                <AdminTableHeaderCell align="center">Elementos</AdminTableHeaderCell>
+                                <AdminTableHeaderCell align="center">Estado</AdminTableHeaderCell>
+                                <AdminTableHeaderCell align="right">Acciones</AdminTableHeaderCell>
+                            </tr>
+                        </AdminTableHead>
 
-            <Dialog open={!!sectionToDelete} onOpenChange={(open) => !open && setSectionToDelete(null)}>
+                        <tbody>
+                            {sections.length === 0 ? (
+                                <AdminTableEmpty
+                                    colSpan={7}
+                                    title="No hay secciones configuradas"
+                                    description="Crea tu primera sección usando el botón superior."
+                                />
+                            ) : (
+                                <SortableContext
+                                    items={sections.map((s) => s._id)}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    {sections.map((section) => (
+                                        <AdminTableRow
+                                            key={section._id}
+                                            id={section._id}
+                                            isDraggable
+                                        >
+                                            <AdminTableCell bold>
+                                                <span className="text-slate-900">{section.title}</span>
+                                            </AdminTableCell>
+
+                                            <AdminTableCell>
+                                                <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] text-slate-700">
+                                                    {section.slug}
+                                                </code>
+                                            </AdminTableCell>
+
+                                            <AdminTableCell>
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                                    {SECTION_TYPE_LABELS[section.type] ?? section.type}
+                                                </span>
+                                            </AdminTableCell>
+
+                                            <AdminTableCell align="center">
+                                                <span className="text-xs text-slate-600 font-medium tabular-nums">
+                                                    {section.blocks?.length || 0}
+                                                </span>
+                                            </AdminTableCell>
+
+                                            <AdminTableCell align="center">
+                                                <span
+                                                    className={cn(
+                                                        "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border",
+                                                        section.isActive
+                                                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                                            : "bg-slate-100 text-slate-600 border-slate-200"
+                                                    )}
+                                                >
+                                                    {section.isActive ? (
+                                                        <>
+                                                            <Eye className="w-3 h-3" /> Activo
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <EyeOff className="w-3 h-3" /> Inactivo
+                                                        </>
+                                                    )}
+                                                </span>
+                                            </AdminTableCell>
+
+                                            <AdminTableCell align="right">
+                                                <div className="flex items-center justify-end">
+                                                    <AdminTableActions
+                                                        actions={[
+                                                            {
+                                                                label: "Editar",
+                                                                icon: Edit2,
+                                                                onClick: () =>
+                                                                    router.push(`/admin/sections/${section._id}/edit`),
+                                                            },
+                                                            {
+                                                                label: "Eliminar",
+                                                                icon: Trash2,
+                                                                variant: "destructive",
+                                                                onClick: () => setSectionToDelete(section),
+                                                            },
+                                                        ]}
+                                                    />
+                                                </div>
+                                            </AdminTableCell>
+                                        </AdminTableRow>
+                                    ))}
+                                </SortableContext>
+                            )}
+                        </tbody>
+                    </AdminTable>
+                </DndContext>
+            </div>
+
+            {/* Modal de Eliminación */}
+            <Dialog
+                open={!!sectionToDelete}
+                onOpenChange={(open) => !open && setSectionToDelete(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>¿Confirmar eliminación?</DialogTitle>
-                        <DialogDescription>Se eliminará permanentemente: <strong>{sectionToDelete?.title}</strong></DialogDescription>
+                        <DialogDescription>
+                            Se eliminará permanentemente la sección:{" "}
+                            <strong>{sectionToDelete?.title}</strong>. Esta acción no se puede revertir.
+                        </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
-                        <DialogClose asChild><Button variant="outline">Cancelar</Button></DialogClose>
-                        <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancelar</Button>
+                        </DialogClose>
+                        <Button
+                            variant="destructive"
+                            onClick={confirmDelete}
+                            disabled={isDeleting}
+                        >
                             {isDeleting ? "Eliminando..." : "Confirmar"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
-    );
-}
-
-function SortableRow({ section, onDelete }: { section: SectionResponse; onDelete: () => void }) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section._id });
-    
-    const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : "auto" };
-
-    return (
-        <tr ref={setNodeRef} style={style} className="border-b hover:bg-muted/30">
-            <TableCell {...attributes} {...listeners} className="cursor-grab text-muted-foreground">
-                <GripVertical className="w-4 h-4" />
-            </TableCell>
-            <TableCell className="font-medium">{section.title}</TableCell>
-            <TableCell className="font-mono text-xs">{section.slug}</TableCell>
-            <TableCell><span className="text-xs bg-primary/10 px-2 py-1 rounded-full">{SECTION_TYPE_LABELS[section.type]}</span></TableCell>
-            <TableCell className="text-center">{section.blocks?.length || 0}</TableCell>
-            <TableCell className="text-center">
-                {section.isActive ? <span className="text-emerald-600 text-xs flex items-center justify-center"><Eye className="w-3 h-3 mr-1"/> Activo</span> : <span className="text-muted-foreground text-xs flex items-center justify-center"><EyeOff className="w-3 h-3 mr-1"/> Inactivo</span>}
-            </TableCell>
-            <TableCell className="text-right">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="w-4 h-4" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild><Link href={`/admin/sections/${section._id}/edit`}><Edit2 className="w-3.5 h-3.5 mr-2" /> Editar</Link></DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={onDelete} className="text-destructive"><Trash2 className="w-3.5 h-3.5 mr-2" /> Eliminar</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </TableCell>
-        </tr>
+        </>
     );
 }

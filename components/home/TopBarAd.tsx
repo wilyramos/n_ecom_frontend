@@ -8,7 +8,7 @@ import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaWhatsapp } from "react-icons/fa6";
 
 interface TopBarAdProps {
-    ads: TAdvertisement[]; // Recibe la lista completa de anuncios tipo barra
+    ads: TAdvertisement[];
 }
 
 const social = [
@@ -36,10 +36,10 @@ export default function TopBarAd({ ads }: TopBarAdProps) {
     const ContentWrapper = currentAd.linkTo ? Link : "div";
 
     return (
-        <div className="w-full h-8 bg-fg-secondary text-fg-inverse select-none overflow-hidden relative">
+        <div className="w-full h-8 bg-brand-silver text-brand-charcoal select-none overflow-hidden relative">
             <div className="w-full h-full max-w-7xl mx-auto px-3 grid grid-cols-12 items-center">
                 
-                {/* Contenedor Animado: Toma 9 columnas en móvil para dar espacio a las redes */}
+                {/* Contenedor Animado */}
                 <div className="col-span-9 sm:col-span-12 flex sm:justify-center items-center overflow-hidden">
                     <ContentWrapper
                         key={index}
@@ -48,11 +48,11 @@ export default function TopBarAd({ ads }: TopBarAdProps) {
                             currentAd.linkTo ? "hover:underline cursor-pointer group" : ""
                         }`}
                     >
-                        <span className="text-[8px] md:text-xs truncate font-extrabold block">
+                        <span className="text-[8px] md:text-xs truncate font-extrabold block text-brand-silver-border">
                             {currentAd.title}
                         </span>
                         {currentAd.subtitle && (
-                            <span className="hidden sm:inline opacity-90 font-medium border-l border-white/20 pl-2 shrink-0">
+                            <span className="hidden sm:inline opacity-80 font-medium border-l border-brand-charcoal/20 pl-2 shrink-0">
                                 {currentAd.subtitle}
                             </span>
                         )}
@@ -62,7 +62,7 @@ export default function TopBarAd({ ads }: TopBarAdProps) {
                     </ContentWrapper>
                 </div>
 
-                {/* Redes Sociales: Toma 3 columnas fijas a la derecha en móvil, pasa a absoluta en desktop */}
+                {/* Redes Sociales */}
                 <div className="col-span-3 sm:absolute sm:right-4 md:right-8 flex items-center justify-end gap-1.5 z-10">
                     {social.map((item) => (
                         <Link
@@ -70,7 +70,9 @@ export default function TopBarAd({ ads }: TopBarAdProps) {
                             href={item.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="h-4.5 w-4.5 rounded-full flex items-center justify-center text-fg-inverse/70 transition-colors hover:text-fg-inverse hover:bg-white/10 border border-white/10 cursor-pointer shrink-0"
+                            className="h-4.5 w-4.5 rounded-full
+                            text-brand-silver-border hover:text-brand-charcoal hover:bg-brand-silver-border/10 transition-colors duration-200
+                            cursor-pointer shrink-0"
                             aria-label={item.label}
                         >
                             {item.icon}

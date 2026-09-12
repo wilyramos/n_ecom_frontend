@@ -40,7 +40,7 @@ export function AdminStatusIndicator({
   return (
     <div
       className={cn(
-        "hidden md:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-100/80 border border-slate-200/60 text-xs font-medium text-slate-600",
+        "hidden md:flex items-center gap-2 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-medium text-slate-600 shadow-2xs",
         className
       )}
     >

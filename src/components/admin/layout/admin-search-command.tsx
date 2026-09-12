@@ -39,7 +39,7 @@ export function AdminSearchCommand() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 rounded-lg transition-colors w-44 sm:w-64 border border-slate-200/60"
+        className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 rounded-lg transition-colors w-44 sm:w-64 border border-slate-200 cursor-pointer"
         type="button"
       >
         <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />

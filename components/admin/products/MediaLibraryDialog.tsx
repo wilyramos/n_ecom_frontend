@@ -1,24 +1,29 @@
-//File: frontend/components/admin/products/MediaLibraryDialog.tsx
+// File: frontend/components/admin/products/MediaLibraryDialog.tsx
+"use client";
 
-"use client"
-import { useState, useCallback, useEffect } from "react"
-import { useDropzone } from "react-dropzone"
+import { useState, useCallback, useEffect } from "react";
+import { useDropzone } from "react-dropzone";
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle,
-    DialogFooter, DialogTrigger, DialogClose
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import Image from "next/image"
-import { CheckCircle2, UploadCloud, ImageIcon, Loader2 } from "lucide-react"
-import { uploadImage } from "@/actions/product/upload-image-action"
-import { toast } from "sonner"
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogTrigger,
+    DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
+import { CheckCircle2, UploadCloud, ImageIcon, Loader2 } from "lucide-react";
+import { uploadImage } from "@/actions/product/upload-image-action";
+import { toast } from "sonner";
 
 interface MediaLibraryProps {
-    selectedImages: string[];      // Imágenes seleccionadas actualmente
-    globalImagesPool: string[];    // El pool completo de imágenes disponibles
+    selectedImages: string[];
+    globalImagesPool: string[];
     onConfirmSelection: (images: string[]) => void;
-    onUploadSuccess: (newImages: string[]) => void; // Para avisar al padre de nuevas fotos
+    onUploadSuccess: (newImages: string[]) => void;
     allowMultiple?: boolean;
     triggerLabel?: string;
     triggerVariant?: "default" | "outline" | "ghost" | "secondary" | "destructive";
@@ -32,53 +37,47 @@ export default function MediaLibraryDialog({
     onUploadSuccess,
     allowMultiple = true,
     triggerLabel = "Gestionar Multimedia",
-    triggerVariant = "default",
-    size = "sm"
+    triggerVariant = "outline",
+    size = "sm",
 }: MediaLibraryProps) {
     const [tempSelection, setTempSelection] = useState<string[]>(selectedImages);
     const [isUploading, setIsUploading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
-    // Sincronizar selección cuando abrimos el diálogo
     useEffect(() => {
         setTempSelection(selectedImages);
     }, [selectedImages]);
 
-    const onDrop = useCallback(async (files: File[]) => {
-        setIsUploading(true);
-        const formData = new FormData();
+    const onDrop = useCallback(
+        async (files: File[]) => {
+            setIsUploading(true);
+            const formData = new FormData();
 
-        // Validar cantidad total
-        const totalImages = tempSelection.length + files.length;
-        if (totalImages > 15) {
-            toast.error(`No se pueden subir más de 15 imágenes. Tienes ${tempSelection.length} seleccionadas.`);
-            setIsUploading(false);
-            return;
-        }
+            const totalImages = tempSelection.length + files.length;
+            if (totalImages > 15) {
+                toast.error(`No se pueden subir más de 15 imágenes. Tienes ${tempSelection.length} seleccionadas.`);
+                setIsUploading(false);
+                return;
+            }
 
-        files.forEach(f => formData.append("images", f));
+            files.forEach((f) => formData.append("images", f));
 
-        try {
-            const result = await uploadImage(formData);
-
-            // 1. Informamos al padre sobre las nuevas URLs
-            onUploadSuccess(result.images);
-
-            // 2. Las añadimos a la selección actual del diálogo
-            setTempSelection(prev =>
-                allowMultiple
-                    ? [...prev, ...result.images]
-                    : [result.images[0]]
-            );
-
-            toast.success(`${result.images.length} imagen(es) subida(s) correctamente`);
-        } catch (error) {
-            console.error("Error al subir imágenes:", error);
-            toast.error("Error al subir imágenes. Intenta de nuevo.");
-        } finally {
-            setIsUploading(false);
-        }
-    }, [onUploadSuccess, allowMultiple, tempSelection.length]);
+            try {
+                const result = await uploadImage(formData);
+                onUploadSuccess(result.images);
+                setTempSelection((prev) =>
+                    allowMultiple ? [...prev, ...result.images] : [result.images[0]]
+                );
+                toast.success(`${result.images.length} imagen(es) subida(s) correctamente`);
+            } catch (error) {
+                console.error("Error al subir imágenes:", error);
+                toast.error("Error al subir imágenes. Intenta de nuevo.");
+            } finally {
+                setIsUploading(false);
+            }
+        },
+        [onUploadSuccess, allowMultiple, tempSelection.length]
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -92,15 +91,15 @@ export default function MediaLibraryDialog({
             "image/heic": [".heic"],
             "image/heif": [".heif"],
             "image/bmp": [".bmp"],
-            "image/tiff": [".tiff", ".tif"]
+            "image/tiff": [".tiff", ".tif"],
         },
         disabled: isUploading,
-        multiple: true
+        multiple: true,
     });
 
     const toggleSelection = (url: string) => {
-        setTempSelection(prev => {
-            if (prev.includes(url)) return prev.filter(i => i !== url);
+        setTempSelection((prev) => {
+            if (prev.includes(url)) return prev.filter((i) => i !== url);
             return allowMultiple ? [...prev, url] : [url];
         });
     };
@@ -111,9 +110,9 @@ export default function MediaLibraryDialog({
     };
 
     const sizeClasses = {
-        sm: "w-4 h-4",
-        md: "w-5 h-5",
-        lg: "w-6 h-6"
+        sm: "w-3.5 h-3.5",
+        md: "w-4 h-4",
+        lg: "w-5 h-5",
     };
 
     return (
@@ -121,76 +120,85 @@ export default function MediaLibraryDialog({
             <DialogTrigger asChild>
                 <Button
                     variant={triggerVariant}
-                    className="gap-2"
+                    size="sm"
+                    className="gap-1.5 text-xs border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
                     type="button"
                 >
                     <ImageIcon className={sizeClasses[size]} />
-                    {triggerLabel}
+                    <span>{triggerLabel}</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0">
-                <DialogHeader className="p-6 pb-0">
-                    <DialogTitle className="text-xl">Biblioteca de Medios</DialogTitle>
-                    <p className="text-sm text-muted-foreground">
+            <DialogContent className="max-w-3xl h-[80vh] flex flex-col p-0 border-slate-200 bg-white shadow-xl rounded-2xl overflow-hidden">
+                <DialogHeader className="p-5 pb-3 border-b border-slate-100">
+                    <DialogTitle className="text-base font-semibold text-slate-900">
+                        Biblioteca Multimedia
+                    </DialogTitle>
+                    <p className="text-xs text-slate-500">
                         {allowMultiple
-                            ? "Sube nuevas fotos o selecciona las existentes."
-                            : "Selecciona una imagen."
-                        }
+                            ? "Carga archivos o selecciona las fotos que deseas asociar."
+                            : "Selecciona una imagen del catálogo."}
                     </p>
                 </DialogHeader>
 
-                <div className="flex-1 flex flex-col overflow-hidden p-6 gap-6">
-                    {/* Zona de Carga */}
+                <div className="flex-1 flex flex-col overflow-hidden p-5 gap-4">
+                    {/* Zona Dropzone */}
                     <div
                         {...getRootProps()}
-                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
-                        ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/20 hover:border-primary/50"}
-                        ${isUploading ? "opacity-50 pointer-events-none" : ""}`}
+                        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${
+                            isDragActive
+                                ? "border-slate-900 bg-slate-50"
+                                : "border-slate-200 hover:border-slate-400 bg-slate-50/50"
+                        } ${isUploading ? "opacity-60 pointer-events-none" : ""}`}
                     >
                         <input {...getInputProps()} />
                         {isUploading ? (
-                            <>
-                                <Loader2 className="w-10 h-10 mx-auto mb-2 text-muted-foreground animate-spin" />
-                                <p className="font-medium text-sm">Subiendo archivos...</p>
-                            </>
+                            <div className="flex flex-col items-center gap-1.5">
+                                <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
+                                <p className="text-xs font-medium text-slate-600">Subiendo imágenes...</p>
+                            </div>
                         ) : (
-                            <>
-                                <UploadCloud className="w-10 h-10 mx-auto mb-2 text-muted-foreground" />
-                                <p className="font-medium text-sm">Arrastra imágenes aquí o haz clic para buscar</p>
-                            </>
+                            <div className="flex flex-col items-center gap-1.5">
+                                <UploadCloud className="w-8 h-8 text-slate-400" />
+                                <p className="text-xs font-medium text-slate-700">
+                                    Arrastra imágenes aquí o haz clic para examinar
+                                </p>
+                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF</p>
+                            </div>
                         )}
                     </div>
 
-                    {/* Galería de Selección */}
-                    <ScrollArea className="flex-1 border rounded-lg bg-muted/5 p-4">
+                    {/* Selector de imágenes */}
+                    <ScrollArea className="flex-1 border border-slate-200 rounded-xl bg-slate-50/30 p-3">
                         {globalImagesPool.length === 0 ? (
-                            <div className="flex items-center justify-center h-full text-muted-foreground">
-                                <p className="text-sm">No hay imágenes disponibles. Sube una para comenzar.</p>
+                            <div className="flex items-center justify-center h-48 text-slate-400 text-xs">
+                                No hay imágenes disponibles en este producto.
                             </div>
                         ) : (
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                                {globalImagesPool.map(url => {
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+                                {globalImagesPool.map((url) => {
                                     const isSelected = tempSelection.includes(url);
                                     return (
                                         <div
                                             key={url}
                                             onClick={() => toggleSelection(url)}
-                                            className={`group relative aspect-square cursor-pointer rounded-lg overflow-hidden border-2 transition-all
-                                            ${isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-muted-foreground/40'}`}
+                                            className={`group relative aspect-square cursor-pointer rounded-lg overflow-hidden border-2 bg-white transition-all ${
+                                                isSelected
+                                                    ? "border-slate-900 ring-2 ring-slate-900/10"
+                                                    : "border-transparent hover:border-slate-300"
+                                            }`}
                                         >
                                             <Image
                                                 src={url}
                                                 alt="Media"
                                                 fill
-                                                className="object-cover"
+                                                className="object-contain"
                                                 unoptimized
                                             />
                                             {isSelected && (
-                                                <div className="absolute top-1 right-1 bg-primary text-white rounded-full p-0.5 shadow-lg">
-                                                    <CheckCircle2 size={16} />
+                                                <div className="absolute top-1 right-1 bg-slate-900 text-white rounded-full p-0.5 shadow-sm">
+                                                    <CheckCircle2 size={14} />
                                                 </div>
                                             )}
-                                            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </div>
                                     );
                                 })}
@@ -199,19 +207,28 @@ export default function MediaLibraryDialog({
                     </ScrollArea>
                 </div>
 
-                <DialogFooter className="p-6 bg-muted/20 border-t">
-                    <div className="flex items-center justify-between w-full">
-                        <p className="text-xs font-medium text-muted-foreground">
-                            {tempSelection.length} {allowMultiple ? "imágenes" : "imagen"} seleccionada{tempSelection.length !== 1 ? "s" : ""}
+                <DialogFooter className="p-4 bg-slate-50 border-t border-slate-200">
+                    <div className="flex items-center justify-between w-full gap-2">
+                        <p className="text-xs text-slate-500">
+                            {tempSelection.length} seleccionada{tempSelection.length !== 1 ? "s" : ""}
                         </p>
-                        <div className="flex gap-2">
+                        <div className="flex items-center gap-2">
                             <DialogClose asChild>
-                                <Button variant="ghost" type="button">Cancelar</Button>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-xs text-slate-600 hover:text-slate-900"
+                                >
+                                    Cancelar
+                                </Button>
                             </DialogClose>
                             <Button
+                                type="button"
+                                size="sm"
                                 onClick={handleConfirm}
                                 disabled={tempSelection.length === 0}
-                                type="button"
+                                className="text-xs bg-slate-900 hover:bg-slate-800 text-white"
                             >
                                 Aplicar Selección
                             </Button>

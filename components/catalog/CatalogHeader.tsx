@@ -19,10 +19,10 @@ export default function CatalogHeader({
     breadcrumbs,
 }: Props) {
     return (
-        <div className="w-full flex flex-col gap-6 py-6 md:py-8 border-b border-fg-secondary">
+        <div className="w-full flex flex-col gap-6 py-6 md:py-8 border-b border-brand-silver-border">
             {/* Breadcrumbs */}
             <nav aria-label="Breadcrumb" className="flex items-center">
-                <ol className="flex items-center flex-wrap gap-x-1.5 text-sm text-[var(--color-fg-secondary)]">
+                <ol className="flex items-center flex-wrap gap-x-1.5 text-sm text-brand-gris">
                     {breadcrumbs.map((crumb, index) => {
                         const isLast = index === breadcrumbs.length - 1;
                         const isFirst = index === 0;
@@ -38,7 +38,7 @@ export default function CatalogHeader({
 
                                 {isLast ? (
                                     <span
-                                        className="text-fg-secondary font-medium"
+                                        className="text-brand-charcoal font-medium"
                                         aria-current="page"
                                     >
                                         {crumb.label}
@@ -46,12 +46,11 @@ export default function CatalogHeader({
                                 ) : (
                                     <Link
                                         href={crumb.href}
-                                        className="flex items-center gap-1 text-[var(--color-fg-secondary)] hover:text-[var(--color-fg-primary)] transition-colors duration-200"
+                                        className="flex items-center gap-1 text-brand-gris hover:text-brand-charcoal transition-colors duration-200"
                                     >
                                         {isFirst && (
                                             <Home className="w-3.5 h-3.5" />
                                         )}
-
                                         {crumb.label}
                                     </Link>
                                 )}
@@ -64,11 +63,11 @@ export default function CatalogHeader({
             {/* Title */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-baseline gap-3">
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-fg-secondary uppercase">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-brand-charcoal uppercase">
                         {title}
                     </h1>
 
-                    <div className="flex items-center gap-1.5 text-xs text-[var(--color-fg-secondary)] whitespace-nowrap">
+                    <div className="flex items-center gap-1.5 text-xs text-brand-gris whitespace-nowrap">
                         <span>({totalProducts.toLocaleString()})</span>
                     </div>
                 </div>

@@ -35,23 +35,23 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
             <DialogTitle className="sr-only">{ad.title}</DialogTitle>
 
             <DialogContent
-                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background rounded-2xl focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none"
+                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background border border-brand-silver-border rounded-2xl focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none"
             >
-                <div className="flex flex-col p-4 sm:p-5 bg-background">
+                <div className="flex flex-col p-1 md:px-4 md:py-2  bg-background ">
 
                     <div className="text-center space-y-0.5 shrink-0">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-fg-muted leading-snug">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-brand-gris leading-snug">
                             {ad.title}
                         </h3>
                         {ad.subtitle && (
-                            <p className="text-[11px] sm:text-xs text-muted-foreground font-medium leading-relaxed">
+                            <p className="text-[11px] sm:text-xs text-brand-gris font-medium leading-relaxed">
                                 {ad.subtitle}
                             </p>
                         )}
                     </div>
 
                     {ad.imageUrl && (
-                        <div className="relative w-full aspect-square rounded-lg overflow-hidden ">
+                        <div className="relative w-full aspect-square rounded-lg overflow-hidden">
                             <Image
                                 src={ad.imageUrl}
                                 alt={ad.title}
@@ -77,7 +77,7 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
                         ) : (
                             <Button
                                 size="sm"
-                                variant="accent"
+                                variant="secondary"
                                 className="w-full text-xs font-semibold cursor-pointer focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none focus:shadow-none"
                                 onClick={() => handleOpenChange(false)}
                             >

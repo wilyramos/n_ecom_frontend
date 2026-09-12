@@ -1,10 +1,10 @@
-// frontend/src/components/admin/layout/admin-page-header.tsx
+// File: frontend/src/components/admin/layout/admin-page-header.tsx
 import React from "react";
 import { cn } from "@/lib/utils";
 
 interface AdminPageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
   breadcrumbs?: React.ReactNode;
   actions?: React.ReactNode;
   bordered?: boolean;
@@ -38,10 +38,10 @@ export function AdminPageHeader({
           </h1>
         )}
         {description && (
-          <p className="text-sm font-normal text-slate-500">{description}</p>
+          <div className="text-sm font-normal text-slate-500">{description}</div>
         )}
       </div>
-      
+
       {actions && (
         <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto ml-auto">
           {actions}

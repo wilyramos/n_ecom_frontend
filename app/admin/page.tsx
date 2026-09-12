@@ -39,8 +39,8 @@ interface GroupSection {
 const groups: GroupSection[] = [
   {
     title: "Operaciones & Ventas",
-    colorClass: "border-admin-info-border",
-    iconBgClass: "bg-admin-info-muted text-admin-info-foreground",
+    colorClass: "border-slate-200 hover:border-slate-300",
+    iconBgClass: "bg-sky-50 text-sky-600",
     items: [
       { href: "/admin/pedidos", label: "Pedidos Ecommerce", desc: "Gestión de compras online y pasarelas", icon: Truck, tag: "BNPL" },
       { href: "/admin/tickets-v2", label: "Comprobantes", desc: "Boletas y facturas electrónicas", icon: ReceiptText },
@@ -49,8 +49,8 @@ const groups: GroupSection[] = [
   },
   {
     title: "Catálogo & Stock",
-    colorClass: "border-admin-success-border",
-    iconBgClass: "bg-admin-success-muted text-admin-success-foreground",
+    colorClass: "border-slate-200 hover:border-slate-300",
+    iconBgClass: "bg-emerald-50 text-emerald-600",
     items: [
       { href: "/admin/products", label: "Productos", desc: "Catálogo, precios e inventario", icon: Boxes },
       { href: "/admin/products/category", label: "Categorías", desc: "Estructura del catálogo", icon: Tags },
@@ -60,8 +60,8 @@ const groups: GroupSection[] = [
   },
   {
     title: "Marketing & Web",
-    colorClass: "border-admin-warning-border",
-    iconBgClass: "bg-admin-warning-muted text-admin-warning-foreground",
+    colorClass: "border-slate-200 hover:border-slate-300",
+    iconBgClass: "bg-amber-50 text-amber-600",
     items: [
       { href: "/admin/slider", label: "Banners", desc: "Sliders de portada y promociones", icon: Images },
       { href: "/admin/sections", label: "Secciones", desc: "Bloques destacados de la Home", icon: Layers },
@@ -71,8 +71,8 @@ const groups: GroupSection[] = [
   },
   {
     title: "Sistema & Accesos",
-    colorClass: "border-admin-accent-border",
-    iconBgClass: "bg-admin-accent-muted text-admin-accent",
+    colorClass: "border-slate-200 hover:border-slate-300",
+    iconBgClass: "bg-indigo-50 text-indigo-600",
     items: [
       { href: "/admin/users", label: "Usuarios", desc: "Permisos y credenciales", icon: Users },
       { href: "/staff/attendance", label: "Asistencia", desc: "Marcación de colaboradores", icon: Fingerprint, isExternal: true },
@@ -92,7 +92,7 @@ export default async function AdminPage() {
       <div className="space-y-6">
         {groups.map((group) => (
           <section key={group.title} className="space-y-2.5">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-admin-fg-muted">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               {group.title}
             </h2>
 
@@ -104,7 +104,7 @@ export default async function AdminPage() {
                     key={item.href}
                     href={item.href}
                     target={item.isExternal ? "_blank" : undefined}
-                    className={`group relative flex items-center gap-3 p-3 rounded-xl border bg-admin-card hover:shadow-xs transition-all ${group.colorClass}`}
+                    className={`group relative flex items-center gap-3 p-3 rounded-xl border bg-white hover:shadow-sm transition-all ${group.colorClass}`}
                   >
                     <div className={`h-9 w-9 rounded-lg flex items-center justify-center shrink-0 ${group.iconBgClass}`}>
                       <Icon className="h-4 w-4" />
@@ -112,21 +112,21 @@ export default async function AdminPage() {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-semibold text-admin-fg-heading group-hover:text-primary truncate">
+                        <span className="text-xs font-semibold text-slate-900 group-hover:text-slate-950 truncate">
                           {item.label}
                         </span>
                         {item.tag && (
-                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-admin-subtle text-admin-fg-body">
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700">
                             {item.tag}
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-admin-fg-muted truncate">
+                      <p className="text-[11px] text-slate-500 truncate">
                         {item.desc}
                       </p>
                     </div>
 
-                    <ArrowUpRight className="h-3.5 w-3.5 text-admin-fg-subtle opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                    <ArrowUpRight className="h-3.5 w-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                   </Link>
                 );
               })}

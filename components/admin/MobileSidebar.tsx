@@ -1,3 +1,5 @@
+// File: frontend/components/admin/MobileSidebar.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -65,8 +67,8 @@ export default function MobileSidebar({ user }: { user: User }) {
 
     return (
         <Sheet>
-            <SheetTrigger className="p-2 rounded-md hover:bg-zinc-100 transition-colors">
-                <Menu className="h-6 w-6" />
+            <SheetTrigger className="p-2 rounded-md hover:bg-slate-100 transition-colors">
+                <Menu className="h-6 w-6 text-slate-700" />
             </SheetTrigger>
 
             <SheetContent side="left" className="p-0 w-64 bg-white">
@@ -74,9 +76,9 @@ export default function MobileSidebar({ user }: { user: User }) {
                     <SheetTitle>Menú de navegación</SheetTitle>
                 </VisuallyHidden>
 
-                <div className="p-6 border-b border-zinc-100 bg-zinc-50/50">
-                    <p className="font-bold text-sm truncate text-zinc-900 uppercase">{user?.nombre}</p>
-                    <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
+                <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+                    <p className="font-bold text-sm truncate text-slate-900 uppercase">{user?.nombre}</p>
+                    <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                 </div>
 
                 <nav className="p-3 space-y-1">
@@ -90,9 +92,9 @@ export default function MobileSidebar({ user }: { user: User }) {
                                 <div key={label} className="space-y-1">
                                     <button
                                         onClick={() => toggleMenu(label)}
-                                        className="w-full flex items-center gap-3 py-2 px-3 rounded-md text-zinc-600 hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-colors"
+                                        className="w-full flex items-center gap-3 py-2 px-3 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                                     >
-                                        <Icon className="h-5 w-5" />
+                                        <Icon className="h-5 w-5 text-slate-500" />
                                         <span className="flex-1 text-sm font-medium text-left">{label}</span>
                                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                                     </button>
@@ -103,7 +105,7 @@ export default function MobileSidebar({ user }: { user: User }) {
                                                 <Link
                                                     key={sub.href}
                                                     href={sub.href}
-                                                    className="block py-1.5 px-2 text-sm text-zinc-500 hover:text-[var(--color-accent-vivid)] transition-colors"
+                                                    className="block py-1.5 px-2 text-sm text-slate-500 hover:text-slate-900 transition-colors"
                                                 >
                                                     {sub.label}
                                                 </Link>
@@ -123,11 +125,11 @@ export default function MobileSidebar({ user }: { user: User }) {
                                 className={cn(
                                     "flex items-center gap-3 py-2 px-3 rounded-md transition-all text-sm font-medium",
                                     isActive 
-                                        ? "bg-[var(--color-accent-vivid)] text-white shadow-md" 
-                                        : "text-zinc-600 hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)]"
+                                        ? "bg-slate-900 text-white shadow-md" 
+                                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                                 )}
                             >
-                                <Icon className={cn("h-5 w-5", isActive ? "text-white" : "text-zinc-400")} />
+                                <Icon className={cn("h-5 w-5", isActive ? "text-white" : "text-slate-400")} />
                                 <span>{label}</span>
                             </Link>
                         );

@@ -5,7 +5,7 @@ import type { KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X, Plus, ListTree } from "lucide-react";
 
 type SpecItem = { key: string; value: string };
 
@@ -34,7 +34,13 @@ export default function SpecificationsSection({ initial = [] }: Props) {
         setItems(newItems);
     };
 
-    const removeRow = (idx: number) => setItems(items.filter((_, i) => i !== idx));
+    const removeRow = (idx: number) => {
+        if (items.length === 1) {
+            setItems([{ key: "", value: "" }]);
+            return;
+        }
+        setItems(items.filter((_, i) => i !== idx));
+    };
 
     const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -84,37 +90,57 @@ export default function SpecificationsSection({ initial = [] }: Props) {
     };
 
     return (
-        <div className="space-y-3 p-4 border border-border rounded-xl bg-background">
-            <Label className="text-sm font-semibold">Especificaciones</Label>
-
-            {items.map((item, i) => (
-                <div key={i} className="flex gap-2">
-                    <Input
-                        placeholder="Clave"
-                        className="w-1/2 font-medium"
-                        value={item.key}
-                        onChange={(e) => handleChange(e, i, "key")}
-                        onPaste={handlePaste}
-                        onKeyDown={(e) => handleKeyDown(e, i)}
-                    />
-                    <Input
-                        placeholder="Valor"
-                        className="w-1/2"
-                        value={item.value}
-                        onChange={(e) => handleChange(e, i, "value")}
-                        onKeyDown={(e) => handleKeyDown(e, i)}
-                    />
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeRow(i)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
-                    >
-                        <X className="h-4 w-4" />
-                    </Button>
+        <div className="p-4 border border-slate-200 rounded-xl bg-white shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <ListTree className="w-4 h-4 text-slate-500" />
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                        Especificaciones Técnicas
+                    </Label>
                 </div>
-            ))}
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => addRow()}
+                    className="h-7 px-2 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                >
+                    <Plus className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                    <span>Agregar fila</span>
+                </Button>
+            </div>
+
+            <div className="space-y-2">
+                {items.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                        <Input
+                            placeholder="Propiedad"
+                            className="w-1/2 font-medium"
+                            value={item.key}
+                            onChange={(e) => handleChange(e, i, "key")}
+                            onPaste={handlePaste}
+                            onKeyDown={(e) => handleKeyDown(e, i)}
+                        />
+                        <Input
+                            placeholder="Valor"
+                            className="w-1/2"
+                            value={item.value}
+                            onChange={(e) => handleChange(e, i, "value")}
+                            onKeyDown={(e) => handleKeyDown(e, i)}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeRow(i)}
+                            className="h-9 w-9 text-slate-400 hover:text-rose-600 hover:bg-rose-50 shrink-0 rounded-lg transition-colors cursor-pointer"
+                            title="Eliminar fila"
+                        >
+                            <X className="h-3.5 w-3.5" />
+                        </Button>
+                    </div>
+                ))}
+            </div>
 
             <input type="hidden" name="especificaciones" value={jsonString} />
         </div>

@@ -1,6 +1,5 @@
 // File: app/(admin)/admin/slider/page.tsx
 import { SliderService } from "@/src/services/slider-service";
-import AdminPageWrapper  from "@/components/admin/AdminPageWrapper";
 import NuevoBanner       from "@/components/admin/slider/NuevoBanner";
 import SliderFilters     from "@/components/admin/slider/SliderFilters";
 import SliderTable       from "@/components/admin/slider/SliderTable";
@@ -11,6 +10,7 @@ interface SearchParams {
     limit?:    string;
     search?:   string;
     isActive?: string;
+    layout?:   string;
 }
 
 interface PageProps {
@@ -20,9 +20,10 @@ interface PageProps {
 export default async function SliderPage({ searchParams }: PageProps) {
     const params = await searchParams;
 
-    const page    = Math.max(1, Number(params.page  ?? 1));
-    const limit   = Math.max(1, Number(params.limit ?? 10));
-    const search  = params.search?.trim() || undefined;
+    const page   = Math.max(1, Number(params.page ?? 1));
+    const limit  = Math.max(1, Number(params.limit ?? 10));
+    const search = params.search?.trim() || undefined;
+    const layout = params.layout?.trim() || undefined;
     const isActive =
         params.isActive === "true"  ? true  :
         params.isActive === "false" ? false :
@@ -33,27 +34,37 @@ export default async function SliderPage({ searchParams }: PageProps) {
         limit,
         search,
         isActive,
+        ...(layout ? { layout } : {}),
     });
 
     return (
-        <AdminPageWrapper
-            title="Slider Banners"
-            showBackButton={false}
-            actions={<NuevoBanner />}
-        >
+        <div className="space-y-6 p-6">
+            {/* Header directo */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                        Slider Banners
+                    </h1>
+                   
+                </div>
+                <NuevoBanner />
+            </div>
+
+            {/* Contenido principal */}
             <div className="space-y-5">
                 <SliderFilters
                     filters={{
                         search:   params.search,
                         isActive: params.isActive,
+                        layout:   params.layout,
                     }}
                 />
 
                 <SliderTable banners={banners} />
 
                 {total > 0 && (
-                    <div className="flex flex-col items-center gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
-                        <p className="text-xs text-[var(--color-text-tertiary)] uppercase tracking-wider">
+                    <div className="flex flex-col items-center gap-3 pt-4 border-t border-slate-200">
+                        <p className="text-xs uppercase tracking-wider text-slate-400">
                             Mostrando {banners.length} de {total} banners
                         </p>
                         <Pagination
@@ -65,6 +76,6 @@ export default async function SliderPage({ searchParams }: PageProps) {
                     </div>
                 )}
             </div>
-        </AdminPageWrapper>
+        </div>
     );
 }

@@ -12,18 +12,16 @@ export default function NavBar() {
         <NavBarClient>
             <div
                 id="navbar-fixed"
-                className="h-18 flex flex-col justify-center text-fg-primary bg-surface-primary border-b border-border-default transition-colors duration-300"
+                className="relative h-14 flex flex-col justify-center text-brand-charcoal bg-background border-b border-brand-silver-border transition-colors duration-300"
             >
                 <div className="max-w-7xl w-full mx-auto flex items-center justify-between md:justify-start px-4 md:px-6 relative h-full">
 
                     {/* Mobile: Logo centrado */}
                     <div className="md:hidden absolute left-1/2 top-0 bottom-0 flex items-center justify-center -ml-16">
-                        {/* Cambiar -translate-x-1/2 por -ml-[50%] del ancho */}
                         <Link href="/">
                             <Logo
                                 color="black"
                                 className="h-8 w-32"
-                                // Añadir estilos inline para Safari
                                 style={{
                                     WebkitFontSmoothing: 'antialiased',
                                     willChange: 'transform',
@@ -53,7 +51,7 @@ export default function NavBar() {
                         </div>
 
                         {/* Separador sutil visible en desktop */}
-                        <div className="hidden md:block h-5 w-px bg-border-default" />
+                        <div className="hidden md:block h-5 w-px bg-brand-silver-border" />
 
                         {/* Grupo de Iconos de Acción */}
                         <div className="flex items-center gap-1 md:gap-2">
@@ -61,10 +59,10 @@ export default function NavBar() {
 
                             <Link
                                 href="/auth/registro"
-                                className="hidden md:flex items-center text-fg-muted rounded-full transition-colors duration-200"
+                                className="hidden md:flex items-center text-brand-gris hover:text-brand-charcoal rounded-full transition-colors duration-200"
                                 aria-label="Cuenta"
                             >
-                                <div className="hover:bg-fg-action rounded-full p-2 transition-colors duration-200">
+                                <div className="hover:bg-brand-action-muted rounded-full p-2 transition-colors duration-200">
                                     <HiOutlineUserCircle className="h-6 w-6" />
                                 </div>
                             </Link>

@@ -14,7 +14,7 @@ export default function HeaderReviews({ title, viewAllHref }: Props) {
         <div className="w-full mb-4 select-none flex items-center justify-between gap-2">
 
             {/* Título */}
-            <h2 className="text-lg md:text-xl font-medium text-fg-muted">
+            <h2 className="text-lg md:text-xl font-medium text-brand-gris">
                 {title}
             </h2>
 
@@ -24,16 +24,18 @@ export default function HeaderReviews({ title, viewAllHref }: Props) {
                     href={viewAllHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-default bg-surface-primary transition-colors whitespace-nowrap shrink-0"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-silver-border bg-background hover:bg-brand-silver-border/40 transition-colors whitespace-nowrap shrink-0 group"
                 >
                     {/* Texto desktop */}
-                    <span className="hidden md:inline text-xs font-medium text-fg-muted ">
+                    <span className="hidden md:inline text-xs font-medium text-brand-gris group-hover:text-brand-charcoal transition-colors">
                         Ver reseñas
                     </span>
+
                     {/* Texto mobile */}
-                    <span className="md:hidden text-xs font-medium text-fg-secondary hover:text-fg-primary">
+                    <span className="md:hidden text-xs font-medium text-brand-gris group-hover:text-brand-charcoal transition-colors">
                         Ver
                     </span>
+
                     {/* Ícono externo */}
                     <svg
                         width="11"
@@ -41,7 +43,7 @@ export default function HeaderReviews({ title, viewAllHref }: Props) {
                         viewBox="0 0 12 12"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="text-fg-muted shrink-0"
+                        className="text-brand-gris group-hover:text-brand-charcoal transition-colors shrink-0"
                     >
                         <path
                             d="M2 10L10 2M10 2H5M10 2V7"

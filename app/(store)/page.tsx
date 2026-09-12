@@ -60,9 +60,9 @@ export default function HomePage() {
 
             </section>
 
-             <div className="">
-                        <FeatureCards />
-                </div>
+            <div className="">
+                <FeatureCards />
+            </div>
 
             {/* Ajustamos el margen superior para que no choque en móviles */}
             <section>
@@ -76,7 +76,7 @@ export default function HomePage() {
             <section>
                 <ProductosDestacados />
             </section>
-{/* 
+            {/* 
             <section className="my-5">
                 <BrandsList />
             </section> */}

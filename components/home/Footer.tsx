@@ -1,3 +1,4 @@
+// File: frontend/components/navigation/Footer.tsx
 "use client";
 
 import Link from "next/link";
@@ -23,14 +24,14 @@ const navigation = {
 
 export default function Footer() {
     return (
-        <footer className="relative overflow-hidden border-t border-border-default bg-fg-secondary/50 text-fg-primary">
+        <footer className="relative overflow-hidden border-t border-brand-silver-border bg-brand-silver/20 text-brand-charcoal">
             <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
                 <div className="grid gap-10 lg:grid-cols-[1fr_1.5fr]">
                     <div className="flex flex-col gap-6">
                         <div className="w-32">
-                            {/* <Logo color="white" /> */}
+                            {/* <Logo color="black" /> */}
                         </div>
-                        <p className="max-w-xs text-xs leading-5 text-fg-primary">
+                        <p className="max-w-xs text-xs leading-5 text-brand-gris">
                             Smartphones, accesorios y dispositivos cuidadosamente seleccionados para quienes valoran diseño, rendimiento y autenticidad.
                         </p>
                     </div>
@@ -43,13 +44,13 @@ export default function Footer() {
                             <SectionTitle>Legal</SectionTitle>
                             <nav className="flex flex-col gap-2">
                                 {navigation.legal.map((link) => (
-                                    <Link key={link.href} href={link.href} className="w-fit text-xs text-fg-primary transition-colors hover:text-action-primary-hover">
+                                    <Link key={link.href} href={link.href} className="w-fit text-xs text-brand-gris transition-colors hover:text-brand-charcoal">
                                         {link.label}
                                     </Link>
                                 ))}
                             </nav>
                             <div className="pt-1">
-                                <Link href="/libro-de-reclamaciones" className="inline-flex items-center gap-2 rounded-md border border-border-default px-3 py-1.5 text-xs font-medium text-fg-primary transition-all hover:bg-action-primary-hover hover:text-fg-inverse">
+                                <Link href="/libro-de-reclamaciones" className="inline-flex items-center gap-2 rounded-md border border-brand-silver-border bg-background px-3 py-1.5 text-xs font-medium text-brand-charcoal transition-all hover:bg-brand-charcoal hover:text-white">
                                     <BookOpen size={12} />
                                     Libro de Reclamaciones
                                 </Link>
@@ -58,16 +59,15 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="mt-12 flex flex-col gap-6 border-t border-border-default pt-6 lg:flex-row lg:items-center lg:justify-between">
+                <div className="mt-12 flex flex-col gap-6 border-t border-brand-silver-border pt-6 lg:flex-row lg:items-center lg:justify-between">
                     <div className="space-y-1">
-                        <p className="text-[10px] uppercase tracking-wider text-fg-primary font-semibold">Neoshop Importaciones</p>
-
+                        <p className="text-[10px] uppercase tracking-wider text-brand-charcoal font-semibold">Neoshop Importaciones</p>
                     </div>
                     <div className="flex flex-col items-start gap-4 lg:items-end">
                         <div className="opacity-90 hover:opacity-100 transition-opacity">
                             <PaymentMethods />
                         </div>
-                        <p className="text-[10px] uppercase tracking-wider text-fg-primary">© 2026 · Todos los derechos reservados</p>
+                        <p className="text-[10px] uppercase tracking-wider text-brand-gris">© 2026 · Todos los derechos reservados</p>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@ export default function Footer() {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-    return <h3 className="text-[10px] font-semibold uppercase tracking-wider text-fg-primary">{children}</h3>;
+    return <h3 className="text-[10px] font-semibold uppercase tracking-wider text-brand-charcoal">{children}</h3>;
 }
 
 function FooterLinks({ title, links }: { title: string; links: { label: string; href: string }[] }) {
@@ -85,7 +85,7 @@ function FooterLinks({ title, links }: { title: string; links: { label: string; 
             <SectionTitle>{title}</SectionTitle>
             <nav className="flex flex-col gap-2">
                 {links.map((link) => (
-                    <Link key={link.href} href={link.href} className="w-fit text-xs text-fg-primary transition-all hover:translate-x-0.5 hover:text-action-primary-hover">
+                    <Link key={link.href} href={link.href} className="w-fit text-xs text-brand-gris transition-all hover:translate-x-0.5 hover:text-brand-charcoal">
                         {link.label}
                     </Link>
                 ))}

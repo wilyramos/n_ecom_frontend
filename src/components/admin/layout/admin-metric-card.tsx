@@ -26,19 +26,19 @@ export function AdminMetricCard({
     return (
         <div
             className={cn(
-                "rounded-xl border border-zinc-200/80 bg-white p-4 transition-colors hover:border-zinc-300",
+                "rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300 shadow-xs",
                 className
             )}
         >
             <div className="flex items-center justify-between gap-2">
-                <span className="text-xs font-medium text-zinc-500">
+                <span className="text-xs font-medium text-slate-500">
                     {title}
                 </span>
-                {Icon && <Icon className="w-4 h-4 text-zinc-400 shrink-0" />}
+                {Icon && <Icon className="w-4 h-4 text-slate-400 shrink-0" />}
             </div>
 
             <div className="mt-2 flex items-baseline justify-between gap-2">
-                <span className="text-xl font-semibold tracking-tight text-zinc-900">
+                <span className="text-xl font-semibold tracking-tight text-slate-900">
                     {value}
                 </span>
                 {trend && (
@@ -55,14 +55,14 @@ export function AdminMetricCard({
                             </span>
                         )}
                         {trend.label && (
-                            <span className="text-zinc-400 font-normal">{trend.label}</span>
+                            <span className="text-slate-400 font-normal">{trend.label}</span>
                         )}
                     </div>
                 )}
             </div>
 
             {description && (
-                <p className="mt-2 text-[11px] text-zinc-500 border-t border-zinc-100 pt-2">
+                <p className="mt-2 text-[11px] text-slate-500 border-t border-slate-100 pt-2">
                     {description}
                 </p>
             )}

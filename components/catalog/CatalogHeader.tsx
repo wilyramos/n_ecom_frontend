@@ -63,7 +63,7 @@ export default function CatalogHeader({
             {/* Title */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-baseline gap-3">
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-brand-charcoal uppercase">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-brand-gris uppercase">
                         {title}
                     </h1>
 

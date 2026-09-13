@@ -1,42 +1,58 @@
 "use client";
 
-import { ArrowUpDown } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { useCatalogNav } from "./hooks/useCatalogNav";
+
+const SORT_OPTIONS = [
+  { value: "recientes", label: "Más Recientes" },
+  { value: "relevancia", label: "Relevancia" },
+  { value: "discount", label: "Mayor Descuento" },
+  { value: "price-asc", label: "Menor Precio" },
+  { value: "price-desc", label: "Mayor Precio" },
+  { value: "name-asc", label: "Nombre: A - Z" },
+];
 
 export default function CatalogMobileSort() {
   const { updateFilter, searchParams } = useCatalogNav();
   const currentSort = searchParams.get("sort") || "recientes";
 
   return (
-    <div className="relative flex items-center">
-      <div className="absolute left-3 z-10 pointer-events-none">
-        <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
+    <div className="relative inline-flex items-center">
+      {/* Icono de ordenamiento a la izquierda */}
+      <div className="absolute left-3 pointer-events-none text-brand-gris">
+        <ArrowUpDown className="w-3.5 h-3.5" />
       </div>
 
-      <Select
+      {/* Select nativo */}
+      <select
         value={currentSort}
-        onValueChange={(val) => updateFilter("sort", val)}
+        onChange={(e) => updateFilter("sort", e.target.value)}
+        aria-label="Ordenar productos"
+        className="
+          appearance-none
+          cursor-pointer
+          h-9
+          pl-8.5 pr-8
+          rounded-xl
+          border border-brand-silver-border
+          bg-background
+          text-xs font-medium text-brand-gris
+          transition-colors duration-150
+          hover:border-brand-gris
+          focus:outline-none focus:border-brand-action focus:ring-2 focus:ring-brand-action-muted
+        "
       >
-        <SelectTrigger className="pl-8">
-          <SelectValue placeholder="Ordenar" />
-        </SelectTrigger>
+        {SORT_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value} className="text-brand-charcoal bg-background">
+            {option.label}
+          </option>
+        ))}
+      </select>
 
-        <SelectContent align="end">
-          <SelectItem value="relevancia">Relevancia</SelectItem>
-          <SelectItem value="recientes">Más Recientes</SelectItem>
-          <SelectItem value="discount">Mayor Descuento</SelectItem>
-          <SelectItem value="price-asc">Menor Precio</SelectItem>
-          <SelectItem value="price-desc">Mayor Precio</SelectItem>
-          <SelectItem value="name-asc">Nombre: A - Z</SelectItem>
-        </SelectContent>
-      </Select>
+      {/* Flecha indicadora a la derecha */}
+      <div className="absolute right-2.5 pointer-events-none text-brand-gris">
+        <ChevronDown className="w-3.5 h-3.5" />
+      </div>
     </div>
   );
 }

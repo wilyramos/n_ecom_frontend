@@ -42,42 +42,44 @@ export default function CatalogMobileFilters({ filters }: Props) {
 
     return (
         <Drawer>
-            {/* Trigger Button */}
+            {/* Disparador: altura compacta de 36px (h-9) que no satura el viewport */}
             <DrawerTrigger asChild>
                 <button
+                    type="button"
                     className="
                         lg:hidden
                         w-full
+                        h-9
                         flex items-center justify-center
                         gap-2
-                        px-3 py-2.5
-                        text-xs md:text-sm
+                        px-3
+                        text-xs
                         font-medium
-                        rounded-lg
-                        border border-border-default
-                        bg-surface-primary
-                        text-fg-primary
-                        transition-colors
-                        hover:border-brand-charcoal
-                        hover:bg-surface-secondary/20
+                        rounded-xl
+                        border border-brand-silver-border
+                        bg-background
+                        text-brand-charcoal
+                        transition-all duration-150
+                        hover:border-brand-gris
+                        active:scale-[0.99]
                     "
                 >
-                    <LuListFilter className="w-4 h-4 text-fg-primary/70" />
+                    <LuListFilter className="w-3.5 h-3.5 text-brand-charcoal/70" />
                     <span>Filtrar y Ordenar</span>
 
                     {hasFilters && (
-                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-action-primary" />
+                        <span className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-action inline-block shrink-0" />
                     )}
                 </button>
             </DrawerTrigger>
 
-            {/* Drawer Content */}
+            {/* Contenedor del Drawer adaptado a la altura de pantalla restante */}
             <DrawerContent
                 className="
-                    h-[88vh]
-                    bg-surface-primary
+                    h-[85vh]
+                    bg-background
                     flex flex-col
-                    border-t border-border-default
+                    border-t border-brand-silver-border
                 "
             >
                 {/* Header */}
@@ -85,26 +87,27 @@ export default function CatalogMobileFilters({ filters }: Props) {
                     className="
                         px-4 py-3
                         flex items-center justify-between
-                        border-b border-border-default
+                        border-b border-brand-silver-border
                         shrink-0
                     "
                 >
-                    <DrawerTitle className="text-sm font-bold uppercase tracking-wider text-fg-primary">
+                    <DrawerTitle className="text-xs font-bold uppercase tracking-widest text-brand-charcoal">
                         Filtrar y Ordenar
                     </DrawerTitle>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                         {hasFilters && (
                             <button
+                                type="button"
                                 onClick={clearFilters}
                                 className="
                                     text-xs
                                     font-semibold
-                                    text-fg-primary/70
-                                    hover:text-fg-primary
-                                    transition-colors
+                                    text-brand-charcoal/80
+                                    hover:text-brand-charcoal
                                     underline
                                     underline-offset-4
+                                    transition-colors
                                 "
                             >
                                 Limpiar
@@ -113,11 +116,13 @@ export default function CatalogMobileFilters({ filters }: Props) {
 
                         <DrawerClose asChild>
                             <button
+                                type="button"
+                                aria-label="Cerrar filtros"
                                 className="
-                                    p-1.5
-                                    rounded-lg
-                                    text-fg-primary
-                                    hover:bg-surface-secondary/30
+                                    p-1
+                                    rounded-full
+                                    text-brand-charcoal
+                                    hover:bg-brand-action-muted
                                     transition-colors
                                 "
                             >
@@ -127,35 +132,35 @@ export default function CatalogMobileFilters({ filters }: Props) {
                     </div>
                 </DrawerHeader>
 
-                {/* Body - Horizontal Sort + Sidebar Filters */}
-                <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-6">
+                {/* Body: Ordenamiento + Filtros del Sidebar */}
+                <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-5">
                     {/* Ordenamiento */}
-                    <div className="flex flex-col gap-3 pb-5 border-b border-border-default">
-                        <span className="text-xs font-bold uppercase tracking-wider text-fg-primary/60">
+                    <div className="flex flex-col gap-2.5 pb-4 border-b border-brand-silver-border">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gris select-none">
                             Ordenar por
                         </span>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                             {SORT_OPTIONS.map((option) => {
                                 const isActive = currentSort === option.value;
 
                                 return (
                                     <button
+                                        type="button"
                                         key={option.value}
                                         onClick={() => handleSortChange(option.value)}
                                         className={`
-                                            px-4 py-2
+                                            px-3 py-1.5
                                             text-xs
                                             rounded-full
                                             border
                                             transition-all
+                                            duration-150
                                             text-left
-                                            break-words
-                                            leading-tight
-                                            max-w-full
+                                            select-none
                                             ${isActive
-                                                ? "bg-[var(--color-brand-action-muted)] text-[var(--color-brand-charcoal)] border-[var(--color-brand-action)] font-bold"
-                                                : "bg-surface-primary text-fg-primary border-border-default hover:border-brand-charcoal"
+                                                ? "bg-brand-action-muted text-brand-charcoal border-brand-action font-semibold"
+                                                : "bg-background text-brand-charcoal border-brand-silver-border hover:border-brand-gris"
                                             }
                                         `}
                                     >
@@ -166,9 +171,8 @@ export default function CatalogMobileFilters({ filters }: Props) {
                         </div>
                     </div>
 
-                    {/* Filtros */}
-                    <div className="flex flex-col gap-3">
-                     
+                    {/* Filtros dinámicos */}
+                    <div className="flex flex-col">
                         <CatalogSidebar filters={filters} />
                     </div>
                 </div>

@@ -1,7 +1,9 @@
-import * as React from "react"
-import * as SliderPrimitive from "@radix-ui/react-slider"
+"use client";
 
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import * as SliderPrimitive from "@radix-ui/react-slider";
+
+import { cn } from "@/lib/utils";
 
 function Slider({
   className,
@@ -19,7 +21,7 @@ function Slider({
           ? defaultValue
           : [min, max],
     [value, defaultValue, min, max]
-  )
+  );
 
   return (
     <SliderPrimitive.Root
@@ -34,28 +36,32 @@ function Slider({
       )}
       {...props}
     >
+      {/* Pista inactiva */}
       <SliderPrimitive.Track
         data-slot="slider-track"
         className={cn(
-          "bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+          "bg-brand-silver-border relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
         )}
       >
+        {/* Rango activo (gris de marca) */}
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
-            "bg-fg-action absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+            "bg-brand-gris absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
           )}
         />
       </SliderPrimitive.Track>
+
+      {/* Manejadores con borde en brand-gris y sombra suave */}
       {Array.from({ length: _values.length }, (_, index) => (
         <SliderPrimitive.Thumb
           data-slot="slider-thumb"
           key={index}
-          className="border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+          className="border-2 border-brand-gris bg-background block size-4 shrink-0 rounded-full shadow-xs transition-transform hover:scale-110 hover:border-brand-silver focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-silver-border active:scale-95 cursor-grab active:cursor-grabbing disabled:pointer-events-none disabled:opacity-50"
         />
       ))}
     </SliderPrimitive.Root>
-  )
+  );
 }
 
-export { Slider }
+export { Slider };

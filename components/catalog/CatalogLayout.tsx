@@ -60,21 +60,21 @@ export default function CatalogLayout({
             </div>
 
             {/* MOBILE STICKY FILTER BAR */}
-            <div
-                className="
-            lg:hidden
-            sticky
-            top-[70px]
-            z-20
-            bg-surface-primary/95
-            backdrop-blur-md
-            border-b border-border-default
-        "
-            >
-                <div className="container mx-auto px-4 md:px-6 py-2">
-                    <CatalogMobileFilters filters={filters} />
-                </div>
-            </div>
+          <div
+    className="
+        lg:hidden
+        sticky
+        top-14
+        z-30
+        bg-background/95
+        backdrop-blur-md
+        border-b border-brand-silver-border
+    "
+>
+    <div className="container mx-auto px-4 py-1.5">
+        <CatalogMobileFilters filters={filters} />
+    </div>
+</div>
 
             {/* MAIN CONTENT - Grid Layout */}
             <div className="container mx-auto px-4 md:px-6 py-6 md:py-8">

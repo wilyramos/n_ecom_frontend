@@ -149,13 +149,13 @@ export default function CatalogSidebar({ filters }: Props) {
         <div className="w-full pb-12 select-none px-1 py-4 rounded-3xl">
             <div className="mb-6 pb-4 border-b border-border-default">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-xs font-bold uppercase tracking-widest text-fg-primary">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-brand-gris">
                         Filtros
                     </h2>
                     {hasFilters && (
                         <button
                             onClick={clearFilters}
-                            className="text-[11px] font-semibold text-fg-muted hover:text-fg-primary transition-colors flex items-center gap-1"
+                            className="text-[11px] font-semibold text-fg-muted hover:text-brand-gris transition-colors flex items-center gap-1"
                         >
                             <LuX className="w-3 h-3" />
                             Limpiar
@@ -177,7 +177,7 @@ export default function CatalogSidebar({ filters }: Props) {
             >
                 {/* PRECIO */}
                 <AccordionItem value="item-price" className="border-0">
-                    <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
+                    <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-brand-gris hover:no-underline py-2 px-0">
                         Precio
                     </AccordionTrigger>
                     <AccordionContent className="pt-4 pb-2 px-1">
@@ -190,7 +190,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                 onValueChange={(val) => setPriceRangeValue(val as [number, number])}
                                 className="w-full"
                             />
-                            <div className="flex items-center justify-between text-xs font-medium text-fg-primary">
+                            <div className="flex items-center justify-between text-xs font-medium text-brand-gris">
                                 <span>S/. {priceRangeValue[0]}</span>
                                 <span>S/. {priceRangeValue[1]}</span>
                             </div>
@@ -201,7 +201,7 @@ export default function CatalogSidebar({ filters }: Props) {
                 {/* CATEGORÍAS */}
                 {sortedFilters.categories.length > 0 && (
                     <AccordionItem value="item-categories" className="border-0">
-                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
+                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-brand-gris hover:no-underline py-2 px-0">
                             Categorías
                         </AccordionTrigger>
                         <AccordionContent className="pt-3 pb-0 px-0">
@@ -216,7 +216,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                                 "flex items-center justify-between px-4 py-2 text-xs border rounded-3xl transition-all duration-200 font-medium text-left",
                                                 active
                                                     ? "bg-[var(--color-brand-action-muted)] border-[var(--color-brand-action)] text-[var(--color-brand-charcoal)] font-semibold"
-                                                    : "border-border-default bg-surface-primary text-fg-primary hover:border-brand-gris"
+                                                    : "border-border-default bg-surface-primary text-brand-gris hover:border-brand-gris"
                                             )}
                                         >
                                             <span>{cat.nombre}</span>
@@ -234,7 +234,7 @@ export default function CatalogSidebar({ filters }: Props) {
                 {/* MARCAS */}
                 {sortedFilters.brands.length > 0 && (
                     <AccordionItem value="item-brands" className="border-0">
-                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
+                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-brand-gris hover:no-underline py-2 px-0">
                             Marcas
                         </AccordionTrigger>
                         <AccordionContent className="pt-3 pb-0 px-0">
@@ -254,7 +254,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                         >
                                             <div className="flex items-center gap-2.5 flex-1 min-w-0">
                                                 <Checkbox checked={active} />
-                                                <span className="text-xs font-medium text-fg-primary truncate">
+                                                <span className="text-xs font-medium text-brand-gris truncate">
                                                     {brand.nombre}
                                                 </span>
                                             </div>
@@ -272,7 +272,7 @@ export default function CatalogSidebar({ filters }: Props) {
                 {/* MODELOS */}
                 {sortedFilters.lines.length > 0 && (
                     <AccordionItem value="item-lines" className="border-0">
-                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
+                        <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-brand-gris hover:no-underline py-2 px-0">
                             Modelos
                         </AccordionTrigger>
                         <AccordionContent className="pt-3 pb-0 px-0">
@@ -292,7 +292,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                         >
                                             <div className="flex items-center gap-2.5 flex-1 min-w-0">
                                                 <Checkbox checked={active} />
-                                                <span className="text-xs font-medium text-fg-primary truncate tracking-tight">
+                                                <span className="text-xs font-medium text-brand-gris truncate tracking-tight">
                                                     {line.nombre}
                                                 </span>
                                             </div>
@@ -312,7 +312,7 @@ export default function CatalogSidebar({ filters }: Props) {
                     const isColorAttr = attr.name.toLowerCase().includes("color");
                     return (
                         <AccordionItem key={idx} value={`attr-${idx}`} className="border-0">
-                            <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-fg-primary hover:no-underline py-2 px-0">
+                            <AccordionTrigger className="text-xs font-bold uppercase tracking-wider text-brand-gris hover:no-underline py-2 px-0">
                                 {attr.name}
                             </AccordionTrigger>
                             <AccordionContent className="pt-3 pb-0 px-0">
@@ -341,7 +341,7 @@ export default function CatalogSidebar({ filters }: Props) {
                                                     {!isColorAttr && (
                                                         <Checkbox checked={isChecked} />
                                                     )}
-                                                    <span className="text-[11px] capitalize truncate font-medium text-fg-primary">
+                                                    <span className="text-[11px] capitalize truncate font-medium text-brand-gris">
                                                         {val}
                                                     </span>
                                                 </div>

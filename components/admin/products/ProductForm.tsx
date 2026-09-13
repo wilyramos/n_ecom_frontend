@@ -1,9 +1,22 @@
-// File: frontend/components/admin/products/ProductForm.tsx
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { X, ImageIcon } from "lucide-react";
+import { ImageIcon } from "lucide-react";
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    rectSortingStrategy,
+} from "@dnd-kit/sortable";
 
 // Types
 import type { ProductWithCategoryResponse, CategoryListResponse } from "@/src/schemas";
@@ -27,6 +40,7 @@ import MediaLibraryDialog from "./MediaLibraryDialog";
 import ComplementaryProductsSection from "./ComplementaryProductsSection";
 import SEOProduct from "./SEOproduct";
 import TagsInput from "./TagsInput";
+import SortableImageItem from "./SortableImageItem";
 
 export default function ProductForm({
     product,
@@ -46,6 +60,33 @@ export default function ProductForm({
     const [selectedBrandId, setSelectedBrandId] = useState<string | undefined>(initialBrandId);
     const [masterImages, setMasterImages] = useState<string[]>(() => Array.from(new Set(product?.imagenes || [])));
 
+    // Sensores DnD configurados con tolerancia para no interferir con clicks simples
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (over && active.id !== over.id) {
+            setMasterImages((items) => {
+                const oldIndex = items.indexOf(String(active.id));
+                const newIndex = items.indexOf(String(over.id));
+                return arrayMove(items, oldIndex, newIndex);
+            });
+        }
+    };
+
+    const handleRemoveImage = (url: string) => {
+        setMasterImages((prev) => prev.filter((i) => i !== url));
+    };
+
     const handleAddImagesToPool = (newImages: string[]) => {
         setMasterImages((prev) => Array.from(new Set([...prev, ...newImages])));
     };
@@ -61,9 +102,6 @@ export default function ProductForm({
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            {/* ======================================================== */}
-            {/* COLUMNA PRINCIPAL (8 cols)                               */}
-            {/* ======================================================== */}
             <div className="lg:col-span-8 space-y-5">
                 {/* 1. Título */}
                 <Card className="border-slate-200 bg-white shadow-xs">
@@ -82,7 +120,7 @@ export default function ProductForm({
                     </CardContent>
                 </Card>
 
-                {/* 2. Archivos Multimedia */}
+                {/* 2. Archivos Multimedia (Con Drag & Drop) */}
                 <Card className="border-slate-200 bg-white shadow-xs">
                     <CardHeader className="p-5 pb-3">
                         <div className="flex items-center justify-between">
@@ -98,7 +136,7 @@ export default function ProductForm({
                             />
                         </div>
                     </CardHeader>
-                    <CardContent className="p-5 pt-0">
+                    <CardContent className="p-2 pt-0">
                         {masterImages.length === 0 ? (
                             <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/60 text-center space-y-2">
                                 <ImageIcon className="w-7 h-7 mx-auto text-slate-400" />
@@ -110,30 +148,25 @@ export default function ProductForm({
                                 </p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 p-3 border border-slate-200 rounded-xl bg-slate-50/40">
-                                {masterImages.map((img, idx) => (
-                                    <div
-                                        key={img}
-                                        className="relative aspect-square border border-slate-200 rounded-lg bg-white overflow-hidden group shadow-2xs"
-                                    >
-                                        <Image src={img} alt="Product" fill className="object-cover" unoptimized />
-                                        {idx === 0 && (
-                                            <span className="absolute bottom-1 left-1 bg-slate-900/80 text-white text-[9px] font-medium px-1 rounded">
-                                                Principal
-                                            </span>
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={() => setMasterImages((prev) => prev.filter((i) => i !== img))}
-                                            className="absolute top-1 right-1 bg-slate-900/70 hover:bg-rose-600 text-white p-1 rounded-md opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
-                                            title="Eliminar archivo"
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                        <input type="hidden" name="imagenes[]" value={img} />
+                            <DndContext
+                                id="product-images-dnd"
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleDragEnd}
+                            >
+                                <SortableContext items={masterImages} strategy={rectSortingStrategy}>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 p-3 border border-slate-200 rounded-xl bg-slate-50/40">
+                                        {masterImages.map((img, idx) => (
+                                            <SortableImageItem
+                                                key={img}
+                                                id={img}
+                                                isFirst={idx === 0}
+                                                onRemove={handleRemoveImage}
+                                            />
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                </SortableContext>
+                            </DndContext>
                         )}
                     </CardContent>
                 </Card>
@@ -309,11 +342,8 @@ export default function ProductForm({
                 </Card>
             </div>
 
-            {/* ======================================================== */}
-            {/* COLUMNA LATERAL (4 cols)                                 */}
-            {/* ======================================================== */}
+            {/* COLUMNA LATERAL */}
             <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
-                {/* 1. Estado del Producto */}
                 <Card className="border-slate-200 bg-white shadow-xs">
                     <CardHeader className="p-5 pb-3">
                         <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -325,7 +355,6 @@ export default function ProductForm({
                     </CardContent>
                 </Card>
 
-                {/* 2. Organización de Productos */}
                 <Card className="border-slate-200 bg-white shadow-xs">
                     <CardHeader className="p-5 pb-3">
                         <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -333,7 +362,6 @@ export default function ProductForm({
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-5 pt-0 space-y-4">
-                        {/* Categoría y Atributos de categoría */}
                         <ClientCategoryAttributes
                             categorias={categorias}
                             initialCategoryId={product?.categoria?._id}
@@ -341,7 +369,6 @@ export default function ProductForm({
                             onCategoryChange={setSelectedCategoryId}
                         />
 
-                        {/* Proveedor / Marca */}
                         <div className="space-y-1.5">
                             <Label htmlFor="brand" className="text-xs font-semibold text-slate-700">
                                 Proveedor / Marca <span className="text-rose-600">*</span>
@@ -354,7 +381,6 @@ export default function ProductForm({
                             <input type="hidden" name="brand" value={selectedBrandId || ""} />
                         </div>
 
-                        {/* Colección / Línea de producto */}
                         <div className="space-y-1.5">
                             <Label htmlFor="line" className="text-xs font-semibold text-slate-700">
                                 Línea / Familia
@@ -377,7 +403,6 @@ export default function ProductForm({
                             </NativeSelect>
                         </div>
 
-                        {/* Etiquetas (Tags) */}
                         <div className="pt-2 border-t border-slate-100">
                             <TagsInput initial={product?.tags || []} />
                         </div>

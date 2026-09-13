@@ -1,10 +1,11 @@
+// File: frontend/components/navigation/ButtonShowSheetMobile.tsx
 "use client";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, User, ChevronRight } from "lucide-react";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { CategoryResponse } from "@/src/schemas";
 import { usePathname } from "next/navigation";
 import { routes } from "@/lib/routes";
@@ -24,43 +25,53 @@ export default function ButtonShowSheetMobile({ categories }: Props) {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <button className="p-2 text-fg-muted active:scale-95 transition-transform outline-none cursor-pointer">
-                    <Menu size={24} strokeWidth={1.5} />
+                <button
+                    type="button"
+                    aria-label="Abrir menú de navegación"
+                    className="p-2 text-brand-charcoal hover:bg-brand-gris/20 rounded-full active:scale-95 transition-all outline-none cursor-pointer"
+                >
+                    <Menu size={22} strokeWidth={1.8} />
                 </button>
             </SheetTrigger>
 
-            <SheetContent side="left" className="flex flex-col p-0 bg-surface-primary border-r border-border-default">
-                <div className="px-4 pt-3 border-b border-border-default">
+            <SheetContent side="left" className="flex flex-col p-0 bg-white border-r border-border w-[300px] sm:w-[340px]">
+                {/* Header con Logo */}
+                <div className="px-4 py-3.5 border-b border-border">
                     <SheetHeader className="text-left">
-                        <SheetTitle>
+                        <SheetTitle className="flex items-center">
                             <Logo />
                         </SheetTitle>
                     </SheetHeader>
                 </div>
 
+                {/* Categorías */}
                 <ScrollArea className="flex-1">
-                    <div className="px-4 pb-10">
-                        <h3 className="text-[10px] font-bold text-fg-secondary uppercase tracking-[0.2em] mb-3 pl-2 pt-4">CATALOGO</h3>
+                    <div className="px-3 py-4">
+                        <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-2 pb-2">
+                            Catálogo
+                        </h3>
                         <div className="space-y-1">
-                            {categories.filter(c => !c.parent).map((parent) => {
-                                const subcategories = categories.filter(c => (typeof c.parent === 'object' ? c.parent?._id : c.parent) === parent._id);
+                            {categories.filter((c) => !c.parent).map((parent) => {
+                                const subcategories = categories.filter(
+                                    (c) => (typeof c.parent === "object" ? c.parent?._id : c.parent) === parent._id
+                                );
                                 const hasSubcategories = subcategories.length > 0;
 
                                 return (
-                                    <div key={parent._id} className="group overflow-hidden border border-transparent">
+                                    <div key={parent._id} className="overflow-hidden">
                                         {hasSubcategories ? (
                                             <details className="group/details">
-                                                <summary className="list-none flex items-center justify-between py-3 px-2 cursor-pointer hover:bg-surface-secondary rounded transition-colors">
-                                                    <span className="text-sm font-semibold text-fg-primary">{parent.nombre}</span>
-                                                    <ChevronRight size={14} className="text-fg-secondary group-open/details:rotate-90 transition-transform" />
+                                                <summary className="list-none flex items-center justify-between py-2 px-2.5 cursor-pointer hover:bg-secondary rounded-xl transition-colors select-none">
+                                                    <span className="text-xs font-semibold text-foreground">{parent.nombre}</span>
+                                                    <ChevronRight size={14} className="text-muted-foreground group-open/details:rotate-90 transition-transform" />
                                                 </summary>
-                                                <div className="pl-6 pr-2 pb-2 pt-1 space-y-2 animate-in slide-in-from-top-1 duration-200">
+                                                <div className="pl-4 pr-1 py-1 space-y-0.5 border-l border-border ml-3 my-1">
                                                     {subcategories.map((sub) => (
                                                         <Link
                                                             key={sub._id}
                                                             href={routes.catalog({ category: sub.slug })}
-                                                            onClick={() => setOpen(false)} // Cierra el sheet al hacer clic
-                                                            className="block text-xs font-medium text-fg-secondary hover:text-action-primary transition-colors py-1"
+                                                            onClick={() => setOpen(false)}
+                                                            className="block text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg px-2 py-1.5 transition-colors"
                                                         >
                                                             {sub.nombre}
                                                         </Link>
@@ -70,10 +81,10 @@ export default function ButtonShowSheetMobile({ categories }: Props) {
                                         ) : (
                                             <Link
                                                 href={routes.catalog({ category: parent.slug })}
-                                                onClick={() => setOpen(false)} // Cierra el sheet al hacer clic
-                                                className="flex items-center justify-between py-3 px-2 hover:bg-surface-secondary rounded transition-colors"
+                                                onClick={() => setOpen(false)}
+                                                className="flex items-center justify-between py-2 px-2.5 hover:bg-secondary rounded-xl transition-colors text-xs font-semibold text-foreground"
                                             >
-                                                <span className="text-sm font-semibold text-fg-primary">{parent.nombre}</span>
+                                                <span>{parent.nombre}</span>
                                             </Link>
                                         )}
                                     </div>
@@ -83,11 +94,12 @@ export default function ButtonShowSheetMobile({ categories }: Props) {
                     </div>
                 </ScrollArea>
 
-                <div className="mt-auto border-t border-border-default p-4">
-                    <Button asChild className="w-full bg-action-primary hover:bg-action-primary-hover text-fg-inverse rounded-md">
-                        <Link href="/auth/registro" className="flex items-center justify-center gap-2">
-                            <User className="h-4 w-4" />
-                            Mi Cuenta
+                {/* Footer de cuenta */}
+                <div className="mt-auto border-t border-border p-4 bg-secondary/30">
+                    <Button asChild className="w-full">
+                        <Link href="/auth/login" className="flex items-center justify-center gap-2">
+                            <User className="size-4" />
+                            <span>Mi Cuenta</span>
                         </Link>
                     </Button>
                 </div>

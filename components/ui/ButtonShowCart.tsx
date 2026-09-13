@@ -34,7 +34,7 @@ export default function ButtonShowCart() {
                 <button className="relative p-2 rounded-full transition-all duration-200 hover:bg-brand-action-muted text-brand-gris hover:text-brand-charcoal group cursor-pointer active:scale-90">
                     <HiOutlineShoppingBag className="h-6 w-6" />
                     {carrito.length > 0 && (
-                        <span className="absolute top-1 right-1 bg-brand-action text-brand-charcoal text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                        <span className="absolute top-1 right-1 bg-brand-action text-brand-silver-border text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                             {carrito.length}
                         </span>
                     )}

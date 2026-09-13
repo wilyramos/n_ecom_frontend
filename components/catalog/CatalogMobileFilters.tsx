@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCatalogNav } from "./hooks/useCatalogNav";
 import CatalogSidebar from "./CatalogSidebar";
 import type { CatalogFilters } from "@/src/schemas/catalog";
@@ -18,31 +17,28 @@ interface Props {
     filters: CatalogFilters;
 }
 
+// Opciones sincronizadas con CatalogMobileSort y el Backend
 const SORT_OPTIONS = [
-    { label: "Relevancia", value: "relevance" },
-    { label: "Precio: Menor a Mayor", value: "price_asc" },
-    { label: "Precio: Mayor a Menor", value: "price_desc" },
-    { label: "Más nuevos", value: "newest" },
+    { label: "Más Recientes", value: "recientes" },
+    { label: "Relevancia", value: "relevancia" },
+    { label: "Mayor Descuento", value: "discount" },
+    { label: "Precio: Menor a Mayor", value: "price-asc" },
+    { label: "Precio: Mayor a Menor", value: "price-desc" },
+    { label: "Nombre: A - Z", value: "name-asc" },
 ];
 
 export default function CatalogMobileFilters({ filters }: Props) {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const { hasFilters, clearFilters } = useCatalogNav();
+    const { hasFilters, clearFilters, updateFilter, searchParams } = useCatalogNav();
 
-    const currentSort = searchParams.get("sort") || "relevance";
+    // Fallback unificado a 'recientes'
+    const currentSort = searchParams.get("sort") || "recientes";
 
     const handleSortChange = (value: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("sort", value);
-        params.set("page", "1");
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        updateFilter("sort", value);
     };
 
     return (
         <Drawer>
-            {/* Disparador: altura compacta de 36px (h-9) que no satura el viewport */}
             <DrawerTrigger asChild>
                 <button
                     type="button"
@@ -73,7 +69,6 @@ export default function CatalogMobileFilters({ filters }: Props) {
                 </button>
             </DrawerTrigger>
 
-            {/* Contenedor del Drawer adaptado a la altura de pantalla restante */}
             <DrawerContent
                 className="
                     h-[85vh]
@@ -82,7 +77,6 @@ export default function CatalogMobileFilters({ filters }: Props) {
                     border-t border-brand-silver-border
                 "
             >
-                {/* Header */}
                 <DrawerHeader
                     className="
                         px-4 py-3
@@ -132,9 +126,8 @@ export default function CatalogMobileFilters({ filters }: Props) {
                     </div>
                 </DrawerHeader>
 
-                {/* Body: Ordenamiento + Filtros del Sidebar */}
                 <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-5">
-                    {/* Ordenamiento */}
+                    {/* Ordenamiento sincronizado */}
                     <div className="flex flex-col gap-2.5 pb-4 border-b border-brand-silver-border">
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gris select-none">
                             Ordenar por
@@ -171,7 +164,7 @@ export default function CatalogMobileFilters({ filters }: Props) {
                         </div>
                     </div>
 
-                    {/* Filtros dinámicos */}
+                    {/* Filtros laterales */}
                     <div className="flex flex-col">
                         <CatalogSidebar filters={filters} />
                     </div>

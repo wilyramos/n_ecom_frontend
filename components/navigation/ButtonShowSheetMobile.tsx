@@ -31,7 +31,7 @@ export default function ButtonShowSheetMobile({ categories }: Props) {
                 <button
                     type="button"
                     aria-label="Abrir menú de navegación"
-                    className="p-2 text-brand-charcoal hover:bg-brand-action-muted rounded-full active:scale-95 transition-all outline-none cursor-pointer"
+                    className="p-2 text-brand-gris hover:text-brand-silver hover:bg-brand-action-muted rounded-full active:scale-95 transition-all outline-none cursor-pointer"
                 >
                     <Menu size={22} strokeWidth={1.8} />
                 </button>

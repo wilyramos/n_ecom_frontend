@@ -22,7 +22,7 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                 <SectionHeader title={section.title} />
             )}
             <div
-                className="grid gap-2"
+                className="grid gap-2 sm:gap-3 md:gap-4"
                 style={{
                     gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, ${Math.floor(100 / columns) - 2}%), 1fr))`
                 }}
@@ -33,8 +33,8 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
 
                     const FeaturedBlockContent = (
                         <div 
-                            // Cambiado aspect-[4/1] por aspect-[27/9] (o aspect-[3/1] que es la proporción simplificada)
-                            className="relative block w-full overflow-hidden aspect-[27/9] min-h-[200px] sm:min-h-[250px] md:min-h-[300px] rounded-2xl bg-muted/20"
+                            // Eliminados los min-heights fijos para respetar el aspect ratio natural
+                            className="relative block w-full overflow-hidden aspect-[27/9] sm:aspect-[27/9] md:aspect-[27/9] rounded-xl sm:rounded-2xl bg-muted/20"
                         >
                             {block.imageUrl ? (
                                 <Image
@@ -50,14 +50,14 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                             )}
 
                             {hasTextContent && (
-                                <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start gap-1 bg-gradient-to-t from-black/60 to-transparent">
+                                <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 flex flex-col items-start gap-0.5 sm:gap-1 bg-gradient-to-t from-black/60 to-transparent">
                                     {block.title && (
-                                        <h3 className="text-white font-black text-base uppercase tracking-[0.1em] drop-shadow-md">
+                                        <h3 className="text-white font-black text-sm sm:text-base uppercase tracking-[0.1em] drop-shadow-md">
                                             {block.title}
                                         </h3>
                                     )}
                                     {block.subtitle && (
-                                        <p className="text-white/90 text-[10px] font-medium uppercase tracking-widest line-clamp-1 drop-shadow-md">
+                                        <p className="text-white/90 text-[9px] sm:text-[10px] font-medium uppercase tracking-widest line-clamp-1 drop-shadow-md">
                                             {block.subtitle}
                                         </p>
                                     )}
@@ -70,12 +70,12 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                         <Link
                             key={block._id || idx}
                             href={block.linkTo}
-                            className="block outline-none focus-visible:ring-2 focus-visible:ring-action-cta rounded-2xl overflow-hidden group"
+                            className="block outline-none focus-visible:ring-2 focus-visible:ring-action-cta rounded-xl sm:rounded-2xl overflow-hidden group"
                         >
                             {FeaturedBlockContent}
                         </Link>
                     ) : (
-                        <div key={block._id || idx} className="block overflow-hidden rounded-2xl">
+                        <div key={block._id || idx} className="block overflow-hidden rounded-xl sm:rounded-2xl">
                             {FeaturedBlockContent}
                         </div>
                     );

@@ -1,3 +1,5 @@
+// File: frontend/components/home/sections/HomepageSectionsWrapper.tsx
+
 import { SectionResponse } from "@/src/schemas/section.schema";
 import RichTextSection from "./RichTextSection";
 import ProductGridSection from "./ProductGridSection";

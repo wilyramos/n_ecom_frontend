@@ -51,6 +51,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                                 className={` ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                                 sizes="100vw"
                                 priority
+                                quality={100}
                                 unoptimized
                             />
                         </div>

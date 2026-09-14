@@ -56,6 +56,7 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                     className={`absolute inset-0 ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                     sizes="100vw"
                     priority
+                    quality={100}
                     unoptimized
                 />
             ) : null}

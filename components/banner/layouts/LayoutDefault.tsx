@@ -122,6 +122,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                              ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                                 sizes="(max-width: 640px) 50vw, 40vw"
                                 priority
+                                quality={100}
                                 unoptimized
                             />
                         </div>

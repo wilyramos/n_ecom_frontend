@@ -37,6 +37,7 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
                     className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
                     sizes="100vw"
                     priority
+                    quality={100}
                     unoptimized
                 />
             ) : null}

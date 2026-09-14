@@ -49,7 +49,7 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                                 alt={title ?? "Banner"}
                                 fill
                                 className={` ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                                sizes="50vw"
+                                sizes="100vw"
                                 priority
                                 unoptimized
                             />

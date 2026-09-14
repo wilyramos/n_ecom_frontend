@@ -55,8 +55,12 @@ export default function StoreLocation() {
           {/* COLUMNA IZQUIERDA */}
           <div className="flex h-[500px] flex-col overflow-hidden">
             {/* Header - Contenedor del Logo Ampliado */}
-            <div className="h-20 w-full max-w-[280px] mb-4">
+            <div className=" w-full max-w-[280px] mb-4">
               <Logo color="black" />
+            </div>
+            
+            <div className="mb-4 text-lg md:text-xl font-bold text-brand-gris">
+              Distribuidor garantizado
             </div>
 
             {/* Info */}

@@ -1,3 +1,5 @@
+//File: frontend/components/home/sections/HomepageSectionsWrapper.tsx
+
 import { getActiveSections } from "@/src/services/section-service";
 import HomepageSections2 from "./HomepageSections2";
 

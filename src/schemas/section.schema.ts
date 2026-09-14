@@ -19,13 +19,11 @@ export type SectionType = z.infer<typeof SectionTypeEnum>;
 
 export const SectionSettingsSchema = z.object({
     bodyText: z.string().optional(),
-    gridColumns: z.coerce.number().int().min(1).max(8).default(4) // 💡 Corregido de max(6) a max(8)
+    gridColumns: z.coerce.number().int().min(1).max(8).default(4),
+    showTitle: z.boolean().default(true) // 👈 Nuevo campo añadido
 });
 export type SectionSettings = z.infer<typeof SectionSettingsSchema>;
 
-/**
- * Referencia simplificada del producto devuelto por el populate del Backend.
- */
 export const ProductRefSchema = z.object({
     _id:      z.string(),
     nombre:   z.string().trim().optional().or(z.null()),
@@ -36,9 +34,6 @@ export const ProductRefSchema = z.object({
 });
 export type ProductRef = z.infer<typeof ProductRefSchema>;
 
-/**
- * Bloque de contenido flexible.
- */
 export const SectionBlockSchema = z.object({
     _id:       z.string().optional(),
     title:     z.string().trim().optional().or(z.literal('')),
@@ -54,10 +49,6 @@ export const SectionBlockSchema = z.object({
 });
 export type SectionBlock = z.infer<typeof SectionBlockSchema>;
 
-// ============================================================================
-// ── FILTROS DE CONSULTA (Para el Panel Administrativo)
-// ============================================================================
-
 export const SectionFiltersSchema = z.object({
     type:     SectionTypeEnum.optional(),
     isActive: z.boolean().optional(),
@@ -71,7 +62,7 @@ export type SectionFilters = z.infer<typeof SectionFiltersSchema>;
 // ============================================================================
 
 export const CreateSectionDTOSchema = z.object({
-    title:    z.string().trim().min(2, 'El título es obligatorio (mín. 2 caracteres)'),
+    title:    z.string().trim().min(2, 'El título es obligatorio para uso interno (mín. 2 caracteres)'),
     type:     SectionTypeEnum,
     order:    z.coerce.number().int().nonnegative('El orden debe ser 0 o mayor').default(0),
     isActive: z.boolean().default(true),
@@ -102,10 +93,6 @@ export const SectionResponseSchema = z.object({
 });
 export type SectionResponse = z.infer<typeof SectionResponseSchema>;
 
-// ============================================================================
-// ── 3. RESPUESTAS EXACTAS DE LA API (RESPONSE ← Backend)
-// ============================================================================
-
 export const SectionSingleResponseSchema = SectionResponseSchema;
 export type SectionSingleResponse = z.infer<typeof SectionSingleResponseSchema>;
 
@@ -123,10 +110,6 @@ export const SectionPaginatedApiResponseSchema = z.object({
     })
 });
 export type SectionPaginatedApiResponse = z.infer<typeof SectionPaginatedApiResponseSchema>;
-
-// ============================================================================
-// ── 4. LABELS Y MAPEOS PARA MÓDULOS DE UI (Frontend Helpers)
-// ============================================================================
 
 export const SECTION_TYPE_LABELS: Record<SectionType, string> = {
     featured_collections: 'Grilla de Colecciones / Imágenes',

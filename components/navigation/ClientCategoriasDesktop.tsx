@@ -57,14 +57,14 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                                         className={cn(
                                             "relative bg-transparent transition-colors font-medium text-sm px-3 py-2",
                                             isRootActive
-                                                ? "text-brand-charcoal font-semibold"
-                                                : "text-brand-gris hover:text-brand-charcoal data-[state=open]:text-brand-charcoal"
+                                                ? "text-brand-gris font-semibold"
+                                                : "text-brand-silver font-semibold hover:text-brand-gris data-[state=open]:text-brand-gris"
                                         )}
                                     >
                                         <span>{cat.nombre}</span>
                                         {isRootActive && (
                                             <span 
-                                                className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-brand-charcoal rounded-full" 
+                                                className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-brand-gris rounded-full" 
                                                 aria-hidden="true" 
                                             />
                                         )}
@@ -95,14 +95,14 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                                             navigationMenuTriggerStyle(),
                                             "relative bg-transparent border-none transition-colors font-medium text-sm px-3 py-2",
                                             isRootActive
-                                                ? "text-brand-charcoal font-semibold"
-                                                : "text-brand-gris hover:text-brand-charcoal"
+                                                ? "text-brand-gris font-semibold"
+                                                : "text-brand-silver font-semibold hover:text-brand-gris"
                                         )}
                                     >
                                         <span>{cat.nombre}</span>
                                         {isRootActive && (
                                             <span 
-                                                className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-brand-charcoal rounded-full" 
+                                                className="absolute bottom-0.5 left-3 right-3 h-[2px] bg-brand-gris rounded-full" 
                                                 aria-hidden="true" 
                                             />
                                         )}
@@ -135,8 +135,8 @@ function ListItem({
                     className={cn(
                         "flex items-center px-3 py-2 rounded-lg transition-all duration-150 border text-xs font-medium",
                         isActive
-                            ? "bg-brand-action-muted text-brand-charcoal font-semibold border-brand-action/40"
-                            : "border-transparent text-brand-gris hover:text-brand-charcoal hover:bg-brand-silver-border/40"
+                            ? "bg-brand-action-muted text-brand-gris font-semibold border-brand-action/40"
+                            : "border-transparent text-brand-silver font-semibold hover:text-brand-gris hover:bg-brand-silver-border/40"
                     )}
                 >
                     <span className="truncate">{title}</span>

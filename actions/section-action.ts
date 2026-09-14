@@ -20,26 +20,16 @@ export interface FormActionState {
         settings: {
             bodyText: string | undefined;
             gridColumns: number;
+            showTitle: boolean;
         };
         blocks: SectionBlock[];
     };
 }
 
-function parseSectionFormData(formData: FormData): {
-    title: string;
-    type: string | undefined;
-    order: number;
-    isActive: boolean;
-    settings: {
-        bodyText: string | undefined;
-        gridColumns: number;
-    };
-    blocks: SectionBlock[];
-} {
+function parseSectionFormData(formData: FormData) {
     const rawBlocksString = formData.get("blocksData")?.toString();
     let rawBlocksData: SectionBlock[] = rawBlocksString ? JSON.parse(rawBlocksString) : [];
 
-    // Limpieza e inicialización desde el Formulario: Sanitización del campo linkTo y cadenas vacías
     rawBlocksData = rawBlocksData.map(block => ({
         ...block,
         title: block.title?.trim() || undefined,
@@ -56,6 +46,7 @@ function parseSectionFormData(formData: FormData): {
         settings: {
             bodyText: formData.get("settings.bodyText")?.toString() || undefined,
             gridColumns: formData.get("settings.gridColumns") ? Number(formData.get("settings.gridColumns")) : 4,
+            showTitle: formData.get("settings.showTitle") === "true", // 👈 Extraído del FormData
         },
         blocks: rawBlocksData,
     };

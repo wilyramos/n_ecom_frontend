@@ -114,6 +114,12 @@ export default function SectionFormUI({
             ? Boolean(submitted.isActive)
             : (initialData?.isActive ?? true)
     );
+    // Nuevo estado para controlar si el título se muestra en el Storefront
+    const [showTitle, setShowTitle] = useState<boolean>(
+        submitted?.settings?.showTitle !== undefined
+            ? Boolean(submitted.settings.showTitle)
+            : (initialData?.settings?.showTitle ?? true)
+    );
 
     const errorCountRef = useRef(0);
     const [formKey, setFormKey] = useState(0);
@@ -132,6 +138,11 @@ export default function SectionFormUI({
                 submitted?.isActive !== undefined
                     ? Boolean(submitted.isActive)
                     : (initialData?.isActive ?? true)
+            );
+            setShowTitle(
+                submitted?.settings?.showTitle !== undefined
+                    ? Boolean(submitted.settings.showTitle)
+                    : (initialData?.settings?.showTitle ?? true)
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,7 +177,6 @@ export default function SectionFormUI({
 
     const [allImages, setAllImages] = useState<string[]>([]);
 
-
     return (
         <form
             key={formKey}
@@ -175,6 +185,8 @@ export default function SectionFormUI({
         >
             <input type="hidden" name="blocksData" value={JSON.stringify(blocks)} />
             <input type="hidden" name="isActive" value={String(isActive)} />
+            {/* Campo oculto para enviar el estado del título */}
+            <input type="hidden" name="settings.showTitle" value={String(showTitle)} />
 
             {/* ── Banner de errores globales ── */}
             {hasErrors && (
@@ -228,7 +240,7 @@ export default function SectionFormUI({
                 <div className="md:col-span-2 space-y-5">
 
                     {/* Card: Identificación */}
-                    <Card className="rounded-xl border-border">
+                    <Card className="rounded-xl border-border shadow-none">
                         <CardHeader className="py-4 border-b border-border mb-4">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                 Identificación
@@ -236,10 +248,10 @@ export default function SectionFormUI({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <Field
-                                label="Título Interno"
+                                label="Título Interno / Administrativo"
                                 required
                                 error={state.fields?.title}
-                                hint="Nombre de referencia para el panel de administración. No se muestra en tienda."
+                                hint="Obligatorio para el sistema. Puedes ocultarlo visualmente a los clientes con el control de abajo."
                             >
                                 <Input
                                     name="title"
@@ -249,6 +261,25 @@ export default function SectionFormUI({
                                     className={`h-10 text-sm bg-background/50 rounded-sm focus-visible:ring-1 focus-visible:ring-primary ${state.fields?.title ? "border-destructive/60 focus-visible:ring-destructive" : "border-border/40"}`}
                                 />
                             </Field>
+
+                            {/* Control de visibilidad del título */}
+                            <div className="flex items-center justify-between rounded-lg px-3.5 py-3 border border-border bg-muted/10">
+                                <div className="space-y-0.5">
+                                    <p className="text-sm font-semibold text-foreground">
+                                        Mostrar Título en la Tienda
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {showTitle
+                                            ? "El título será visible como encabezado en la página principal."
+                                            : "El título será invisible para los clientes."}
+                                    </p>
+                                </div>
+                                <Switch
+                                    checked={showTitle}
+                                    onCheckedChange={setShowTitle}
+                                    disabled={isPending}
+                                />
+                            </div>
 
                             <div className="flex items-start gap-2.5 bg-muted/30 border border-border rounded-lg px-3.5 py-3">
                                 <Info className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
@@ -263,7 +294,7 @@ export default function SectionFormUI({
                     </Card>
 
                     {/* Card: Configuración estructural */}
-                    <Card className="rounded-xl border-border">
+                    <Card className="rounded-xl border-border shadow-none">
                         <CardHeader className="py-4 border-b border-border mb-4">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                 Configuración Estructural
@@ -339,7 +370,7 @@ export default function SectionFormUI({
                 <div className="space-y-5">
 
                     {/* Card: Publicación */}
-                    <Card className="rounded-xl border-border">
+                    <Card className="rounded-xl border-border shadow-none">
                         <CardHeader className="py-4 border-b border-border mb-4">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                 Publicación
@@ -349,7 +380,7 @@ export default function SectionFormUI({
                             <div className="flex items-center justify-between rounded-lg px-3.5 py-3 border border-border bg-muted/10">
                                 <div className="space-y-0.5">
                                     <p className="text-sm font-semibold text-foreground">
-                                        {isActive ? "Visible en tienda" : "Oculta al público"}
+                                        {isActive ? "Activa (Visible)" : "Oculta al público"}
                                     </p>
                                     <p className="text-xs text-muted-foreground">
                                         {isActive ? "Se muestra en la tienda" : "No aparece"}
@@ -381,7 +412,7 @@ export default function SectionFormUI({
 
                     {/* Card: Resumen */}
                     {isEditMode && initialData && (
-                        <Card className="rounded-xl border-border bg-background">
+                        <Card className="rounded-xl border-border bg-background shadow-none">
                             <CardHeader className="py-4 border-b border-border mb-3">
                                 <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                     Resumen
@@ -390,7 +421,7 @@ export default function SectionFormUI({
                             <CardContent className="space-y-2 text-xs">
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Slug</span>
-                                    <span className="font-mono text-foreground">{initialData.slug}</span>
+                                    <span className="font-mono text-foreground truncate max-w-[150px]">{initialData.slug}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground">Bloques</span>
@@ -414,13 +445,12 @@ export default function SectionFormUI({
 
             {/* ── Bloques de contenido ── */}
             {sectionType !== "rich_text" && (
-                <Card className="rounded-xl border-border">
+                <Card className="rounded-xl border-border shadow-none">
                     <CardHeader className="py-4 border-b border-border mb-4 flex flex-row items-center justify-between space-y-0">
                         <div className="space-y-0.5">
                             <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                 Bloques de Contenido
                             </CardTitle>
-
                         </div>
                         <Button
                             type="button"
@@ -589,7 +619,7 @@ export default function SectionFormUI({
                         )}
 
                         {blocks.length > 0 && (
-                            <p className="text-right text-xs text-muted-foreground">
+                            <p className="text-right text-xs text-muted-foreground mt-2">
                                 {blocks.length} / 8 bloque{blocks.length !== 1 ? "s" : ""} configurado{blocks.length !== 1 ? "s" : ""}
                             </p>
                         )}

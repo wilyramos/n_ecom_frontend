@@ -37,7 +37,7 @@ export default function PreguntasFrecuentesPage() {
         },
         {
             question: "¿Cuál es el horario de atención?",
-            answer: "Lunes a Sábado de 10:00 am a 7:00 pm. Fuera de horario, déjanos un mensaje por WhatsApp y te contactaremos a primera hora."
+            answer: "Lunes a Sábado de 12:00 pm a 8:00 pm. Fuera de horario, déjanos un mensaje por WhatsApp y te contactaremos a primera hora."
         }
     ];
 

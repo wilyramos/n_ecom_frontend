@@ -24,7 +24,7 @@ export default function AdminTicketsPage() {
     ticketSize: "80mm",
     storeName: "neoshop",
     address: "Av. Benavides 1234, Miraflores, Lima",
-    email: "contacto@neoshop.com",
+    email: "neoshopimportaciones@gmail.com",
     phone: "(01) 444-5566",
     website: "www.neoshop.com",
     date: "Jan 14, 2026 16:34 PM",

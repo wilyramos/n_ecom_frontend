@@ -13,7 +13,7 @@ interface FeaturedCollectionsSectionProps {
 export default function FeaturedCollectionsSection({ section, columns }: FeaturedCollectionsSectionProps) {
     const imageFitClass = columns <= 2 ? "object-cover" : "object-contain";
     
-    // 👈 Comprobamos el ajuste. Usamos !== false para compatibilidad hacia atrás
+    // Comprobamos el ajuste. Usamos !== false para compatibilidad hacia atrás
     const shouldShowTitle = section.settings?.showTitle !== false;
 
     return (
@@ -33,7 +33,8 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
 
                     const FeaturedBlockContent = (
                         <div 
-                            className="relative block w-full overflow-hidden aspect-[4/1] min-h-[200px] sm:min-h-[250px] md:min-h-[300px] rounded-2xl bg-muted/20"
+                            // Cambiado aspect-[4/1] por aspect-[27/9] (o aspect-[3/1] que es la proporción simplificada)
+                            className="relative block w-full overflow-hidden aspect-[27/9] min-h-[200px] sm:min-h-[250px] md:min-h-[300px] rounded-2xl bg-muted/20"
                         >
                             {block.imageUrl ? (
                                 <Image

@@ -3,6 +3,8 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { MapPin, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { LuBadgeCheck } from "react-icons/lu";
+
 import Image from "next/image";
 import Logo from "../ui/Logo";
 
@@ -30,7 +32,7 @@ const storeImages = [
 const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-charcoal backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
+    className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-gris backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
   >
     <ChevronLeft size={20} />
   </button>
@@ -39,7 +41,7 @@ const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
 const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-charcoal backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
+    className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-gris backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
   >
     <ChevronRight size={20} />
   </button>
@@ -47,7 +49,7 @@ const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
 
 export default function StoreLocation() {
   return (
-    <section className="py-6 text-brand-charcoal">
+    <section className="py-6 text-brand-gris">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Grid Principal */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-stretch">
@@ -55,47 +57,58 @@ export default function StoreLocation() {
           {/* COLUMNA IZQUIERDA */}
           <div className="flex h-[500px] flex-col overflow-hidden">
             {/* Header - Contenedor del Logo Ampliado */}
-            <div className=" w-full max-w-[280px] mb-4">
+            <div className="w-full max-w-[280px] mb-4">
               <Logo color="black" />
-            </div>
-            
-            <div className="mb-4 text-lg md:text-xl font-bold text-brand-gris">
-              Distribuidor garantizado
             </div>
 
             {/* Info */}
             <div className="space-y-2 pb-4">
+              
+              {/* Distribuidor garantizado con icono */}
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-action text-brand-charcoal">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-action text-brand-gris">
+                  <LuBadgeCheck size={18} />
+                </div>
+                <div className="leading-tight flex flex-col justify-center">
+                  <p className="text-sm font-semibold text-brand-gris">
+                    Distribuidor garantizado
+                  </p>
+                </div>
+              </div>
+
+              {/* Dirección */}
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-action text-brand-gris">
                   <MapPin size={18} />
                 </div>
                 <div className="leading-tight">
                   <p className="text-sm font-semibold text-brand-gris">
                     Av caminos del inca 257-Surco
                   </p>
-                  <p className="text-sm font-bold text-brand-silver">
+                  <p className="text-sm font-bold text-brand-gris">
                     Piso 3 - Tda 326
                   </p>
                 </div>
               </div>
 
+              {/* Horario */}
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-brand-action text-brand-charcoal">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-action text-brand-gris">
                   <Clock size={18} />
                 </div>
                 <div className="leading-tight">
                   <p className="text-sm font-semibold text-brand-gris">
                     Lunes a Sábado
                   </p>
-                  <p className="text-sm font-bold text-brand-silver">
-                    11:00 am a 8:00 pm
+                  <p className="text-sm font-bold text-brand-gris">
+                    12:00 pm a 8:00 pm
                   </p>
                 </div>
               </div>
             </div>
 
             {/* MAPA */}
-            <div className="flex-1 overflow-hidden rounded-2xl border border-brand-silver-border">
+            <div className="flex-1 overflow-hidden rounded-md border border-brand-silver-border">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.71171804938!2d-76.9945115!3d-12.1318464!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105b8178cd39e33%3A0x633512e09153574c!2sAv.%20Caminos%20del%20Inca%20257%2C%20Santiago%20de%20Surco%2015038!5e0!3m2!1ses-419!2spe!4v1717684000000!5m2!1ses-419!2spe"
                 className="h-full w-full border-0"
@@ -106,7 +119,7 @@ export default function StoreLocation() {
           </div>
 
           {/* COLUMNA DERECHA */}
-          <div className="h-[500px] overflow-hidden rounded-2xl border border-brand-silver-border">
+          <div className="h-[500px] overflow-hidden rounded-md border border-brand-silver-border">
             <Carousel
               responsive={responsive}
               infinite

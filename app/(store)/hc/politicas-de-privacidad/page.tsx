@@ -70,7 +70,7 @@ export default function PoliticasPrivacidadPage() {
 
             <footer className="mt-16 border-t pt-12 text-center">
                 <h3 className="text-sm font-bold text-black mb-4">¿Deseas ejercer tus derechos ARCO?</h3>
-                <p className="text-sm text-gray-600 mb-2">Nuestro horario de atención es de <strong>11:00 am a 8:00 pm</strong>.</p>
+                <p className="text-sm text-gray-600 mb-2">Nuestro horario de atención es de <strong>12:00 pm a 8:00 pm</strong>.</p>
                 <p className="text-sm text-gray-600 mb-6">Puedes escribirnos al correo: <strong>neoshopimportaciones@gmail.com</strong></p>
                 <Link href="/hc/contacto-y-soporte" className="text-sm font-bold bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition">
                     Necesitas ayuda o quieres contactarnos directamente?

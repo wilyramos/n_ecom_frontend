@@ -43,7 +43,7 @@ export default function FeatureCards() {
             {features.map(({ title, description, icon: Icon }) => (
               <div key={title} className="group block w-full">
                 
-                <div className="w-full h-full flex flex-row items-center justify-center gap-2.5 px-1 transition-all duration-300 rounded-2xl bg-brand-silver/10 text-brand-silver  py-1 ">
+                <div className="w-full h-full flex flex-row items-center justify-center gap-2.5 px-1 transition-all duration-300 rounded-2xl bg-brand-silver/10 text-brand-gris  py-1 ">
                   
                   {/* Ícono en blanco */}
                   <div className="flex-shrink-0   transition-transform duration-300 group-hover:scale-110">

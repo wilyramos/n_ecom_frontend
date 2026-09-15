@@ -58,7 +58,7 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                                             "relative bg-transparent transition-colors font-medium text-sm px-3 py-2",
                                             isRootActive
                                                 ? "text-brand-gris font-medium"
-                                                : "text-brand-silver font-medium hover:text-brand-gris data-[state=open]:text-brand-gris"
+                                                : "text-brand-gris font-medium hover:text-brand-gris data-[state=open]:text-brand-gris"
                                         )}
                                     >
                                         <span>{cat.nombre}</span>
@@ -70,7 +70,7 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                                         )}
                                     </NavigationMenuTrigger>
 
-                                    <NavigationMenuContent className="border border-brand-silver-border shadow-xl rounded-xl overflow-hidden p-3 bg-background w-[380px]">
+                                    <NavigationMenuContent className="border border-brand-gris-border shadow-xl rounded-xl overflow-hidden p-3 bg-background w-[380px]">
                                         <ul className="grid grid-cols-2 gap-1">
                                             {sub.map((subcat) => {
                                                 const isSubActive = isRouteActive(subcat.slug);
@@ -96,7 +96,7 @@ export default function ClientCategoriasDesktop({ categories }: { categories: Ca
                                             "relative bg-transparent border-none transition-colors font-medium text-sm px-3 py-2",
                                             isRootActive
                                                 ? "text-brand-gris font-medium"
-                                                : "text-brand-silver font-medium hover:text-brand-gris"
+                                                : "text-brand-gris font-medium hover:text-brand-gris"
                                         )}
                                     >
                                         <span>{cat.nombre}</span>
@@ -136,7 +136,7 @@ function ListItem({
                         "flex items-center px-3 py-2 rounded-lg transition-all duration-150 border text-xs font-medium",
                         isActive
                             ? "bg-brand-action-muted text-brand-gris font-medium border-brand-action/40"
-                            : "border-transparent text-brand-silver font-medium hover:text-brand-gris hover:bg-brand-silver-border/40"
+                            : "border-transparent text-brand-gris font-medium hover:text-brand-gris hover:bg-brand-gris-border/40"
                     )}
                 >
                     <span className="truncate">{title}</span>

@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverActions: {
+    bodySizeLimit: "4mb",
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
+  },
+
   // 1. Configuración de Imágenes (Cloudinary)
   images: {
     remotePatterns: [
@@ -29,7 +38,6 @@ const nextConfig: NextConfig = {
         destination: '/catalogo',
         permanent: true,
       },
-
     ];
   },
 };

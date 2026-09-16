@@ -31,16 +31,17 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange} >
             <DialogTitle className="sr-only">{ad.title}</DialogTitle>
 
             <DialogContent
+                showCloseButton={true}
                 className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background border border-brand-silver-border rounded-2xl focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none"
             >
                 <div className="flex flex-col py-1 px-2 md:px-4 md:py-2  bg-background ">
 
                     <div className="text-center space-y-0.5 shrink-0">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-brand-gris leading-snug">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-brand-gris leading-snug mx-4">
                             {ad.title}
                         </h3>
                         {ad.subtitle && (

@@ -81,8 +81,7 @@ const navGroups: NavGroup[] = [
                 children: [
                     { href: "/admin/claims", label: "Reclamaciones", icon: ShieldAlert },
                     { href: "/admin/reports", label: "Reporte General", icon: TrendingUp },
-                    { href: "/admin/reports/sales", label: "Reporte Ventas", icon: TrendingUp },
-                    { href: "/admin/reports/orders", label: "Reporte Pedidos", icon: TrendingUp },
+                    
                 ],
             },
             {

@@ -1,11 +1,13 @@
+//File: frontend/app/admin/pedidos/page.tsx
+
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { verifySession } from '@/src/auth/dal';
 import {
   getAdminPedidos,
-  getAdminPedidosStats,
   IAdminPedidosParams,
 } from '@/src/modules/checkout/services/admin-pedidos.service';
+import { getAdminReportesStats } from '@/src/modules/reports/services/reports.service';
 import AdminPedidosClient from '@/components/admin/pedidos/AdminPedidosClient';
 
 interface PedidosPageProps {
@@ -45,7 +47,10 @@ export default async function AdminPedidosPage({ searchParams }: PedidosPageProp
 
   const [pedidosResponse, statsResponse] = await Promise.all([
     getAdminPedidos(currentFilters, session.token),
-    getAdminPedidosStats(session.token),
+    getAdminReportesStats(session.token, {
+      dateFrom: currentFilters.dateFrom,
+      dateTo: currentFilters.dateTo,
+    }),
   ]);
 
   const defaultStats = {

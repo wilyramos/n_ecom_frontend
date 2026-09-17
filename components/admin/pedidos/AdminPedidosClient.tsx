@@ -94,7 +94,14 @@ export default function AdminPedidosClient({
   };
 
   const handleQuickFilter = (key: string, value: string) => {
-    updateUrlFilters({ [key]: value, page: 1 });
+    // 💡 Resetea filtros conflictivos si hacemos clic en una tarjeta específica
+    if (key === 'status') {
+      updateUrlFilters({ status: value, paymentStatus: 'all', page: 1 });
+    } else if (key === 'paymentStatus') {
+      updateUrlFilters({ paymentStatus: value, status: 'all', page: 1 });
+    } else {
+      updateUrlFilters({ [key]: value, page: 1 });
+    }
   };
 
   const handleApplyDrawerFilters = () => {
@@ -145,6 +152,8 @@ export default function AdminPedidosClient({
             label: 'Recaudado Total',
             value: `S/ ${stats.totalRecaudado.toFixed(2)}`,
             icon: DollarSign,
+            // Al ser general, puedes optar por limpiar los estados si hacen clic
+            onClick: () => updateUrlFilters({ status: 'all', paymentStatus: 'all', page: 1 }),
           },
           {
             label: 'Órdenes Aprobadas',
@@ -152,6 +161,7 @@ export default function AdminPedidosClient({
             icon: CheckCircle2,
             hint: 'completadas',
             hintColor: 'emerald',
+            onClick: () => handleQuickFilter('paymentStatus', 'approved'),
           },
           {
             label: 'En Preparación',
@@ -159,6 +169,7 @@ export default function AdminPedidosClient({
             icon: Clock,
             hint: 'pendientes',
             hintColor: 'blue',
+            onClick: () => handleQuickFilter('status', 'processing'),
           },
           {
             label: 'Por Entregar',
@@ -166,10 +177,10 @@ export default function AdminPedidosClient({
             icon: Truck,
             hint: 'en ruta',
             hintColor: 'amber',
+            onClick: () => handleQuickFilter('status', 'shipped'),
           },
         ]}
       />
-
       {/* Barra de Filtros Unificada */}
       <AdminFilterBar
         searchPlaceholder="Buscar por orden, cliente, DNI..."
@@ -327,13 +338,12 @@ export default function AdminPedidosClient({
                           <CreditCard size={13} className="text-zinc-400" />
                           {ped.payment.provider}
                         </span>
-                        <span className={`text-[10px] font-semibold uppercase ${
-                          ped.payment.status === 'approved'
+                        <span className={`text-[10px] font-semibold uppercase ${ped.payment.status === 'approved'
                             ? 'text-emerald-600'
                             : ped.payment.status === 'rejected'
-                            ? 'text-red-600'
-                            : 'text-amber-600'
-                        }`}>
+                              ? 'text-red-600'
+                              : 'text-amber-600'
+                          }`}>
                           {ped.payment.status === 'approved' ? 'Pagado' : ped.payment.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
                         </span>
                       </div>

@@ -1,3 +1,4 @@
+// File: frontend/components/admin/pedidos/AdminPedidosClient.tsx
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -8,10 +9,9 @@ import {
   IAdminPedidosParams,
   IAdminPedidosStats,
 } from '@/src/modules/checkout/services/admin-pedidos.service';
-
-// Layout & UI Components
+import { DollarSign, CheckCircle2, Clock, Truck } from 'lucide-react';
+// Layout & UI
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
-import { AdminPageHeader } from '@/src/components/admin/layout/admin-page-header';
 import { AdminCardWrapper } from '@/src/components/admin/layout/admin-card-wrapper';
 import { AdminFilterBar } from '@/src/components/admin/layout/admin-filter-bar';
 import { AdminFilterDrawer } from '@/src/components/admin/layout/admin-filter-drawer';
@@ -24,12 +24,14 @@ import {
   AdminTableEmpty,
 } from '@/src/components/admin/layout/admin-table';
 import { AdminTablePagination } from '@/src/components/admin/layout/admin-table-pagination';
-import { Badge } from '@/components/ui/badge';
-import { formatDate } from '@/lib/utils';
-import { CreditCard, Eye, Package, Truck, Loader2 } from 'lucide-react';
+import { AdminStatsRow } from '@/src/components/admin/layout/admin-stats-row';
+import { AdminStatusBadge } from '@/src/components/admin/layout/admin-status-badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Clock, DollarSign } from 'lucide-react';
-import { AdminMetricsBar } from '@/src/components/admin/layout/admin-metrics-bar';
+import { formatDate } from '@/lib/utils';
+import {
+  CreditCard,
+  Package, ExternalLink
+} from 'lucide-react';
 
 export interface AdminPedidosClientProps {
   initialData: IPedido[];
@@ -43,18 +45,6 @@ export interface AdminPedidosClientProps {
   currentFilters: IAdminPedidosParams;
 }
 
-const STATUS_BADGE_MAP: Record<
-  string,
-  { variant: 'default' | 'secondary' | 'destructive' | 'outline'; label: string }
-> = {
-  awaiting_payment: { variant: 'outline', label: 'Esperando Pago' },
-  processing: { variant: 'default', label: 'En Proceso' },
-  shipped: { variant: 'secondary', label: 'Enviado' },
-  delivered: { variant: 'default', label: 'Entregado' },
-  canceled: { variant: 'destructive', label: 'Cancelado' },
-  paid_but_out_of_stock: { variant: 'destructive', label: 'Sin Stock' },
-};
-
 export default function AdminPedidosClient({
   initialData,
   stats,
@@ -63,7 +53,7 @@ export default function AdminPedidosClient({
 }: AdminPedidosClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const [search, setSearch] = useState(currentFilters.search || '');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -94,7 +84,6 @@ export default function AdminPedidosClient({
   };
 
   const handleQuickFilter = (key: string, value: string) => {
-    // 💡 Resetea filtros conflictivos si hacemos clic en una tarjeta específica
     if (key === 'status') {
       updateUrlFilters({ status: value, paymentStatus: 'all', page: 1 });
     } else if (key === 'paymentStatus') {
@@ -131,57 +120,49 @@ export default function AdminPedidosClient({
   ].filter(Boolean).length;
 
   return (
-    <AdminPageContainer maxWidth="default" padding="default" spacing="default">
-      {/* Cabecera */}
-      <AdminPageHeader
-        title="Gestión de Pedidos"
-        actions={
-          isPending && (
-            <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Actualizando lista...</span>
-            </div>
-          )
-        }
-      />
+    <AdminPageContainer maxWidth="default" padding="default" spacing="compact">
+      {/* KPIs Compactos */}
+      <AdminStatsRow
+  stats={[
+    {
+      label: 'Total pagadas',
+      value: `S/ ${stats.totalRecaudado.toLocaleString('es-PE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
+      icon: DollarSign,
+      iconColor: 'emerald',
+      active: currentFilters.status === 'all' && currentFilters.paymentStatus === 'all',
+      onClick: () => updateUrlFilters({ status: 'all', paymentStatus: 'all', page: 1 }),
+    },
+    {
+      label: 'Pagadas',
+      value: stats.totalApprovedOrders,
+      icon: CheckCircle2,
+      iconColor: 'indigo',
+      active: currentFilters.paymentStatus === 'approved',
+      onClick: () => handleQuickFilter('paymentStatus', 'approved'),
+    },
+    {
+      label: 'Preparando',
+      value: stats.enProcesoCount,
+      icon: Clock,
+      iconColor: 'blue',
+      active: currentFilters.status === 'processing',
+      onClick: () => handleQuickFilter('status', 'processing'),
+    },
+    {
+      label: 'En Reparto',
+      value: stats.enviadosCount,
+      icon: Truck,
+      iconColor: 'amber',
+      active: currentFilters.status === 'shipped',
+      onClick: () => handleQuickFilter('status', 'shipped'),
+    },
+  ]}
+/>
 
-      <AdminMetricsBar
-        defaultOpen={true}
-        metrics={[
-          {
-            label: 'Recaudado Total',
-            value: `S/ ${stats.totalRecaudado.toFixed(2)}`,
-            icon: DollarSign,
-            // Al ser general, puedes optar por limpiar los estados si hacen clic
-            onClick: () => updateUrlFilters({ status: 'all', paymentStatus: 'all', page: 1 }),
-          },
-          {
-            label: 'Órdenes Aprobadas',
-            value: stats.totalApprovedOrders,
-            icon: CheckCircle2,
-            hint: 'completadas',
-            hintColor: 'emerald',
-            onClick: () => handleQuickFilter('paymentStatus', 'approved'),
-          },
-          {
-            label: 'En Preparación',
-            value: stats.enProcesoCount,
-            icon: Clock,
-            hint: 'pendientes',
-            hintColor: 'blue',
-            onClick: () => handleQuickFilter('status', 'processing'),
-          },
-          {
-            label: 'Por Entregar',
-            value: stats.enviadosCount,
-            icon: Truck,
-            hint: 'en ruta',
-            hintColor: 'amber',
-            onClick: () => handleQuickFilter('status', 'shipped'),
-          },
-        ]}
-      />
-      {/* Barra de Filtros Unificada */}
+      {/* Barra de Filtros */}
       <AdminFilterBar
         searchPlaceholder="Buscar por orden, cliente, DNI..."
         searchValue={search}
@@ -192,52 +173,48 @@ export default function AdminPedidosClient({
         onRefresh={() => updateUrlFilters({})}
         filters={
           <div className="flex items-center gap-1.5 flex-wrap">
-            {/* Filtro: Estado de Pago */}
             <AdminSelect
               value={currentFilters.paymentStatus || 'all'}
               onChange={(e) => handleQuickFilter('paymentStatus', e.target.value)}
-              className="h-7 py-0 px-2 text-xs w-36 font-semibold text-emerald-700 bg-emerald-50/40 border-emerald-200"
+              className="h-7 py-0 px-2 text-[11px] w-32 font-medium text-zinc-700 bg-white border-zinc-200"
             >
               <option value="all">Cobro: Todos</option>
               <option value="approved">Solo Pagadas</option>
-              <option value="pending">Pendiente de Pago</option>
-              <option value="rejected">Rechazadas / Fallidas</option>
+              <option value="pending">Pendientes</option>
+              <option value="rejected">Rechazadas</option>
             </AdminSelect>
 
-            {/* Filtro: Estado Logístico */}
             <AdminSelect
               value={currentFilters.status || 'all'}
               onChange={(e) => handleQuickFilter('status', e.target.value)}
-              className="h-7 py-0 px-2 text-xs w-36"
+              className="h-7 py-0 px-2 text-[11px] w-36 font-medium text-zinc-700 bg-white border-zinc-200"
             >
-              <option value="all">Todos los estados</option>
+              <option value="all">Logística: Todas</option>
               <option value="awaiting_payment">Esperando Pago</option>
-              <option value="processing">En Proceso</option>
+              <option value="processing">En Preparación</option>
               <option value="shipped">Enviado</option>
               <option value="delivered">Entregado</option>
               <option value="canceled">Cancelado</option>
             </AdminSelect>
 
-            {/* Filtro: Pasarela */}
             <AdminSelect
               value={currentFilters.paymentProvider || 'all'}
               onChange={(e) => handleQuickFilter('provider', e.target.value)}
-              className="h-7 py-0 px-2 text-xs w-32"
+              className="h-7 py-0 px-2 text-[11px] w-28 font-medium text-zinc-700 bg-white border-zinc-200"
             >
-              <option value="all">Todas las pasarelas</option>
+              <option value="all">Pasarelas</option>
               <option value="powerpay">Powerpay</option>
               <option value="culqi">Culqi</option>
               <option value="mercadopago">Mercado Pago</option>
               <option value="transferencia">Transferencia</option>
             </AdminSelect>
 
-            {/* Filtro: Método de Entrega */}
             <AdminSelect
               value={currentFilters.deliveryMethod || 'all'}
               onChange={(e) => handleQuickFilter('delivery', e.target.value)}
-              className="h-7 py-0 px-2 text-xs w-28"
+              className="h-7 py-0 px-2 text-[11px] w-28 font-medium text-zinc-700 bg-white border-zinc-200"
             >
-              <option value="all">Todo tipo</option>
+              <option value="all">Entrega</option>
               <option value="shipping">Envío</option>
               <option value="pickup">Recojo</option>
             </AdminSelect>
@@ -245,125 +222,190 @@ export default function AdminPedidosClient({
         }
       />
 
-      {/* Drawer de Filtros Avanzados */}
+      {/* Drawer Filtros de Fecha */}
       <AdminFilterDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        title="Filtros de Fecha"
-        description="Filtra los pedidos generados dentro de un rango de tiempo."
+        title="Filtro por Fecha"
+        description="Selecciona un intervalo de fechas para consultar las órdenes registradas."
         onApply={handleApplyDrawerFilters}
         onReset={() => setTempFilters({ dateFrom: '', dateTo: '' })}
       >
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
-            <label className="text-xs font-semibold text-zinc-700 block mb-1">Desde:</label>
+            <label className="text-[11px] font-semibold text-zinc-600 block mb-1">
+              Fecha de Inicio:
+            </label>
             <input
               type="date"
               value={tempFilters.dateFrom}
               onChange={(e) => setTempFilters((prev) => ({ ...prev, dateFrom: e.target.value }))}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-md p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-zinc-700 block mb-1">Hasta:</label>
+            <label className="text-[11px] font-semibold text-zinc-600 block mb-1">
+              Fecha de Fin:
+            </label>
             <input
               type="date"
               value={tempFilters.dateTo}
               onChange={(e) => setTempFilters((prev) => ({ ...prev, dateTo: e.target.value }))}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-lg p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-md p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
             />
           </div>
         </div>
       </AdminFilterDrawer>
 
-      {/* Tabla */}
-      <AdminCardWrapper padding="none">
-        <AdminTable>
+      {/* Tabla con min-width explícito para respetar todas las columnas en móviles */}
+      <AdminCardWrapper padding="none" className="border-zinc-200/80 shadow-2xs">
+        <AdminTable className="min-w-[980px]">
           <AdminTableHead>
             <tr>
               <AdminTableHeaderCell width="140px">Orden</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="160px">Fecha</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Cliente</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="110px">Entrega</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="130px">Fecha</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="200px">Cliente</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="240px">Productos</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="100px">Entrega</AdminTableHeaderCell>
               <AdminTableHeaderCell width="130px">Pago</AdminTableHeaderCell>
               <AdminTableHeaderCell width="110px">Total</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="120px">Estado</AdminTableHeaderCell>
-              <AdminTableHeaderCell width="80px" align="right">Acción</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="130px">Estado</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="50px" align="right">Ver</AdminTableHeaderCell>
             </tr>
           </AdminTableHead>
 
-          <tbody className="divide-y divide-zinc-100">
+          <tbody className="divide-y divide-zinc-100 bg-white">
             {initialData.length === 0 ? (
               <AdminTableEmpty
                 title="No se encontraron pedidos"
-                description="No existen órdenes registradas que coincidan con los filtros seleccionados."
-                colSpan={8}
+                description="Intenta cambiar los términos de búsqueda o filtros aplicados."
+                colSpan={9}
               />
             ) : (
               initialData.map((ped) => {
-                const badge = STATUS_BADGE_MAP[ped.status] || {
-                  variant: 'outline',
-                  label: ped.status,
-                };
+                const isPickup = ped.deliveryMethod === 'pickup';
+                const firstItem = ped.items?.[0];
+                const totalItemsCount = ped.items?.reduce((acc, it) => acc + it.quantity, 0) || 0;
+                const extraProductsCount = (ped.items?.length || 0) - 1;
 
                 return (
-                  <tr key={ped._id} className="hover:bg-zinc-50/60 transition-colors">
-                    <AdminTableCell bold>
-                      #{ped.orderNumber}
+                  <tr
+                    key={ped._id}
+                    className="hover:bg-zinc-50/60 transition-colors text-xs"
+                  >
+                    {/* Orden */}
+                    <AdminTableCell bold className="text-zinc-900  w-[140px]">
+                      <Link
+                        href={`/admin/pedidos/${ped._id}`}
+                        className="hover:underline hover:text-blue-600 block truncate"
+                        title={ped.orderNumber}
+                      >
+                        {ped.orderNumber}
+                      </Link>
                     </AdminTableCell>
 
-                    <AdminTableCell>
+                    {/* Fecha */}
+                    <AdminTableCell className="text-zinc-500 whitespace-nowrap text-[11.5px] w-[130px]">
                       {formatDate(ped.createdAt)}
                     </AdminTableCell>
 
-                    <AdminTableCell>
-                      <p className="font-semibold text-zinc-900 truncate max-w-[170px]">
-                        {ped.customerProfile.nombre} {ped.customerProfile.apellidos}
-                      </p>
-                      <p className="text-[10px] text-zinc-400">
-                        {ped.customerProfile.tipoDocumento}: {ped.customerProfile.numeroDocumento}
-                      </p>
-                    </AdminTableCell>
-
-                    <AdminTableCell>
-                      <span className="inline-flex items-center gap-1.5 text-zinc-700">
-                        {ped.deliveryMethod === 'pickup' ? <Package size={13} className="text-zinc-400" /> : <Truck size={13} className="text-zinc-400" />}
-                        {ped.deliveryMethod === 'pickup' ? 'Recojo' : 'Envío'}
-                      </span>
-                    </AdminTableCell>
-
-                    <AdminTableCell>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="inline-flex items-center gap-1.5 text-zinc-700 uppercase font-medium">
-                          <CreditCard size={13} className="text-zinc-400" />
-                          {ped.payment.provider}
+                    {/* Cliente */}
+                    <AdminTableCell className="w-[200px]">
+                      <div className="flex flex-col min-w-0 pr-2">
+                        <span className="font-medium text-zinc-900 truncate" title={`${ped.customerProfile.nombre} ${ped.customerProfile.apellidos}`}>
+                          {ped.customerProfile.nombre} {ped.customerProfile.apellidos}
                         </span>
-                        <span className={`text-[10px] font-semibold uppercase ${ped.payment.status === 'approved'
-                            ? 'text-emerald-600'
-                            : ped.payment.status === 'rejected'
-                              ? 'text-red-600'
-                              : 'text-amber-600'
-                          }`}>
-                          {ped.payment.status === 'approved' ? 'Pagado' : ped.payment.status === 'rejected' ? 'Rechazado' : 'Pendiente'}
+                        <span className="text-[10px] text-zinc-400 truncate">
+                          {ped.customerProfile.tipoDocumento}: {ped.customerProfile.numeroDocumento}
                         </span>
                       </div>
                     </AdminTableCell>
 
-                    <AdminTableCell bold>
+                    {/* Productos */}
+                    <AdminTableCell className="w-[240px]">
+                      {firstItem ? (
+                        <div className="flex items-center gap-2 pr-2">
+                          <div className="flex flex-col min-w-0">
+                            <span
+                              className="truncate font-medium text-zinc-800 text-[11px] leading-tight"
+                              title={firstItem.nombre}
+                            >
+                              {firstItem.nombre}
+                            </span>
+                            <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 leading-tight">
+                              <span>Cant: {firstItem.quantity}</span>
+                              {firstItem.variantAttributes && (
+                                <>
+                                  <span>•</span>
+                                  <span className="truncate">
+                                    {Object.values(firstItem.variantAttributes).join(' / ')}
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          {extraProductsCount > 0 && (
+                            <span
+                              className="shrink-0 rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 border border-zinc-200/80"
+                              title={`${totalItemsCount} unidades en total`}
+                            >
+                              +{extraProductsCount}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-zinc-400 text-[11px]">—</span>
+                      )}
+                    </AdminTableCell>
+
+                    {/* Entrega */}
+                    <AdminTableCell className="w-[100px]">
+                      <div className="flex items-center gap-1.5 text-zinc-700">
+                        {isPickup ? (
+                          <Package className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                        ) : (
+                          <Truck className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                        )}
+                        <span className="text-[11.5px] font-medium">
+                          {isPickup ? 'Recojo' : 'Envío'}
+                        </span>
+                      </div>
+                    </AdminTableCell>
+
+                    {/* Pago */}
+                    <AdminTableCell className="w-[130px]">
+                      <div className="flex flex-col gap-0.5 items-start">
+                        <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-zinc-600 uppercase tracking-tight">
+                          <CreditCard className="h-3 w-3 text-zinc-400 shrink-0" />
+                          {ped.payment.provider}
+                        </span>
+                        <AdminStatusBadge status={ped.payment.status} />
+                      </div>
+                    </AdminTableCell>
+
+                    {/* Total */}
+                    <AdminTableCell bold className="text-zinc-950 font-semibold text-xs whitespace-nowrap  w-[110px]">
                       S/ {ped.totalPrice.toFixed(2)}
                     </AdminTableCell>
 
-                    <AdminTableCell>
-                      <Badge variant={badge.variant}>
-                        {badge.label}
-                      </Badge>
+                    {/* Estado */}
+                    <AdminTableCell className="w-[130px]">
+                      <AdminStatusBadge status={ped.status} />
                     </AdminTableCell>
 
-                    <AdminTableCell align="right">
-                      <Button asChild variant="ghost" size="sm" className="h-7 px-2 font-medium">
+                    {/* Acción */}
+                    <AdminTableCell align="right" className="w-[50px]">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md"
+                        title="Ver detalles"
+                      >
                         <Link href={`/admin/pedidos/${ped._id}`}>
-                          <Eye className="w-3.5 h-3.5 mr-1" />
-                          Ver
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          <span className="sr-only">Ver Pedido</span>
                         </Link>
                       </Button>
                     </AdminTableCell>
@@ -374,7 +416,6 @@ export default function AdminPedidosClient({
           </tbody>
         </AdminTable>
 
-        {/* Paginador Modular */}
         <AdminTablePagination
           currentPage={pagination.page}
           totalPages={pagination.totalPages}

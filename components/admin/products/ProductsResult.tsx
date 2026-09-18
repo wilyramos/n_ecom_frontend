@@ -34,7 +34,7 @@ export default async function ProductsResultsAdmin({
     const categories = await getCategories();
 
     return (
-        <AdminCardWrapper padding="none" className="border-slate-200 bg-white shadow-xs">
+        <AdminCardWrapper padding="none" className="border-zinc-200/80 shadow-2xs">
             <ProductsTable
                 products={productsData}
                 categories={categories}

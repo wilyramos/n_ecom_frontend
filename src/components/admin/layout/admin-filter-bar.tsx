@@ -1,8 +1,6 @@
-//File: frontend/src/components/admin/layout/admin-filter-bar.tsx
-
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Search,
   Filter,
@@ -15,31 +13,22 @@ import { cn } from "@/lib/utils";
 import { AdminButton } from "./admin-button";
 
 interface AdminFilterBarProps extends React.HTMLAttributes<HTMLDivElement> {
-  // Buscador
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
-
-  // Filtros rápidos
   filters?: React.ReactNode;
-
-  // Drawer de filtros avanzados
   onToggleAdvanced?: () => void;
   activeCount?: number;
-
-  // Acciones secundarias opcionales
   onImport?: () => void;
   onExport?: () => void;
   onRefresh?: () => void;
   customActions?: React.ReactNode;
-
-  // Reset
   onReset?: () => void;
 }
 
 export function AdminFilterBar({
   searchPlaceholder = "Buscar...",
-  searchValue,
+  searchValue = "",
   onSearchChange,
   filters,
   onToggleAdvanced,
@@ -52,7 +41,19 @@ export function AdminFilterBar({
   className,
   ...props
 }: AdminFilterBarProps) {
+  const [internalValue, setInternalValue] = useState(searchValue);
   const hasSecondaryActions = Boolean(onImport || onExport || onRefresh || customActions);
+
+  // Sincronizar si el valor externo cambia (por ejemplo al resetear)
+  useEffect(() => {
+    setInternalValue(searchValue);
+  }, [searchValue]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = e.target.value;
+    setInternalValue(nextValue);
+    onSearchChange?.(nextValue);
+  };
 
   return (
     <div
@@ -68,20 +69,18 @@ export function AdminFilterBar({
           <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400 pointer-events-none" />
           <input
             type="text"
-            value={searchValue ?? ""}
-            onChange={(e) => onSearchChange(e.target.value)}
+            value={internalValue}
+            onChange={handleChange}
             placeholder={searchPlaceholder}
             className="w-full bg-slate-50/60 border border-slate-200 rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-slate-400 transition-all font-medium"
           />
         </div>
       )}
 
-      {/* 2. Filtros Rápidos, Disparadores y Acciones */}
+      {/* 2. Filtros Rápidos y Acciones */}
       <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-        {/* Selects rápidos personalizados */}
         {filters}
 
-        {/* Botón Disparador del Drawer de Filtros */}
         {onToggleAdvanced && (
           <button
             type="button"
@@ -99,12 +98,10 @@ export function AdminFilterBar({
           </button>
         )}
 
-        {/* Separador vertical si existen acciones secundarias */}
         {hasSecondaryActions && (
           <div className="h-4 w-px bg-slate-200 mx-0.5" />
         )}
 
-        {/* Refrescar Datos */}
         {onRefresh && (
           <AdminButton
             type="button"
@@ -118,7 +115,6 @@ export function AdminFilterBar({
           </AdminButton>
         )}
 
-        {/* Importar */}
         {onImport && (
           <AdminButton
             type="button"
@@ -132,7 +128,6 @@ export function AdminFilterBar({
           </AdminButton>
         )}
 
-        {/* Exportar */}
         {onExport && (
           <AdminButton
             type="button"
@@ -146,10 +141,8 @@ export function AdminFilterBar({
           </AdminButton>
         )}
 
-        {/* Componentes o acciones adicionales pasados por prop */}
         {customActions}
 
-        {/* Limpiar Filtros */}
         {activeCount > 0 && onReset && (
           <AdminButton
             type="button"

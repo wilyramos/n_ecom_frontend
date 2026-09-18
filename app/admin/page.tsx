@@ -18,7 +18,6 @@ import {
   ExternalLink
 } from "lucide-react";
 import { AdminPageContainer } from "@/src/components/admin/layout/admin-page-container";
-import { AdminPageHeader } from "@/src/components/admin/layout/admin-page-header";
 
 interface NavCardItem {
   href: string;
@@ -85,9 +84,7 @@ const groups: GroupSection[] = [
 export default async function AdminPage() {
   return (
     <AdminPageContainer maxWidth="default" padding="default" spacing="default">
-      <AdminPageHeader
-        title="Panel de Admin."
-      />
+      
 
       <div className="space-y-6">
         {groups.map((group) => (

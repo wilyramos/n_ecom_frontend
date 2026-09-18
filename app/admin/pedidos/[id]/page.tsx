@@ -1,5 +1,4 @@
 // File: frontend/app/admin/pedidos/[id]/page.tsx
-
 import React from 'react';
 import { redirect, notFound } from 'next/navigation';
 import { verifySession } from '@/src/auth/dal';

@@ -1,8 +1,8 @@
+// File: frontend/components/admin/products/SpecificationsSection.tsx
 "use client";
 
 import { useState } from "react";
 import type { KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X, Plus, ListTree } from "lucide-react";
@@ -90,22 +90,22 @@ export default function SpecificationsSection({ initial = [] }: Props) {
     };
 
     return (
-        <div className="p-4 border border-slate-200 rounded-xl bg-white shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
+        <div className="space-y-3">
+            <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100">
                 <div className="flex items-center gap-2">
-                    <ListTree className="w-4 h-4 text-slate-500" />
-                    <Label className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    <ListTree className="w-4 h-4 text-zinc-500" />
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">
                         Especificaciones Técnicas
-                    </Label>
+                    </h3>
                 </div>
                 <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => addRow()}
-                    className="h-7 px-2 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 cursor-pointer"
+                    className="h-7 px-2 text-xs text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 cursor-pointer"
                 >
-                    <Plus className="w-3.5 h-3.5 mr-1 text-slate-400" />
+                    <Plus className="w-3.5 h-3.5 mr-1 text-zinc-400" />
                     <span>Agregar fila</span>
                 </Button>
             </div>
@@ -114,16 +114,16 @@ export default function SpecificationsSection({ initial = [] }: Props) {
                 {items.map((item, i) => (
                     <div key={i} className="flex items-center gap-2">
                         <Input
-                            placeholder="Propiedad"
-                            className="w-1/2 font-medium"
+                            placeholder="Propiedad (ej. Procesador)"
+                            className="w-1/2 h-8 text-xs font-medium"
                             value={item.key}
                             onChange={(e) => handleChange(e, i, "key")}
                             onPaste={handlePaste}
                             onKeyDown={(e) => handleKeyDown(e, i)}
                         />
                         <Input
-                            placeholder="Valor"
-                            className="w-1/2"
+                            placeholder="Valor (ej. A17 Pro)"
+                            className="w-1/2 h-8 text-xs"
                             value={item.value}
                             onChange={(e) => handleChange(e, i, "value")}
                             onKeyDown={(e) => handleKeyDown(e, i)}
@@ -133,7 +133,7 @@ export default function SpecificationsSection({ initial = [] }: Props) {
                             variant="ghost"
                             size="icon"
                             onClick={() => removeRow(i)}
-                            className="h-9 w-9 text-slate-400 hover:text-rose-600 hover:bg-rose-50 shrink-0 rounded-lg transition-colors cursor-pointer"
+                            className="h-8 w-8 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 shrink-0 rounded-lg transition-colors cursor-pointer"
                             title="Eliminar fila"
                         >
                             <X className="h-3.5 w-3.5" />

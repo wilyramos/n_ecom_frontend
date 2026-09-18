@@ -3,29 +3,42 @@
 import React, { useState } from "react";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminNavbar } from "./admin-navbar";
-import { cn } from "@/lib/utils";
+import { User } from "@/src/schemas";
 
 interface AdminShellProps {
   children: React.ReactNode;
+  user: User;
 }
 
-export function AdminShell({ children }: AdminShellProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+export function AdminShell({ children, user }: AdminShellProps) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
-      <AdminSidebar
-        isCollapsed={isCollapsed}
-        onToggle={() => setIsCollapsed((prev) => !prev)}
+    <div className="flex h-screen w-full overflow-hidden bg-background">
+      {/* Overlay para móviles cuando el sidebar está abierto */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      <AdminSidebar 
+        user={user}
+        isOpen={isSidebarOpen} 
+        onToggle={() => setIsSidebarOpen(!isSidebarOpen)} 
       />
-      <div
-        className={cn(
-          "flex-1 flex flex-col min-w-0 transition-all duration-300",
-          isCollapsed ? "lg:pl-20" : "lg:pl-64"
-        )}
-      >
-        <AdminNavbar onToggleSidebar={() => setIsCollapsed((prev) => !prev)} />
-        <main className="flex-1">{children}</main>
+      
+      <div className="flex flex-1 flex-col overflow-hidden w-full min-w-0">
+        <AdminNavbar 
+          user={user} 
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+        />
+        <main className="flex-1 overflow-y-auto bg-muted/40 p-4">
+          <div className="mx-auto w-full">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

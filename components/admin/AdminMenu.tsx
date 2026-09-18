@@ -1,3 +1,5 @@
+//File: frontend/components/admin/AdminMenu.tsx
+
 'use client'
 
 import { Fragment } from 'react';

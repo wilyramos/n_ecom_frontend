@@ -15,43 +15,43 @@ export default function ProductSwitches({ product }: { product?: ProductWithCate
     const switches = [
         {
             id: "isActive",
-            label: "¿Producto activo?",
+            label: "Producto Activo",
             state: isActive,
             setter: setIsActive,
         },
         {
             id: "esDestacado",
-            label: "¿Es destacado?",
+            label: "Destacado",
             state: esDestacado,
             setter: setEsDestacado,
         },
         {
             id: "esNuevo",
-            label: "¿Es nuevo?",
+            label: "Etiqueta Nuevo",
             state: esNuevo,
             setter: setEsNuevo,
         },
         {
             id: "isFrontPage",
-            label: "¿Página principal?",
+            label: "Mostrar en Portada",
             state: isFrontPage,
             setter: setIsFrontPage,
         },
     ];
 
     return (
-        <div className="space-y-3.5 text-xs">
+        <div className="space-y-3 text-xs">
             {switches.map(({ id, label, state, setter }) => (
                 <div key={id} className="flex items-center justify-between gap-2">
-                    <Label htmlFor={id} className="text-xs font-medium text-slate-700 cursor-pointer">
+                    <Label htmlFor={id} className="text-xs font-medium text-zinc-700 cursor-pointer">
                         {label}
                     </Label>
                     <Switch
                         id={id}
                         onChange={setter}
                         checked={state}
-                        onColor="#0f172a"
-                        offColor="#e2e8f0"
+                        onColor="#18181b"
+                        offColor="#e4e4e7"
                         onHandleColor="#ffffff"
                         offHandleColor="#ffffff"
                         uncheckedIcon={false}

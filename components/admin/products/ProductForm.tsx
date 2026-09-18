@@ -1,3 +1,4 @@
+// File: frontend/components/admin/products/ProductForm.tsx
 "use client";
 
 import { useState } from "react";
@@ -18,18 +19,15 @@ import {
     rectSortingStrategy,
 } from "@dnd-kit/sortable";
 
-// Types
 import type { ProductWithCategoryResponse, CategoryListResponse } from "@/src/schemas";
 import type { TBrand } from "@/src/schemas/brands";
 import type { ProductLine } from "@/src/schemas/line.schema";
 
-// UI Components
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapper";
 
-// Custom Form Components
 import ClientCategoryAttributes from "./ClientCategoryAttributes";
 import ProductSwitches from "./ProductSwitches";
 import SpecificationsSection from "./SpecificationsSection";
@@ -39,7 +37,6 @@ import ProductVariantsForm from "./ProductVariantsForm";
 import MediaLibraryDialog from "./MediaLibraryDialog";
 import ComplementaryProductsSection from "./ComplementaryProductsSection";
 import SEOProduct from "./SEOproduct";
-import TagsInput from "./TagsInput";
 import SortableImageItem from "./SortableImageItem";
 
 export default function ProductForm({
@@ -60,7 +57,6 @@ export default function ProductForm({
     const [selectedBrandId, setSelectedBrandId] = useState<string | undefined>(initialBrandId);
     const [masterImages, setMasterImages] = useState<string[]>(() => Array.from(new Set(product?.imagenes || [])));
 
-    // Sensores DnD configurados con tolerancia para no interferir con clicks simples
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -101,88 +97,82 @@ export default function ProductForm({
     const dynamicCategoryAttributes = currentCategory?.attributes || [];
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-            <div className="lg:col-span-8 space-y-5">
-                {/* 1. Título */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardContent className="p-5">
-                        <div className="space-y-1.5">
-                            <Label htmlFor="nombre" className="text-xs font-semibold text-slate-700">
-                                Título <span className="text-rose-600">*</span>
-                            </Label>
-                            <Input
-                                id="nombre"
-                                name="nombre"
-                                defaultValue={product?.nombre}
-                                placeholder="Camiseta de manga corta, Zapatos..."
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+            <div className="lg:col-span-8 space-y-3">
+                {/* Nombre / Título */}
+                <AdminCardWrapper padding="default">
+                    <div className="space-y-1.5">
+                        <Label htmlFor="nombre" className="text-xs font-semibold text-zinc-700">
+                            Nombre del Producto <span className="text-rose-600">*</span>
+                        </Label>
+                        <Input
+                            id="nombre"
+                            name="nombre"
+                            defaultValue={product?.nombre}
+                            placeholder="Ej. iPhone 17 Pro Max..."
+                            className="h-8 text-xs font-medium"
+                        />
+                    </div>
+                </AdminCardWrapper>
 
-                {/* 2. Archivos Multimedia (Con Drag & Drop) */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                                Archivos multimedia
-                            </CardTitle>
-                            <MediaLibraryDialog
-                                selectedImages={masterImages}
-                                globalImagesPool={masterImages}
-                                onConfirmSelection={setMasterImages}
-                                onUploadSuccess={handleAddImagesToPool}
-                                triggerLabel="Agregar"
-                            />
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-2 pt-0">
-                        {masterImages.length === 0 ? (
-                            <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/60 text-center space-y-2">
-                                <ImageIcon className="w-7 h-7 mx-auto text-slate-400" />
-                                <p className="text-xs text-slate-600 font-medium">
-                                    Agrega imágenes, videos o modelos 3D
-                                </p>
-                                <p className="text-[11px] text-slate-400">
-                                    Acepta archivos JPG, PNG, WEBP y AVIF
-                                </p>
-                            </div>
-                        ) : (
-                            <DndContext
-                                id="product-images-dnd"
-                                sensors={sensors}
-                                collisionDetection={closestCenter}
-                                onDragEnd={handleDragEnd}
-                            >
-                                <SortableContext items={masterImages} strategy={rectSortingStrategy}>
-                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 p-3 border border-slate-200 rounded-xl bg-slate-50/40">
-                                        {masterImages.map((img, idx) => (
-                                            <SortableImageItem
-                                                key={img}
-                                                id={img}
-                                                isFirst={idx === 0}
-                                                onRemove={handleRemoveImage}
-                                            />
-                                        ))}
-                                    </div>
-                                </SortableContext>
-                            </DndContext>
-                        )}
-                    </CardContent>
-                </Card>
+                {/* Galería Multimedia */}
+                <AdminCardWrapper padding="default">
+                    <div className="flex items-center justify-between pb-3 border-b border-zinc-100 mb-3">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">
+                            Archivos Multimedia
+                        </h3>
+                        <MediaLibraryDialog
+                            selectedImages={masterImages}
+                            globalImagesPool={masterImages}
+                            onConfirmSelection={setMasterImages}
+                            onUploadSuccess={handleAddImagesToPool}
+                            triggerLabel="Agregar"
+                        />
+                    </div>
 
-                {/* 3. Precios */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Precios
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0 space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {masterImages.length === 0 ? (
+                        <div className="p-6 border border-dashed border-zinc-200 rounded-lg bg-zinc-50/50 text-center space-y-1.5">
+                            <ImageIcon className="w-6 h-6 mx-auto text-zinc-400" />
+                            <p className="text-xs text-zinc-600 font-medium">
+                                Sin imágenes asociadas
+                            </p>
+                            <p className="text-[11px] text-zinc-400">
+                                Formatos permitidos: JPG, PNG, WEBP y AVIF
+                            </p>
+                        </div>
+                    ) : (
+                        <DndContext
+                            id="product-images-dnd"
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext items={masterImages} strategy={rectSortingStrategy}>
+                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 p-2.5 border border-zinc-200/80 rounded-lg bg-zinc-50/40">
+                                    {masterImages.map((img, idx) => (
+                                        <SortableImageItem
+                                            key={img}
+                                            id={img}
+                                            isFirst={idx === 0}
+                                            onRemove={handleRemoveImage}
+                                        />
+                                    ))}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+                    )}
+                </AdminCardWrapper>
+
+                {/* Precios */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Precios
+                    </h3>
+                    <div className="space-y-3.5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <Label htmlFor="precio" className="text-xs font-semibold text-slate-700">
-                                    Precio <span className="text-rose-600">*</span>
+                                <Label htmlFor="precio" className="text-xs font-semibold text-zinc-700">
+                                    Precio de Venta <span className="text-rose-600">*</span>
                                 </Label>
                                 <Input
                                     id="precio"
@@ -192,11 +182,12 @@ export default function ProductForm({
                                     step="0.01"
                                     min={0}
                                     placeholder="S/ 0.00"
+                                    className="h-8 text-xs font-medium"
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <Label htmlFor="precioComparativo" className="text-xs font-semibold text-slate-700">
-                                    Precio de comparación
+                                <Label htmlFor="precioComparativo" className="text-xs font-semibold text-zinc-700">
+                                    Precio Regular / Comparativo
                                 </Label>
                                 <Input
                                     id="precioComparativo"
@@ -206,14 +197,15 @@ export default function ProductForm({
                                     step="0.01"
                                     min={0}
                                     placeholder="S/ 0.00"
+                                    className="h-8 text-xs font-medium"
                                 />
                             </div>
                         </div>
 
-                        <div className="border-t border-slate-100 pt-3">
+                        <div className="border-t border-zinc-100 pt-3">
                             <div className="max-w-xs space-y-1.5">
-                                <Label htmlFor="costo" className="text-xs font-semibold text-slate-700">
-                                    Costo por artículo
+                                <Label htmlFor="costo" className="text-xs font-semibold text-zinc-700">
+                                    Costo por Artículo
                                 </Label>
                                 <Input
                                     id="costo"
@@ -223,52 +215,51 @@ export default function ProductForm({
                                     step="0.01"
                                     min={0}
                                     placeholder="S/ 0.00"
+                                    className="h-8 text-xs font-medium"
                                 />
-                                <p className="text-[11px] text-slate-400">Los clientes no verán este valor.</p>
+                                <p className="text-[11px] text-zinc-400">Uso interno para cálculo de margen.</p>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </AdminCardWrapper>
 
-                {/* 4. Inventario */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Inventario
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0 space-y-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Inventario */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Inventario y Logística
+                    </h3>
+                    <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div className="space-y-1.5">
-                                <Label htmlFor="sku" className="text-xs font-semibold text-slate-700">
-                                    SKU (código de artículo)
+                                <Label htmlFor="sku" className="text-xs font-semibold text-zinc-700">
+                                    SKU
                                 </Label>
                                 <Input
                                     id="sku"
                                     name="sku"
                                     defaultValue={product?.sku}
                                     placeholder="PROD-001"
-                                    className="font-mono uppercase"
+                                    className="h-8 text-xs uppercase"
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <Label htmlFor="barcode" className="text-xs font-semibold text-slate-700">
-                                    Código de barras (ISBN, UPC, GTIN)
+                                <Label htmlFor="barcode" className="text-xs font-semibold text-zinc-700">
+                                    Código de Barras
                                 </Label>
                                 <Input
                                     id="barcode"
                                     name="barcode"
                                     defaultValue={product?.barcode}
                                     placeholder="775..."
-                                    className="font-mono"
+                                    className="h-8 text-xs"
                                 />
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-100 pt-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-zinc-100 pt-3">
                             <div className="space-y-1.5">
-                                <Label htmlFor="stock" className="text-xs font-semibold text-slate-700">
-                                    Cantidad disponible
+                                <Label htmlFor="stock" className="text-xs font-semibold text-zinc-700">
+                                    Stock Disponible
                                 </Label>
                                 <Input
                                     id="stock"
@@ -276,11 +267,12 @@ export default function ProductForm({
                                     name="stock"
                                     defaultValue={product?.stock ?? 0}
                                     min={0}
+                                    className="h-8 text-xs"
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <Label htmlFor="diasEnvio" className="text-xs font-semibold text-slate-700">
-                                    Días de preparación / despacho
+                                <Label htmlFor="diasEnvio" className="text-xs font-semibold text-zinc-700">
+                                    Días de Preparación
                                 </Label>
                                 <Input
                                     id="diasEnvio"
@@ -288,80 +280,69 @@ export default function ProductForm({
                                     name="diasEnvio"
                                     defaultValue={product?.diasEnvio ?? 1}
                                     min={1}
+                                    className="h-8 text-xs"
                                 />
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </AdminCardWrapper>
 
-                {/* 5. Variantes */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Variantes
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0">
-                        <ProductVariantsForm
-                            product={product}
-                            categoryAttributes={dynamicCategoryAttributes}
-                            globalImagesPool={masterImages}
-                            onUploadToPool={handleAddImagesToPool}
-                        />
-                    </CardContent>
-                </Card>
+                {/* Variantes */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Variantes
+                    </h3>
+                    <ProductVariantsForm
+                        product={product}
+                        categoryAttributes={dynamicCategoryAttributes}
+                        globalImagesPool={masterImages}
+                        onUploadToPool={handleAddImagesToPool}
+                    />
+                </AdminCardWrapper>
 
-                {/* 6. Especificaciones Técnicas */}
-                <SpecificationsSection initial={product?.especificaciones} />
+                {/* Especificaciones */}
+                <AdminCardWrapper padding="default">
+                    <SpecificationsSection initial={product?.especificaciones} />
+                </AdminCardWrapper>
 
-                {/* 7. Productos Complementarios */}
-                <ComplementaryProductsSection initialItems={product?.complementarios || []} />
+                {/* Complementarios */}
+                <AdminCardWrapper padding="default">
+                    <ComplementaryProductsSection initialItems={product?.complementarios || []} />
+                </AdminCardWrapper>
 
-                {/* 8. Descripción Detallada */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Descripción
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0">
-                        <ProductDescriptionEditor initialHTML={product?.descripcion || ""} />
-                    </CardContent>
-                </Card>
+                {/* Descripción */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Descripción Detallada
+                    </h3>
+                    <ProductDescriptionEditor initialHTML={product?.descripcion || ""} />
+                </AdminCardWrapper>
 
-                {/* 9. Publicación en motores de búsqueda (SEO) */}
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Publicación en motores de búsqueda
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0">
-                        <SEOProduct product={product} />
-                    </CardContent>
-                </Card>
+                {/* SEO */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        SEO y Metadatos
+                    </h3>
+                    <SEOProduct product={product} />
+                </AdminCardWrapper>
             </div>
 
-            {/* COLUMNA LATERAL */}
-            <aside className="lg:col-span-4 space-y-5 lg:sticky lg:top-20">
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Estado
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0">
-                        <ProductSwitches product={product} />
-                    </CardContent>
-                </Card>
+            {/* Columna Lateral */}
+            <aside className="lg:col-span-4 space-y-3 lg:sticky lg:top-18">
+                {/* Switches de Estado */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Visibilidad
+                    </h3>
+                    <ProductSwitches product={product} />
+                </AdminCardWrapper>
 
-                <Card className="border-slate-200 bg-white shadow-xs">
-                    <CardHeader className="p-5 pb-3">
-                        <CardTitle className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
-                            Organización de productos
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0 space-y-4">
+                {/* Clasificación / Organización */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Clasificación
+                    </h3>
+                    <div className="space-y-3">
                         <ClientCategoryAttributes
                             categorias={categorias}
                             initialCategoryId={product?.categoria?._id}
@@ -370,8 +351,8 @@ export default function ProductForm({
                         />
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="brand" className="text-xs font-semibold text-slate-700">
-                                Proveedor / Marca <span className="text-rose-600">*</span>
+                            <Label htmlFor="brand" className="text-xs font-semibold text-zinc-700">
+                                Marca <span className="text-rose-600">*</span>
                             </Label>
                             <BrandCombobox
                                 brands={brands}
@@ -382,7 +363,7 @@ export default function ProductForm({
                         </div>
 
                         <div className="space-y-1.5">
-                            <Label htmlFor="line" className="text-xs font-semibold text-slate-700">
+                            <Label htmlFor="line" className="text-xs font-semibold text-zinc-700">
                                 Línea / Familia
                             </Label>
                             <NativeSelect
@@ -391,6 +372,7 @@ export default function ProductForm({
                                 key={selectedBrandId}
                                 defaultValue={initialLineId || ""}
                                 disabled={!selectedBrandId || filteredLines.length === 0}
+                                className="h-8 text-xs font-medium"
                             >
                                 <option value="" disabled>
                                     {!selectedBrandId ? "Selecciona marca primero" : "Seleccionar línea..."}
@@ -402,12 +384,12 @@ export default function ProductForm({
                                 ))}
                             </NativeSelect>
                         </div>
-
-                        <div className="pt-2 border-t border-slate-100">
+{/* 
+                        <div className="pt-2 border-t border-zinc-100">
                             <TagsInput initial={product?.tags || []} />
-                        </div>
-                    </CardContent>
-                </Card>
+                        </div> */}
+                    </div>
+                </AdminCardWrapper>
             </aside>
         </div>
     );

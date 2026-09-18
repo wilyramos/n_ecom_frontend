@@ -10,54 +10,57 @@ import { linesService } from "@/src/services/lines.service";
 import { getProduct } from "@/src/services/products";
 
 import { AdminPageContainer } from "@/src/components/admin/layout/admin-page-container";
-import { AdminPageHeader } from "@/src/components/admin/layout/admin-page-header";
-import { AdminButton } from "@/src/components/admin/layout/admin-button";
+import { AdminActionBar } from "@/src/components/admin/layout/admin-action-bar";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function NewProductPage({
-    searchParams,
+  searchParams,
 }: {
-    searchParams: SearchParams;
+  searchParams: SearchParams;
 }) {
-    const params = await searchParams;
-    const duplicateId = params.duplicate;
+  const params = await searchParams;
+  const duplicateId = params.duplicate;
 
-    // Parallel Data Fetching
-    const [categorias, brands, lines, duplicateProduct] = await Promise.all([
-        getCategories(),
-        getActiveBrands(),
-        linesService.getAllActive(),
-        duplicateId ? getProduct(duplicateId as string) : Promise.resolve(null),
-    ]);
+  const [categorias, brands, lines, duplicateProduct] = await Promise.all([
+    getCategories(),
+    getActiveBrands(),
+    linesService.getAllActive(),
+    duplicateId ? getProduct(duplicateId as string) : Promise.resolve(null),
+  ]);
 
-    const initialData = duplicateProduct
-        ? {
-              ...duplicateProduct,
-              _id: "",
-              nombre: `${duplicateProduct.nombre} (Copia)`,
-          }
-        : undefined;
+  const initialData = duplicateProduct
+    ? {
+        ...duplicateProduct,
+        _id: "",
+        nombre: `${duplicateProduct.nombre} (Copia)`,
+      }
+    : undefined;
 
-    return (
-        <AdminPageContainer maxWidth="default" padding="default" spacing="default">
-            <AdminPageHeader
-                title={duplicateProduct ? "Duplicar Producto" : "Nuevo Producto"}
-                actions={
-                    <AdminButton variant="outline" size="sm" icon={ArrowLeft}>
-                        <Link href="/admin/products">
-                            <span>Volver a Productos</span>
-                        </Link>
-                    </AdminButton>
-                }
-            />
+  return (
+    <AdminPageContainer maxWidth="default" padding="default" spacing="compact">
+      <AdminActionBar
+        leftContent={
+          <span className="text-xs font-semibold text-zinc-800">
+            {duplicateProduct ? "Duplicar Producto" : "Nuevo Producto"}
+          </span>
+        }
+      >
+        <Link
+          href="/admin/products"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200/80 rounded-lg transition-colors cursor-pointer"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Volver a Productos</span>
+        </Link>
+      </AdminActionBar>
 
-            <CreateProductForm
-                categorias={categorias}
-                brands={brands}
-                lines={lines}
-                initialData={initialData}
-            />
-        </AdminPageContainer>
-    );
+      <CreateProductForm
+        categorias={categorias}
+        brands={brands}
+        lines={lines}
+        initialData={initialData}
+      />
+    </AdminPageContainer>
+  );
 }

@@ -16,8 +16,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import { CheckCircle2, UploadCloud, ImageIcon, Loader2 } from "lucide-react";
-import { uploadImage } from "@/actions/product/upload-image-action";
 import { toast } from "sonner";
+import { getClientToken } from "@/actions/get-token-action";
 
 interface MediaLibraryProps {
     selectedImages: string[];
@@ -63,15 +63,43 @@ export default function MediaLibraryDialog({
             files.forEach((f) => formData.append("images", f));
 
             try {
-                const result = await uploadImage(formData);
-                onUploadSuccess(result.images);
+                // 1. Obtener el token sin pasar archivos pesados por el servidor Next.js
+                const token = await getClientToken();
+                
+                if (!token) {
+                    toast.error("No tienes autorización o tu sesión ha expirado.");
+                    setIsUploading(false);
+                    return;
+                }
+
+                // 2. Apuntar directamente a la URL de tu API pública
+                const backendUrl = `${process.env.NEXT_PUBLIC_API_URL}/products/upload-images`;
+                
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                        // Nota: No se incluye 'Content-Type' manualmente, el navegador genera el límite "boundary" adecuado.
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const uploadedImages = result.images || [];
+
+                onUploadSuccess(uploadedImages);
                 setTempSelection((prev) =>
-                    allowMultiple ? [...prev, ...result.images] : [result.images[0]]
+                    allowMultiple ? [...prev, ...uploadedImages] : [uploadedImages[0]]
                 );
-                toast.success(`${result.images.length} imagen(es) subida(s) correctamente`);
+                toast.success(`${uploadedImages.length} imagen(es) subida(s) correctamente`);
+                
             } catch (error) {
                 console.error("Error al subir imágenes:", error);
-                toast.error("Error al subir imágenes. Intenta de nuevo.");
+                toast.error("Error al subir imágenes al servidor. Intenta de nuevo.");
             } finally {
                 setIsUploading(false);
             }
@@ -96,7 +124,7 @@ export default function MediaLibraryDialog({
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         onDropRejected,
-        maxSize: 4 * 1024 * 1024, // Límite estricto de 4MB
+        maxSize: 4 * 1024 * 1024, // Bloquea en el frontend archivos > 4MB
         accept: {
             "image/jpeg": [".jpeg", ".jpg"],
             "image/png": [".png"],
@@ -157,7 +185,6 @@ export default function MediaLibraryDialog({
                 </DialogHeader>
 
                 <div className="flex-1 flex flex-col overflow-hidden p-5 gap-4">
-                    {/* Zona Dropzone */}
                     <div
                         {...getRootProps()}
                         className={`border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${
@@ -178,12 +205,11 @@ export default function MediaLibraryDialog({
                                 <p className="text-xs font-medium text-slate-700">
                                     Arrastra imágenes aquí o haz clic para examinar
                                 </p>
-                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF (Máx. 4MB)</p>
+                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF (Máx. 4MB por archivo)</p>
                             </div>
                         )}
                     </div>
 
-                    {/* Selector de imágenes */}
                     <ScrollArea className="flex-1 border border-slate-200 rounded-xl bg-slate-50/30 p-3">
                         {globalImagesPool.length === 0 ? (
                             <div className="flex items-center justify-center h-48 text-slate-400 text-xs">

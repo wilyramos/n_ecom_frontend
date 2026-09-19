@@ -67,7 +67,7 @@ export default function AdvertisementFormUI({
     const [showTitle, setShowTitle] = useState<boolean>(
         submitted?.showTitle !== undefined
             ? Boolean(submitted.showTitle)
-            : (initialData?.showTitle ?? true)
+            : (initialData?.showTitle !== undefined ? Boolean(initialData.showTitle) : true)
     );
     const [imageUrl, setImageUrl] = useState<string>(
         submitted?.imageUrl ?? initialData?.imageUrl ?? ""
@@ -90,7 +90,7 @@ export default function AdvertisementFormUI({
             setShowTitle(
                 submitted?.showTitle !== undefined
                     ? Boolean(submitted.showTitle)
-                    : (initialData?.showTitle ?? true)
+                    : (initialData?.showTitle !== undefined ? Boolean(initialData.showTitle) : true)
             );
             setImageUrl(submitted?.imageUrl ?? initialData?.imageUrl ?? "");
         }
@@ -111,11 +111,10 @@ export default function AdvertisementFormUI({
             className="w-full space-y-4 pb-20"
             noValidate
         >
-            <input type="hidden" name="isActive" value={String(isActive)} />
-            <input type="hidden" name="showTitle" value={String(showTitle)} />
+            <input type="hidden" name="isActive" value={isActive ? "true" : "false"} />
+            <input type="hidden" name="showTitle" value={showTitle ? "true" : "false"} />
             <input type="hidden" name="imageUrl" value={imageUrl} />
 
-            {/* Barra de cabecera con botón de retorno */}
             <AdminActionBar
                 leftContent={
                     <div className="flex flex-col">
@@ -147,9 +146,7 @@ export default function AdvertisementFormUI({
                 </div>
             )}
 
-            {/* Grid de Contenido */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-                {/* Columna Principal */}
                 <div className="lg:col-span-8 space-y-3">
                     <AdminCardWrapper padding="default">
                         <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
@@ -157,7 +154,6 @@ export default function AdvertisementFormUI({
                         </h3>
 
                         <div className="space-y-3">
-                            {/* Título y Checkbox de Visibilidad */}
                             <div className="space-y-1.5">
                                 <div className="flex items-center justify-between">
                                     <Label htmlFor="title" className="text-xs font-semibold text-zinc-700">
@@ -239,7 +235,6 @@ export default function AdvertisementFormUI({
                                 </div>
                             </div>
 
-                            {/* Imagen Publicitaria */}
                             <div className="space-y-2 pt-2 border-t border-zinc-100">
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-0.5">
@@ -291,7 +286,6 @@ export default function AdvertisementFormUI({
                     </AdminCardWrapper>
                 </div>
 
-                {/* Columna Lateral */}
                 <aside className="lg:col-span-4 space-y-3 lg:sticky lg:top-18">
                     <AdminCardWrapper padding="default">
                         <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
@@ -345,7 +339,6 @@ export default function AdvertisementFormUI({
                 </aside>
             </div>
 
-            {/* Barra de Guardado Inferior Fija a Todo el Ancho */}
             <div className="fixed bottom-0 inset-x-0 z-40 border-t border-indigo-100 bg-gradient-to-r from-white via-indigo-50/20 to-white backdrop-blur-md px-4 py-2.5 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] transition-all">
                 <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3">
                     <div className="hidden sm:flex items-center gap-2">

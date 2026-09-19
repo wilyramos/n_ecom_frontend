@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
 interface LayoutBackgroundMediaProps {
     banner: SliderBanner;
@@ -46,7 +47,7 @@ export default function LayoutBackgroundMedia({ banner, isPriority = false }: La
                 <video
                     ref={videoRef}
                     src={media!.videoUrl}
-                    poster={media!.imageUrl}
+                    poster={media?.imageUrl ? getOptimizedImageUrl(media.imageUrl, 1200) : undefined}
                     autoPlay
                     muted
                     loop
@@ -55,15 +56,13 @@ export default function LayoutBackgroundMedia({ banner, isPriority = false }: La
                 />
             ) : media?.imageUrl ? (
                 <Image
-                    src={media.imageUrl}
+                    src={getOptimizedImageUrl(media.imageUrl, 1200)}
                     alt={title ?? "Banner Background"}
                     fill
                     className={`absolute inset-0 ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                     sizes="100vw"
                     priority={isPriority}
                     loading={isPriority ? "eager" : "lazy"}
-                    quality={100}
-                    unoptimized={true}
                 />
             ) : null}
 

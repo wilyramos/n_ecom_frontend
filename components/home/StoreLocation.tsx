@@ -118,9 +118,9 @@ export default function StoreLocation() {
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3900.71171804938!2d-76.9945115!3d-12.1318464!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105b8178cd39e33%3A0x633512e09153574c!2sAv.%20Caminos%20del%20Inca%20257%2C%20Santiago%20de%20Surco%2015038!5e0!3m2!1ses-419!2spe!4v1717684000000!5m2!1ses-419!2spe"
                 className="h-full w-full border-0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+/>
             </div>
           </div>
 

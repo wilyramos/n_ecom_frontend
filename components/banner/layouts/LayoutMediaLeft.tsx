@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
 interface LayoutMediaLeftProps {
     banner: SliderBanner;
@@ -50,16 +51,15 @@ export default function LayoutMediaLeft({ banner, isPriority = false }: LayoutMe
                     >
                         <div className="relative w-full h-full">
                             <Image
-                                src={media.imageUrl}
-                                alt={title ?? "Banner"}
-                                fill
-                                className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
-                                sizes="(max-width: 640px) 50vw, 40vw"
-                                priority={isPriority}
-                                loading={isPriority ? "eager" : "lazy"}
-                                quality={100}
-                                unoptimized={true}
-                            />
+    src={getOptimizedImageUrl(media.imageUrl, 1200)}
+    alt={title ?? "Banner"}
+    fill
+    className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
+    sizes="100vw"
+    priority={isPriority}
+    loading={isPriority ? "eager" : "lazy"}
+    // Quita unoptimized={true} para evitar saturar el hardware móvil
+/>
                         </div>
                     </div>
                 )}

@@ -28,6 +28,10 @@ interface AdvertisementFormUIProps {
     initialImagesPool?: string[];
 }
 
+type AdvertisementSubmittedState = Partial<TAdvertisement> & {
+    showTitle?: boolean | string;
+};
+
 const AD_LAYOUT_DESCRIPTIONS: Record<AdLayout, string> = {
     top_bar: "Barra superior fija. Ideal para avisos breves, cupones o promociones de envío.",
     modal_popup: "Modal emergente visual. Requiere cargar una imagen de banner obligatoria.",
@@ -50,7 +54,7 @@ export default function AdvertisementFormUI({
     initialImagesPool = [],
 }: AdvertisementFormUIProps) {
     const isEditMode = !!initialData;
-    const submitted = state.submitted;
+    const submitted = state.submitted as AdvertisementSubmittedState | undefined;
 
     const [adLayout, setAdLayout] = useState<AdLayout>(
         (submitted?.layout as AdLayout) ?? initialData?.layout ?? "top_bar"
@@ -61,8 +65,8 @@ export default function AdvertisementFormUI({
             : (initialData?.isActive ?? true)
     );
     const [showTitle, setShowTitle] = useState<boolean>(
-        (submitted as any)?.showTitle !== undefined
-            ? Boolean((submitted as any).showTitle)
+        submitted?.showTitle !== undefined
+            ? Boolean(submitted.showTitle)
             : (initialData?.showTitle ?? true)
     );
     const [imageUrl, setImageUrl] = useState<string>(
@@ -77,20 +81,20 @@ export default function AdvertisementFormUI({
         if (!state.ok && state.fields) {
             errorCountRef.current += 1;
             setFormKey(errorCountRef.current);
-            setAdLayout((state.submitted?.layout as AdLayout) ?? initialData?.layout ?? "top_bar");
+            setAdLayout((submitted?.layout as AdLayout) ?? initialData?.layout ?? "top_bar");
             setIsActive(
-                state.submitted?.isActive !== undefined
-                    ? Boolean(state.submitted.isActive)
+                submitted?.isActive !== undefined
+                    ? Boolean(submitted.isActive)
                     : (initialData?.isActive ?? true)
             );
             setShowTitle(
-                (state.submitted as any)?.showTitle !== undefined
-                    ? Boolean((state.submitted as any).showTitle)
+                submitted?.showTitle !== undefined
+                    ? Boolean(submitted.showTitle)
                     : (initialData?.showTitle ?? true)
             );
-            setImageUrl(state.submitted?.imageUrl ?? initialData?.imageUrl ?? "");
+            setImageUrl(submitted?.imageUrl ?? initialData?.imageUrl ?? "");
         }
-    }, [state.ok, state.fields]);
+    }, [state.ok, state.fields, submitted, initialData]);
 
     const resolvedTitle = submitted?.title ?? initialData?.title ?? "";
     const resolvedSubtitle = submitted?.subtitle ?? initialData?.subtitle ?? "";

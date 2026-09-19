@@ -18,8 +18,6 @@ const responsive = {
 export default function SliderBannerCarousel({ banners }: Props) {
     if (!banners.length) return null;
 
-    const autoPlaySpeed = 9000; // 9 segundos
-
     return (
         <div className="w-full mx-auto relative">
             <div className="w-full">
@@ -27,15 +25,20 @@ export default function SliderBannerCarousel({ banners }: Props) {
                     responsive={responsive}
                     infinite
                     autoPlay
-                    autoPlaySpeed={autoPlaySpeed}
+                    autoPlaySpeed={9000}
                     showDots={false}
                     containerClass="w-full"
                     customLeftArrow={<CarouselArrow direction="left" />}
                     customRightArrow={<CarouselArrow direction="right" />}
                     dotListClass="!bottom-4"
                 >
-                    {banners.map((banner) => (
-                        <SliderBannerSlide key={banner._id} banner={banner} />
+                    {banners.map((banner, index) => (
+                        <SliderBannerSlide 
+                            key={banner._id} 
+                            banner={banner} 
+                            // Solo el primer elemento es prioridad para la carga inicial
+                            isPriority={index === 0} 
+                        />
                     ))}
                 </Carousel>
             </div>

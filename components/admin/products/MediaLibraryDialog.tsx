@@ -124,7 +124,7 @@ export default function MediaLibraryDialog({
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         onDropRejected,
-        maxSize: 10 * 1024 * 1024, // Bloquea en el frontend archivos > 10MB
+        maxSize: 7 * 1024 * 1024, // Bloquea en el frontend archivos > 7MB
         accept: {
             "image/jpeg": [".jpeg", ".jpg"],
             "image/png": [".png"],
@@ -205,7 +205,7 @@ export default function MediaLibraryDialog({
                                 <p className="text-xs font-medium text-slate-700">
                                     Arrastra imágenes aquí o haz clic para examinar
                                 </p>
-                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF (Máx. 4MB por archivo)</p>
+                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF (Máx. 7MB por archivo)</p>
                             </div>
                         )}
                     </div>

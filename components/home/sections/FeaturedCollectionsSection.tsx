@@ -41,7 +41,10 @@ export default function FeaturedCollectionsSection({ section, columns }: Feature
                                     alt={block.title || "Colección"}
                                     fill
                                     className={`${imageFitClass} w-full h-full`}
-                                    priority={idx < 3}
+                                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                    priority={false}
+                                    loading="lazy"
+                                    quality={100}
                                     unoptimized={true}
                                 />
                             ) : (

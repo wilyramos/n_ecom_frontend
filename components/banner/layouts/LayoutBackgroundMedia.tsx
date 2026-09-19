@@ -7,7 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
 
-export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner }) {
+interface LayoutBackgroundMediaProps {
+    banner: SliderBanner;
+    isPriority?: boolean;
+}
+
+export default function LayoutBackgroundMedia({ banner, isPriority = false }: LayoutBackgroundMediaProps) {
     const { design, media, title, subtitle, description, terms, price, destUrl, openInNewTab } = banner;
     const [loaded, setLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,7 +51,7 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                     muted
                     loop
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover ]"
+                    className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : media?.imageUrl ? (
                 <Image
@@ -55,9 +60,10 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                     fill
                     className={`absolute inset-0 ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                     sizes="100vw"
-                    priority
+                    priority={isPriority}
+                    loading={isPriority ? "eager" : "lazy"}
                     quality={100}
-                    unoptimized
+                    unoptimized={true}
                 />
             ) : null}
 
@@ -82,7 +88,6 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                                 style={{
                                     color: accent,
                                     background: `${accent}22`,
-                                    border: ``,
                                 }}
                             >
                                 {subtitle}

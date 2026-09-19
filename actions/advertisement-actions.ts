@@ -2,7 +2,11 @@
 
 import { revalidateTag } from "next/cache";
 import { verifySession } from "@/src/auth/dal";
-import { CreateAdDTOSchema, UpdateAdDTOSchema } from "@/src/schemas/advertisement.schema";
+import {
+    CreateAdDTOSchema,
+    UpdateAdDTOSchema,
+} from "@/src/schemas/advertisement.schema";
+import { AdvertisementService } from "@/src/services/advertisement-service";
 
 export interface AdFormActionState {
     ok: boolean;
@@ -10,28 +14,34 @@ export interface AdFormActionState {
     fields?: Record<string, string>;
     submitted?: {
         title: string;
+        showTitle: boolean;
         subtitle: string | undefined;
         imageUrl: string | undefined;
         linkTo: string | undefined;
         layout: string | undefined;
         isActive: boolean;
-        order: number;
         startDate: string | null;
         endDate: string | null;
     };
 }
 
 function parseAdFormData(formData: FormData) {
+    const rawTitle = formData.get("title")?.toString().trim() || "";
+    const rawSubtitle = formData.get("subtitle")?.toString().trim() || "";
+    const rawImageUrl = formData.get("imageUrl")?.toString().trim() || "";
+    const rawLinkTo = formData.get("linkTo")?.toString().trim() || "";
+    const rawLayout = formData.get("layout")?.toString().trim() || undefined;
+
     return {
-        title:     formData.get("title")?.toString() || "",
-        subtitle:  formData.get("subtitle")?.toString() || undefined,
-        imageUrl:  formData.get("imageUrl")?.toString() || undefined,
-        linkTo:    formData.get("linkTo")?.toString() || undefined,
-        layout:    formData.get("layout")?.toString() || undefined,
-        isActive:  formData.get("isActive") === "true",
-        order:     formData.get("order") ? Number(formData.get("order")) : 0,
+        title: rawTitle,
+        showTitle: formData.get("showTitle") === "true",
+        subtitle: rawSubtitle || undefined,
+        imageUrl: rawImageUrl || undefined,
+        linkTo: rawLinkTo || undefined,
+        layout: rawLayout,
+        isActive: formData.get("isActive") === "true",
         startDate: formData.get("startDate")?.toString() || null,
-        endDate:   formData.get("endDate")?.toString() || null,
+        endDate: formData.get("endDate")?.toString() || null,
     };
 }
 
@@ -40,48 +50,38 @@ export async function createAdvertisementAction(
     formData: FormData
 ): Promise<AdFormActionState> {
     const session = await verifySession();
-    const rawData = parseAdFormData(formData);
+    if (!session?.token) {
+        return {
+            ok: false,
+            error: "No tienes autorización o tu sesión ha expirado.",
+        };
+    }
 
+    const rawData = parseAdFormData(formData);
     const validated = CreateAdDTOSchema.safeParse(rawData);
+
     if (!validated.success) {
         const fieldErrors: Record<string, string> = {};
         validated.error.errors.forEach((err) => {
             fieldErrors[err.path.join(".")] = err.message;
         });
+
         return {
-            ok:        false,
-            error:     "Revisa los campos marcados antes de continuar.",
-            fields:    fieldErrors,
+            ok: false,
+            error: "Revisa los campos marcados antes de continuar.",
+            fields: fieldErrors,
             submitted: rawData,
         };
     }
 
     try {
-        const res = await fetch(`${process.env.API_URL}/advertisements`, {
-            method:  "POST",
-            headers: {
-                "Content-Type":  "application/json",
-                "Authorization": `Bearer ${session.token}`,
-            },
-            body: JSON.stringify(validated.data),
-        });
-
-        if (!res.ok) {
-            const errData = await res.json().catch(() => ({ message: "" })) as { message?: string };
-            return {
-                ok:        false,
-                error:     errData.message || "Error del servidor al guardar el aviso.",
-                submitted: rawData,
-            };
-        }
-
+        await AdvertisementService.create(validated.data, session.token);
         revalidateTag("ads-public");
         return { ok: true };
     } catch (error) {
-        console.error("Error de red al crear aviso:", error);
         return {
-            ok:        false,
-            error:     "Fallo de conexión con el servidor. Intenta nuevamente.",
+            ok: false,
+            error: error instanceof Error ? error.message : "Error operacional al crear el anuncio.",
             submitted: rawData,
         };
     }
@@ -93,98 +93,80 @@ export async function updateAdvertisementAction(
     formData: FormData
 ): Promise<AdFormActionState> {
     const session = await verifySession();
-    const rawData = parseAdFormData(formData);
+    if (!session?.token) {
+        return {
+            ok: false,
+            error: "No tienes autorización o tu sesión ha expirado.",
+        };
+    }
 
+    const rawData = parseAdFormData(formData);
     const validated = UpdateAdDTOSchema.safeParse(rawData);
+
     if (!validated.success) {
         const fieldErrors: Record<string, string> = {};
         validated.error.errors.forEach((err) => {
             fieldErrors[err.path.join(".")] = err.message;
         });
+
         return {
-            ok:        false,
-            error:     "Revisa los campos marcados antes de continuar.",
-            fields:    fieldErrors,
+            ok: false,
+            error: "Revisa los campos marcados antes de continuar.",
+            fields: fieldErrors,
             submitted: rawData,
         };
     }
 
     try {
-        const res = await fetch(`${process.env.API_URL}/advertisements/${id}`, {
-            method:  "PUT",
-            headers: {
-                "Content-Type":  "application/json",
-                "Authorization": `Bearer ${session.token}`,
-            },
-            body: JSON.stringify(validated.data),
-        });
-
-        if (!res.ok) {
-            const errData = await res.json().catch(() => ({ message: "" })) as { message?: string };
-            return {
-                ok:        false,
-                error:     errData.message || "Error al actualizar el aviso.",
-                submitted: rawData,
-            };
-        }
-
+        await AdvertisementService.update(id, validated.data, session.token);
         revalidateTag("ads-public");
         return { ok: true };
     } catch (error) {
-        console.error("Error de red al actualizar aviso:", error);
         return {
-            ok:        false,
-            error:     "Fallo de red al intentar actualizar.",
+            ok: false,
+            error: error instanceof Error ? error.message : "Error al actualizar la campaña publicitaria.",
             submitted: rawData,
         };
     }
 }
 
-export async function deleteAdvertisementAction(id: string): Promise<{ ok: boolean; error?: string }> {
+export async function deleteAdvertisementAction(
+    id: string
+): Promise<{ ok: boolean; error?: string }> {
     const session = await verifySession();
+    if (!session?.token) {
+        return { ok: false, error: "Sesión inválida o expirada." };
+    }
 
     try {
-        const res = await fetch(`${process.env.API_URL}/advertisements/${id}`, {
-            method:  "DELETE",
-            headers: {
-                "Content-Type":  "application/json",
-                "Authorization": `Bearer ${session.token}`
-            }
-        });
-
-        if (!res.ok) {
-            return { ok: false, error: "El aviso no pudo ser eliminado de la base de datos." };
-        }
-
+        await AdvertisementService.delete(id, session.token);
         revalidateTag("ads-public");
         return { ok: true };
     } catch (error) {
-        console.error("Error crítico al eliminar aviso:", error);
-        return { ok: false, error: "Error crítico al intentar procesar la eliminación." };
+        return {
+            ok: false,
+            error: error instanceof Error ? error.message : "No fue posible eliminar el registro.",
+        };
     }
 }
 
-export async function toggleAdStatusAction(id: string, currentStatus: boolean): Promise<{ ok: boolean; error?: string }> {
+export async function toggleAdStatusAction(
+    id: string,
+    currentStatus: boolean
+): Promise<{ ok: boolean; error?: string }> {
     const session = await verifySession();
+    if (!session?.token) {
+        return { ok: false, error: "Sesión inválida o expirada." };
+    }
 
     try {
-        const res = await fetch(`${process.env.API_URL}/advertisements/${id}`, {
-            method:  "PUT",
-            headers: {
-                "Content-Type":  "application/json",
-                "Authorization": `Bearer ${session.token}`
-            },
-            body: JSON.stringify({ isActive: !currentStatus })
-        });
-
-        if (!res.ok) {
-            return { ok: false, error: "No se pudo cambiar el estado operacional del aviso." };
-        }
-
+        await AdvertisementService.update(id, { isActive: !currentStatus }, session.token);
         revalidateTag("ads-public");
         return { ok: true };
     } catch (error) {
-        console.error("Error de red al cambiar estado del aviso:", error);
-        return { ok: false, error: "Fallo de conexión." };
+        return {
+            ok: false,
+            error: error instanceof Error ? error.message : "Fallo al alternar el estado del aviso.",
+        };
     }
 }

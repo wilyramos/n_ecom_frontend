@@ -1,3 +1,4 @@
+// File: frontend/components/admin/advertisements/NewAdvertisementClient.tsx
 "use client";
 
 import { useActionState, useEffect } from "react";
@@ -28,7 +29,7 @@ export default function NewAdvertisementClient() {
             state={state}
             isPending={isPending}
             titleLabel="Nueva Campaña Publicitaria"
-            subtitleLabel=" "
+            subtitleLabel=""
         />
     );
 }

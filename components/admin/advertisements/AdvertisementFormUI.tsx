@@ -1,18 +1,22 @@
+// File: frontend/components/admin/advertisements/AdvertisementFormUI.tsx
 "use client";
 
 import { useState, ChangeEvent, useEffect, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowLeft, Save, AlertCircle, Loader2 } from "lucide-react";
+
 import {
     TAdvertisement,
     AD_LAYOUT_LABELS,
     AdLayout,
 } from "@/src/schemas/advertisement.schema";
 import { AdFormActionState } from "@/actions/advertisement-actions";
-import { ArrowLeft, Save, AlertCircle } from "lucide-react";
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import MediaLibraryDialog from "../products/MediaLibraryDialog";
-import Image from "next/image";
+import { AdminActionBar } from "@/src/components/admin/layout/admin-action-bar";
+import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapper";
 
 interface AdvertisementFormUIProps {
     formAction: (payload: FormData) => void;
@@ -20,50 +24,14 @@ interface AdvertisementFormUIProps {
     isPending: boolean;
     initialData?: TAdvertisement;
     titleLabel: string;
-    subtitleLabel: string;
+    subtitleLabel?: string;
     initialImagesPool?: string[];
 }
 
 const AD_LAYOUT_DESCRIPTIONS: Record<AdLayout, string> = {
-    top_bar:     "Barra superior fija. Útil para cupones de descuento rápidos o avisos globales de envío gratis.",
-    modal_popup: "Modal emergente visual. Requiere obligatoriamente cargar una imagen de banner publicitario.",
+    top_bar: "Barra superior fija. Ideal para avisos breves, cupones o promociones de envío.",
+    modal_popup: "Modal emergente visual. Requiere cargar una imagen de banner obligatoria.",
 };
-
-function Required() {
-    return <span className="text-destructive ml-0.5">*</span>;
-}
-
-function Field({
-    label,
-    required,
-    error,
-    hint,
-    children,
-}: {
-    label: string;
-    required?: boolean;
-    error?: string;
-    hint?: string;
-    children: React.ReactNode;
-}) {
-    return (
-        <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-foreground">
-                {label}{required && <Required />}
-            </label>
-            {children}
-            {hint && !error && (
-                <p className="text-xs text-muted-foreground">{hint}</p>
-            )}
-            {error && (
-                <p className="flex items-center gap-1 text-xs text-destructive font-medium">
-                    <AlertCircle className="w-3 h-3 shrink-0" />
-                    {error}
-                </p>
-            )}
-        </div>
-    );
-}
 
 const formatDateForInput = (dateInput: unknown): string => {
     if (!dateInput) return "";
@@ -82,7 +50,7 @@ export default function AdvertisementFormUI({
     initialImagesPool = [],
 }: AdvertisementFormUIProps) {
     const isEditMode = !!initialData;
-    const submitted  = state.submitted;
+    const submitted = state.submitted;
 
     const [adLayout, setAdLayout] = useState<AdLayout>(
         (submitted?.layout as AdLayout) ?? initialData?.layout ?? "top_bar"
@@ -92,15 +60,19 @@ export default function AdvertisementFormUI({
             ? Boolean(submitted.isActive)
             : (initialData?.isActive ?? true)
     );
+    const [showTitle, setShowTitle] = useState<boolean>(
+        (submitted as any)?.showTitle !== undefined
+            ? Boolean((submitted as any).showTitle)
+            : (initialData?.showTitle ?? true)
+    );
     const [imageUrl, setImageUrl] = useState<string>(
         submitted?.imageUrl ?? initialData?.imageUrl ?? ""
     );
     const [allImages, setAllImages] = useState<string[]>(initialImagesPool);
 
     const errorCountRef = useRef(0);
-    const [formKey, setFormKey]     = useState(0);
+    const [formKey, setFormKey] = useState(0);
 
-    // Restaura el estado controlado cuando el servidor devuelve errores de validación
     useEffect(() => {
         if (!state.ok && state.fields) {
             errorCountRef.current += 1;
@@ -111,21 +83,20 @@ export default function AdvertisementFormUI({
                     ? Boolean(state.submitted.isActive)
                     : (initialData?.isActive ?? true)
             );
+            setShowTitle(
+                (state.submitted as any)?.showTitle !== undefined
+                    ? Boolean((state.submitted as any).showTitle)
+                    : (initialData?.showTitle ?? true)
+            );
             setImageUrl(state.submitted?.imageUrl ?? initialData?.imageUrl ?? "");
         }
-    // state.ok y state.fields son suficientes para detectar el cambio de ronda
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [state.ok, state.fields]);
 
-    // Valores derivados para campos no controlados — priorizan submitted sobre initialData
-    const resolvedTitle    = submitted?.title    ?? initialData?.title    ?? "";
+    const resolvedTitle = submitted?.title ?? initialData?.title ?? "";
     const resolvedSubtitle = submitted?.subtitle ?? initialData?.subtitle ?? "";
-    const resolvedLinkTo   = submitted?.linkTo   ?? initialData?.linkTo   ?? "";
-
-    // formatDateForInput normaliza tanto strings ISO completos como instancias Date
-    // al formato "YYYY-MM-DDTHH:mm" que espera datetime-local
+    const resolvedLinkTo = submitted?.linkTo ?? initialData?.linkTo ?? "";
     const resolvedStartDate = formatDateForInput(submitted?.startDate ?? initialData?.startDate);
-    const resolvedEndDate   = formatDateForInput(submitted?.endDate   ?? initialData?.endDate);
+    const resolvedEndDate = formatDateForInput(submitted?.endDate ?? initialData?.endDate);
 
     const hasErrors = !!state.fields && Object.keys(state.fields).length > 0;
 
@@ -133,272 +104,268 @@ export default function AdvertisementFormUI({
         <form
             key={formKey}
             action={formAction}
-            className="space-y-5 max-w-5xl mx-auto text-foreground"
+            className="w-full space-y-4 pb-20"
+            noValidate
         >
-            {/* Campos ocultos para valores de estado controlado */}
             <input type="hidden" name="isActive" value={String(isActive)} />
+            <input type="hidden" name="showTitle" value={String(showTitle)} />
             <input type="hidden" name="imageUrl" value={imageUrl} />
 
-            {/* ── Banner global de errores ── */}
+            {/* Barra de cabecera con botón de retorno */}
+            <AdminActionBar
+                leftContent={
+                    <div className="flex flex-col">
+                        <span className="text-xs font-semibold text-zinc-900">{titleLabel}</span>
+                        {subtitleLabel && <span className="text-[11px] text-zinc-500">{subtitleLabel}</span>}
+                    </div>
+                }
+            >
+                <Link
+                    href="/admin/advertisements"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200/80 rounded-lg transition-colors cursor-pointer"
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span>Volver al listado</span>
+                </Link>
+            </AdminActionBar>
+
             {hasErrors && (
-                <div className="flex items-start gap-3 bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-3">
-                    <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                <div className="flex items-start gap-2.5 bg-rose-50 border border-rose-200 rounded-xl px-3.5 py-2.5">
+                    <AlertCircle className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
                     <div>
-                        <p className="text-sm font-semibold text-destructive">
+                        <p className="text-xs font-semibold text-rose-800">
                             {state.error ?? "Hay campos con errores"}
                         </p>
-                        <p className="text-xs text-destructive/80 mt-0.5">
-                            Revisa los campos marcados a continuación y vuelve a intentarlo.
+                        <p className="text-[11px] text-rose-600 mt-0.5">
+                            Revisa los campos indicados e inténtalo nuevamente.
                         </p>
                     </div>
                 </div>
             )}
 
-            {/* ── Barra superior de acciones ── */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-muted/20 p-4 rounded-xl border border-border">
-                <div className="flex items-center gap-3">
-                    <Link
-                        href="/admin/advertisements"
-                        className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted/40 rounded-lg transition-colors border border-border bg-background"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                    </Link>
-                    <div>
-                        <h2 className="text-base font-bold text-foreground">{titleLabel}</h2>
-                        {subtitleLabel.trim() && (
-                            <p className="text-xs text-muted-foreground">{subtitleLabel}</p>
-                        )}
-                    </div>
-                </div>
-                <Button
-                    type="submit"
-                    disabled={isPending}
-                    className="flex items-center gap-2 font-semibold"
-                >
-                    <Save className="w-4 h-4" />
-                    {isPending ? "Procesando..." : isEditMode ? "Guardar Cambios" : "Crear Anuncio"}
-                </Button>
-            </div>
+            {/* Grid de Contenido */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+                {/* Columna Principal */}
+                <div className="lg:col-span-8 space-y-3">
+                    <AdminCardWrapper padding="default">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                            Contenido del Anuncio
+                        </h3>
 
-            {/* ── Layout principal ── */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-
-                {/* ── Columna principal ── */}
-                <div className="md:col-span-2 space-y-5">
-                    <section className="bg-background border border-border rounded-xl p-5 space-y-4">
-                        <div className="flex items-center gap-2 border-b border-border pb-3">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                                Configuración de Campaña
-                            </h3>
-                        </div>
-
-                        <Field
-                            label="Título o Nombre del Aviso"
-                            required
-                            error={state.fields?.title}
-                            hint="Texto destacado o identificador principal del anuncio visible."
-                        >
-                            <Input
-                                name="title"
-                                defaultValue={resolvedTitle}
-                                placeholder="Ej: ¡20% DE DESCUENTO EN TODA LA TIENDA!"
-                                className={`h-10 text-sm bg-background/50 border-border/40 rounded-sm ${
-                                    state.fields?.title
-                                        ? "border-destructive/60 focus-visible:ring-destructive"
-                                        : ""
-                                }`}
-                            />
-                        </Field>
-
-                        <Field
-                            label="Subtítulo / Texto Secundario"
-                            error={state.fields?.subtitle}
-                            hint="Descripción complementaria opcional expuesta en el componente publicitario."
-                        >
-                            <Input
-                                name="subtitle"
-                                defaultValue={resolvedSubtitle}
-                                placeholder="Ej: Usa el código ABCDT al finalizar tu compra"
-                                className="h-10 text-sm bg-background/50 border-border/40 rounded-sm"
-                            />
-                        </Field>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field
-                                label="Formato de Renderizado (Layout)"
-                                required
-                                error={state.fields?.layout}
-                                hint={AD_LAYOUT_DESCRIPTIONS[adLayout]}
-                            >
-                                <select
-                                    name="layout"
-                                    value={adLayout}
-                                    onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                                        setAdLayout(e.target.value as AdLayout)
-                                    }
-                                    className="w-full bg-background border border-input rounded-sm h-10 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary transition-colors cursor-pointer"
-                                >
-                                    {Object.entries(AD_LAYOUT_LABELS).map(([value, label]) => (
-                                        <option key={value} value={value}>{label}</option>
-                                    ))}
-                                </select>
-                            </Field>
-
-                            <Field
-                                label="Enlace / Ruta de Redirección"
-                                error={state.fields?.linkTo}
-                                hint="Dirección interna a donde apunta el clic (Ej: /shop/cases)."
-                            >
+                        <div className="space-y-3">
+                            {/* Título y Checkbox de Visibilidad */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="title" className="text-xs font-semibold text-zinc-700">
+                                        Título o Nombre Interno <span className="text-zinc-400 font-normal">(Opcional)</span>
+                                    </Label>
+                                    <label className="flex items-center gap-1.5 cursor-pointer select-none">
+                                        <input
+                                            type="checkbox"
+                                            checked={showTitle}
+                                            onChange={(e) => setShowTitle(e.target.checked)}
+                                            className="w-3.5 h-3.5 rounded border-zinc-300 text-zinc-900 focus:ring-0 cursor-pointer"
+                                        />
+                                        <span className="text-[11.5px] font-medium text-zinc-600">
+                                            Mostrar título en el banner
+                                        </span>
+                                    </label>
+                                </div>
                                 <Input
-                                    name="linkTo"
-                                    defaultValue={resolvedLinkTo}
-                                    placeholder="Ej: /productos/iphone-15-pro"
-                                    className="h-10 text-sm bg-background/50 border-border/40 rounded-sm"
+                                    id="title"
+                                    name="title"
+                                    defaultValue={resolvedTitle}
+                                    placeholder="Ej: 20% DE DESCUENTO EN TODA LA TIENDA"
+                                    className="h-8 text-xs font-medium"
                                 />
-                            </Field>
-                        </div>
+                                <p className="text-[10.5px] text-zinc-400">
+                                    {showTitle
+                                        ? "El texto se mostrará como encabezado en la tienda."
+                                        : "El texto solo se usará como referencia interna en el panel."}
+                                </p>
+                            </div>
 
-                        <Field
-                            label="Imagen Publicitaria Multimedia"
-                            error={state.fields?.imageUrl}
-                            required={adLayout === "modal_popup"}
-                            hint="Obligatoria para ventanas emergentes, opcional para barras horizontales superiores."
-                        >
-                            <div className="flex flex-col gap-2">
-                                {imageUrl && (
-                                    <div className="relative w-full aspect-video max-w-sm rounded-md overflow-hidden border border-border bg-muted/20">
+                            <div className="space-y-1.5">
+                                <Label htmlFor="subtitle" className="text-xs font-semibold text-zinc-700">
+                                    Subtítulo / Texto Secundario
+                                </Label>
+                                <Input
+                                    id="subtitle"
+                                    name="subtitle"
+                                    defaultValue={resolvedSubtitle}
+                                    placeholder="Ej: Usa el cupón VERANO20 al pagar"
+                                    className="h-8 text-xs"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="layout" className="text-xs font-semibold text-zinc-700">
+                                        Formato (Layout) <span className="text-rose-600">*</span>
+                                    </Label>
+                                    <select
+                                        id="layout"
+                                        name="layout"
+                                        value={adLayout}
+                                        onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                                            setAdLayout(e.target.value as AdLayout)
+                                        }
+                                        className="w-full bg-white border border-zinc-200 rounded-md h-8 px-2.5 text-xs text-zinc-800 font-medium focus:outline-none focus:border-zinc-400 cursor-pointer"
+                                    >
+                                        {Object.entries(AD_LAYOUT_LABELS).map(([value, label]) => (
+                                            <option key={value} value={value}>
+                                                {label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <p className="text-[10.5px] text-zinc-400">{AD_LAYOUT_DESCRIPTIONS[adLayout]}</p>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="linkTo" className="text-xs font-semibold text-zinc-700">
+                                        Ruta de Redirección (URL)
+                                    </Label>
+                                    <Input
+                                        id="linkTo"
+                                        name="linkTo"
+                                        defaultValue={resolvedLinkTo}
+                                        placeholder="Ej: /productos/ofertas"
+                                        className="h-8 text-xs font-medium"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Imagen Publicitaria */}
+                            <div className="space-y-2 pt-2 border-t border-zinc-100">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-xs font-semibold text-zinc-700">
+                                        Imagen Publicitaria {adLayout === "modal_popup" && <span className="text-rose-600">*</span>}
+                                    </Label>
+                                    <MediaLibraryDialog
+                                        selectedImages={imageUrl ? [imageUrl] : []}
+                                        globalImagesPool={allImages}
+                                        allowMultiple={false}
+                                        triggerLabel={imageUrl ? "Cambiar Imagen" : "Subir / Seleccionar Imagen"}
+                                        onConfirmSelection={(urls) => setImageUrl(urls[0] ?? "")}
+                                        onUploadSuccess={(newImages) =>
+                                            setAllImages((prev) => [...prev, ...newImages])
+                                        }
+                                    />
+                                </div>
+
+                                {imageUrl ? (
+                                    <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50">
                                         <Image
                                             src={imageUrl}
-                                            alt="Vista previa del banner"
-                                            className="w-full h-full object-cover"
+                                            alt="Preview del anuncio"
                                             fill
+                                            className="object-cover"
                                             unoptimized
                                         />
                                     </div>
-                                )}
-                                <MediaLibraryDialog
-                                    selectedImages={imageUrl ? [imageUrl] : []}
-                                    globalImagesPool={allImages}
-                                    allowMultiple={false}
-                                    triggerLabel={imageUrl ? "Cambiar imagen publicitaria" : "Seleccionar imagen publicitaria"}
-                                    triggerVariant="outline"
-                                    onConfirmSelection={(urls) => setImageUrl(urls[0] ?? "")}
-                                    onUploadSuccess={(newImages) =>
-                                        setAllImages((prev) => [...prev, ...newImages])
-                                    }
-                                />
-                            </div>
-                        </Field>
-                    </section>
-                </div>
-
-                {/* ── Columna lateral ── */}
-                <div className="space-y-5">
-                    <section className="bg-background border border-border rounded-xl p-5 space-y-4">
-                        <div className="border-b border-border pb-3">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                                Control de Visibilidad y Fechas
-                            </h3>
-                        </div>
-
-                        {/* Toggle de visibilidad accesible */}
-                        <div
-                            role="switch"
-                            aria-checked={isActive}
-                            tabIndex={0}
-                            onClick={() => setIsActive(!isActive)}
-                            onKeyDown={(e) => {
-                                if (e.key === " " || e.key === "Enter") {
-                                    e.preventDefault();
-                                    setIsActive(!isActive);
-                                }
-                            }}
-                            className={`flex items-center justify-between rounded-lg px-3.5 py-3 cursor-pointer border transition-colors select-none ${
-                                isActive
-                                    ? "bg-emerald-500/10 border-emerald-500/30"
-                                    : "bg-muted/30 border-border"
-                            }`}
-                        >
-                            <div>
-                                <p className={`text-sm font-semibold ${
-                                    isActive
-                                        ? "text-emerald-600 dark:text-emerald-400"
-                                        : "text-muted-foreground"
-                                }`}>
-                                    {isActive ? "Campaña Habilitada" : "Campaña Pausada"}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                    {isActive
-                                        ? "El anuncio se procesará dinámicamente"
-                                        : "Forzar apagado manual permanente"}
-                                </p>
-                            </div>
-                            <div className={`w-9 h-5 rounded-full transition-colors flex items-center px-0.5 ${
-                                isActive ? "bg-emerald-500" : "bg-muted-foreground/30"
-                            }`}>
-                                <div className={`w-4 h-4 rounded-full bg-white shadow transition-transform ${
-                                    isActive ? "translate-x-4" : "translate-x-0"
-                                }`} />
-                            </div>
-                        </div>
-
-                        <Field
-                            label="Fecha de Inicio (Programación)"
-                            error={state.fields?.startDate}
-                            hint="Dejar vacío si deseas que empiece a mostrarse de forma inmediata."
-                        >
-                            <Input
-                                type="datetime-local"
-                                name="startDate"
-                                defaultValue={resolvedStartDate}
-                                className="h-10 text-sm bg-background/50 border-border/40 rounded-sm"
-                            />
-                        </Field>
-
-                        <Field
-                            label="Fecha de Expiración (Vencimiento)"
-                            error={state.fields?.endDate}
-                            hint="Al cumplirse el plazo, el anuncio se retirará del storefront automáticamente."
-                        >
-                            <Input
-                                type="datetime-local"
-                                name="endDate"
-                                defaultValue={resolvedEndDate}
-                                className="h-10 text-sm bg-background/50 border-border/40 rounded-sm"
-                            />
-                        </Field>
-                    </section>
-
-                    {/* ── Card: Resumen informativo (solo edición) ── */}
-                    {isEditMode && initialData && (
-                        <section className="bg-background border border-border rounded-xl p-5 space-y-3 shadow-2xs">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border pb-3">
-                                Resumen Informativo
-                            </h3>
-                            <div className="space-y-2 text-xs">
-                                <div className="flex justify-between">
-                                    <span className="text-muted-foreground">ID Interno</span>
-                                    <span className="font-mono text-foreground break-all max-w-[150px] text-right">
-                                        {initialData._id}
-                                    </span>
-                                </div>
-                                {initialData.updatedAt && (
-                                    <div className="flex justify-between">
-                                        <span className="text-muted-foreground">Actualizado</span>
-                                        <span className="text-foreground font-medium">
-                                            {new Date(initialData.updatedAt).toLocaleDateString("es-PE", {
-                                                day:    "2-digit",
-                                                month:  "short",
-                                                year:   "numeric",
-                                                hour:   "2-digit",
-                                                minute: "2-digit",
-                                            })}
-                                        </span>
+                                ) : (
+                                    <div className="p-5 border border-dashed border-zinc-200 rounded-lg bg-zinc-50/50 text-center">
+                                        <p className="text-xs text-zinc-500">Sin imagen seleccionada</p>
                                     </div>
                                 )}
+                                {state.fields?.imageUrl && (
+                                    <p className="text-[11px] text-rose-600">{state.fields.imageUrl}</p>
+                                )}
                             </div>
-                        </section>
-                    )}
+                        </div>
+                    </AdminCardWrapper>
+                </div>
+
+                {/* Columna Lateral */}
+                <aside className="lg:col-span-4 space-y-3 lg:sticky lg:top-18">
+                    <AdminCardWrapper padding="default">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                            Programación y Estado
+                        </h3>
+
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between py-1">
+                                <div>
+                                    <p className="text-xs font-medium text-zinc-800">Campaña Habilitada</p>
+                                    <p className="text-[10.5px] text-zinc-400">Control manual de encendido</p>
+                                </div>
+                                <input
+                                    type="checkbox"
+                                    checked={isActive}
+                                    onChange={(e) => setIsActive(e.target.checked)}
+                                    className="w-4 h-4 accent-zinc-900 rounded cursor-pointer"
+                                />
+                            </div>
+
+                            <div className="space-y-1.5 pt-2 border-t border-zinc-100">
+                                <Label htmlFor="startDate" className="text-xs font-semibold text-zinc-700">
+                                    Fecha de Inicio (Opcional)
+                                </Label>
+                                <Input
+                                    type="datetime-local"
+                                    id="startDate"
+                                    name="startDate"
+                                    defaultValue={resolvedStartDate}
+                                    className="h-8 text-xs font-medium"
+                                />
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="endDate" className="text-xs font-semibold text-zinc-700">
+                                    Fecha de Expiración (Opcional)
+                                </Label>
+                                <Input
+                                    type="datetime-local"
+                                    id="endDate"
+                                    name="endDate"
+                                    defaultValue={resolvedEndDate}
+                                    className="h-8 text-xs font-medium"
+                                />
+                                {state.fields?.endDate && (
+                                    <p className="text-[11px] text-rose-600">{state.fields.endDate}</p>
+                                )}
+                            </div>
+                        </div>
+                    </AdminCardWrapper>
+                </aside>
+            </div>
+
+            {/* Barra de Guardado Inferior Fija a Todo el Ancho */}
+            <div className="fixed bottom-0 inset-x-0 z-40 border-t border-indigo-100 bg-gradient-to-r from-white via-indigo-50/20 to-white backdrop-blur-md px-4 py-2.5 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] transition-all">
+                <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3">
+                    <div className="hidden sm:flex items-center gap-2">
+                        <span className="flex h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100 animate-pulse" />
+                        <span className="text-xs font-medium text-slate-600">
+                            {isEditMode ? "Modificaciones listas para guardar" : "Nueva campaña lista para registrar"}
+                        </span>
+                    </div>
+
+                    <div className="flex items-center gap-2.5 ml-auto">
+                        <Link
+                            href="/admin/advertisements"
+                            className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer"
+                        >
+                            Cancelar
+                        </Link>
+
+                        <button
+                            type="submit"
+                            disabled={isPending}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            {isPending ? (
+                                <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                    <span>Guardando...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="w-3.5 h-3.5" />
+                                    <span>{isEditMode ? "Guardar Cambios" : "Crear Anuncio"}</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

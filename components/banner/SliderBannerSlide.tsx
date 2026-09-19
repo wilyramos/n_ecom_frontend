@@ -7,13 +7,14 @@ import LayoutBackgroundMedia from "./layouts/LayoutBackgroundMedia";
 
 interface Props {
     banner: SliderBanner;
+    isPriority?: boolean; // Nuevo prop
 }
 
-export function SliderBannerSlide({ banner }: Props) {
+export function SliderBannerSlide({ banner, isPriority = false }: Props) {
     switch (banner.design.layout) {
-        case "image-only": return <LayoutImageOnly banner={banner} />;
-        case "media-left": return <LayoutMediaLeft banner={banner} />;
-        case "background-media": return <LayoutBackgroundMedia banner={banner} />;
-        default: return <LayoutDefault banner={banner} />;
+        case "image-only": return <LayoutImageOnly banner={banner} isPriority={isPriority} />;
+        case "media-left": return <LayoutMediaLeft banner={banner} isPriority={isPriority} />;
+        case "background-media": return <LayoutBackgroundMedia banner={banner} isPriority={isPriority} />;
+        default: return <LayoutDefault banner={banner} isPriority={isPriority} />;
     }
 }

@@ -1,4 +1,4 @@
-// File: src/components/banner/layouts/LayoutMediaLeft.tsx
+// File: frontend/components/banner/layouts/LayoutMediaLeft.tsx
 "use client";
 
 import Link from "next/link";
@@ -7,7 +7,12 @@ import { useEffect, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
 
-export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
+interface LayoutMediaLeftProps {
+    banner: SliderBanner;
+    isPriority?: boolean;
+}
+
+export default function LayoutMediaLeft({ banner, isPriority = false }: LayoutMediaLeftProps) {
     const { design, media, title, subtitle, description, terms, price, destUrl, openInNewTab } = banner;
     const [loaded, setLoaded] = useState(false);
 
@@ -48,11 +53,12 @@ export default function LayoutMediaLeft({ banner }: { banner: SliderBanner }) {
                                 src={media.imageUrl}
                                 alt={title ?? "Banner"}
                                 fill
-                                className={` ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
-                                sizes="100vw"
-                                priority
+                                className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
+                                sizes="(max-width: 640px) 50vw, 40vw"
+                                priority={isPriority}
+                                loading={isPriority ? "eager" : "lazy"}
                                 quality={100}
-                                unoptimized
+                                unoptimized={true}
                             />
                         </div>
                     </div>

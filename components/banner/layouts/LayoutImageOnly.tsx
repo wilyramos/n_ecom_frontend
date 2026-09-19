@@ -6,7 +6,12 @@ import Image from "next/image";
 import { useRef } from "react";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
 
-export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
+interface LayoutImageOnlyProps {
+    banner: SliderBanner;
+    isPriority?: boolean;
+}
+
+export default function LayoutImageOnly({ banner, isPriority = false }: LayoutImageOnlyProps) {
     const { media, title, destUrl, openInNewTab, design } = banner;
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -36,9 +41,10 @@ export default function LayoutImageOnly({ banner }: { banner: SliderBanner }) {
                     fill
                     className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
                     sizes="100vw"
-                    priority
+                    priority={isPriority}
+                    loading={isPriority ? "eager" : "lazy"}
                     quality={100}
-                    unoptimized
+                    unoptimized={true}
                 />
             ) : null}
         </div>

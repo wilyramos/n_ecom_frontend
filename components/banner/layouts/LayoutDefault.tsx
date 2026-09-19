@@ -7,7 +7,12 @@ import { useEffect, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
 
-export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
+interface LayoutDefaultProps {
+    banner: SliderBanner;
+    isPriority?: boolean;
+}
+
+export default function LayoutDefault({ banner, isPriority = false }: LayoutDefaultProps) {
     const { design, media, title, subtitle, description, terms, price, destUrl, openInNewTab } = banner;
     const [loaded, setLoaded] = useState(false);
 
@@ -52,9 +57,7 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
 
                     {title && (
                         <div style={fadeUp(0.2)}>
-                            <h2
-                                className="font-bold leading-[1.1] tracking-[-0.03em] text-[clamp(1.05rem,2.8vw,3rem)] line-clamp-2 sm:line-clamp-3"
-                            >
+                            <h2 className="font-bold leading-[1.1] tracking-[-0.03em] text-[clamp(1.05rem,2.8vw,3rem)] line-clamp-2 sm:line-clamp-3">
                                 {title}
                             </h2>
                         </div>
@@ -118,12 +121,12 @@ export default function LayoutDefault({ banner }: { banner: SliderBanner }) {
                                 src={media.imageUrl}
                                 alt={media.imageUrl ?? title ?? "Banner"}
                                 fill
-                                className={`
-                             ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
+                                className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
                                 sizes="(max-width: 640px) 50vw, 40vw"
-                                priority
+                                priority={isPriority}
+                                loading={isPriority ? "eager" : "lazy"}
                                 quality={100}
-                                unoptimized
+                                unoptimized={true}
                             />
                         </div>
                     </div>

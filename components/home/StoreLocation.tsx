@@ -1,3 +1,4 @@
+// File: frontend/components/home/StoreLocation.tsx
 "use client";
 
 import Carousel from "react-multi-carousel";
@@ -32,7 +33,8 @@ const storeImages = [
 const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-gris backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
+    aria-label="Imagen anterior"
+    className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/20 text-brand-gris backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
   >
     <ChevronLeft size={20} />
   </button>
@@ -41,7 +43,8 @@ const CustomLeftArrow = ({ onClick }: { onClick: () => void }) => (
 const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-brand-gris backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
+    aria-label="Siguiente imagen"
+    className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-background/20 text-brand-gris backdrop-blur-xs transition-all hover:bg-background hover:scale-110"
   >
     <ChevronRight size={20} />
   </button>
@@ -142,11 +145,14 @@ export default function StoreLocation() {
                 >
                   <Image
                     src={src}
-                    alt={`Imagen ${index + 1}`}
+                    alt={`Instalaciones Neoshop - Vista ${index + 1}`}
                     fill
-                    priority={index === 0}
+                    priority={false}
+                    loading="lazy"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover"
+                    quality={100}
+                    unoptimized={true}
                   />
                 </div>
               ))}
@@ -165,19 +171,25 @@ export default function StoreLocation() {
             <div className="relative h-10 w-18 md:w-32">
               <Image
                 src="/osiptel.png"
-                alt="Osiptel"
+                alt="Entidad Reguladora Osiptel"
                 fill
+                loading="lazy"
                 className="object-contain"
                 sizes="(max-width: 768px) 72px, 128px"
+                quality={100}
+                unoptimized={true}
               />
             </div>
             <div className="relative h-10 w-18 md:w-32">
               <Image
                 src="/mtc.png"
-                alt="MTC"
+                alt="Ministerio de Transportes y Comunicaciones - MTC"
                 fill
+                loading="lazy"
                 className="object-contain"
                 sizes="(max-width: 768px) 72px, 128px"
+                quality={100}
+                unoptimized={true}
               />
             </div>
           </div>

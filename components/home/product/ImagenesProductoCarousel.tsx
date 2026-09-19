@@ -145,6 +145,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                                 zoom ? "scale-[2.5]" : "scale-100"
                             )}
                             style={zoom ? { transformOrigin: `${position.x}% ${position.y}%` } : undefined}
+                            quality={100}
                             unoptimized
                         />
                     )}

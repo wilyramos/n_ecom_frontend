@@ -128,9 +128,8 @@ export default function StoreLocation() {
           <div className="h-[500px] overflow-hidden rounded-md border border-brand-silver-border">
             <Carousel
               responsive={responsive}
-              infinite
-              autoPlay
-              autoPlaySpeed={3000}
+              infinite={false}
+              autoPlay={false}
               customLeftArrow={<CustomLeftArrow onClick={() => {}} />}
               customRightArrow={<CustomRightArrow onClick={() => {}} />}
               showDots={false}

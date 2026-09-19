@@ -5,6 +5,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Save, Loader2, Eye } from "lucide-react";
 import { updateSliderBannerAction, type ActionState } from "@/actions/slider-actions";
 import SliderForm from "./SliderForm";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
@@ -39,7 +40,6 @@ export default function EditSliderBannerForm({ id, initialData }: Props) {
 
         if (state.success) {
             toast.success(state.message ?? "Banner actualizado correctamente.");
-            // router.push("/admin/slider");
             return;
         }
 
@@ -53,34 +53,58 @@ export default function EditSliderBannerForm({ id, initialData }: Props) {
     }, [state, router]);
 
     return (
-        <form action={dispatch} className="flex flex-col gap-4 w-full" noValidate>
+        <form action={dispatch} className="w-full space-y-4 pb-20" noValidate>
             <SliderForm
                 initialData={initialData}
                 fields={state.success ? undefined : state.fields}
                 fieldErrors={state.success ? undefined : state.fieldErrors}
             />
 
-            <div className="flex items-center justify-between px-6 py-4 bg-white border-t sticky bottom-0 z-10">
-                <Link
-                    href={`/admin/slider/${id}/preview`}
-                    className="text-sm text-zinc-500 hover:text-zinc-800 transition-colors"
-                >
-                    Ver preview →
-                </Link>
-                <div className="flex items-center gap-3">
-                    <Link
-                        href="/admin/slider"
-                        className="px-5 py-2.5 text-sm text-zinc-600 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors"
-                    >
-                        Cancelar
-                    </Link>
-                    <button
-                        type="submit"
-                        disabled={isPending}
-                        className="px-8 py-2.5 bg-zinc-900 text-white text-sm font-semibold rounded-md hover:bg-zinc-700 disabled:bg-zinc-300 transition-colors"
-                    >
-                        {isPending ? "Guardando..." : "Guardar cambios"}
-                    </button>
+            <div className="fixed bottom-0 inset-x-0 z-40 border-t border-indigo-100 bg-gradient-to-r from-white via-indigo-50/20 to-white backdrop-blur-md px-4 py-2.5 shadow-[0_-4px_16px_rgba(0,0,0,0.04)] transition-all">
+                <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="hidden sm:flex items-center gap-2">
+                            <span className="flex h-2 w-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100 animate-pulse" />
+                            <span className="text-xs font-medium text-slate-600">
+                                Edición de banner
+                            </span>
+                        </div>
+
+                        <Link
+                            href={`/admin/slider/${id}/preview`}
+                            className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+                        >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>Ver preview</span>
+                        </Link>
+                    </div>
+
+                    <div className="flex items-center gap-2.5 ml-auto">
+                        <Link
+                            href="/admin/slider"
+                            className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer"
+                        >
+                            Cancelar
+                        </Link>
+
+                        <button
+                            type="submit"
+                            disabled={isPending}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all cursor-pointer disabled:opacity-50"
+                        >
+                            {isPending ? (
+                                <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                                    <span>Guardando...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Save className="w-3.5 h-3.5" />
+                                    <span>Guardar Cambios</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

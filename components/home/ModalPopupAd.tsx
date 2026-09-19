@@ -70,20 +70,20 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
 
             <DialogContent
                 showCloseButton={true}
-                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background border border-brand-silver-border rounded-2xl focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none"
+                className="w-[90vw] max-w-[340px] sm:max-w-[380px] p-0 overflow-hidden bg-background rounded-3xl border-0 border-none ring-0 outline-none focus:ring-0 focus-visible:ring-0 focus:outline-none focus-visible:outline-none"
             >
                 {ad.linkTo ? (
                     <Link
                         href={ad.linkTo}
                         onClick={() => handleOpenChange(false)}
-                        className="group block w-full text-left cursor-pointer focus:outline-none"
+                        className="group block w-full text-left cursor-pointer border-none outline-none focus:outline-none focus:ring-0"
                     >
                         {content}
                     </Link>
                 ) : (
                     <div
                         onClick={() => handleOpenChange(false)}
-                        className="group block w-full text-left cursor-pointer focus:outline-none"
+                        className="group block w-full text-left cursor-pointer border-none outline-none focus:outline-none focus:ring-0"
                     >
                         {content}
                     </div>

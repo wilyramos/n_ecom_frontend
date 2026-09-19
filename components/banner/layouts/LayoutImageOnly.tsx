@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
 interface LayoutImageOnlyProps {
     banner: SliderBanner;
@@ -36,16 +37,15 @@ export default function LayoutImageOnly({ banner, isPriority = false }: LayoutIm
                 />
             ) : media?.imageUrl ? (
                 <Image
-                    src={media.imageUrl}
-                    alt={title ?? "Banner"}
-                    fill
-                    className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
-                    sizes="100vw"
-                    priority={isPriority}
-                    loading={isPriority ? "eager" : "lazy"}
-                    quality={100}
-                    unoptimized={true}
-                />
+    src={getOptimizedImageUrl(media.imageUrl)}
+    alt={title ?? "Banner"}
+    fill
+    className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
+    sizes="100vw"
+    priority={isPriority}
+    loading={isPriority ? "eager" : "lazy"}
+    unoptimized={true}
+/>
             ) : null}
         </div>
     );

@@ -6,8 +6,14 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
-export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner }) {
+interface LayoutBackgroundMediaProps {
+    banner: SliderBanner;
+    isPriority?: boolean;
+}
+
+export default function LayoutBackgroundMedia({ banner, isPriority = false }: LayoutBackgroundMediaProps) {
     const { design, media, title, subtitle, description, terms, price, destUrl, openInNewTab } = banner;
     const [loaded, setLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -41,23 +47,23 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                 <video
                     ref={videoRef}
                     src={media!.videoUrl}
-                    poster={media!.imageUrl}
+                    poster={media?.imageUrl ? getOptimizedImageUrl(media.imageUrl) : undefined}
                     autoPlay
                     muted
                     loop
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover ]"
+                    className="absolute inset-0 w-full h-full object-cover"
                 />
             ) : media?.imageUrl ? (
                 <Image
-                    src={media.imageUrl}
+                    src={getOptimizedImageUrl(media.imageUrl)}
                     alt={title ?? "Banner Background"}
                     fill
                     className={`absolute inset-0 ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
                     sizes="100vw"
-                    priority
-                    quality={100}
-                    unoptimized
+                    priority={isPriority}
+                    loading={isPriority ? "eager" : "lazy"}
+                    unoptimized={true}
                 />
             ) : null}
 
@@ -82,7 +88,6 @@ export default function LayoutBackgroundMedia({ banner }: { banner: SliderBanner
                                 style={{
                                     color: accent,
                                     background: `${accent}22`,
-                                    border: ``,
                                 }}
                             >
                                 {subtitle}

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
 interface LayoutDefaultProps {
     banner: SliderBanner;
@@ -117,17 +118,16 @@ export default function LayoutDefault({ banner, isPriority = false }: LayoutDefa
                         }}
                     >
                         <div className="relative w-full h-full">
-                            <Image
-                                src={media.imageUrl}
-                                alt={media.imageUrl ?? title ?? "Banner"}
-                                fill
-                                className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
-                                sizes="(max-width: 640px) 50vw, 40vw"
-                                priority={isPriority}
-                                loading={isPriority ? "eager" : "lazy"}
-                                quality={100}
-                                unoptimized={true}
-                            />
+                           <Image
+    src={getOptimizedImageUrl(media.imageUrl)}
+    alt={title ?? "Banner"}
+    fill
+    className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
+    sizes="(max-width: 640px) 100vw, 50vw"
+    priority={isPriority}
+    loading={isPriority ? "eager" : "lazy"}
+    unoptimized={true}
+/>
                         </div>
                     </div>
                 )}

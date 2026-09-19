@@ -1,38 +1,23 @@
+// File: frontend/next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverActions: {
-    bodySizeLimit: "4mb",
-  },
-  experimental: {
-    serverActions: {
-      bodySizeLimit: "4mb",
-    },
+    bodySizeLimit: "4mb", // Límite de seguridad
   },
 
   // 1. Configuración de Imágenes (Cloudinary)
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.neoshopimportaciones.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.googleusercontent.com", // Acepta todos los subdominios de avatares de Google (lh3, lh4, etc.)
-      },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "www.neoshopimportaciones.com" },
+      { protocol: "https", hostname: "*.googleusercontent.com" }, 
     ],
   },
 
-  // 2. Redirecciones SEO (Vitales para no perder tráfico)
+  // 2. Redirecciones SEO
   async redirects() {
     return [
-      // A) Migración de listado general antiguo
-      // Si alguien entra a neoshopimportaciones.com/productos -> lo manda a /catalogo
       {
         source: '/productos',
         destination: '/catalogo',

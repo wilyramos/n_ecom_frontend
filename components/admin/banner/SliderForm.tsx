@@ -3,20 +3,19 @@
 
 import { useState, useEffect } from "react";
 import { Info, ImageIcon, Link as LinkIcon, DollarSign, Palette, RotateCcw, Calendar } from "lucide-react";
-import { Alert } from "@/components/ui/Alert";
+import { Alert, AlertDescription } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { LabelWithTooltip } from "@/components/utils/LabelWithTooltip";
 import MediaLibraryDialog from "@/components/admin/products/MediaLibraryDialog";
+import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapper";
 import {
     SliderLayoutEnum,
     SliderThemeEnum,
     SliderObjectFitEnum,
-    type SliderBanner
+    type SliderBanner,
 } from "@/src/schemas/slider.schema";
 import { z } from "zod";
 
@@ -38,12 +37,12 @@ interface SliderFormProps {
 
 const LAYOUT_LABELS: Record<SliderLayout, string> = {
     "image-only": "Solo imagen",
-    "default": "Default (Media Derecha)",
+    default: "Default (Media Derecha)",
     "media-left": "Media Izquierda",
     "background-media": "Fondo con Media",
 };
 
-const THEME_PRESETS: Record<Exclude<SliderTheme, 'custom'>, ColorPalette> = {
+const THEME_PRESETS: Record<Exclude<SliderTheme, "custom">, ColorPalette> = {
     dark: { bgColor: "#000000", accentColor: "#a0a0a0", textColor: "#cbcbcb" },
     light: { bgColor: "#ffffff", accentColor: "#a0a0a0", textColor: "#a0a0a0" },
 };
@@ -60,7 +59,6 @@ export default function SliderForm({
     fieldErrors,
     generalError,
 }: SliderFormProps) {
-    // ── ESTADOS MULTIMEDIA ────────────────────────────────────────────────────
     const [availableImages, setAvailableImages] = useState<string[]>(
         initialData?.media?.imageUrl ? [initialData.media.imageUrl] : []
     );
@@ -68,7 +66,6 @@ export default function SliderForm({
         fields?.["media.imageUrl"] || initialData?.media?.imageUrl || ""
     );
 
-    // ── ESTADOS APARIENCIA ────────────────────────────────────────────────────
     const [theme, setTheme] = useState<SliderTheme>(
         (fields?.["design.theme"] as SliderTheme) || initialData?.design?.theme || "dark"
     );
@@ -89,7 +86,6 @@ export default function SliderForm({
         }
     }, [theme, isCustom]);
 
-    // ── HELPERS FORMULARIO ────────────────────────────────────────────────────
     const val = (name: string, fallback?: string) => fields?.[name] ?? fallback ?? "";
     const err = (name: string) => fieldErrors?.[name]?.[0];
 
@@ -99,9 +95,8 @@ export default function SliderForm({
         return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16);
     };
 
-    // ── MANEJADORES MULTIMEDIA ────────────────────────────────────────────────
     const handleUploadSuccess = (newImages: string[]) => {
-        setAvailableImages(prev => [...prev, ...newImages]);
+        setAvailableImages((prev) => [...prev, ...newImages]);
     };
 
     const handleConfirmSelection = (selectedImages: string[]) => {
@@ -116,10 +111,9 @@ export default function SliderForm({
         }
     };
 
-    // ── MANEJADORES DISEÑO ────────────────────────────────────────────────────
     const handleColorChange = (key: keyof ColorPalette, value: string) => {
         if (!isCustom) return;
-        setColors(prev => ({ ...prev, [key]: value }));
+        setColors((prev) => ({ ...prev, [key]: value }));
     };
 
     const resetAppearance = () => {
@@ -129,23 +123,27 @@ export default function SliderForm({
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
             {generalError && (
-                <Alert >{generalError}</Alert>
+                <Alert variant="destructive" className="py-2.5">
+                    <AlertDescription className="text-xs">{generalError}</AlertDescription>
+                </Alert>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-2">
-                {/* ── COLUMNA PRINCIPAL ──────────────────────────────────────── */}
-                <div className="lg:col-span-3 space-y-6">
-
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+                {/* Columna Principal */}
+                <div className="lg:col-span-8 space-y-3">
                     {/* INFORMACIÓN GENERAL */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
-                            <Info className="w-3.5 h-3.5 text-muted-foreground/80" />
-                            <CardTitle>Información General</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-5">
-                            <div className="space-y-1">
+                    <AdminCardWrapper padding="default">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
+                            <Info className="w-3.5 h-3.5" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">
+                                Información General
+                            </h3>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="title"
                                     label="Título Principal"
@@ -153,434 +151,488 @@ export default function SliderForm({
                                     tooltip="Texto principal y destacado del banner."
                                 />
                                 <Input
+                                    id="title"
                                     name="title"
                                     defaultValue={val("title", initialData?.title)}
                                     placeholder="Ej: Nueva Colección de Invierno"
-                                    className={`h-10 text-xs bg-background-secondary border ${err("title") ? "border-destructive" : "border-border/40"} rounded-sm`}
+                                    className={`h-8 text-xs font-medium ${err("title") ? "border-rose-500" : ""}`}
                                 />
-                                {err("title") && <p className="text-[10px] text-destructive">{err("title")}</p>}
+                                {err("title") && <p className="text-[10px] text-rose-600">{err("title")}</p>}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="subtitle"
                                         label="Subtítulo"
                                         tooltip="Texto secundario complementario opcional."
                                     />
                                     <Input
+                                        id="subtitle"
                                         name="subtitle"
                                         defaultValue={val("subtitle", initialData?.subtitle)}
                                         placeholder="Ej: Hasta 50% de descuento"
-                                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="destUrl"
                                         label="URL de Destino"
                                         tooltip="Enlace de redirección al hacer clic en el banner."
                                     />
                                     <div className="relative">
-                                        <LinkIcon className="absolute left-3 top-3 w-3.5 h-3.5 text-muted-foreground" />
+                                        <LinkIcon className="absolute left-2.5 top-2.5 w-3 h-3 text-zinc-400" />
                                         <Input
+                                            id="destUrl"
                                             name="destUrl"
                                             defaultValue={val("destUrl", initialData?.destUrl)}
                                             placeholder="/categorias/invierno"
-                                            className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm pl-9"
+                                            className="h-8 text-xs font-medium pl-7"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 pt-0.5">
                                 <input
                                     type="checkbox"
                                     id="openInNewTab"
                                     name="openInNewTab"
                                     value="true"
                                     defaultChecked={initialData?.openInNewTab ?? false}
-                                    className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                    className="w-3.5 h-3.5 accent-zinc-900 rounded cursor-pointer"
                                 />
                                 <LabelWithTooltip
                                     htmlFor="openInNewTab"
                                     label="Abrir enlace en nueva pestaña"
-                                    tooltip="Si se marca, el enlace de destino se abrirá en un nuevo tab del navegador."
+                                    tooltip="Abre el destino en un tab secundario del navegador."
                                 />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="space-y-1.5 pt-1">
                                 <LabelWithTooltip
                                     htmlFor="description"
                                     label="Descripción"
-                                    tooltip="Bloque de texto informativo adicional que aparece dentro del banner."
+                                    tooltip="Texto explicativo adicional dentro del banner."
                                 />
                                 <Textarea
+                                    id="description"
                                     name="description"
                                     defaultValue={val("description", initialData?.description)}
                                     rows={2}
-                                    placeholder="Detalles adicionales sobre la promoción o campaña..."
-                                    className="text-xs bg-background-secondary border-border/40 rounded-sm"
+                                    placeholder="Detalles sobre la campaña o lanzamiento..."
+                                    className="text-xs"
                                 />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="terms"
                                     label="Términos y condiciones"
-                                    tooltip="Restricciones legales o letra pequeña aplicable a la promoción."
+                                    tooltip="Letra pequeña y restricciones operativas de la promoción."
                                 />
                                 <Textarea
+                                    id="terms"
                                     name="terms"
                                     defaultValue={val("terms", initialData?.terms)}
                                     rows={2}
-                                    placeholder="*Oferta válida desde el 01/06 hasta el 30/06 o hasta agotar stock..."
-                                    className="text-xs bg-background-secondary border-border/40 rounded-sm"
+                                    placeholder="*Válido hasta agotar stock o vigencia estipulada..."
+                                    className="text-xs"
                                 />
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </AdminCardWrapper>
 
-                    {/* PRECIO */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
-                            <DollarSign className="w-3.5 h-3.5 text-green-600" />
-                            <CardTitle>Precio promocional</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1">
+                    {/* PRECIO PROMOCIONAL */}
+                    <AdminCardWrapper padding="default">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
+                            <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">
+                                Precio Promocional
+                            </h3>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="price.current"
                                         label="Precio actual"
-                                        tooltip="El valor de venta final configurado para el banner."
+                                        tooltip="Monto de oferta destacado en el banner."
                                     />
                                     <Input
+                                        id="price.current"
                                         name="price.current"
                                         type="number"
                                         step="0.01"
                                         min="0"
                                         defaultValue={val("price.current", initialData?.price?.current?.toString())}
                                         placeholder="0.00"
-                                        className={`h-10 text-xs bg-background-secondary border rounded-sm ${err("price.current") ? "border-destructive" : "border-border/40"}`}
+                                        className={`h-8 text-xs font-medium ${err("price.current") ? "border-rose-500" : ""}`}
                                     />
-                                    {err("price.current") && <p className="text-[10px] text-destructive">{err("price.current")}</p>}
+                                    {err("price.current") && (
+                                        <p className="text-[10px] text-rose-600">{err("price.current")}</p>
+                                    )}
                                 </div>
-                                <div className="space-y-1">
+
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="price.compare"
                                         label="Precio comparativo"
-                                        tooltip="Precio original tachado que sirve de referencia comercial."
+                                        tooltip="Precio tachado regular de referencia."
                                     />
                                     <Input
+                                        id="price.compare"
                                         name="price.compare"
                                         type="number"
                                         step="0.01"
                                         min="0"
                                         defaultValue={val("price.compare", initialData?.price?.compare?.toString())}
                                         placeholder="0.00"
-                                        className={`h-10 text-xs bg-background-secondary border rounded-sm ${err("price.compare") ? "border-destructive" : "border-border/40"}`}
+                                        className={`h-8 text-xs font-medium ${err("price.compare") ? "border-rose-500" : ""}`}
                                     />
-                                    {err("price.compare") && <p className="text-[10px] text-destructive">{err("price.compare")}</p>}
+                                    {err("price.compare") && (
+                                        <p className="text-[10px] text-rose-600">{err("price.compare")}</p>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="price.label"
                                         label="Etiqueta"
-                                        tooltip="Prefijo descriptivo para el precio (Ej: Desde, Solo hoy)."
+                                        tooltip="Texto previo al importe numérico (ej. Desde)."
                                     />
                                     <Input
+                                        id="price.label"
                                         name="price.label"
                                         defaultValue={val("price.label", initialData?.price?.label)}
-                                        placeholder="Ej: Solo por hoy"
-                                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                        placeholder="Ej: Desde"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="price.suffix"
                                         label="Sufijo"
-                                        tooltip="Información complementaria posterior al monto numérico (Ej: /mes, c/u)."
+                                        tooltip="Texto posterior al precio (ej. / mes)."
                                     />
                                     <Input
+                                        id="price.suffix"
                                         name="price.suffix"
                                         defaultValue={val("price.suffix", initialData?.price?.suffix)}
                                         placeholder="Ej: / unidad"
-                                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </AdminCardWrapper>
 
-                    {/* MULTIMEDIA */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
-                            <ImageIcon className="w-3.5 h-3.5 text-muted-foreground/80" />
-                            <CardTitle>Multimedia</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
+                    {/* RECURSOS MULTIMEDIA */}
+                    <AdminCardWrapper padding="default">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
+                            <ImageIcon className="w-3.5 h-3.5" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">
+                                Recursos Multimedia
+                            </h3>
+                        </div>
+
+                        <div className="space-y-3">
                             <input type="hidden" name="media.imageUrl" value={selectedImageUrl} />
 
-                            <div className="items-end gap-3 p-3 border border-border/40 bg-background-secondary/20 rounded-sm flex justify-between">
-                                <div className="flex-1 space-y-1">
+                            <div className="flex items-center justify-between gap-3 p-2.5 border border-zinc-200/80 bg-zinc-50/50 rounded-lg">
+                                <div className="min-w-0 flex-1 space-y-0.5">
                                     <LabelWithTooltip
                                         htmlFor="media.imageUrl"
                                         label="Imagen seleccionada"
-                                        tooltip="Ruta o URI absoluta del recurso de imagen vinculado al banner."
+                                        tooltip="Dirección del archivo de imagen asignado."
                                     />
-                                    <div className="h-10 px-3 flex items-center bg-background border border-border/40 rounded-sm text-xs text-muted-foreground truncate max-w-lg">
-                                        {selectedImageUrl || "Sin imagen seleccionada"}
-                                    </div>
+                                    <p className="text-[11.5px] text-zinc-600 truncate">
+                                        {selectedImageUrl || "Ningún archivo vinculado"}
+                                    </p>
                                 </div>
+
                                 <MediaLibraryDialog
                                     selectedImages={selectedImageUrl ? [selectedImageUrl] : []}
                                     globalImagesPool={availableImages}
                                     onConfirmSelection={handleConfirmSelection}
                                     onUploadSuccess={handleUploadSuccess}
                                     allowMultiple={false}
-                                    triggerLabel="Seleccionar"
-                                    triggerVariant="outline"
-                                    size="sm"
+                                    triggerLabel="Examinar"
                                 />
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="media.videoUrl"
-                                        label="URL del Video"
-                                        tooltip="Dirección web opcional si el banner renderiza un reproductor multimedia."
+                                        label="URL del Video (opcional)"
+                                        tooltip="Dirección MP4 de fondo si aplica."
                                     />
                                     <Input
+                                        id="media.videoUrl"
                                         name="media.videoUrl"
                                         defaultValue={val("media.videoUrl", initialData?.media?.videoUrl)}
-                                        placeholder="https://su-servidor.com/video.mp4"
-                                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                        placeholder="https://dominio.com/video.mp4"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
-                                <div className="space-y-1">
+
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="media.objectFit"
-                                        label="Ajuste de Imagen (Object Fit)"
-                                        tooltip="Estrategia CSS empleada para escalar la imagen dentro de la caja contenedora."
+                                        label="Ajuste de Imagen"
+                                        tooltip="Regla CSS para escalar dentro del banner."
                                     />
                                     <Select
                                         name="media.objectFit"
                                         defaultValue={val("media.objectFit", initialData?.media?.objectFit ?? "cover")}
                                     >
-                                        <SelectTrigger className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm">
+                                        <SelectTrigger className="h-8 text-xs">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-background border border-border rounded-sm">
+                                        <SelectContent>
                                             {SliderObjectFitEnum.options.map((opt) => (
-                                                <SelectItem key={opt} value={opt} className="text-xs uppercase">{opt}</SelectItem>
+                                                <SelectItem key={opt} value={opt} className="text-xs uppercase">
+                                                    {opt}
+                                                </SelectItem>
                                             ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </AdminCardWrapper>
 
-                    {/* COUNTDOWN */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
+                    {/* CONTADOR REGRESIVO */}
+                    <AdminCardWrapper padding="default">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
                             <Calendar className="w-3.5 h-3.5 text-amber-600" />
-                            <CardTitle>Contador regresivo (Countdown)</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-1">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">
+                                Contador Regresivo (Countdown)
+                            </h3>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="countdown.endsAt"
-                                        label="Fecha de finalización"
-                                        tooltip="Fecha límite en la que el contador llegará a cero."
+                                        label="Fecha Límite"
+                                        tooltip="Momento en el cual el contador llega a cero."
                                     />
                                     <Input
+                                        id="countdown.endsAt"
                                         name="countdown.endsAt"
                                         type="datetime-local"
                                         defaultValue={toDatetimeLocal(initialData?.countdown?.endsAt)}
-                                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="countdown.label"
-                                        label="Etiqueta del contador"
-                                        tooltip="Texto descriptivo que se muestra arriba o al lado del reloj."
+                                        label="Etiqueta del Reloj"
+                                        tooltip="Texto encima del contador de tiempo."
                                     />
                                     <Input
+                                        id="countdown.label"
                                         name="countdown.label"
                                         defaultValue={val("countdown.label", initialData?.countdown?.label)}
-                                        placeholder="Ej: La oferta termina en:"
-                                        className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                        placeholder="Ej: La oferta finaliza en:"
+                                        className="h-8 text-xs font-medium"
                                     />
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 pt-1">
+
+                            <div className="flex items-center gap-2 pt-0.5">
                                 <input
                                     type="checkbox"
                                     id="countdown.showDays"
                                     name="countdown.showDays"
                                     value="true"
                                     defaultChecked={initialData?.countdown?.showDays ?? true}
-                                    className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                    className="w-3.5 h-3.5 accent-zinc-900 rounded cursor-pointer"
                                 />
                                 <LabelWithTooltip
                                     htmlFor="countdown.showDays"
-                                    label="Mostrar días en el contador"
-                                    tooltip="Habilita o deshabilita la visualización del bloque de días remanentes."
+                                    label="Incluir bloque de días"
+                                    tooltip="Muestra u oculta la caja de días restantes."
                                 />
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </AdminCardWrapper>
                 </div>
 
-                {/* ── COLUMNA LATERAL (CONFIGURACIÓN SECUNDARIA) ───────────────── */}
-                <aside className="space-y-6">
-
-                    {/* APARIENCIA Y DISEÑO */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <div className="flex items-center gap-2">
-                                <Palette className="w-3.5 h-3.5 text-muted-foreground/80" />
-                                <CardTitle className="text-sm">Apariencia</CardTitle>
+                {/* Columna Lateral */}
+                <aside className="lg:col-span-4 space-y-3 lg:sticky lg:top-18">
+                    {/* APARIENCIA Y ESTILO */}
+                    <AdminCardWrapper padding="default">
+                        <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100 mb-3">
+                            <div className="flex items-center gap-2 text-zinc-700">
+                                <Palette className="w-3.5 h-3.5" />
+                                <h3 className="text-xs font-semibold uppercase tracking-wider">
+                                    Apariencia
+                                </h3>
                             </div>
-                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={resetAppearance}>
-                                <RotateCcw className="w-3.5 h-3.5" />
-                            </Button>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-1">
+                            <button
+                                type="button"
+                                onClick={resetAppearance}
+                                className="h-6 w-6 inline-flex items-center justify-center text-zinc-400 hover:text-zinc-700 rounded-md hover:bg-zinc-100 transition-colors cursor-pointer"
+                                title="Restablecer tema"
+                            >
+                                <RotateCcw className="w-3 h-3" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="design.layout"
-                                    label="Layout"
-                                    tooltip="Estructura visual y distribución interna de los textos y archivos multimedia."
+                                    label="Distribución (Layout)"
+                                    tooltip="Disposición estructural de textos e imagen."
                                 />
-                                <Select name="design.layout" value={layout} onValueChange={(v: SliderLayout) => setLayout(v)}>
-                                    <SelectTrigger className="h-9 text-xs bg-background-secondary border-border/40 rounded-sm">
+                                <Select
+                                    name="design.layout"
+                                    value={layout}
+                                    onValueChange={(v: SliderLayout) => setLayout(v)}
+                                >
+                                    <SelectTrigger className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-background border border-border rounded-sm">
+                                    <SelectContent>
                                         {SliderLayoutEnum.options.map((opt) => (
-                                            <SelectItem key={opt} value={opt} className="text-xs">{LAYOUT_LABELS[opt]}</SelectItem>
+                                            <SelectItem key={opt} value={opt} className="text-xs">
+                                                {LAYOUT_LABELS[opt]}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="design.theme"
-                                    label="Tema"
-                                    tooltip="Esquema base de colores. Selecciona 'custom' para modificar de forma independiente."
+                                    label="Tema de Color"
+                                    tooltip="Paleta cromática preconfigurada o personalizada."
                                 />
-                                <Select name="design.theme" value={theme} onValueChange={(v: SliderTheme) => setTheme(v)}>
-                                    <SelectTrigger className="h-9 text-xs bg-background-secondary border-border/40 rounded-sm">
+                                <Select
+                                    name="design.theme"
+                                    value={theme}
+                                    onValueChange={(v: SliderTheme) => setTheme(v)}
+                                >
+                                    <SelectTrigger className="h-8 text-xs">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-background border border-border rounded-sm">
+                                    <SelectContent>
                                         {SliderThemeEnum.options.map((opt) => (
-                                            <SelectItem key={opt} value={opt} className="text-xs capitalize">{opt}</SelectItem>
+                                            <SelectItem key={opt} value={opt} className="text-xs capitalize">
+                                                {opt}
+                                            </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            <div className="space-y-3 pt-2">
+                            <div className="space-y-2 pt-1 border-t border-zinc-100">
                                 {(Object.keys(colors) as Array<keyof ColorPalette>).map((key) => (
                                     <div key={key} className="space-y-1">
-                                        <Label className="text-[9px] uppercase text-muted-foreground font-semibold">
+                                        <Label className="text-[10px] uppercase font-semibold text-zinc-500">
                                             {COLOR_LABELS[key]}
                                         </Label>
                                         <input type="hidden" name={`design.${key}`} value={colors[key]} />
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 items-center">
                                             <Input
                                                 type="text"
                                                 value={colors[key]}
                                                 onChange={(e) => handleColorChange(key, e.target.value)}
                                                 disabled={!isCustom}
-                                                className="h-8 text-[11px] font-mono uppercase bg-background-secondary border-border/40 rounded-sm"
                                                 maxLength={7}
+                                                className="h-8 text-xs uppercase"
                                             />
-                                            <div className="relative w-10 h-8 shrink-0 rounded border overflow-hidden">
+                                            <div className="relative w-9 h-8 shrink-0 rounded-md border border-zinc-200/80 overflow-hidden">
                                                 <input
                                                     type="color"
                                                     value={colors[key]}
                                                     onChange={(e) => handleColorChange(key, e.target.value)}
                                                     disabled={!isCustom}
-                                                    className="absolute inset-0 w-full h-full cursor-pointer scale-150 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    className="absolute inset-0 w-full h-full cursor-pointer scale-150 disabled:cursor-not-allowed disabled:opacity-40"
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </AdminCardWrapper>
 
-                    {/* CONFIGURACIÓN DE PUBLICACIÓN */}
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-muted-foreground/80" />
-                            <CardTitle>Planificación</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-1">
+                    {/* PLANIFICACIÓN Y PUBLICACIÓN */}
+                    <AdminCardWrapper padding="default">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
+                            <Calendar className="w-3.5 h-3.5" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">
+                                Planificación
+                            </h3>
+                        </div>
+
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="order"
-                                    label="Orden de aparición"
-                                    tooltip="Índice numérico para organizar la prioridad en el carrusel (menor número primero)."
+                                    label="Posición en el carrusel"
+                                    tooltip="Índice ordinal de visualización (menor a mayor)."
                                 />
                                 <Input
+                                    id="order"
                                     name="order"
                                     type="number"
                                     min="0"
                                     defaultValue={initialData?.order ?? 0}
-                                    className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                    className="h-8 text-xs font-medium"
                                 />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="schedule.startsAt"
-                                    label="Vigente desde"
-                                    tooltip="Fecha y hora automatizada para que el banner se vuelva visible en el storefront."
+                                    label="Fecha de inicio"
+                                    tooltip="Fecha y hora de activación automática en la tienda."
                                 />
                                 <Input
+                                    id="schedule.startsAt"
                                     name="schedule.startsAt"
                                     type="datetime-local"
                                     defaultValue={toDatetimeLocal(initialData?.schedule?.startsAt)}
-                                    className="h-10 text-xs bg-background-secondary border-border/40 rounded-sm"
+                                    className="h-8 text-xs font-medium"
                                 />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="schedule.endsAt"
-                                    label="Vigente hasta"
-                                    tooltip="Fecha y hora automatizada en la que el banner expira y deja de renderizarse."
+                                    label="Fecha de término"
+                                    tooltip="Fecha y hora de expiración automática del banner."
                                 />
                                 <Input
+                                    id="schedule.endsAt"
                                     name="schedule.endsAt"
                                     type="datetime-local"
                                     defaultValue={toDatetimeLocal(initialData?.schedule?.endsAt)}
-                                    className={`h-10 text-xs bg-background-secondary border rounded-sm ${err("schedule.endsAt") ? "border-destructive" : "border-border/40"}`}
+                                    className={`h-8 text-xs font-medium ${err("schedule.endsAt") ? "border-rose-500" : ""}`}
                                 />
                                 {err("schedule.endsAt") && (
-                                    <p className="text-[10px] text-destructive">{err("schedule.endsAt")}</p>
+                                    <p className="text-[10px] text-rose-600">{err("schedule.endsAt")}</p>
                                 )}
                             </div>
 
-                            <div className="flex items-center justify-between pt-3 border-t border-border/40">
+                            <div className="flex items-center justify-between pt-2.5 border-t border-zinc-100">
                                 <LabelWithTooltip
                                     htmlFor="isActive"
                                     label="Estado Activo"
-                                    tooltip="Interruptor maestro global para habilitar o deshabilitar temporalmente el banner."
+                                    tooltip="Control maestro de visibilidad del banner."
                                 />
                                 <input
                                     type="checkbox"
@@ -588,11 +640,11 @@ export default function SliderForm({
                                     name="isActive"
                                     value="true"
                                     defaultChecked={initialData?.isActive ?? true}
-                                    className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                    className="w-4 h-4 accent-zinc-900 rounded cursor-pointer"
                                 />
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </AdminCardWrapper>
                 </aside>
             </div>
         </div>

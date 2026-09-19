@@ -57,7 +57,7 @@ export default function ModalPopupAd({ ad }: ModalPopupAdProps) {
                         fill
                         className="object-cover"
                         priority
-                        quality={100}
+                        quality={80}
                     />
                 </div>
             )}

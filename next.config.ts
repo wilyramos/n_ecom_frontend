@@ -3,10 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverActions: {
-    bodySizeLimit: "4mb", // Límite de seguridad
+    bodySizeLimit: "4mb",
   },
-
-  // 1. Configuración de Imágenes (Cloudinary)
+  
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com" },
@@ -15,7 +14,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // 2. Redirecciones SEO
   async redirects() {
     return [
       {

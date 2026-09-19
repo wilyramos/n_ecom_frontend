@@ -66,19 +66,22 @@ export default function StoreLocation() {
               
               {/* Distribuidor garantizado con icono */}
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-action text-brand-gris">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-silver text-brand-silver-border">
                   <LuBadgeCheck size={18} />
                 </div>
                 <div className="leading-tight flex flex-col justify-center">
                   <p className="text-sm font-semibold text-brand-gris">
                     Distribuidor garantizado
                   </p>
+                  <p className="text-sm font-bold text-brand-gris">
+                    neoshopimportaciones@gmail.com
+                  </p>
                 </div>
               </div>
 
               {/* Dirección */}
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-action text-brand-gris">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-silver text-brand-silver-border">
                   <MapPin size={18} />
                 </div>
                 <div className="leading-tight">
@@ -93,7 +96,7 @@ export default function StoreLocation() {
 
               {/* Horario */}
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-action text-brand-gris">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-brand-silver text-brand-silver-border">
                   <Clock size={18} />
                 </div>
                 <div className="leading-tight">

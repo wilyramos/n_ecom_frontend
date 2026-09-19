@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, FileRejection } from "react-dropzone";
 import {
     Dialog,
     DialogContent,
@@ -79,8 +79,24 @@ export default function MediaLibraryDialog({
         [onUploadSuccess, allowMultiple, tempSelection.length]
     );
 
+    const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
+        fileRejections.forEach(({ file, errors }) => {
+            errors.forEach(err => {
+                if (err.code === "file-too-large") {
+                    toast.error(`El archivo "${file.name}" supera el límite de 4MB.`);
+                } else if (err.code === "file-invalid-type") {
+                    toast.error(`El formato del archivo "${file.name}" no es válido.`);
+                } else {
+                    toast.error(`Error con "${file.name}": ${err.message}`);
+                }
+            });
+        });
+    }, []);
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
+        onDropRejected,
+        maxSize: 4 * 1024 * 1024, // Límite estricto de 4MB
         accept: {
             "image/jpeg": [".jpeg", ".jpg"],
             "image/png": [".png"],
@@ -162,7 +178,7 @@ export default function MediaLibraryDialog({
                                 <p className="text-xs font-medium text-slate-700">
                                     Arrastra imágenes aquí o haz clic para examinar
                                 </p>
-                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF</p>
+                                <p className="text-[11px] text-slate-400">JPG, PNG, WEBP o AVIF (Máx. 4MB)</p>
                             </div>
                         )}
                     </div>

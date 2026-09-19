@@ -34,7 +34,7 @@ type AdvertisementSubmittedState = Partial<TAdvertisement> & {
 
 const AD_LAYOUT_DESCRIPTIONS: Record<AdLayout, string> = {
     top_bar: "Barra superior fija. Ideal para avisos breves, cupones o promociones de envío.",
-    modal_popup: "Modal emergente visual. Requiere cargar una imagen de banner obligatoria.",
+    modal_popup: "Modal emergente visual (proporción 4:5 vertical). Requiere cargar una imagen de banner obligatoria.",
 };
 
 const formatDateForInput = (dateInput: unknown): string => {
@@ -242,9 +242,16 @@ export default function AdvertisementFormUI({
                             {/* Imagen Publicitaria */}
                             <div className="space-y-2 pt-2 border-t border-zinc-100">
                                 <div className="flex items-center justify-between">
-                                    <Label className="text-xs font-semibold text-zinc-700">
-                                        Imagen Publicitaria {adLayout === "modal_popup" && <span className="text-rose-600">*</span>}
-                                    </Label>
+                                    <div className="space-y-0.5">
+                                        <Label className="text-xs font-semibold text-zinc-700">
+                                            Imagen Publicitaria {adLayout === "modal_popup" && <span className="text-rose-600">*</span>}
+                                        </Label>
+                                        <p className="text-[10.5px] text-zinc-400">
+                                            {adLayout === "modal_popup"
+                                                ? "El modal presentará la imagen en proporción vertical 4:5 (ej: 1080x1350 px)."
+                                                : "Visualización en proporción 4:5."}
+                                        </p>
+                                    </div>
                                     <MediaLibraryDialog
                                         selectedImages={imageUrl ? [imageUrl] : []}
                                         globalImagesPool={allImages}
@@ -258,18 +265,22 @@ export default function AdvertisementFormUI({
                                 </div>
 
                                 {imageUrl ? (
-                                    <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50">
+                                    <div className="relative w-full max-w-[240px] aspect-[4/5] rounded-lg overflow-hidden border border-zinc-200 bg-zinc-50 shadow-xs">
                                         <Image
                                             src={imageUrl}
-                                            alt="Preview del anuncio"
+                                            alt="Preview del anuncio (proporción 4:5)"
                                             fill
                                             className="object-cover"
                                             unoptimized
                                         />
+                                        <span className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-[9.5px] font-medium px-1.5 py-0.5 rounded backdrop-blur-xs">
+                                            4:5
+                                        </span>
                                     </div>
                                 ) : (
-                                    <div className="p-5 border border-dashed border-zinc-200 rounded-lg bg-zinc-50/50 text-center">
+                                    <div className="p-5 border border-dashed border-zinc-200 rounded-lg bg-zinc-50/50 text-center space-y-1">
                                         <p className="text-xs text-zinc-500">Sin imagen seleccionada</p>
+                                        <p className="text-[10.5px] text-zinc-400">Recomendado: proporción 4:5 (ej: 800x1000 px)</p>
                                     </div>
                                 )}
                                 {state.fields?.imageUrl && (

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Info, ImageIcon, Link as LinkIcon, DollarSign, Palette, RotateCcw, Calendar } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/input";
@@ -343,26 +344,51 @@ export default function SliderForm({
                         <div className="space-y-3">
                             <input type="hidden" name="media.imageUrl" value={selectedImageUrl} />
 
-                            <div className="flex items-center justify-between gap-3 p-2.5 border border-zinc-200/80 bg-zinc-50/50 rounded-lg">
-                                <div className="min-w-0 flex-1 space-y-0.5">
-                                    <LabelWithTooltip
-                                        htmlFor="media.imageUrl"
-                                        label="Imagen seleccionada"
-                                        tooltip="Dirección del archivo de imagen asignado."
+                            <div className="space-y-2 p-2.5 border border-zinc-200/80 bg-zinc-50/50 rounded-lg">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="min-w-0 flex-1 space-y-0.5">
+                                        <LabelWithTooltip
+                                            htmlFor="media.imageUrl"
+                                            label="Imagen seleccionada"
+                                            tooltip="Dirección del archivo de imagen asignado."
+                                        />
+                                        <p className="text-[10.5px] text-zinc-400">
+                                            Proporción panorámica recomendada: <strong>27:9</strong> (mínimo 140px de alto, ej: 1920x640 px o 2160x720 px).
+                                        </p>
+                                        <p className="text-[11.5px] text-zinc-600 truncate">
+                                            {selectedImageUrl || "Ningún archivo vinculado"}
+                                        </p>
+                                    </div>
+
+                                    <MediaLibraryDialog
+                                        selectedImages={selectedImageUrl ? [selectedImageUrl] : []}
+                                        globalImagesPool={availableImages}
+                                        onConfirmSelection={handleConfirmSelection}
+                                        onUploadSuccess={handleUploadSuccess}
+                                        allowMultiple={false}
+                                        triggerLabel={selectedImageUrl ? "Cambiar Imagen" : "Examinar"}
                                     />
-                                    <p className="text-[11.5px] text-zinc-600 truncate">
-                                        {selectedImageUrl || "Ningún archivo vinculado"}
-                                    </p>
                                 </div>
 
-                                <MediaLibraryDialog
-                                    selectedImages={selectedImageUrl ? [selectedImageUrl] : []}
-                                    globalImagesPool={availableImages}
-                                    onConfirmSelection={handleConfirmSelection}
-                                    onUploadSuccess={handleUploadSuccess}
-                                    allowMultiple={false}
-                                    triggerLabel="Examinar"
-                                />
+                                {selectedImageUrl ? (
+                                    <div className="relative w-full aspect-[27/9] min-h-[140px] rounded-md overflow-hidden border border-zinc-200 bg-zinc-900 shadow-xs">
+                                        <Image
+                                            src={selectedImageUrl}
+                                            alt="Vista previa del banner"
+                                            fill
+                                            className="object-cover"
+                                            unoptimized
+                                        />
+                                        <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9.5px] font-medium px-1.5 py-0.5 rounded backdrop-blur-xs">
+                                            27:9
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="w-full aspect-[27/9] min-h-[140px] border border-dashed border-zinc-200 rounded-md bg-zinc-50/70 flex flex-col items-center justify-center p-3 text-center space-y-1">
+                                        <p className="text-xs text-zinc-500">Sin imagen vinculada</p>
+                                        <p className="text-[10.5px] text-zinc-400">El contenedor del banner se renderizará en proporción 27:9</p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -385,7 +411,7 @@ export default function SliderForm({
                                     <LabelWithTooltip
                                         htmlFor="media.objectFit"
                                         label="Ajuste de Imagen"
-                                        tooltip="Regla CSS para escalar dentro del banner."
+                                        tooltip="Regla CSS para escalar dentro del contenedor."
                                     />
                                     <Select
                                         name="media.objectFit"
@@ -551,7 +577,7 @@ export default function SliderForm({
                                                 onChange={(e) => handleColorChange(key, e.target.value)}
                                                 disabled={!isCustom}
                                                 maxLength={7}
-                                                className="h-8 text-xs uppercase"
+                                                className="h-8 text-xs uppercase font-mono"
                                             />
                                             <div className="relative w-9 h-8 shrink-0 rounded-md border border-zinc-200/80 overflow-hidden">
                                                 <input

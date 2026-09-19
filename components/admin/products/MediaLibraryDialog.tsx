@@ -124,7 +124,7 @@ export default function MediaLibraryDialog({
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
         onDropRejected,
-        maxSize: 4 * 1024 * 1024, // Bloquea en el frontend archivos > 4MB
+        maxSize: 10 * 1024 * 1024, // Bloquea en el frontend archivos > 10MB
         accept: {
             "image/jpeg": [".jpeg", ".jpg"],
             "image/png": [".png"],

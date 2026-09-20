@@ -1,40 +1,58 @@
-"use server"
+"use server";
 
+import { revalidatePath } from "next/cache";
 import getToken from "@/src/auth/token";
-import { ErrorResponse } from "@/src/schemas";
-// import { revalidatePath } from "next/cache";
-import { SuccessResponse } from "@/src/schemas";
+import { ErrorResponse, SuccessResponse } from "@/src/schemas";
 
-type ActionStateType = {
-    errors: string[],
-    success: string
+export type DeleteProductState = {
+    errors: string[];
+    success: string;
 };
 
-export async function DeleteProduct(productId: string, prevState: ActionStateType) {
+export async function DeleteProduct(
+    productId: string,
+    _prevState: DeleteProductState
+): Promise<DeleteProductState> {
+    try {
+        const token = await getToken();
+        const url = `${process.env.API_URL}/products/${productId}`;
 
-    const token = await getToken();
-    const url = `${process.env.API_URL}/products/${productId}`;
-    const req = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+        const req = await fetch(url, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        const json = await req.json().catch(() => null);
+
+        if (!req.ok) {
+            const parsedError = ErrorResponse.safeParse(json);
+            const message = parsedError.success
+                ? parsedError.data.message
+                : "No se pudo eliminar el producto.";
+            return {
+                errors: [message],
+                success: "",
+            };
         }
-    });
 
-    const json = await req.json();
-    if (!req.ok) {
-        const error = ErrorResponse.parse(json);
+        const parsedSuccess = SuccessResponse.safeParse(json);
+        const message = parsedSuccess.success
+            ? parsedSuccess.data.message
+            : "Producto eliminado correctamente.";
+
+        revalidatePath("/admin/products");
+
         return {
-            errors: [error.message],
-            success: ""
-        }
-    }
-
-    const success = SuccessResponse.parse(json);
-    // revalidatePath('/admin/products');
-    return {
-        errors: [],
-        success: success.message
+            errors: [],
+            success: message,
+        };
+    } catch {
+        return {
+            errors: ["Ocurrió un error inesperado al conectar con el servidor."],
+            success: "",
+        };
     }
 }

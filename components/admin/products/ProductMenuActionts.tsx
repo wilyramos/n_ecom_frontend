@@ -1,9 +1,10 @@
-// File: frontend/components/admin/products/ProductMenuActionts.tsx
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, ExternalLink, Trash2 } from "lucide-react";
 import { AdminTableActions, type ActionItem } from "@/src/components/admin/layout/admin-table-actions";
+import DeleteProductDialog from "./DeleteProductDialog";
 
 interface Props {
     productId: string;
@@ -12,6 +13,7 @@ interface Props {
 
 export default function ProductMenuAction({ productId, slug }: Props) {
     const router = useRouter();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     const actions: ActionItem[] = [
         {
@@ -28,12 +30,18 @@ export default function ProductMenuAction({ productId, slug }: Props) {
             label: "Eliminar",
             icon: Trash2,
             variant: "destructive",
-            onClick: () => {
-                // Invocar la lógica de eliminación existente
-                router.push(`/admin/products/${productId}?action=delete`);
-            },
+            onClick: () => setIsDeleteDialogOpen(true),
         },
     ];
 
-    return <AdminTableActions actions={actions} label="Acciones de producto" />;
+    return (
+        <>
+            <AdminTableActions actions={actions} label="Acciones de producto" />
+            <DeleteProductDialog
+                productId={productId}
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+            />
+        </>
+    );
 }

@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,12 +7,11 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
-import { $getRoot, $insertNodes } from "lexical";
+import { $getRoot, $insertNodes, $setSelection } from "lexical";
 import { LinkNode } from "@lexical/link";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -33,7 +30,6 @@ const editorConfig: InitialConfigType = {
 const moveStylesToSpans = (dom: Document) => {
     const doc = dom;
 
-    // Lista de propiedades CSS. Usamos kebab-case (ej: background-color) que funciona con getPropertyValue
     const stylesToTransfer = [
         'color',
         'background-color',
@@ -48,7 +44,6 @@ const moveStylesToSpans = (dom: Document) => {
     elements.forEach((el) => {
         if (!(el instanceof HTMLElement)) return;
 
-        // getPropertyValue devuelve string vacío si no existe, lo cual es falsy
         const hasStyles = stylesToTransfer.some(style => el.style.getPropertyValue(style));
 
         if (hasStyles) {
@@ -57,12 +52,10 @@ const moveStylesToSpans = (dom: Document) => {
             if (childNodes.length === 0) return;
 
             childNodes.forEach(child => {
-                // Caso 1: Es Texto -> Envolver en Span
                 if (child.nodeType === Node.TEXT_NODE && child.textContent?.trim()) {
                     const span = doc.createElement('span');
                     span.textContent = child.textContent;
 
-                    // Copiar estilos usando la API estándar
                     stylesToTransfer.forEach(style => {
                         const val = el.style.getPropertyValue(style);
                         if (val) {
@@ -71,14 +64,11 @@ const moveStylesToSpans = (dom: Document) => {
                     });
 
                     el.replaceChild(span, child);
-                }
-                // Caso 2: Es otro Elemento HTML -> Fusionar estilos
-                else if (child instanceof HTMLElement) {
+                } else if (child instanceof HTMLElement) {
                     stylesToTransfer.forEach(style => {
                         const parentVal = el.style.getPropertyValue(style);
                         const childVal = child.style.getPropertyValue(style);
 
-                        // Solo aplicamos si el padre tiene valor y el hijo NO (la cascada gana)
                         if (parentVal && !childVal) {
                             child.style.setProperty(style, parentVal);
                         }
@@ -110,6 +100,9 @@ function InitialHTMLPlugin({ html }: { html: string }) {
                 const nodes = $generateNodesFromDOM(editor, dom);
                 root.clear();
                 $insertNodes(nodes);
+                
+                // Evita que el editor tome el foco automáticamente
+                $setSelection(null);
             }
         });
 
@@ -150,7 +143,6 @@ export default function ProductDescriptionEditor({ initialHTML = "" }) {
                         />
                         <InitialHTMLPlugin html={initialHTML} />
                         <HistoryPlugin />
-                        <AutoFocusPlugin />
                         <ListPlugin />
                         <TablePlugin />
                         <OnChangePlugin onChange={(editorState, editor) => {

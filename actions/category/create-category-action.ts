@@ -1,9 +1,9 @@
+// actions/category/create-category-action.ts
 "use server"
 
 import { createCategorySchema, SuccessResponse, categoryAttributesArraySchema } from "@/src/schemas";
 import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
-
 
 type ActionStateType = {
     errors: string[],
@@ -11,12 +11,9 @@ type ActionStateType = {
 }
 
 export async function createCategoryAction(prevState: ActionStateType, formData: FormData) {
-
-    // parsear los atributos del formData
     const rawAttributes = formData.get("attributes");
-    console.log("Raw Attributes:", rawAttributes);
-
     let attributesData;
+    
     if (rawAttributes) {
         try {
             const parsed = JSON.parse(rawAttributes as string);
@@ -28,15 +25,13 @@ export async function createCategoryAction(prevState: ActionStateType, formData:
                 };
             }
 
-            // Normalizar a minúscula las claves y valores
             attributesData = result.data.map(attr => ({
                 name: attr.name.toLowerCase(),
                 values: attr.values.map(v => v.toLowerCase()),
                 isVariant: attr.isVariant || false,
             }));
-
         } catch (error) {
-            console.log("Error parsing attributes:", error);
+            console.error("Error parsing attributes:", error);
             return {
                 errors: ["Los atributos tienen un formato inválido."],
                 success: ""
@@ -53,8 +48,6 @@ export async function createCategoryAction(prevState: ActionStateType, formData:
         attributes: attributesData,
         image: formData.get("image") || undefined,
     })
-
-    console.log("imagen", formData.get("image"))
 
     if (!category.success) {
         return {
@@ -89,10 +82,8 @@ export async function createCategoryAction(prevState: ActionStateType, formData:
         }
     }
 
-    // Revalidate for redirect
-    revalidatePath("/admin/category")
-
-    // console.log("category", category.data)
+    // Revalidate 
+    revalidatePath("/admin/products/category")
 
     return {
         errors: [],

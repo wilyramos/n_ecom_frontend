@@ -1,9 +1,8 @@
+// actions/category/delete-category-action.ts
 "use server";
 
 import getToken from "@/src/auth/token";
-import { ErrorResponse } from "@/src/schemas";
-// import { revalidatePath } from "next/cache";
-import { SuccessResponse } from "@/src/schemas";
+import { ErrorResponse, SuccessResponse } from "@/src/schemas";
 
 type ActionStateType = {
     errors: string[],
@@ -11,7 +10,6 @@ type ActionStateType = {
 };
 
 export async function DeleteCategoryAction(categoryId: string, prevState: ActionStateType) {
-
     const token = await getToken();
     const url = `${process.env.API_URL}/category/${categoryId}`;
     const req = await fetch(url, {
@@ -32,7 +30,9 @@ export async function DeleteCategoryAction(categoryId: string, prevState: Action
     }
 
     const success = SuccessResponse.parse(json);
-    // revalidatePath('/admin/products/category');
+    
+    // No se incluye revalidatePath por instrucción
+    
     return {
         errors: [],
         success: success.message

@@ -1,3 +1,4 @@
+// actions/category/edit-category-action.ts
 "use server"
 
 import getToken from "@/src/auth/token"
@@ -5,23 +6,18 @@ import { updateCategorySchema, categoryAttributesArraySchema } from "@/src/schem
 import { ErrorResponse } from "@/src/schemas"
 import { revalidatePath } from "next/cache"
 
-
 type ActionStateType = {
     errors: string[],
     success: string
 }
 
-
 export async function EditCategory(id: string, prevState: ActionStateType, formData: FormData) {
-
-    // parsear los atributos del formData
     const rawAttributes = formData.get("attributes");
     let attributesData;
     console.log("Raw Attributes:", rawAttributes);
 
     try {
         const parsed = JSON.parse(rawAttributes as string);
-
         const result = categoryAttributesArraySchema.safeParse(parsed);
         if (!result.success) {
             return {
@@ -34,7 +30,6 @@ export async function EditCategory(id: string, prevState: ActionStateType, formD
             values: attr.values.map(v => v.toLowerCase()),
             isVariant: attr.isVariant || false,
         }));
-
     } catch (error) {
         console.error("Error parsing attributes:", error);
         return {
@@ -42,7 +37,6 @@ export async function EditCategory(id: string, prevState: ActionStateType, formD
             success: ""
         }
     }
-    // Formatear los atributos
 
     const categoryData = {
         nombre: formData.get("name"),
@@ -53,10 +47,6 @@ export async function EditCategory(id: string, prevState: ActionStateType, formD
         isActive: formData.get("isActive") === "on" ? true : false
     }
 
-    console.log("imagen", categoryData.image)
-    // console.log("categoryData", categoryData)
-    // console.log("attributesData", attributesData)
-
     const category = updateCategorySchema.safeParse(categoryData);
     if (!category.success) {
         return {
@@ -66,7 +56,6 @@ export async function EditCategory(id: string, prevState: ActionStateType, formD
     }
 
     const token = await getToken();
-    // console.log("tokennnn", token)
     const url = `${process.env.API_URL}/category/update/${id}`;
     const req = await fetch(url, {
         method: 'PUT',
@@ -88,6 +77,7 @@ export async function EditCategory(id: string, prevState: ActionStateType, formD
     }
 
     // Revalidate
+    revalidatePath(`/admin/products/category`)
     revalidatePath(`/admin/products/category/${id}`)
 
     return {

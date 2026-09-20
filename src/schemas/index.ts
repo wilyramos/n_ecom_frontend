@@ -204,6 +204,7 @@ export const dimensionsSchema = z.object({
 
 // ---------- Variantes ----------
 export const variantSchema = z.object({
+    _id: z.string().optional(),
     nombre: z.string().optional(),
     precio: z.number().min(0, 'El precio no puede ser negativo').optional(),
     precioComparativo: z.number().min(0, 'El precio comparativo no puede ser negativo').optional(),

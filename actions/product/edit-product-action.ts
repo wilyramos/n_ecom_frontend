@@ -107,6 +107,7 @@ export async function EditProduct(id: string, prevState: ActionStateType, formDa
         metaDescription: formData.get('metaDescription') || undefined,
     };
 
+console.log("Variantes enviadas:", JSON.stringify(cleanedVariants, null, 2));
     // 9. Validar con Zod
     const product = updateProductSchema.safeParse(productData);
     if (!product.success) {
@@ -133,7 +134,8 @@ export async function EditProduct(id: string, prevState: ActionStateType, formDa
     }
 
     const success = SuccessResponse.parse(json);
-    revalidatePath(`/admin/products/${id}`);
+    //revalidatePath(`/admin/products/${id}`);
 
+    revalidatePath(`/admin/products`);
     return { errors: [], success: success.message };
 }

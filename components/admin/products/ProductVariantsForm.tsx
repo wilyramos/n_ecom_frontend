@@ -132,19 +132,17 @@ export default function ProductVariantsForm({
         setErrors(getValidationErrors(nextVariants));
     };
 
-    const variantsToSubmit = useMemo(
-        () =>
-            variants.map((v) => ({
-                ...v,
-                atributos: Object.fromEntries(
-                    Object.entries(v.atributos).filter(([key]) =>
-                        variantAttributes.some((c) => c.name === key)
-                    )
-                ),
-                imagenes: v.imagenes ?? [],
-            })),
-        [variants, variantAttributes]
-    );
+   const variantsToSubmit = useMemo(
+    () =>
+        variants.map((v) => ({
+            ...v,
+            atributos: Object.fromEntries(
+                // Solo filtra los que tengan string vacío ("")
+Object.entries(v.atributos).filter(([, value]) => value && value.trim() !== "")            ),
+            imagenes: v.imagenes ?? [],
+        })),
+    [variants]
+);
 
     if (!variantAttributes?.length) {
         return (

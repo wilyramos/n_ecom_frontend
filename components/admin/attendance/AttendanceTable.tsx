@@ -45,9 +45,12 @@ export default function AttendanceTable({ data }: AttendanceTableProps) {
                     <AdminTableHeaderCell width="100px">Rol</AdminTableHeaderCell>
                     <AdminTableHeaderCell width="120px">Fecha Jornada</AdminTableHeaderCell>
                     <AdminTableHeaderCell>Marcaciones (Entrada / Salida)</AdminTableHeaderCell>
-                    <AdminTableHeaderCell width="140px" align="right">Horas Calculadas</AdminTableHeaderCell>
+                    <AdminTableHeaderCell width="140px" align="right">
+                        Horas Calculadas
+                    </AdminTableHeaderCell>
                 </tr>
             </AdminTableHead>
+
             <tbody>
                 {data.map((row) => {
                     const user = row.userId;
@@ -58,7 +61,9 @@ export default function AttendanceTable({ data }: AttendanceTableProps) {
                                     <span className="text-zinc-900 text-xs font-semibold">
                                         {user.nombre} {user.apellidos || ""}
                                     </span>
-                                    <span className="text-[11px] text-zinc-400 font-normal">{user.email}</span>
+                                    <span className="text-[11px] text-zinc-400 font-normal">
+                                        {user.email}
+                                    </span>
                                 </div>
                             </AdminTableCell>
 
@@ -88,14 +93,22 @@ export default function AttendanceTable({ data }: AttendanceTableProps) {
                             <AdminTableCell>
                                 <div className="flex items-center gap-1.5 text-[11px]">
                                     <span className="text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded font-medium">
-                                        ENT: {new Date(row.checkIn.timestamp).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
+                                        ENT:{" "}
+                                        {new Date(row.checkIn.timestamp).toLocaleTimeString("es-ES", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
                                     </span>
 
                                     {row.checkOut?.timestamp ? (
                                         <>
                                             <ArrowRight className="h-3 w-3 text-zinc-300" />
                                             <span className="text-rose-700 bg-rose-50 border border-rose-200/60 px-2 py-0.5 rounded font-medium">
-                                                SAL: {new Date(row.checkOut.timestamp).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
+                                                SAL:{" "}
+                                                {new Date(row.checkOut.timestamp).toLocaleTimeString("es-ES", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
                                             </span>
                                         </>
                                     ) : (
@@ -123,12 +136,13 @@ export default function AttendanceTable({ data }: AttendanceTableProps) {
                     );
                 })}
             </tbody>
+
             <tfoot>
-                <tr className="bg-zinc-50 border-t border-zinc-200 font-medium">
-                    <td colSpan={5} className="p-3 text-xs text-zinc-600 font-semibold">
+                <tr className="bg-slate-50 border-t border-slate-200 font-medium">
+                    <td colSpan={5} className="px-3 py-2.5 text-xs text-slate-600 font-semibold">
                         Total horas de los registros en esta página
                     </td>
-                    <td className="p-3 text-right text-xs font-mono font-bold text-zinc-900">
+                    <td className="px-3 py-2.5 text-right text-xs font-mono font-bold text-slate-900">
                         {formatDecimalHours(totalHorasLote)}
                     </td>
                 </tr>

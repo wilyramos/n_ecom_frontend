@@ -1,29 +1,27 @@
-"use client"
+"use client";
 
-import { FiTrash } from "react-icons/fi";
 import { useActionState, useEffect } from "react";
-import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { toast } from "react-toastify";
 import { DeleteCategoryAction } from "@/actions/category/delete-category-action";
+import { AdminButton } from "@/src/components/admin/layout/admin-button";
 
-
-export default function DeleteCategoryButton({ categoryId }: { categoryId: string }) {
-
+export default function DeleteCategoryButton({
+    categoryId,
+}: {
+    categoryId: string;
+}) {
     const router = useRouter();
     const deleteCategoryWithId = DeleteCategoryAction.bind(null, categoryId);
-    const [state, dispatch] = useActionState(deleteCategoryWithId, {
+    const [state, dispatch, isPending] = useActionState(deleteCategoryWithId, {
         errors: [],
-        success: ""
+        success: "",
     });
 
-    console.log(state);
-
     useEffect(() => {
-        console.log(state);
         if (state.errors) {
-            state.errors.forEach(error => {
-                toast.error(error);
-            });
+            state.errors.forEach((error) => toast.error(error));
         }
         if (state.success) {
             toast.success(state.success);
@@ -31,20 +29,18 @@ export default function DeleteCategoryButton({ categoryId }: { categoryId: strin
         }
     }, [state, router]);
 
-    
     return (
-        <form
-            action={dispatch}
-        >
-            <button
+        <form action={dispatch}>
+            <AdminButton
                 type="submit"
-                className="flex items-center gap-2 px-4 py-1 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors duration-200 cursor-pointer"
+                variant="destructive"
+                size="sm"
+                icon={Trash2}
+                disabled={isPending}
+                title="Eliminar esta categoría permanentemente"
             >
-                <FiTrash className="w-4 h-4" />
-
-                Eliminar Categoria
-            </button>
-
+                {isPending ? "Eliminando..." : "Eliminar"}
+            </AdminButton>
         </form>
-    )
+    );
 }

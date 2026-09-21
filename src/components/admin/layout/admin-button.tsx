@@ -1,5 +1,6 @@
+// File: frontend/src/components/admin/layout/admin-button.tsx
 import React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +31,7 @@ const buttonVariants = cva(
 
 interface AdminButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   icon?: React.ElementType;
 }
@@ -52,7 +53,7 @@ export function AdminButton({
       {...props}
     >
       {Icon && <Icon className="w-3.5 h-3.5 shrink-0" />}
-      {children}
+      <Slottable>{children}</Slottable>
     </Comp>
   );
 }

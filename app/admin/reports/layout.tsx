@@ -11,7 +11,6 @@ export default function ReportsLayout({ children }: { children: React.ReactNode 
       {/* Cabecera con selector de fechas persistente */}
       <AdminPageHeader 
         title="Análisis y Reportes" 
-        description="Supervisa el rendimiento de tu tienda y las métricas clave."
         actions={<GlobalDateRangePicker />} 
       />
       

@@ -25,7 +25,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AdminInput } from "@/src/components/admin/layout/admin-form-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { AttendanceQuery } from "@/src/schemas/attendance.schema";
 
@@ -147,7 +147,11 @@ export default function AttendanceFilters({ current }: AttendanceFiltersProps) {
 
     const isInvalidRange = startDate && endDate && startDate > endDate;
 
-    const pushUpdate = (newStart: Date | undefined, newEnd: Date | undefined, textSearch: string) => {
+    const pushUpdate = (
+        newStart: Date | undefined,
+        newEnd: Date | undefined,
+        textSearch: string
+    ) => {
         if (newStart && newEnd && newStart > newEnd) return;
 
         const params = new URLSearchParams(searchParams.toString());
@@ -197,12 +201,16 @@ export default function AttendanceFilters({ current }: AttendanceFiltersProps) {
         });
     };
 
-    const hasActiveFilters = Boolean(current.startDate || current.endDate || current.search || isInvalidRange);
+    const hasActiveFilters = Boolean(
+        current.startDate || current.endDate || current.search || isInvalidRange
+    );
 
     return (
-        <div className="bg-admin-card border border-admin-border rounded-xl p-4 space-y-3 shadow-xs">
+        <div className="bg-white border border-slate-200 rounded-xl p-3 space-y-2.5 shadow-2xs">
             <div className="flex justify-between items-center">
-                <span className="text-xs font-semibold text-admin-fg-heading">Filtros de Búsqueda</span>
+                <span className="text-xs font-semibold text-slate-800">
+                    Filtros de Asistencia
+                </span>
                 {hasActiveFilters && (
                     <Button
                         type="button"
@@ -210,27 +218,27 @@ export default function AttendanceFilters({ current }: AttendanceFiltersProps) {
                         size="sm"
                         onClick={handleClear}
                         disabled={isPending}
-                        className="h-7 text-xs text-admin-danger hover:text-admin-danger-foreground hover:bg-admin-danger-muted cursor-pointer"
+                        className="h-6 text-[11px] text-rose-600 hover:text-rose-700 hover:bg-rose-50 cursor-pointer px-2"
                     >
-                        <X className="mr-1.5 h-3.5 w-3.5" /> Limpiar filtros
+                        <X className="mr-1 h-3 w-3" /> Limpiar filtros
                     </Button>
                 )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-                {/* Selector de Rango Completo con Presets */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+                {/* Selector de Rango de Fechas */}
                 <div className="col-span-1 md:col-span-5 lg:col-span-4">
                     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                         <PopoverTrigger asChild>
                             <Button
                                 variant="outline"
                                 className={cn(
-                                    "w-full justify-start text-left font-normal text-xs h-9 truncate bg-admin-card border-admin-border text-admin-fg-body hover:bg-admin-sidebar-hover",
-                                    !startDate && "text-admin-fg-muted",
-                                    isInvalidRange && "border-admin-danger bg-admin-danger-muted text-admin-danger-foreground"
+                                    "w-full justify-start text-left font-normal text-xs h-8 truncate bg-white border-slate-200 text-slate-800 hover:bg-slate-50",
+                                    !startDate && "text-slate-400",
+                                    isInvalidRange && "border-rose-300 bg-rose-50 text-rose-700"
                                 )}
                             >
-                                <CalendarIcon className="mr-2 h-3.5 w-3.5 shrink-0 text-admin-fg-subtle" />
+                                <CalendarIcon className="mr-2 h-3.5 w-3.5 shrink-0 text-slate-400" />
                                 {startDate ? (
                                     endDate ? (
                                         <span className="truncate">
@@ -257,7 +265,7 @@ export default function AttendanceFilters({ current }: AttendanceFiltersProps) {
                                 moveRangeOnFirstSelection={false}
                                 staticRanges={customStaticRanges}
                                 inputRanges={[]}
-                                rangeColors={["#2563eb"]}
+                                rangeColors={["#0f172a"]}
                             />
                         </PopoverContent>
                     </Popover>
@@ -265,26 +273,26 @@ export default function AttendanceFilters({ current }: AttendanceFiltersProps) {
 
                 {/* Input de Búsqueda de Colaborador */}
                 <div className="col-span-1 md:col-span-7 lg:col-span-8 relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-admin-fg-subtle" />
-                    <Input
+                    <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-slate-400" />
+                    <AdminInput
                         type="text"
-                        placeholder="Buscar por colaborador, correo o DNI..."
+                        placeholder="Buscar por colaborador, correo o documento..."
                         value={search}
                         onChange={handleSearchChange}
-                        className="pl-8 text-xs h-9 bg-admin-card border-admin-border text-admin-fg-body placeholder:text-admin-fg-muted focus-visible:border-admin-border-focus"
+                        className="pl-8 h-8 text-xs placeholder:text-slate-400"
                     />
                     {isPending && (
-                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-admin-fg-subtle">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <div className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+                            <Loader2 className="h-3 w-3 animate-spin" />
                         </div>
                     )}
                 </div>
             </div>
 
             {isInvalidRange && (
-                <div className="flex items-center gap-2 text-xs font-medium text-admin-danger bg-admin-danger-muted border border-admin-danger-border rounded-lg p-2.5">
+                <div className="flex items-center gap-2 text-xs font-medium text-rose-600 bg-rose-50 border border-rose-200 rounded-lg p-2">
                     <AlertCircle className="h-4 w-4 shrink-0" />
-                    <span>La fecha de inicio no puede ser posterior a la fecha de fin.</span>
+                    <span>La fecha inicial no puede superar a la fecha final.</span>
                 </div>
             )}
         </div>

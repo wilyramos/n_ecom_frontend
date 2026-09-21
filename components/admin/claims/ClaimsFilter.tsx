@@ -3,17 +3,20 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTransition } from "react";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDebouncedCallback } from "use-debounce";
+import { AdminFilterBar } from "@/src/components/admin/layout/admin-filter-bar";
+import { AdminSelect } from "@/src/components/admin/layout/admin-form-group";
 
 export default function ClaimsFilter() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
 
-    const handleSearchDebounce = useDebouncedCallback((value: string) => {
+    const currentSearch = searchParams.get("search") || "";
+    const currentEstado = searchParams.get("estado") || "";
+
+    const handleSearch = useDebouncedCallback((value: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("page", "1");
 
@@ -26,16 +29,16 @@ export default function ClaimsFilter() {
         startTransition(() => {
             router.push(`${pathname}?${params.toString()}`);
         });
-    }, 400);
+    }, 350);
 
-    const handleSelectChange = (key: string, value: string) => {
+    const handleEstadoChange = (estado: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("page", "1");
 
-        if (value) {
-            params.set(key, value);
+        if (estado && estado !== "ALL") {
+            params.set("estado", estado);
         } else {
-            params.delete(key);
+            params.delete("estado");
         }
 
         startTransition(() => {
@@ -43,33 +46,35 @@ export default function ClaimsFilter() {
         });
     };
 
+    const handleReset = () => {
+        startTransition(() => {
+            router.push(pathname);
+        });
+    };
+
+    const activeCount = (currentSearch ? 1 : 0) + (currentEstado ? 1 : 0);
+
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 bg-background-secondary p-4 rounded-lg border border-border">
-            <div className="sm:col-span-2">
-                <Input
-                    placeholder="Buscar por correlativo, nombre, DNI/RUC o email..."
-                    defaultValue={searchParams.get("search") || ""}
-                    onChange={(e) => handleSearchDebounce(e.target.value)}
-                    disabled={isPending}
-                />
-            </div>
-            <div>
-                <Select
-                    defaultValue={searchParams.get("estado") || "ALL"}
-                    onValueChange={(val) => handleSelectChange("estado", val === "ALL" ? "" : val)}
-                    disabled={isPending}
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder="Filtrar por Estado" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="ALL">Todos los Estados</SelectItem>
-                        <SelectItem value="Pendiente">Pendiente</SelectItem>
-                        <SelectItem value="En Proceso">En Proceso</SelectItem>
-                        <SelectItem value="Resuelto">Resuelto</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-        </div>
+        <AdminFilterBar
+            searchPlaceholder="Buscar por correlativo, consumidor, DNI/RUC..."
+            searchValue={currentSearch}
+            onSearchChange={handleSearch}
+            activeCount={activeCount}
+            onReset={activeCount > 0 ? handleReset : undefined}
+            filters={
+                <div className="flex items-center gap-2">
+                    <AdminSelect
+                        value={currentEstado || "ALL"}
+                        onChange={(e) => handleEstadoChange(e.target.value)}
+                        className="w-36 h-7 text-[11px]"
+                    >
+                        <option value="ALL">Todos los Estados</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Resuelto">Resuelto</option>
+                    </AdminSelect>
+                </div>
+            }
+        />
     );
 }

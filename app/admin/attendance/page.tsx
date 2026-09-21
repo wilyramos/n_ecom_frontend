@@ -1,6 +1,10 @@
 // File: frontend/app/admin/attendance/page.tsx
 import { AttendanceService } from "@/src/services/attendance.service";
-import { AttendanceQuery, AdminAttendance, AttendanceGlobalStats } from "@/src/schemas/attendance.schema";
+import {
+    AttendanceQuery,
+    AdminAttendance,
+    AttendanceGlobalStats,
+} from "@/src/schemas/attendance.schema";
 import AdminAttendanceClient from "@/components/admin/attendance/AdminAttendanceClient";
 
 interface SearchParams {
@@ -14,6 +18,10 @@ interface SearchParams {
 interface PageProps {
     searchParams: Promise<SearchParams>;
 }
+
+export const metadata = {
+    title: "Control de Asistencias - Panel de Administración",
+};
 
 export default async function AdminAttendancePage({ searchParams }: PageProps) {
     const params = await searchParams;
@@ -38,14 +46,20 @@ export default async function AdminAttendancePage({ searchParams }: PageProps) {
         globalActiveDays: 0,
     };
 
-    const hasInvalidRange = query.startDate && query.endDate && new Date(query.startDate) > new Date(query.endDate);
+    const hasInvalidRange =
+        query.startDate &&
+        query.endDate &&
+        new Date(query.startDate) > new Date(query.endDate);
 
     if (!hasInvalidRange) {
-        const res = await AttendanceService.getAdminReport(query).catch((error: unknown) => {
-            const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-            console.error("[AdminAttendancePage]", errorMessage);
-            return null;
-        });
+        const res = await AttendanceService.getAdminReport(query).catch(
+            (error: unknown) => {
+                const errorMessage =
+                    error instanceof Error ? error.message : "Error desconocido";
+                console.error("[AdminAttendancePage]", errorMessage);
+                return null;
+            }
+        );
 
         if (res) {
             records = res.data;

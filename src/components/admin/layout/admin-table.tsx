@@ -1,3 +1,4 @@
+// File: frontend/src/components/admin/layout/admin-table.tsx
 "use client";
 
 import React from "react";
@@ -6,36 +7,55 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 
-export function AdminTable({
-  children,
-  className,
-}: {
+interface AdminTableProps extends React.TableHTMLAttributes<HTMLTableElement> {
   children: React.ReactNode;
-  className?: string;
-}) {
+}
+
+export function AdminTable({ children, className, ...props }: AdminTableProps) {
   return (
     <div className="overflow-x-auto w-full">
-      <table className={cn("w-full text-left text-xs sm:text-[13px] border-collapse", className)}>
+      <table
+        className={cn(
+          "w-full text-left text-xs sm:text-[13px] border-collapse",
+          className
+        )}
+        {...props}
+      >
         {children}
       </table>
     </div>
   );
 }
 
-export function AdminTableHead({ children }: { children: React.ReactNode }) {
+interface AdminTableHeadProps
+  extends React.HTMLAttributes<HTMLTableSectionElement> {
+  children: React.ReactNode;
+}
+
+export function AdminTableHead({
+  children,
+  className,
+  ...props
+}: AdminTableHeadProps) {
   return (
-    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide">
+    <thead
+      className={cn(
+        "bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold tracking-wide",
+        className
+      )}
+      {...props}
+    >
       {children}
     </thead>
   );
 }
 
-interface AdminTableRowProps {
+interface AdminTableRowProps
+  extends React.HTMLAttributes<HTMLTableRowElement> {
   id: string;
   children: React.ReactNode;
   selected?: boolean;
   isDraggable?: boolean;
-  className?: string;
 }
 
 export function AdminTableRow({
@@ -44,6 +64,8 @@ export function AdminTableRow({
   selected = false,
   isDraggable = false,
   className,
+  style: userStyle,
+  ...props
 }: AdminTableRowProps) {
   const {
     attributes,
@@ -57,6 +79,7 @@ export function AdminTableRow({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    ...userStyle,
   };
 
   return (
@@ -69,6 +92,7 @@ export function AdminTableRow({
         isDragging && "opacity-60 bg-slate-100 z-10 shadow-md",
         className
       )}
+      {...props}
     >
       {isDraggable && (
         <td className="px-2 py-1.5 w-8 text-center align-middle">
@@ -88,15 +112,21 @@ export function AdminTableRow({
   );
 }
 
+interface AdminTableHeaderCellProps
+  extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  children?: React.ReactNode;
+  align?: "left" | "center" | "right";
+  width?: string;
+}
+
 export function AdminTableHeaderCell({
   children,
   align = "left",
   width,
-}: {
-  children?: React.ReactNode;
-  align?: "left" | "center" | "right";
-  width?: string;
-}) {
+  className,
+  style,
+  ...props
+}: AdminTableHeaderCellProps) {
   const alignClass = {
     left: "text-left",
     center: "text-center",
@@ -105,15 +135,24 @@ export function AdminTableHeaderCell({
 
   return (
     <th
-      style={{ width }}
+      style={{ width, ...style }}
       className={cn(
         "px-3 py-2.5 whitespace-nowrap text-slate-500 font-semibold text-[11px] sm:text-xs uppercase tracking-wider",
-        alignClass
+        alignClass,
+        className
       )}
+      {...props}
     >
       {children}
     </th>
   );
+}
+
+interface AdminTableCellProps
+  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  children?: React.ReactNode;
+  align?: "left" | "center" | "right";
+  bold?: boolean;
 }
 
 export function AdminTableCell({
@@ -121,12 +160,8 @@ export function AdminTableCell({
   align = "left",
   bold = false,
   className,
-}: {
-  children: React.ReactNode;
-  align?: "left" | "center" | "right";
-  bold?: boolean;
-  className?: string;
-}) {
+  ...props
+}: AdminTableCellProps) {
   const alignClass = {
     left: "text-left",
     center: "text-center",
@@ -141,27 +176,35 @@ export function AdminTableCell({
         bold && "font-semibold text-slate-900",
         className
       )}
+      {...props}
     >
       {children}
     </td>
   );
 }
 
+interface AdminTableEmptyProps
+  extends React.HTMLAttributes<HTMLTableRowElement> {
+  title?: string;
+  description?: string;
+  colSpan?: number;
+}
+
 export function AdminTableEmpty({
   title = "No se encontraron resultados",
   description = "Intenta cambiar los términos de búsqueda o los filtros aplicados.",
   colSpan = 10,
-}: {
-  title?: string;
-  description?: string;
-  colSpan?: number;
-}) {
+  className,
+  ...props
+}: AdminTableEmptyProps) {
   return (
-    <tr>
+    <tr className={cn(className)} {...props}>
       <td colSpan={colSpan} className="py-8 text-center">
         <div className="space-y-1">
           <p className="text-sm font-semibold text-slate-900">{title}</p>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">{description}</p>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            {description}
+          </p>
         </div>
       </td>
     </tr>

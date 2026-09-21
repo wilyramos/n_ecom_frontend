@@ -1,114 +1,212 @@
-// File: app/(admin)/admin/claims/components/ClaimsTable.tsx
+// File: components/admin/claims/ClaimsTable.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Claim } from "@/src/schemas/claim.schema";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Pagination from "@/components/ui/Pagination";
+import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Eye, FileText, AlertCircle } from "lucide-react";
+import type { Claim } from "@/src/schemas/claim.schema";
+import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapper";
+import {
+    AdminTable,
+    AdminTableHead,
+    AdminTableHeaderCell,
+    AdminTableRow,
+    AdminTableCell,
+    AdminTableEmpty,
+} from "@/src/components/admin/layout/admin-table";
+import { AdminTablePagination } from "@/src/components/admin/layout/admin-table-pagination";
+import { AdminButton } from "@/src/components/admin/layout/admin-button";
+import { cn } from "@/lib/utils";
 
 interface ClaimsTableProps {
     claims: Claim[];
     total: number;
     page: number;
     pages: number;
+    limit: number;
 }
 
-export default function ClaimsTable({ claims, total, page, pages }: ClaimsTableProps) {
-    const router = useRouter();
+const STATUS_BADGES: Record<string, { label: string; className: string }> = {
+    Resuelto: {
+        label: "Resuelto",
+        className: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+    },
+    "En Proceso": {
+        label: "En Proceso",
+        className: "bg-blue-50 text-blue-700 border-blue-200/80",
+    },
+    Pendiente: {
+        label: "Pendiente",
+        className: "bg-amber-50 text-amber-700 border-amber-200/80",
+    },
+};
 
-    // Mapeo estricto utilizando únicamente las variables definidas en tu archivo de estilos CSS
-    const getStatusStyles = (estado: string) => {
-        switch (estado) {
-            case "Resuelto":
-                return "text-success border-success bg-background-secondary";
-            case "En Proceso":
-                return "text-warning border-warning bg-background-secondary";
-            default:
-                return "text-[var(--destructivered)] border-[var(--destructivered)] bg-background-secondary";
-        }
+export default function ClaimsTable({
+    claims,
+    total,
+    page,
+    pages,
+    limit,
+}: ClaimsTableProps) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const handlePageChange = (newPage: number) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("page", String(newPage));
+        router.push(`${pathname}?${params.toString()}`);
+    };
+
+    const handleLimitChange = (newLimit: number) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("limit", String(newLimit));
+        params.set("page", "1");
+        router.push(`${pathname}?${params.toString()}`);
     };
 
     return (
-        <div className="space-y-4">
-            <div className="rounded-lg  overflow-hidden">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[140px] font-semibold">Correlativo</TableHead>
-                            <TableHead className="font-semibold">Consumidor</TableHead>
-                            <TableHead className="w-[120px] font-semibold">Documento</TableHead>
-                            <TableHead className="w-[110px] font-semibold">Tipo</TableHead>
-                            <TableHead className="w-[120px] font-semibold">Estado</TableHead>
-                            <TableHead className="w-[140px] font-semibold text-right">Fecha Registro</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {claims.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground text-sm">
-                                    No se encontraron hojas de reclamación con los filtros aplicados.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            claims.map((claim) => (
-                                <TableRow
+        <AdminCardWrapper padding="none">
+            <AdminTable>
+                <AdminTableHead>
+                    <tr>
+                        <AdminTableHeaderCell width="140px">Correlativo</AdminTableHeaderCell>
+                        <AdminTableHeaderCell width="30%">Consumidor</AdminTableHeaderCell>
+                        <AdminTableHeaderCell width="130px">Documento</AdminTableHeaderCell>
+                        <AdminTableHeaderCell width="110px">Tipo</AdminTableHeaderCell>
+                        <AdminTableHeaderCell width="120px">Estado</AdminTableHeaderCell>
+                        <AdminTableHeaderCell width="120px">Fecha Registro</AdminTableHeaderCell>
+                        <AdminTableHeaderCell width="60px" align="right">
+                            Acción
+                        </AdminTableHeaderCell>
+                    </tr>
+                </AdminTableHead>
+
+                <tbody>
+                    {claims.length === 0 ? (
+                        <AdminTableEmpty
+                            title="Sin hojas de reclamación"
+                            description="No se encontraron registros con los criterios o filtros aplicados."
+                            colSpan={7}
+                        />
+                    ) : (
+                        claims.map((claim) => {
+                            const status =
+                                STATUS_BADGES[claim.resolution.estado] || {
+                                    label: claim.resolution.estado,
+                                    className: "bg-slate-100 text-slate-700 border-slate-200",
+                                };
+
+                            const isQueja = claim.detail.tipoReclamo === "Queja";
+
+                            return (
+                                <AdminTableRow
                                     key={claim._id}
-                                    className="cursor-pointer transition-colors"
+                                    id={claim._id}
+                                    className="cursor-pointer hover:bg-slate-50/80 transition-colors"
                                     onClick={() => router.push(`/admin/claims/${claim._id}`)}
                                 >
-                                    <TableCell className="font-mono text-xs font-semibold text-action-cta">
-                                        {claim.correlativo}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium text-sm">{claim.consumer.nombres}</span>
-                                            <span className="text-xs text-muted-foreground">{claim.consumer.email}</span>
+                                    {/* Correlativo */}
+                                    <AdminTableCell bold>
+                                        <span className="font-mono text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/70">
+                                            {claim.correlativo}
+                                        </span>
+                                    </AdminTableCell>
+
+                                    {/* Consumidor */}
+                                    <AdminTableCell>
+                                        <div className="flex flex-col min-w-0">
+                                            <span className="font-medium text-xs text-slate-900 truncate">
+                                                {claim.consumer.nombres}
+                                            </span>
+                                            <span className="text-[11px] text-slate-400 truncate">
+                                                {claim.consumer.email}
+                                            </span>
                                         </div>
-                                    </TableCell>
-                                    <TableCell className="text-xs font-medium">
-                                        <div className="flex flex-col">
+                                    </AdminTableCell>
+
+                                    {/* Documento */}
+                                    <AdminTableCell>
+                                        <div className="flex items-center gap-1.5 text-xs text-slate-700">
+                                            <span className="text-[10px] font-bold text-slate-400">
+                                                {claim.consumer.tipoDocumento}
+                                            </span>
                                             <span>{claim.consumer.numeroDocumento}</span>
-                                            <span className="text-[10px] text-muted-foreground uppercase">{claim.consumer.tipoDocumento}</span>
                                         </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className={`text-xs font-semibold ${claim.detail.tipoReclamo === "Queja" ? "text-primary" : "text-action-cta"}`}>
-                                            {claim.detail.tipoReclamo}
+                                    </AdminTableCell>
+
+                                    {/* Tipo de Reclamación */}
+                                    <AdminTableCell>
+                                        <span
+                                            className={cn(
+                                                "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium border",
+                                                isQueja
+                                                    ? "bg-purple-50 text-purple-700 border-purple-200/60"
+                                                    : "bg-sky-50 text-sky-700 border-sky-200/60"
+                                            )}
+                                        >
+                                            {isQueja ? (
+                                                <AlertCircle className="w-3 h-3 shrink-0" />
+                                            ) : (
+                                                <FileText className="w-3 h-3 shrink-0" />
+                                            )}
+                                            <span>{claim.detail.tipoReclamo}</span>
                                         </span>
-                                    </TableCell>
-                                    <TableCell>
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusStyles(claim.resolution.estado)}`}>
-                                            {claim.resolution.estado}
+                                    </AdminTableCell>
+
+                                    {/* Estado */}
+                                    <AdminTableCell>
+                                        <span
+                                            className={cn(
+                                                "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium border whitespace-nowrap",
+                                                status.className
+                                            )}
+                                        >
+                                            {status.label}
                                         </span>
-                                    </TableCell>
-                                    <TableCell className="text-right text-muted-foreground text-xs font-medium">
+                                    </AdminTableCell>
+
+                                    {/* Fecha */}
+                                    <AdminTableCell className="text-xs text-slate-500">
                                         {new Date(claim.createdAt).toLocaleDateString("es-PE", {
                                             day: "2-digit",
                                             month: "2-digit",
-                                            year: "numeric"
+                                            year: "numeric",
                                         })}
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+                                    </AdminTableCell>
 
-            {/* Bloque de Control de Paginación */}
-            {pages > 1 && (
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-border pt-4 px-1">
-                    <p className="text-xs text-muted-foreground font-medium text-center sm:text-left">
-                        Mostrando página <span className="font-semibold text-foreground">{page}</span> de <span className="font-semibold text-foreground">{pages}</span> ({total} reclamos en total)
-                    </p>
-                    <Pagination
-                        currentPage={page}
-                        totalPages={pages}
-                        limit={10}
-                        pathname="/admin/claims"
-                    />
-                </div>
-            )}
-        </div>
+                                    {/* Acción */}
+                                    <AdminTableCell align="right" onClick={(e) => e.stopPropagation()}>
+                                        <AdminButton
+                                            asChild
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7 text-slate-500 hover:text-slate-900"
+                                        >
+                                            <Link
+                                                href={`/admin/claims/${claim._id}`}
+                                                title="Ver detalle del reclamo"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" />
+                                            </Link>
+                                        </AdminButton>
+                                    </AdminTableCell>
+                                </AdminTableRow>
+                            );
+                        })
+                    )}
+                </tbody>
+            </AdminTable>
+
+            {/* Paginador Unificado */}
+            <AdminTablePagination
+                currentPage={page}
+                totalPages={pages}
+                pageSize={limit}
+                totalItems={total}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handleLimitChange}
+            />
+        </AdminCardWrapper>
     );
 }

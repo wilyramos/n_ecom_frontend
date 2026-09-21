@@ -1,4 +1,14 @@
 const diccionarioColores: Record<string, string> = {
+    // --- iPhone 18 Series, 18 Pro & iPhone Duo ---
+    "borgoña": "bg-[#581825]",
+    "burgundy": "bg-[#581825]",
+    "glaciar": "bg-[#DDE5EB]",
+    "glacier": "bg-[#DDE5EB]",
+    "blanco estrella": "bg-[#F5F5F7]",
+    "star white": "bg-[#F5F5F7]",
+    "cielo nocturno": "bg-[#1C1F26]",
+    "night sky": "bg-[#1C1F26]",
+
     // --- iPhone Signature & Series Colors ---
     "titanio natural": "bg-[#B8B3AB]",
     "natural titanium": "bg-[#B8B3AB]",

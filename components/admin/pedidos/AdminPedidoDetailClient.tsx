@@ -1,4 +1,3 @@
-// File: frontend/components/admin/pedidos/AdminPedidoDetailClient.tsx
 'use client';
 
 import { useState } from 'react';
@@ -20,9 +19,11 @@ import {
   Package,
   Copy,
   Check,
+  Building2,
+  QrCode,
+  Layers,
 } from 'lucide-react';
 
-// Componentes de Layout Reutilizables
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
 import { AdminCardWrapper } from '@/src/components/admin/layout/admin-card-wrapper';
 import { AdminStatusBadge } from '@/src/components/admin/layout/admin-status-badge';
@@ -34,13 +35,19 @@ interface AdminPedidoDetailClientProps {
 
 export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDetailClientProps) {
   const [pedido, setPedido] = useState<IPedido>(initialPedido);
-  const [copied, setCopied] = useState(false);
+  const [copiedTxId, setCopiedTxId] = useState(false);
+  const [copiedPaymentCode, setCopiedPaymentCode] = useState(false);
 
-  const handleCopyTransactionId = (id?: string) => {
-    if (!id) return;
-    navigator.clipboard.writeText(id);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = (text?: string, type: 'tx' | 'code' = 'tx') => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    if (type === 'tx') {
+      setCopiedTxId(true);
+      setTimeout(() => setCopiedTxId(false), 2000);
+    } else {
+      setCopiedPaymentCode(true);
+      setTimeout(() => setCopiedPaymentCode(false), 2000);
+    }
   };
 
   if (!pedido || !pedido.status) {
@@ -57,6 +64,7 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
 
   const isPickup = pedido.deliveryMethod === 'pickup';
   const totalItemsCount = pedido.items?.reduce((acc, it) => acc + it.quantity, 0) || 0;
+  const paymentDetails = pedido.payment?.details;
 
   return (
     <AdminPageContainer maxWidth="default" padding="default" spacing="compact">
@@ -109,8 +117,8 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
               {pedido.items?.map((item, idx) => {
                 const attrs = item.variantAttributes
                   ? Object.entries(item.variantAttributes)
-                      .map(([k, v]) => `${k}: ${v}`)
-                      .join(' • ')
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(' • ')
                   : null;
 
                 return (
@@ -209,12 +217,104 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
 
             <div className="space-y-2.5 text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-50 border border-zinc-200/80">
-                <span className="text-[11px] text-zinc-500 font-medium">Método</span>
-                <span className="font-medium text-zinc-900 uppercase">
+                <span className="text-[11px] text-zinc-500 font-medium">Pasarela</span>
+                <span className="font-semibold text-zinc-900 uppercase tracking-wide">
                   {pedido.payment?.provider}
                 </span>
               </div>
 
+              {/* Detalles Estructurados de Culqi / Tarjeta / CIP */}
+              {paymentDetails && (
+                <div className="space-y-2 p-2.5 rounded-lg bg-zinc-50/70 border border-zinc-200/70 text-[11.5px]">
+                  {paymentDetails.paymentMethod === 'tarjeta' && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-500 font-medium">Tarjeta</span>
+                        <span className="font-semibold text-zinc-900">
+                          {paymentDetails.brand || 'Tarjeta'} •••• {paymentDetails.lastFour || '----'}
+                        </span>
+                      </div>
+
+                      {paymentDetails.cardType && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-zinc-500 font-medium">Tipo</span>
+                          <span className="text-zinc-700 capitalize">
+                            {paymentDetails.cardType}
+                          </span>
+                        </div>
+                      )}
+
+                      {paymentDetails.issuerName && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-zinc-500 font-medium flex items-center gap-1">
+                            <Building2 className="h-3 w-3 text-zinc-400" />
+                            Emisor
+                          </span>
+                          <span className="text-zinc-700 font-medium">
+                            {paymentDetails.issuerName}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-500 font-medium flex items-center gap-1">
+                          <Layers className="h-3 w-3 text-zinc-400" />
+                          Cuotas
+                        </span>
+                        <span className="font-medium text-zinc-900">
+                          {paymentDetails.installments && paymentDetails.installments > 1
+                            ? `${paymentDetails.installments} cuotas`
+                            : '1 cuota (Directo)'}
+                        </span>
+                      </div>
+                    </>
+                  )}
+
+                  {paymentDetails.paymentMethod === 'yape' && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-500 font-medium">Billetera</span>
+                      <span className="font-semibold text-[#8B2D88]">Yape</span>
+                    </div>
+                  )}
+
+                  {paymentDetails.paymentMethod === 'pagoefectivo' && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-500 font-medium flex items-center gap-1">
+                        <QrCode className="h-3 w-3 text-zinc-400" />
+                        Modalidad
+                      </span>
+                      <span className="font-medium text-zinc-800">PagoEfectivo</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Código CIP si es PagoEfectivo */}
+              {pedido.payment?.paymentCode && (
+                <div className="space-y-1">
+                  <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
+                    Código CIP (PagoEfectivo)
+                  </span>
+                  <div className="flex items-center justify-between gap-2 bg-amber-50/60 px-2.5 py-1.5 rounded-lg border border-amber-200/80">
+                    <span className="text-xs font-mono font-semibold text-amber-900 select-all">
+                      {pedido.payment.paymentCode}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(pedido.payment?.paymentCode, 'code')}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium text-amber-800 bg-white hover:bg-amber-100 border border-amber-300 shadow-2xs transition-all shrink-0 cursor-pointer"
+                    >
+                      {copiedPaymentCode ? (
+                        <Check className="h-3 w-3 text-amber-600 stroke-[2.5]" />
+                      ) : (
+                        <Copy className="h-3 w-3 text-amber-600 stroke-[1.8]" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Identificador de Transacción */}
               {pedido.payment?.transactionId && (
                 <div className="space-y-1">
                   <span className="text-[10px] font-medium text-zinc-400 uppercase tracking-wider">
@@ -226,19 +326,17 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleCopyTransactionId(pedido.payment?.transactionId)}
+                      onClick={() => handleCopy(pedido.payment?.transactionId, 'tx')}
                       className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium text-zinc-600 bg-white hover:bg-zinc-100 hover:text-zinc-900 border border-zinc-200 shadow-2xs transition-all shrink-0 cursor-pointer"
                       title="Copiar ID de transacción"
                     >
-                      {copied ? (
+                      {copiedTxId ? (
                         <>
                           <Check className="h-3.5 w-3.5 text-zinc-500 stroke-[2.5]" />
                           <span className="text-[8px] text-zinc-700 font-medium">Copiado</span>
                         </>
                       ) : (
-                        <>
-                          <Copy className="h-3.5 w-3.5 text-zinc-500 stroke-[1.8]" />
-                        </>
+                        <Copy className="h-3.5 w-3.5 text-zinc-500 stroke-[1.8]" />
                       )}
                     </button>
                   </div>

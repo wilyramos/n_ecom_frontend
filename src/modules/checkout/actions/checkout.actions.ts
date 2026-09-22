@@ -1,3 +1,6 @@
+// File: frontend/src/modules/checkout/actions/checkout.actions.ts
+// CAMBIO 3: Pasar deviceFingerprint al backend (actualizar interfaz si es necesario)
+
 'use server';
 
 import { checkoutSchema, CheckoutFormData } from '../schemas/checkout.schema';
@@ -80,9 +83,13 @@ export async function crearPedidoAction(
   }
 }
 
-// 🔴 CORRECCIÓN: Se añade el tercer argumento opcional "parameters3DS"
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function procesarCargoCulqiAction(orderNumber: string, culqiToken: string, parameters3DS?: any) {
+export async function procesarCargoCulqiAction(
+  orderNumber: string,
+  culqiToken: string,
+  parameters3DS?: any,
+  deviceFingerPrintId?: string,
+  installments?: number
+) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('ecommerce-token')?.value;
@@ -94,20 +101,40 @@ export async function procesarCargoCulqiAction(orderNumber: string, culqiToken: 
         'Content-Type': 'application/json',
         ...(token && { Authorization: `Bearer ${token}` }),
       },
-      // 🔴 Enviamos también parameters3DS si existe
-      body: JSON.stringify({ orderNumber, culqiToken, parameters3DS }),
+      body: JSON.stringify({
+        orderNumber,
+        culqiToken,
+        parameters3DS,
+        deviceFingerPrintId,
+        installments: installments || 1
+      }),
       cache: 'no-store',
     });
 
     const result = await response.json();
-
-    if (!response.ok) {
-      return { success: false, message: result.message || 'La pasarela rechazó la transacción.' };
-    }
-
+    if (!response.ok) return { success: false, message: result.message || 'La pasarela rechazó la transacción.' };
     return { success: true, data: result.data };
   } catch (error) {
     console.error('💥 [procesarCargoCulqiAction Error]:', error);
     return { success: false, message: 'Error de conexión al procesar el cobro.' };
+  }
+}
+
+export async function cancelarPedidoAction(orderNumber: string) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('ecommerce-token')?.value;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:4000/api';
+
+    await fetch(`${apiUrl}/pedidos/${orderNumber}/cancel`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      cache: 'no-store',
+    });
+  } catch (error) {
+    console.error('💥 [cancelarPedidoAction Error]:', error);
   }
 }

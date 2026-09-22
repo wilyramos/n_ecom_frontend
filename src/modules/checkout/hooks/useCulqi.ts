@@ -23,7 +23,7 @@ type CulqiInstance = ICulqiCheckoutInstance | ICulqiGlobalObject;
 type ExtendedCulqiInstance = CulqiInstance & {
   charge?: { id: string } | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  order?: any; 
+  order?: any;
 };
 
 const DEFAULT_OPTIONS: ICulqiOptions = {
@@ -49,13 +49,13 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
     return false;
   });
   const [isProcessing, setIsProcessing] = useState(false);
+  const [deviceFingerprint, setDeviceFingerprint] = useState<string | null>(null);
 
   const checkoutRef = useRef<ICulqiCheckoutInstance | null>(null);
   const tokenHandledRef = useRef<boolean>(false);
-  
-  // Rastreadores de órdenes diferidas (PagoEfectivo / CIP)
+
   const deferredOrderIdRef = useRef<string | null>(null);
-  const providedOrderIdRef = useRef<string | null>(null); 
+  const providedOrderIdRef = useRef<string | null>(null);
 
   const onSuccessRef = useRef(onSuccess);
   const onErrorRef = useRef(onError);
@@ -67,6 +67,24 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
     onCloseRef.current = onClose;
   }, [onSuccess, onError, onClose]);
 
+  // Generación y captura de Device Fingerprint
+  const captureFingerprint = useCallback(async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const culqiAntifraud = (window as any).CulqiAntifraud;
+      if (culqiAntifraud?.generateDeviceFingerprint) {
+        const fp = await culqiAntifraud.generateDeviceFingerprint();
+        if (fp) setDeviceFingerprint(fp);
+      }
+    } catch (e) {
+      console.warn('⚠️ [useCulqi] CulqiAntifraud no disponible:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    captureFingerprint();
+  }, [captureFingerprint, isScriptLoaded]);
+
   useEffect(() => {
     if (!isScriptLoaded && typeof window !== 'undefined') {
       if (window.CulqiCheckout || window.CulqiCheckout2 || window.Culqi) {
@@ -77,10 +95,11 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const handleScriptLoad = useCallback(() => {
     setIsScriptLoaded(true);
-  }, []);
+    captureFingerprint();
+  }, [captureFingerprint]);
 
   const handleScriptError = useCallback(() => {
-    toast.error('No se pudo conectar con los servidores de Culqi.');
+    toast.error('No se pudo conectar con los servidores de pago de Culqi.');
   }, []);
 
   const closeCulqiModal = useCallback(() => {
@@ -91,13 +110,12 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         window.Culqi.close();
       }
     } catch (e: unknown) {
-      console.warn('⚠️ [useCulqi] Error al forzar cierre del modal de Culqi:', e);
+      console.warn('⚠️ [useCulqi] Error forzando cierre de modal:', e);
     }
   }, []);
 
   const handleSuccessReceived = useCallback(
     (id: string) => {
-      console.log(`✅ [useCulqi] Resolviendo éxito en el frontend para ID: ${id}`);
       if (tokenHandledRef.current) return;
       tokenHandledRef.current = true;
       closeCulqiModal();
@@ -109,7 +127,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
   const handleErrorReceived = useCallback(
     (errorObj: ICulqiError) => {
-      console.error('💥 [useCulqi] Modal de Culqi emitió un error:', errorObj);
       if (tokenHandledRef.current) return;
       tokenHandledRef.current = true;
       closeCulqiModal();
@@ -128,7 +145,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
     if (onCloseRef.current) onCloseRef.current();
   }, []);
 
-  // 🔴 ESCUCHADOR GLOBAL DE MENSAJES (postMessage)
   useEffect(() => {
     if (!isProcessing) return;
 
@@ -137,12 +153,11 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         let payload: unknown = event.data;
 
         if (typeof payload === 'string') {
-          try { payload = JSON.parse(payload) as unknown; } catch {}
+          try { payload = JSON.parse(payload) as unknown; } catch { }
         }
 
         const data = typeof payload === 'object' && payload !== null ? (payload as Record<string, unknown>) : null;
 
-        // 🔴 LA LÍNEA MÁGICA: Agregamos object === 'closeCheckout' a la validación
         const isCloseAction =
           payload === 'checkout_close' ||
           payload === 'close' ||
@@ -150,14 +165,13 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           data?.type === 'culqi.close' ||
           data?.event === 'checkout_closed' ||
           data?.name === 'checkout_close' ||
-          data?.object === 'closeCheckout'; // <--- ESTO DETECTA EL BOTÓN "DE ACUERDO"
+          data?.object === 'closeCheckout';
 
         const isOrderSuccess = data?.action === 'order_pending' || data?.type === 'order_success' || data?.event === 'order_created';
 
         if (isCloseAction || isOrderSuccess) {
-          // console.log(`🛑 [useCulqi postMessage] Acción de cierre/éxito detectada.`);
           const targetId = deferredOrderIdRef.current || providedOrderIdRef.current;
-          
+
           if (targetId && targetId.startsWith('ord_')) {
             handleSuccessReceived(targetId);
           } else if (isCloseAction) {
@@ -166,7 +180,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
         }
       } catch (e: unknown) {
         console.warn(e);
-        // console.warn('⚠️ [useCulqi] Error leyendo postMessage de Culqi:', e);
       }
     };
 
@@ -174,19 +187,17 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
     return () => window.removeEventListener('message', handleMessage);
   }, [isProcessing, handleCloseReceived, handleSuccessReceived]);
 
-  // Fallback visual (Polling)
+  // Polling fallback si el DOM se oculta sin postMessage
   useEffect(() => {
     if (!isProcessing) return;
     let fallbackInterval: NodeJS.Timeout;
 
-    // Le damos 2 segundos de gracia al modal para aparecer antes de empezar a vigilar
     const timeoutId = setTimeout(() => {
       fallbackInterval = setInterval(() => {
         const culqiContainer = document.querySelector('.culqi-checkout-container') || document.getElementById('culqi-container');
         if (culqiContainer) {
           const isHidden = window.getComputedStyle(culqiContainer).display === 'none';
           if (isHidden) {
-            // console.log("🕵️‍♂️ [useCulqi Fallback] El modal de Culqi se detectó oculto físicamente.");
             const targetId = deferredOrderIdRef.current || providedOrderIdRef.current;
             if (targetId && targetId.startsWith('ord_')) {
               handleSuccessReceived(targetId);
@@ -222,7 +233,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
       tokenHandledRef.current = false;
       deferredOrderIdRef.current = null;
-      providedOrderIdRef.current = culqiOrderId || null; 
+      providedOrderIdRef.current = culqiOrderId || null;
       setIsProcessing(true);
 
       const config: CulqiCheckoutConfig = {
@@ -243,20 +254,20 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           if (instance.charge) {
             handleSuccessReceived(instance.charge.id);
             instance.charge = null;
-          } 
+          }
           else if (instance.order) {
             const orderId = typeof instance.order === 'string' ? instance.order : (instance.order.id || instance.order.order_number);
             if (orderId) deferredOrderIdRef.current = orderId;
-            instance.order = null; 
-          } 
+            instance.order = null;
+          }
           else if (instance.error) {
             handleErrorReceived(instance.error);
             instance.error = null;
-          } 
+          }
           else if (instance.token) {
             handleSuccessReceived(instance.token.id);
             instance.token = null;
-          } 
+          }
           else if (instance.closeEvent) {
             instance.closeEvent = false;
             const targetId = deferredOrderIdRef.current || providedOrderIdRef.current;
@@ -268,7 +279,6 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
           }
         } catch (error: unknown) {
           console.warn(error);
-          // console.error('⚠️ [useCulqi] Error manejando evento de Culqi:', error);
           handleCloseReceived();
         }
       };
@@ -302,5 +312,5 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
     [handleSuccessReceived, handleErrorReceived, handleCloseReceived]
   );
 
-  return { isScriptLoaded, isProcessing, openCulqiModal, handleScriptLoad, handleScriptError };
+  return { isScriptLoaded, isProcessing, openCulqiModal, handleScriptLoad, handleScriptError, deviceFingerprint };
 }

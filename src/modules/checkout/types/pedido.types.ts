@@ -48,15 +48,25 @@ export interface IItemPedido {
   imagen?: string;
 }
 
+export interface IPaymentDetails {
+  brand?: string;
+  lastFour?: string;
+  cardType?: string;
+  issuerName?: string;
+  installments?: number;
+  paymentMethod?: string;
+}
+
 export interface IInfoPago {
   provider: 'mercadopago' | 'culqi' | 'powerpay' | 'transferencia' | string;
   method?: string;
   gatewayOrderId?: string;
   transactionId?: string;
-  paymentCode?: string; // 🔴 Aquí viene el CIP
+  paymentCode?: string;
   status: EstadoPago;
   paidAt?: string;
-  gatewayData?: Record<string, unknown>; // 🔴 Agregado sin 'any'
+  details?: IPaymentDetails;
+  gatewayData?: Record<string, unknown>;
 }
 
 export interface IPedido {

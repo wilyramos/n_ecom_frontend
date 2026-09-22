@@ -1,5 +1,3 @@
-// File: frontend/src/modules/checkout/components/CheckoutClient.tsx
-
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
@@ -12,7 +10,6 @@ import ShippingInfo from './form-sections/ShippingInfo';
 import InvoiceInfo from './form-sections/InvoiceInfo';
 import PaymentSelector from './payment-methods/PaymentSelector';
 import OrderSummary from './OrderSummary';
-import { crearPedidoAction, procesarCargoCulqiAction } from '../actions/checkout.actions';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/src/store/cartStore';
 import { useCulqi } from '../hooks/useCulqi';
@@ -21,6 +18,7 @@ import { Loader2, Lock, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PowerpayCheckoutWidget from '@/src/components/powerpay/PowerpayCheckoutWidget';
+import { crearPedidoAction, procesarCargoCulqiAction, cancelarPedidoAction } from '../actions/checkout.actions';
 
 interface CheckoutClientProps {
   initialCustomerData: {
@@ -42,6 +40,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
 
   const activeOrderNumberRef = useRef<string | null>(null);
   const activeCulqiTokenRef = useRef<string | null>(null);
+  const timeout3DSRef = useRef<NodeJS.Timeout | null>(null);
 
   const methods = useForm<CheckoutFormData>({
     defaultValues: {
@@ -76,43 +75,77 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
   const totalFinalCalculado = total + shippingCost + recargoFinanciero;
 
-  // 🔴 1. GESTIÓN DEL FLUJO DE CARGO Y 3DS
+  const {
+    isScriptLoaded,
+    isProcessing: isCulqiProcessing,
+    openCulqiModal,
+    handleScriptLoad,
+    handleScriptError,
+    deviceFingerprint,
+  } = useCulqi({
+    onSuccess: (id) => handleCulqiTokenSuccess(id),
+    onError: (errorMessage) => {
+      console.warn('⚠️ [CheckoutClient] Error detectado:', errorMessage);
+    },
+    onClose: () => {
+      toast.info('Cancelaste el proceso de pago. Puedes volver a intentarlo cuando desees.');
+    },
+  });
+
   const handleCulqiTokenSuccess = useCallback(
     async (tokenOrOrderId: string) => {
-      // console.log('✅ [CheckoutClient] handleCulqiTokenSuccess invocado con ID:', tokenOrOrderId);
-      
       const orderNumber = activeOrderNumberRef.current;
       if (!orderNumber) {
-        // console.error('❌ [CheckoutClient] No se encontró activeOrderNumberRef.');
         toast.error('No se encontró una orden activa.');
         return;
       }
 
       setIsSubmitting(true);
       activeCulqiTokenRef.current = tokenOrOrderId;
-      // console.log(`🔑 [CheckoutClient] Token o ID de orden guardado: ${tokenOrOrderId}`);
-      // console.log(`📦 [CheckoutClient] Token o ID de orden guardado: ${tokenOrOrderId}`);
 
       try {
-        // console.log(`📡 [CheckoutClient] Enviando petición a procesarCargoCulqiAction para la orden ${orderNumber}...`);
-        const resultadoCargo = await procesarCargoCulqiAction(orderNumber, tokenOrOrderId);
-        // console.log('📥 [CheckoutClient] Respuesta de procesarCargoCulqiAction:', resultadoCargo);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const culqiGlobal = (window as any).Culqi;
 
-
-        if (!resultadoCargo) {
-           throw new Error('El servidor no respondió correctamente. Por favor recarga la página e intenta de nuevo.');
+        // 🔴 Culqi V4 guarda los installments en una propiedad interna diferente,
+        // Si no la encontramos, forzamos un '1' absoluto y tipado.
+        let installments = 1;
+        try {
+          const rawInst = culqiGlobal?.token?.metadata?.installments;
+          if (rawInst) {
+            const parsed = parseInt(String(rawInst), 10);
+            if (!isNaN(parsed) && parsed > 0 && parsed <= 36) {
+              installments = parsed;
+            }
+          }
+        } catch (e) {
+          console.warn("⚠️ No se pudo extraer installments de Culqi, forzando a 1.", e);
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const culqiAntifraud = (window as any).CulqiAntifraud;
+        const resolvedFingerprint =
+          deviceFingerprint ||
+          (culqiAntifraud?.generateDeviceFingerprint ? await culqiAntifraud.generateDeviceFingerprint() : undefined);
+
+        const resultadoCargo = await procesarCargoCulqiAction(
+          orderNumber,
+          tokenOrOrderId,
+          undefined,
+          resolvedFingerprint,
+          installments
+        );
+
+        if (!resultadoCargo) throw new Error('El servidor no respondió.');
+
         if (!resultadoCargo.success) {
-          // console.warn('⚠️ [CheckoutClient] El servidor rechazó la transacción:', resultadoCargo.message);
-          toast.error(resultadoCargo.message || 'El pago fue rechazado. Revisa tu tarjeta e intenta nuevamente.');
+          toast.error(resultadoCargo.message || 'El pago fue rechazado.');
           setIsSubmitting(false);
           return;
         }
 
-        // 🛡️ SI EL BANCO PIDE VALIDACIÓN 3D SECURE (SMS/CLAVE)
+        // Manejo 3DS
         if (resultadoCargo.data?.status === 'requires_3ds') {
-          // console.log('🛡️ [3DS] Iniciando validación 3D Secure con el banco...');
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const culqi3DS = (window as any).Culqi3DS;
 
@@ -121,53 +154,67 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
             culqi3DS.settings = {
               charge: {
                 totalAmount: Math.round(totalFinalCalculado * 100),
-                returnUrl: window.location.origin + `/checkout-result/verifying?orderNumber=${orderNumber}`
+                returnUrl: window.location.origin + `/checkout-result/verifying?orderNumber=${orderNumber}`,
               },
-              card: { email: methods.getValues('customerProfile.email').trim().toLowerCase() }
+              card: { email: methods.getValues('customerProfile.email').trim().toLowerCase() },
             };
-            
-            // Abre la pantallita flotante de "Verified by Visa / Mastercard SecureCode"
+
+            // Iniciar timeout de 5 minutos con referencia limpiable
+            if (timeout3DSRef.current) clearTimeout(timeout3DSRef.current);
+            timeout3DSRef.current = setTimeout(async () => {
+              if (activeOrderNumberRef.current) {
+                await cancelarPedidoAction(activeOrderNumberRef.current);
+                toast.error('El tiempo para validar tu identidad con el banco ha expirado.');
+                setIsSubmitting(false);
+                window.location.reload();
+              }
+            }, 300000);
+
             culqi3DS.initAuthentication(tokenOrOrderId);
-            return; 
+            return;
           } else {
-            // console.error('❌ [3DS] window.Culqi3DS no está definido.');
             toast.error('Librería de seguridad del banco no disponible.');
             setIsSubmitting(false);
             return;
           }
         }
 
-        // console.log('🚀 [CheckoutClient] Transacción pre-aprobada por el servidor. Redirigiendo a Verifying...');
+        // Pago completado o pendiente (PagoEfectivo)
         clearCart();
-        router.push(`/checkout-result/verifying?orderNumber=${orderNumber}`);
-        
+        const paymentCodeParam = resultadoCargo.data?.paymentCode ? `&paymentCode=${resultadoCargo.data.paymentCode}` : '';
+        router.push(`/checkout-result/verifying?orderNumber=${orderNumber}${paymentCodeParam}`);
       } catch (error) {
-        console.error('Excepción al procesar el cargo:', error);
-        toast.error('Error de conexión al verificar el pago con el servidor.');
+        console.error('💥 [handleCulqiTokenSuccess Error]:', error);
+        toast.error('Error de conexión al verificar el pago.');
         setIsSubmitting(false);
       }
     },
-    [clearCart, router, methods, totalFinalCalculado]
+    [clearCart, router, methods, totalFinalCalculado, deviceFingerprint]
   );
 
-  // 🔴 2. ESCUCHADOR DEL RESULTADO DE LA PANTALLA 3DS DEL BANCO
+  // Listener para el resultado del 3DS Modal
   useEffect(() => {
     const handle3DSMessage = async (event: MessageEvent) => {
-      if (event.origin === window.location.origin) {
+      if (
+        event.origin === window.location.origin ||
+        event.origin.includes('culqi.com')
+      ) {
         const response = event.data;
-        
-        // Si el usuario validó el SMS con éxito
-        if (response.parameters3DS) {
-          // console.log('✅ [3DS] Autenticación completada. Re-enviando cargo al backend con el token de seguridad...');
-          const orderNumber = activeOrderNumberRef.current;
-          const token = activeCulqiTokenRef.current;
+        const orderNumber = activeOrderNumberRef.current;
 
+        if (response.parameters3DS) {
+          // Limpiar timeout de cancelación
+          if (timeout3DSRef.current) {
+            clearTimeout(timeout3DSRef.current);
+            timeout3DSRef.current = null;
+          }
+
+          const token = activeCulqiTokenRef.current;
           if (orderNumber && token) {
             try {
               const res = await procesarCargoCulqiAction(orderNumber, token, response.parameters3DS);
-              
+
               if (res.success && res.data?.status === 'approved') {
-                // console.log('🚀 [3DS] Cobro final aprobado por el banco.');
                 clearCart();
                 router.push(`/checkout-result/verifying?orderNumber=${orderNumber}`);
               } else {
@@ -179,40 +226,26 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
               setIsSubmitting(false);
             }
           }
-        } 
-        // Si el usuario cerró la ventana del banco o falló
-        else if (response.error) {
-          console.error('❌ [3DS] Fallo/Cierre del modal bancario:', response.error);
-          toast.error(typeof response.error === 'string' ? response.error : 'Validación de identidad cancelada o fallida.');
+        } else if (response.error) {
+          if (timeout3DSRef.current) {
+            clearTimeout(timeout3DSRef.current);
+            timeout3DSRef.current = null;
+          }
+          if (orderNumber) await cancelarPedidoAction(orderNumber);
+          toast.error(typeof response.error === 'string' ? response.error : 'Validación cancelada.');
           setIsSubmitting(false);
         }
       }
     };
 
     window.addEventListener('message', handle3DSMessage);
-    return () => window.removeEventListener('message', handle3DSMessage);
+    return () => {
+      window.removeEventListener('message', handle3DSMessage);
+      if (timeout3DSRef.current) clearTimeout(timeout3DSRef.current);
+    };
   }, [clearCart, router]);
 
-  const {
-    isScriptLoaded,
-    isProcessing: isCulqiProcessing,
-    openCulqiModal,
-    handleScriptLoad,
-    handleScriptError,
-  } = useCulqi({
-    onSuccess: handleCulqiTokenSuccess,
-    onError: (errorMessage) => {
-      console.warn('⚠️ [CheckoutClient] Transacción denegada o abortada detectada en hook:', errorMessage);
-    },
-    onClose: () => {
-      // console.log('🛑 [CheckoutClient] Modal cerrado por el usuario detectado en hook.');
-      toast.info('Cancelaste el proceso de pago. Puedes volver a intentarlo cuando desees.');
-    },
-  });
-
   const onSubmit = async (formData: CheckoutFormData) => {
-    // console.log('📋 [CheckoutClient] onSubmit iniciado con datos:', formData);
-
     if (cart.length === 0) {
       toast.error('Tu carrito está vacío.');
       return;
@@ -220,7 +253,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
 
     const parsed = checkoutSchema.safeParse(formData);
     if (!parsed.success) {
-      // console.warn('⚠️ [CheckoutClient] Errores de validación en formulario:', parsed.error.issues);
       parsed.error.issues.forEach((issue) => {
         methods.setError(issue.path.join('.') as Path<CheckoutFormData>, {
           type: 'manual',
@@ -237,14 +269,14 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       shippingAddress:
         formData.deliveryMethod === 'pickup'
           ? {
-              departamento: 'Lima',
-              provincia: 'Lima',
-              distrito: 'Santiago de Surco',
-              direccion: 'Av. Caminos del Inca 257 (Recojo en Tienda)',
-              numero: '',
-              pisoDpto: '',
-              referencia: 'Tienda Oficial',
-            }
+            departamento: 'Lima',
+            provincia: 'Lima',
+            distrito: 'Santiago de Surco',
+            direccion: 'Av. Caminos del Inca 257 (Recojo en Tienda)',
+            numero: '',
+            pisoDpto: '',
+            referencia: 'Tienda Oficial',
+          }
           : formData.shippingAddress,
       invoiceInfo: parsed.data.invoiceInfo?.type === 'factura' ? parsed.data.invoiceInfo : undefined,
       items: cart.map((item) => ({
@@ -265,15 +297,12 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       },
     };
 
-    // console.log('📦 [CheckoutClient] Payload preparado para crearPedidoAction:', orderPayload);
     setIsSubmitting(true);
 
     try {
       const response = await crearPedidoAction(orderPayload);
-      // console.log('📥 [CheckoutClient] Respuesta de crearPedidoAction:', response);
 
       if (!response.success || !response.data) {
-        // console.error('❌ [CheckoutClient] Error al crear pedido en BD:', response.message);
         toast.error(response.message || 'No se pudo crear el pedido.');
         setIsSubmitting(false);
         return;
@@ -289,7 +318,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         const amountInCents = Math.round(totalFinalCalculado * 100);
         const cleanPhone = formData.customerProfile.telefono.replace(/\D/g, '').substring(0, 15);
 
-        // console.log(`💳 [CheckoutClient] Abriendo modal de Culqi. Monto: ${amountInCents}, Orden: ${culqiOrderId}`);
         openCulqiModal(
           amountInCents,
           {
@@ -305,10 +333,8 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       } else if (formData.payment.provider === 'mercadopago' || formData.payment.provider === 'powerpay') {
         clearCart();
         if (initPointUrl) {
-          // console.log(`🔗 [CheckoutClient] Redirigiendo a pasarela externa: ${initPointUrl}`);
           window.location.href = initPointUrl;
         } else {
-          // console.error('❌ [CheckoutClient] Faltó el initPointUrl para redirección externa.');
           toast.error('Error al redirigir al portal de pago.');
           setIsSubmitting(false);
         }
@@ -318,7 +344,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         router.push(`/checkout-result/verifying?orderNumber=${pedidoCreado.orderNumber}`);
       }
     } catch (e) {
-      console.error(' Excepción durante el proceso de submit:', e);
+      console.error('💥 Excepción en submit:', e);
       toast.error('Ocurrió un error inesperado al procesar la solicitud.');
       setIsSubmitting(false);
     }
@@ -329,20 +355,21 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
 
   return (
     <FormProvider {...methods}>
+      {/* 1. Checkout v4 */}
       <Script
         id="culqi-checkout-v4"
         src="https://checkout.culqi.com/js/v4"
         strategy="afterInteractive"
-        onLoad={() => {
-          // console.log('✅ [Script] culqi.com/js/v4 cargado correctamente.');
-          handleScriptLoad();
-        }}
-        onError={() => {
-          // console.error('❌ [Script] Error cargando culqi.com/js/v4.');
-          handleScriptError();
-        }}
+        onLoad={handleScriptLoad}
+        onError={handleScriptError}
       />
-      {/* 🔴 SCRIPT OFICIAL DEL BANCO PARA 3DS - Cargado temprano */}
+      {/* 2. Culqi Antifraud (Requerido para generar device_finger_print_id) */}
+      <Script
+        id="culqi-antifraud"
+        src="https://checkout.culqi.com/plugins/v2/culqi-antifraud.js"
+        strategy="afterInteractive"
+      />
+      {/* 3. Culqi 3DS Script */}
       <Script id="culqi-3ds-v1" src="https://3ds.culqi.com" strategy="afterInteractive" />
 
       <div className="w-full flex flex-col lg:flex-row min-h-[calc(100vh-57px)]">
@@ -367,11 +394,9 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         <div className="w-full lg:w-[58%] bg-white flex justify-center lg:justify-end lg:border-r lg:border-neutral-200">
           <div className="w-full max-w-xl px-4 sm:px-8 lg:pr-14 py-8 sm:py-10">
             <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
-              
               <CustomerInfo isAuth={isAuth} />
-              
               <ShippingInfo />
-              
+
               <div>
                 <PaymentSelector />
                 {paymentProvider === 'powerpay' && (
@@ -380,7 +405,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
                   </div>
                 )}
               </div>
-              
+
               <InvoiceInfo />
 
               <div className="bg-blue-50/60 border border-blue-100 rounded-lg p-3.5 sm:p-4 flex gap-3 items-start">

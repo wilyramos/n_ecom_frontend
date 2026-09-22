@@ -25,7 +25,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
     };
 
     return (
-        <section className="relative max-w-7xl mx-auto px-4 md:px-8 py-2">
+        <section className="relative max-w-7xl mx-auto px-4 md:px-8 ">
             <Carousel
                 responsive={responsive}
                 infinite
@@ -33,7 +33,7 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                 arrows={false}
                 renderButtonGroupOutside
                 // customButtonGroup={<AbsoluteHeaderWrapper />}
-                itemClass="px-1 md:py-4"
+                itemClass="px-1 md:pb-2"
                 partialVisible
             >
                 {categorias.map(c => (
@@ -60,10 +60,10 @@ export default function ClientCarouselCategorias({ categorias }: { categorias: C
                         </div>
 
                         {/* Textos: Jerarquía Pequeño/Normal */}
-                        <div className="mt-1 px-1 space-y-0.5">
+                        <div className=" px-1 space-y-0.5">
 
                             <div className="flex items-center text-center justify-center">
-                                <h3 className="text-xs md:text-base text-[var(--color-text-primary)]">
+                                <h3 className="text-xs md:text-base font-medium text-brand-gris">
                                     {c.nombre}
                                 </h3>
                               

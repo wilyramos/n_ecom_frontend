@@ -1,7 +1,6 @@
-/* File: frontend/app/(pos-v3)/cash-shift/CashOpeningModal.tsx */
 "use client";
 
-import React, { useState, useActionState, useEffect } from "react";
+import { useState, useActionState, useEffect } from "react";
 import {
     Dialog,
     DialogContent,
@@ -11,7 +10,7 @@ import {
 
 import { openCashAction } from "@/actions/cash-actions";
 import { useCashStore } from "@/src/store/useCashStore";
-import { Banknote, Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,7 +32,6 @@ export const CashOpeningModal = ({ userId, onClose }: Props) => {
         message: "",
     });
 
-    // Sincronizar el modal con el store al montar si la terminal está bloqueada
     useEffect(() => {
         if (userId) {
             toggleModal(true);
@@ -62,63 +60,69 @@ export const CashOpeningModal = ({ userId, onClose }: Props) => {
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
-            <DialogContent className="bg-[var(--color-surface-primary)] border-[var(--color-border-default)] shadow-xl">
-                <DialogHeader className="text-left mb-4">
-                    <DialogTitle className="text-xl font-black uppercase tracking-tighter text-[var(--color-fg-primary)]">
-                        Apertura de Caja
-                    </DialogTitle>
-                </DialogHeader>
+            <DialogContent className="bg-card border border-border rounded-sm shadow-xl p-0 overflow-hidden text-card-foreground sm:max-w-md">
+                {/* Header de Apertura */}
+                <div className="bg-brand-charcoal p-6 text-white">
+                    <DialogHeader className="text-left space-y-1">
+                        <DialogTitle className="text-xl font-black uppercase tracking-tighter text-white">
+                            Apertura de Caja
+                        </DialogTitle>
+                        <p className="text-[10px] font-black text-brand-gris uppercase tracking-widest">
+                            Registro de turno operativo
+                        </p>
+                    </DialogHeader>
+                </div>
 
-                <form action={formAction} className="space-y-6">
-                    <input type="hidden" name="userId" value={userId} />
+                <div className="p-6 space-y-6">
+                    <form action={formAction} className="space-y-6">
+                        <input type="hidden" name="userId" value={userId} />
 
-                    <div className="space-y-3">
-                        <Label className="text-[10px] font-black uppercase text-[var(--color-fg-muted)] ml-1">
-                            Efectivo Inicial (S/)
-                        </Label>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                                Efectivo Inicial (S/)
+                            </Label>
 
-                        <div className="relative group">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-fg-muted)] group-focus-within:text-[var(--color-accent-vivid)] transition-colors z-10">
-                                <Banknote size={20} />
+                            <div className="relative group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-black text-xl">
+                                    S/
+                                </div>
+
+                                <Input
+                                    name="initialBalance"
+                                    type="number"
+                                    step="0.10"
+                                    min="0"
+                                    required
+                                    value={balance}
+                                    onChange={(e) => setBalance(e.target.value)}
+                                    placeholder="0.00"
+                                    className="h-16 pl-12 pr-4 bg-background border-2 border-foreground text-3xl font-black text-foreground rounded-none focus-visible:ring-0 outline-none"
+                                    autoFocus
+                                />
                             </div>
-
-                            <Input
-                                name="initialBalance"
-                                type="number"
-                                step="0.10"
-                                min="0"
-                                required
-                                value={balance}
-                                onChange={(e) => setBalance(e.target.value)}
-                                placeholder="0.00"
-                                className="h-14 pl-12 pr-4 bg-zinc-50 border-2 border-[var(--color-border-default)] text-3xl font-black text-[var(--color-fg-primary)] focus-visible:ring-[var(--color-accent-vivid)] focus-visible:border-[var(--color-accent-vivid)] transition-all outline-none"
-                                autoFocus
-                            />
                         </div>
+
+                        <Button
+                            type="submit"
+                            disabled={isPending}
+                            className="w-full bg-brand-action text-brand-charcoal hover:opacity-90 h-14 rounded-none transition-all active:scale-[0.99] gap-2 font-black uppercase tracking-widest text-[10px] cursor-pointer"
+                        >
+                            {isPending ? (
+                                <Loader2 className="animate-spin size-4" />
+                            ) : (
+                                <>
+                                    <span>Iniciar Turno Ahora</span>
+                                    <ArrowRight size={16} strokeWidth={3} />
+                                </>
+                            )}
+                        </Button>
+                    </form>
+
+                    <div className="text-center pt-2 border-t border-border">
+                        <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-tight">
+                            Asegúrese de contar el efectivo físico en caja antes de confirmar
+                        </p>
                     </div>
-
-                    <Button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full bg-[var(--color-accent-vivid)] text-white hover:bg-[var(--color-accent-vivid)]/90 h-12 transition-all active:scale-[0.98] gap-3"
-                    >
-                        {isPending ? (
-                            <Loader2 className="animate-spin" size={20} />
-                        ) : (
-                            <>
-                                <span className="font-black uppercase tracking-widest text-xs">
-                                    Iniciar Turno Ahora
-                                </span>
-                                <ArrowRight size={18} strokeWidth={3} />
-                            </>
-                        )}
-                    </Button>
-                </form>
-
-                <div className="mt-2 text-center">
-                    <p className="text-[9px] font-bold text-[var(--color-fg-muted)] uppercase tracking-tighter">
-                        Asegúrese de contar el efectivo físico antes de confirmar
-                    </p>
                 </div>
             </DialogContent>
         </Dialog>

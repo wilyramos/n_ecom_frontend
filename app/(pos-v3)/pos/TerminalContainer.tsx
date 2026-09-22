@@ -59,17 +59,17 @@ export default function TerminalContainer({ initialProducts, userId }: TerminalC
     }, []);
 
     return (
-        <div className="flex h-full w-full overflow-hidden bg-[var(--color-bg-secondary)]">
+        <div className="flex h-full w-full overflow-hidden bg-background text-foreground">
             <section className="flex flex-1 flex-col min-w-0 relative">
-                <header className="p-4 md:p-6 bg-[var(--color-bg-primary)] border-b border-[var(--color-border-default)] sticky top-0 z-20 shadow-sm">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-6xl mx-auto">
-
+                {/* Search Bar Bar Header */}
+                <header className="p-4 md:p-6 bg-card border-b border-border sticky top-0 z-20">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-7xl mx-auto">
                         <div className="relative flex-1 group">
-                            <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-[var(--color-text-tertiary)]">
+                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-foreground transition-colors">
                                 {isLoading ? (
-                                    <Loader2 size={20} className="animate-spin text-[var(--color-text-primary)]" />
+                                    <Loader2 size={18} className="animate-spin text-foreground" />
                                 ) : (
-                                    <Search size={20} strokeWidth={2.5} />
+                                    <Search size={18} strokeWidth={2.5} />
                                 )}
                             </div>
                             <input
@@ -78,33 +78,34 @@ export default function TerminalContainer({ initialProducts, userId }: TerminalC
                                 placeholder="Busca productos o escanea código [ / ]..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full h-14 pl-14 pr-12 bg-[var(--color-bg-tertiary)] border-2 border-transparent rounded-2xl text-sm font-bold transition-all outline-none focus:bg-[var(--color-bg-primary)] focus:border-[var(--color-action-primary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)]"
+                                className="w-full h-12 pl-12 pr-10 bg-background border border-border rounded-sm text-xs font-bold transition-all outline-none focus:border-brand-action text-foreground placeholder:text-muted-foreground"
                             />
                             {searchTerm && (
                                 <button
                                     onClick={() => setSearchTerm("")}
-                                    className="absolute inset-y-0 right-5 flex items-center text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] transition-colors"
+                                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                                 >
-                                    <X size={20} strokeWidth={3} />
+                                    <X size={18} strokeWidth={2.5} />
                                 </button>
                             )}
                         </div>
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar">
+                {/* Grid Container */}
+                <main className="flex-1 overflow-y-auto p-4 md:p-6">
                     {products.length > 0 ? (
                         <div className="max-w-7xl mx-auto">
                             <ProductGrid products={products} />
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-[var(--color-text-tertiary)] space-y-6">
-                            <div className="h-32 w-32 bg-[var(--color-bg-primary)] rounded-[2.5rem] flex items-center justify-center border border-[var(--color-border-subtle)] shadow-inner">
-                                <PackageSearch size={48} strokeWidth={1.5} />
+                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-muted-foreground space-y-4">
+                            <div className="h-24 w-24 bg-card rounded-sm flex items-center justify-center border border-border">
+                                <PackageSearch size={36} strokeWidth={1.5} />
                             </div>
                             <div className="text-center">
-                                <p className="text-xs font-black uppercase tracking-widest text-[var(--color-text-secondary)]">Sin resultados</p>
-                                <p className="text-[10px] font-bold text-[var(--color-text-tertiary)] uppercase">Intente con otro SKU o escanee nuevamente</p>
+                                <p className="text-xs font-black uppercase tracking-widest text-foreground">Sin resultados</p>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase mt-0.5">Intente con otro SKU o escanee nuevamente</p>
                             </div>
                         </div>
                     )}
@@ -112,8 +113,9 @@ export default function TerminalContainer({ initialProducts, userId }: TerminalC
                 </main>
             </section>
 
+            {/* Sidebar Carrito */}
             <aside className={cn(
-                "fixed inset-y-0 right-0 z-50 w-full sm:w-[450px] bg-[var(--color-bg-primary)] transition-all duration-500 lg:relative lg:translate-x-0 lg:border-l lg:border-[var(--color-border-subtle)]",
+                "fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] bg-card border-l border-border transition-transform duration-300 lg:relative lg:translate-x-0",
                 isMobileCartOpen ? "translate-x-0 shadow-2xl" : "translate-x-full lg:translate-x-0"
             )}>
                 <CartSidebar userId={userId} onClose={() => setIsMobileCartOpen(false)} />

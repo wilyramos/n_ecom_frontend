@@ -1,9 +1,8 @@
-
-//File: frontend/components/ui/Pagination.tsx
 "use client";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 type PaginationProps = {
     currentPage: number;
@@ -68,24 +67,26 @@ export default function Pagination({
     const pages = createPages();
 
     return (
-        <div className="flex justify-center items-center mt-2">
-            <nav className="inline-flex items-center space-x-2 p-2">
+        <div className="flex justify-center items-center">
+            <nav className="inline-flex items-center space-x-1.5 p-1">
                 {pages.map((page, index) =>
                     typeof page === "number" ? (
                         <Link
                             key={page}
                             href={getPageLink(page)}
-                            className={`flex items-center justify-center w-8 h-8 text-sm font-medium rounded transition-colors ${page === currentPage
-                                    ? "bg-black text-white shadow"
-                                    : "text-gray-600 hover:bg-gray-100 hover:text-blue-800"
-                                }`}
+                            className={cn(
+                                "flex items-center justify-center w-8 h-8 text-xs font-bold rounded-sm border transition-colors",
+                                page === currentPage
+                                    ? "bg-brand-action text-brand-charcoal border-brand-action"
+                                    : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+                            )}
                         >
                             {page}
                         </Link>
                     ) : (
                         <span
                             key={`ellipsis-${index}`}
-                            className="flex items-center justify-center w-9 h-9 text-sm text-gray-400"
+                            className="flex items-center justify-center w-8 h-8 text-xs text-muted-foreground"
                         >
                             ...
                         </span>

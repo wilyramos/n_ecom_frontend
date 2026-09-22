@@ -16,14 +16,11 @@ export function ExportButton() {
     const handleExport = () => {
         setIsExporting(true);
 
-        // Construimos la URL hacia nuestra propia API interna de Next.js
         const query = searchParams.toString();
         const downloadUrl = `/api/sales/export${query ? `?${query}` : ""}`;
 
-        // Redirección para disparar la descarga gestionada por el navegador
         window.location.assign(downloadUrl);
 
-        // Feedback visual temporal
         setTimeout(() => setIsExporting(false), 2000);
     };
 
@@ -33,14 +30,14 @@ export function ExportButton() {
             size="sm"
             onClick={handleExport}
             disabled={isExporting}
-            className="h-10 gap-2 border-[var(--color-border-default)] hover:bg-[var(--color-bg-tertiary)] transition-colors"
+            className="h-11 gap-2 border-border bg-card hover:bg-muted text-foreground rounded-sm transition-colors cursor-pointer"
         >
             {isExporting ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin text-muted-foreground" />
             ) : (
-                <Download className="size-4 text-blue-500" />
+                <Download className="size-4 text-foreground" />
             )}
-            <span className="hidden md:inline font-medium">Exportar CSV</span>
+            <span className="hidden md:inline font-bold text-xs uppercase tracking-wider">Exportar CSV</span>
         </Button>
     );
 }

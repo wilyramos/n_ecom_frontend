@@ -19,8 +19,8 @@ export default async function TerminalTresPage() {
     ]);
 
     return (
-        <div className="h-full w-full">
-            {/* 1. Sync Cash State for Header/UI UI */}
+        <div className="h-full w-full bg-background">
+            {/* 1. Sync Cash State for Header/UI */}
             <CashStateSync 
                 isOpen={cashStatus.isOpen} 
                 shiftId={cashStatus.shift?._id} 

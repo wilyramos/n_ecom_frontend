@@ -54,11 +54,11 @@ export function SaleDetailsModal({ sale: initialSale }: Props) {
                     if (result.success && result.data) {
                         setSale(result.data);
                     } else {
-                        toast.error(result.message || "Error al obtener los nombres detallados del producto");
+                        toast.error(result.message || "Error al obtener los detalles");
                     }
                 })
                 .catch(() => {
-                    toast.error("Error de red al intentar cargar detalles del producto");
+                    toast.error("Error de red al intentar cargar detalles");
                 })
                 .finally(() => {
                     setIsLoading(false);
@@ -87,61 +87,61 @@ export function SaleDetailsModal({ sale: initialSale }: Props) {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted">
                         <Eye className="size-4" />
                     </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
+                <DialogContent className="sm:max-w-[600px] border-border bg-card text-card-foreground rounded-sm">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-xl">
-                            <Receipt className="size-5" />
+                        <DialogTitle className="flex items-center gap-2 text-lg font-black uppercase text-foreground">
+                            <Receipt className="size-5 text-muted-foreground" />
                             Detalle de Venta: {sale.receiptNumber}
                         </DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-xs text-muted-foreground">
                             Realizada el {sale.createdAt ? format(new Date(sale.createdAt), "dd/MM/yyyy HH:mm") : "-"} por {typeof sale.employee === 'object' ? sale.employee?.nombre : 'Empleado'}
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="grid gap-6 py-4 max-h-[60vh] overflow-y-auto pr-2 relative">
+                    <div className="grid gap-6 py-2 max-h-[60vh] overflow-y-auto pr-2 relative">
                         {isLoading && (
-                            <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
+                            <div className="absolute inset-0 bg-background/60 backdrop-blur-xs flex items-center justify-center z-10">
                                 <SpinnerLoading />
                             </div>
                         )}
 
                         {/* Datos del Cliente */}
-                        <div className="grid gap-2 border-b pb-4">
-                            <h4 className="text-sm font-semibold">Información del Cliente</h4>
-                            <div className="grid grid-cols-2 text-sm">
-                                <span className="text-[var(--color-text-secondary)]">Nombre:</span>
-                                <span>{sale.customerSnapshot?.nombre || "Cliente Varios"}</span>
-                                <span className="text-[var(--color-text-secondary)]">Documento:</span>
-                                <span>{sale.customerSnapshot?.numeroDocumento || "-"}</span>
+                        <div className="grid gap-2 border-b border-border pb-4">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground">Información del Cliente</h4>
+                            <div className="grid grid-cols-2 text-sm gap-y-1">
+                                <span className="text-muted-foreground">Nombre:</span>
+                                <span className="font-medium text-foreground">{sale.customerSnapshot?.nombre || "Cliente Varios"}</span>
+                                <span className="text-muted-foreground">Documento:</span>
+                                <span className="font-mono text-foreground">{sale.customerSnapshot?.numeroDocumento || "-"}</span>
                             </div>
                         </div>
 
                         {/* Listado de Productos */}
                         <div className="grid gap-2">
-                            <h4 className="text-sm font-semibold">Productos</h4>
-                            <div className="rounded-md border border-[var(--color-border-default)] overflow-hidden">
-                                <Table>
-                                    <TableHeader className="bg-[var(--color-bg-secondary)]">
-                                        <TableRow className="hover:bg-transparent">
-                                            <TableHead className="px-4 py-2 text-left h-auto">Item</TableHead>
-                                            <TableHead className="px-4 py-2 text-center h-auto">Cant.</TableHead>
-                                            <TableHead className="px-4 py-2 text-right h-auto">Precio</TableHead>
-                                            <TableHead className="px-4 py-2 text-right h-auto">Subtotal</TableHead>
+                            <h4 className="text-xs font-black uppercase tracking-wider text-muted-foreground">Productos</h4>
+                            <div className="rounded-sm border border-border overflow-hidden">
+                                <Table className="text-xs">
+                                    <TableHeader className="bg-muted">
+                                        <TableRow className="hover:bg-transparent border-border">
+                                            <TableHead className="px-3 py-2 text-left h-auto font-bold text-muted-foreground">Item</TableHead>
+                                            <TableHead className="px-3 py-2 text-center h-auto font-bold text-muted-foreground">Cant.</TableHead>
+                                            <TableHead className="px-3 py-2 text-right h-auto font-bold text-muted-foreground">Precio</TableHead>
+                                            <TableHead className="px-3 py-2 text-right h-auto font-bold text-muted-foreground">Subtotal</TableHead>
                                         </TableRow>
                                     </TableHeader>
-                                    <TableBody>
+                                    <TableBody className="divide-y divide-border">
                                         {sale.items.map((item, idx) => (
-                                            <TableRow key={idx} className="hover:bg-transparent border-border-default">
-                                                <TableCell className="px-4 py-2">
+                                            <TableRow key={idx} className="hover:bg-transparent border-border">
+                                                <TableCell className="px-3 py-2 font-medium text-foreground">
                                                     {typeof item.product === 'object' ? item.product.nombre : 'Producto'}
                                                 </TableCell>
-                                                <TableCell className="px-4 py-2 text-center">{item.quantity}</TableCell>
-                                                <TableCell className="px-4 py-2 text-right">S/ {item.price.toFixed(2)}</TableCell>
-                                                <TableCell className="px-4 py-2 text-right">S/ {(item.price * item.quantity).toFixed(2)}</TableCell>
+                                                <TableCell className="px-3 py-2 text-center text-foreground">{item.quantity}</TableCell>
+                                                <TableCell className="px-3 py-2 text-right text-muted-foreground">S/ {item.price.toFixed(2)}</TableCell>
+                                                <TableCell className="px-3 py-2 text-right font-bold text-foreground">S/ {(item.price * item.quantity).toFixed(2)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -150,36 +150,36 @@ export function SaleDetailsModal({ sale: initialSale }: Props) {
                         </div>
 
                         {/* Totales */}
-                        <div className="flex flex-col items-end gap-1 px-4">
-                            <div className="flex w-full max-w-[200px] justify-between text-sm">
-                                <span className="text-[var(--color-text-secondary)]">Subtotal:</span>
-                                <span>S/ {sale.subtotal.toFixed(2)}</span>
+                        <div className="flex flex-col items-end gap-1 px-2">
+                            <div className="flex w-full max-w-[200px] justify-between text-xs">
+                                <span className="text-muted-foreground">Subtotal:</span>
+                                <span className="text-foreground">S/ {sale.subtotal.toFixed(2)}</span>
                             </div>
-                            <div className="flex w-full max-w-[200px] justify-between font-bold text-lg border-t border-[var(--color-border-default)] mt-1 pt-1">
-                                <span>Total:</span>
-                                <span>S/ {sale.totalPrice.toFixed(2)}</span>
+                            <div className="flex w-full max-w-[200px] justify-between font-black text-base border-t border-border mt-1 pt-1">
+                                <span className="text-foreground">Total:</span>
+                                <span className="text-foreground">S/ {sale.totalPrice.toFixed(2)}</span>
                             </div>
                         </div>
 
                         {/* Historial de Auditoría */}
-                        <div className="grid gap-2 bg-[var(--color-bg-secondary)] p-3 rounded-md">
-                            <h4 className="text-xs font-semibold uppercase text-[var(--color-text-tertiary)] tracking-wider">Historial de Auditoría</h4>
+                        <div className="grid gap-2 bg-muted/50 p-3 rounded-sm border border-border">
+                            <h4 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Historial de Auditoría</h4>
                             {sale.statusHistory?.map((history, idx) => (
                                 <div key={idx} className="flex justify-between text-xs">
-                                    <span className={history.status === 'REFUNDED' ? 'text-red-500 font-bold' : 'font-medium'}>
+                                    <span className={history.status === 'REFUNDED' ? 'text-destructive font-bold' : 'font-medium text-foreground'}>
                                         {history.status}
                                     </span>
-                                    <span className="text-[var(--color-text-tertiary)]">{format(new Date(history.changedAt), "dd/MM/yyyy HH:mm:ss")}</span>
+                                    <span className="text-muted-foreground font-mono text-[11px]">{format(new Date(history.changedAt), "dd/MM/yyyy HH:mm:ss")}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <DialogFooter className="gap-2">
+                    <DialogFooter className="gap-2 border-t border-border pt-3">
                         {isRefundable && (
                             <Button
                                 variant="outline"
-                                className="text-red-500 hover:bg-red-50 hover:text-red-600 border-red-200"
+                                className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30 rounded-sm"
                                 onClick={() => setShowRefundConfirm(true)}
                             >
                                 <RotateCcw className="size-4 mr-2" />
@@ -189,18 +189,18 @@ export function SaleDetailsModal({ sale: initialSale }: Props) {
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline">
+                                <Button variant="outline" className="border-border bg-card text-foreground hover:bg-muted rounded-sm">
                                     <Printer className="size-4 mr-2" />
                                     Imprimir
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuContent align="end" className="w-48 border-border bg-popover text-popover-foreground rounded-sm">
                                 <DropdownMenuItem onClick={() => window.open(`/api/sales/${sale._id}/ticket`, '_blank')}>
-                                    <Printer className="size-4 mr-2 text-text-secondary" />
+                                    <Printer className="size-4 mr-2 text-muted-foreground" />
                                     <span>Ticket 80mm</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => window.open(`/api/sales/${sale._id}/pdf`, '_blank')}>
-                                    <FileText className="size-4 mr-2 text-text-secondary" />
+                                    <FileText className="size-4 mr-2 text-muted-foreground" />
                                     <span>Documento A4</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -209,36 +209,38 @@ export function SaleDetailsModal({ sale: initialSale }: Props) {
                 </DialogContent>
             </Dialog>
 
-            {/* MODAL DE CONFIRMACIÓN DE ANULACIÓN */}
+            {/* Modal Confirmación Anulación */}
             <Dialog open={showRefundConfirm} onOpenChange={setShowRefundConfirm}>
-                <DialogContent className="sm:max-w-[400px] border-red-200">
+                <DialogContent className="sm:max-w-[400px] border-destructive/30 bg-card text-card-foreground rounded-sm">
                     <DialogHeader>
-                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                        <DialogTitle className="flex items-center gap-2 text-destructive font-black">
                             <AlertTriangle className="size-5" />
                             Confirmar Anulación
                         </DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-xs text-muted-foreground">
                             Esta acción restablecerá el stock de los productos y ajustará el balance de caja actual.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="py-4 space-y-3">
-                        <label className="text-sm font-medium">Motivo de la anulación:</label>
+                    <div className="py-3 space-y-2">
+                        <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Motivo de la anulación:</label>
                         <Input
                             value={refundReason}
                             onChange={(e) => setRefundReason(e.target.value)}
                             placeholder="Ej: Error en cobro, devolución..."
+                            className="bg-background border-border text-foreground rounded-sm"
                         />
                     </div>
 
-                    <DialogFooter>
-                        <Button variant="ghost" onClick={() => setShowRefundConfirm(false)} disabled={isPending}>
+                    <DialogFooter className="gap-2">
+                        <Button variant="ghost" onClick={() => setShowRefundConfirm(false)} disabled={isPending} className="rounded-sm">
                             Cancelar
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={handleRefund}
                             disabled={isPending || !refundReason}
+                            className="rounded-sm"
                         >
                             {isPending ? <SpinnerLoading /> : <RotateCcw className="size-4 mr-2" />}
                             Confirmar Anulación

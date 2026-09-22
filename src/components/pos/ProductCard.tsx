@@ -1,4 +1,3 @@
-/* File: src/components/pos/ProductCard.tsx */
 "use client";
 
 import { useState } from 'react';
@@ -33,15 +32,17 @@ export const ProductCard = ({ product }: { product: Product }) => {
 
     return (
         <div className="relative h-full">
-            <div 
+            <div
                 onClick={handleMainClick}
                 className={cn(
-                    "group bg-white  border-2 border-transparent p-4 transition-all duration-300 shadow-sm flex flex-col h-full",
-                    hasStock ? "hover:border-black cursor-pointer active:scale-[0.97]" : "opacity-60 grayscale cursor-not-allowed"
+                    "group bg-card border border-border p-3 rounded-sm transition-all duration-200 flex flex-col h-full select-none",
+                    hasStock
+                        ? "hover:border-foreground cursor-pointer active:scale-[0.98]"
+                        : "opacity-50 grayscale cursor-not-allowed"
                 )}
             >
-                {/* IMAGEN Y BADGES */}
-                <div className="relative aspect-square flex items-center justify-center mb-4 overflow-hidden">
+                {/* Contenedor Imagen y Tags */}
+                <div className="relative aspect-square flex items-center justify-center mb-3 bg-muted/40 border border-border rounded-sm overflow-hidden">
                     {product.imagenes?.[0] ? (
                         <Image
                             src={product.imagenes[0]}
@@ -49,64 +50,79 @@ export const ProductCard = ({ product }: { product: Product }) => {
                             width={200}
                             height={200}
                             unoptimized
-                            className="object-contain w-full h-full"
+                            className="object-contain w-full h-full p-2"
                         />
                     ) : (
-                        <Smartphone size={32} className="text-slate-200" />
+                        <Smartphone size={32} className="text-muted-foreground/40" />
                     )}
-                    
+
                     {hasVariants && (
-                        <div className="absolute bottom-2 left-2 bg-black text-white px-2 py-1 rounded-lg flex items-center gap-1">
+                        <div className="absolute bottom-1.5 left-1.5 bg-brand-charcoal text-brand-silver px-1.5 py-0.5 rounded-sm flex items-center gap-1">
                             <Layers size={10} />
-                            <span className="text-[8px] font-black uppercase">{product.variants?.length} Variantes</span>
+                            <span className="text-[8px] font-black uppercase tracking-tighter">
+                                {product.variants?.length} Var
+                            </span>
                         </div>
                     )}
                 </div>
 
+                {/* Datos del Producto */}
                 <div className="flex-1">
-                    <h3 className="text-xs font-black uppercase text-slate-900 leading-tight">{product.nombre}</h3>
-                    <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase">
+                    <h3 className="text-xs font-bold uppercase text-foreground leading-snug line-clamp-2">
+                        {product.nombre}
+                    </h3>
+                    <p className="text-[9px] font-bold text-muted-foreground mt-0.5 uppercase tracking-wide">
                         {typeof product.categoria === 'object' ? product.categoria.nombre : 'General'}
                     </p>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t pt-3">
-                    <span className="text-sm font-black text-black">S/ {product.precio?.toFixed(2)}</span>
-                    <div className={cn(
-                        "text-[8px] font-black px-2 py-1 rounded-lg uppercase",
-                        hasStock ? "bg-emerald-50 text-emerald-600" : "bg-red-50 "
+                {/* Footer Tarjeta: Precio y Estado */}
+                <div className="mt-3 flex items-center justify-between border-t border-border pt-2">
+                    <span className="text-sm font-black text-foreground font-mono">
+                        S/ {product.precio?.toFixed(2)}
+                    </span>
+                    <span className={cn(
+                        "text-[8px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-wider border",
+                        hasStock
+                            ? "bg-brand-action/15 text-foreground border-brand-action/40"
+                            : "bg-destructive/10 text-destructive border-destructive/20"
                     )}>
-                        {hasStock ? 'Disponible' : 'Sin Stock'}
-                    </div>
+                        {hasStock ? 'En Stock' : 'Sin Stock'}
+                    </span>
                 </div>
             </div>
 
-            {/* OVERLAY DE VARIANTES (Industrial UX) */}
+            {/* Selector de Variantes (Overlay Plano) */}
             {showVariants && (
-                <div className="absolute inset-0 z-10 bg-white/95 backdrop-blur-sm  p-4 flex flex-col animate-in fade-in zoom-in duration-200 border-2 border-black">
-                    <div className="flex items-center justify-between mb-3">
-                        <span className="text-[10px] font-black uppercase">Seleccionar Variante</span>
-                        <button onClick={() => setShowVariants(false)} className="p-1 hover:bg-slate-100 rounded-full">
+                <div className="absolute inset-0 z-10 bg-card/95 backdrop-blur-xs p-3 flex flex-col animate-in fade-in duration-150 border-2 border-foreground rounded-sm">
+                    <div className="flex items-center justify-between mb-2 border-b border-border pb-1.5">
+                        <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Variantes</span>
+                        <button
+                            onClick={() => setShowVariants(false)}
+                            className="p-1 hover:bg-muted rounded-sm transition-colors text-muted-foreground hover:text-foreground cursor-pointer"
+                        >
                             <X size={14} />
                         </button>
                     </div>
-                    
-                    <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+
+                    <div className="flex-1 overflow-y-auto space-y-1.5 pr-0.5">
                         {product.variants?.map((v) => (
                             <button
                                 key={v._id?.toString()}
                                 disabled={v.stock <= 0}
                                 onClick={() => selectVariant(v)}
                                 className={cn(
-                                    "w-full p-2 border flex items-center justify-between transition-all",
-                                    v.stock > 0 ? "hover:border-black bg-white" : "opacity-40 bg-slate-50 cursor-not-allowed"
+                                    "w-full p-2 border rounded-sm flex items-center justify-between transition-colors text-left",
+                                    v.stock > 0
+                                        ? "border-border hover:border-foreground bg-card text-foreground cursor-pointer"
+                                        : "opacity-40 border-border bg-muted cursor-not-allowed"
                                 )}
                             >
-                                <div className="text-left">
-                                    <p className="text-[9px] font-black uppercase leading-none">{v.nombre || 'Variante'}</p>
-                                    <p className="text-[8px] font-bold text-slate-400 mt-1">Stock: {v.stock}</p>
+                                <div>
+                                    <p className="text-[9px] font-bold uppercase leading-none">{v.nombre || 'Variante'}</p>
+                                    <p className="text-[8px] text-muted-foreground mt-0.5 font-mono">Stock: {v.stock}</p>
                                 </div>
-                                <span className="text-[10px] font-black">S/ {v.precio?.toFixed(2)}</span>
+                                <span className="text-[10px] font-black font-mono">S/ {v.precio?.toFixed(2)}</span>
                             </button>
                         ))}
                     </div>

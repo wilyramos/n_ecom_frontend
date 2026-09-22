@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-    ShoppingBag, LayoutDashboard, ShoppingCart, History,
-    DollarSign, BarChart3, LogOut, LucideIcon, Fingerprint
+    ShoppingBag,
+    LayoutDashboard,
+    ShoppingCart,
+    History,
+    DollarSign, LogOut,
+    LucideIcon,
+    Fingerprint
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCashStore } from "@/src/store/useCashStore";
@@ -22,7 +27,6 @@ const ROUTES: NavItem[] = [
     { label: "POS", href: "/pos", icon: ShoppingCart, roles: ["administrador", "vendedor"] },
     { label: "Caja", href: "/cash-shift", icon: DollarSign, roles: ["administrador", "vendedor"] },
     { label: "Ventas", href: "/sales", icon: History, roles: ["administrador", "vendedor"] },
-    { label: "Reportes", href: "/reports", icon: BarChart3, roles: ["administrador"] },
 ];
 
 export const Sidebar = ({ user }: { user: User }) => {
@@ -38,21 +42,20 @@ export const Sidebar = ({ user }: { user: User }) => {
     };
 
     const filteredRoutes = ROUTES.filter(
-        route => !route.roles || route.roles.includes(user.rol || "")
+        (route) => !route.roles || route.roles.includes(user.rol || "")
     );
 
     return (
-        <aside className="hidden lg:flex h-dvh w-20 flex-col items-center border-r py-4 bg-[var(--color-surface-inverse)] border-[var(--color-border-default)] overflow-y-auto">
-
+        <aside className="hidden lg:flex h-dvh w-20 flex-col items-center border-r border-sidebar-border bg-sidebar text-sidebar-foreground py-4 overflow-y-auto">
             {/* Brand Logo */}
-            <div className="mb-4 flex h-10 w-10 items-center justify-center font-black text-white text-[10px]">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-sm bg-brand-charcoal text-[10px] font-black text-brand-silver">
                 NEO
             </div>
 
-            <div className="mb-4 w-10 h-px bg-[var(--color-border-default)]" />
+            <div className="mb-4 h-px w-10 bg-sidebar-border" />
 
             {/* Navigation Flow */}
-            <nav className="flex flex-col gap-2 w-full items-center">
+            <nav className="flex w-full flex-col items-center gap-2">
                 {filteredRoutes.map((route) => {
                     const isActive = pathname.startsWith(route.href);
                     return (
@@ -60,10 +63,10 @@ export const Sidebar = ({ user }: { user: User }) => {
                             key={route.href}
                             href={route.href}
                             className={cn(
-                                "group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm transition-all",
+                                "group flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-sm transition-all",
                                 isActive
-                                    ? "bg-[var(--color-accent-vivid)] text-white"
-                                    : "text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)]"
+                                    ? "bg-brand-action text-brand-charcoal font-black"
+                                    : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
                             )}
                             title={route.label}
                         >
@@ -75,14 +78,12 @@ export const Sidebar = ({ user }: { user: User }) => {
                     );
                 })}
 
-                {/* --- SECCIÓN ADMINISTRATIVA Y EXTERNA --- */}
-                <div className="flex flex-col gap-2 w-full items-center border-t border-[var(--color-border-default)] pt-2 mt-2">
-
-                    {/* Asistencia */}
+                {/* Sección Administrativa y Externa */}
+                <div className="mt-2 flex w-full flex-col items-center gap-2 border-t border-sidebar-border pt-2">
                     <Link
                         href="/staff/attendance"
                         target="_blank"
-                        className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all"
+                        className="group flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-sm text-muted-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         title="Asistencia"
                     >
                         <Fingerprint size={18} />
@@ -90,13 +91,23 @@ export const Sidebar = ({ user }: { user: User }) => {
                     </Link>
 
                     {user.rol === "administrador" && (
-                        <Link href="/admin" className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all">
+                        <Link
+                            href="/admin"
+                            className="group flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-sm text-muted-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                            title="Admin"
+                        >
                             <LayoutDashboard size={18} />
                             <span className="text-[8px] font-black uppercase tracking-tighter">Admin</span>
                         </Link>
                     )}
 
-                    <Link href="/" target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-accent-vivid)]/10 hover:text-[var(--color-accent-vivid)] transition-all">
+                    <Link
+                        href="/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-sm text-muted-foreground transition-all hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                        title="Tienda"
+                    >
                         <ShoppingBag size={18} />
                         <span className="text-[8px] font-black uppercase tracking-tighter">Tienda</span>
                     </Link>
@@ -104,10 +115,10 @@ export const Sidebar = ({ user }: { user: User }) => {
             </nav>
 
             {/* Logout */}
-            <div className="mt-auto w-full flex flex-col items-center border-t border-[var(--color-border-default)] pt-2">
+            <div className="mt-auto flex w-full flex-col items-center border-t border-sidebar-border pt-2">
                 <button
                     onClick={handleLogout}
-                    className="group flex flex-col items-center justify-center gap-0.5 w-16 h-14 rounded-sm text-[var(--color-fg-muted)] hover:bg-red-500/10 hover:text-red-500 transition-colors cursor-pointer"
+                    className="group flex h-14 w-16 flex-col items-center justify-center gap-0.5 rounded-sm text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive cursor-pointer"
                     title="Cerrar sesión"
                 >
                     <LogOut size={18} />

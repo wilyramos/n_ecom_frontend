@@ -7,7 +7,6 @@ import { es } from "date-fns/locale";
 import { Calendar as CalendarIcon, Search, X } from "lucide-react";
 import { DateRange, Range, RangeKeyDict } from "react-date-range";
 
-// Estilos de la librería
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
@@ -20,9 +19,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 
-/**
- * Helper para obtener fechas seguras desde la URL
- */
 const getInitialDate = (param: string | null, defaultDate: Date): Date => {
     if (!param) return defaultDate;
     const parsed = parseISO(param);
@@ -34,7 +30,6 @@ export function SalesFilters() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    // 1. Sincronizar estado local con la URL
     const [dateRange, setDateRange] = React.useState<Range[]>([
         {
             startDate: getInitialDate(searchParams.get("startDate"), new Date()),
@@ -43,7 +38,6 @@ export function SalesFilters() {
         },
     ]);
 
-    // 2. Manejo de búsqueda de texto
     const handleSearch = (term: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("page", "1");
@@ -55,7 +49,6 @@ export function SalesFilters() {
         router.replace(`${pathname}?${params.toString()}`);
     };
 
-    // 3. Aplicar Filtro de Fechas a la URL
     const handleDateChange = (ranges: RangeKeyDict) => {
         const { selection } = ranges;
         if (!selection) return;
@@ -75,7 +68,6 @@ export function SalesFilters() {
         router.replace(`${pathname}?${params.toString()}`);
     };
 
-    // 4. Limpiar Filtros
     const handleClear = () => {
         const initialRange: Range = {
             startDate: new Date(),
@@ -89,39 +81,38 @@ export function SalesFilters() {
     const hasFilters = !!(searchParams.get("search") || searchParams.get("startDate"));
 
     return (
-        <div className="flex flex-col gap-4 bg-bg-secondary p-4 rounded-xs border border-border-default sm:flex-row sm:items-center">
-
-            {/* Grupo de Búsqueda */}
+        <div className="flex flex-col gap-4 bg-card p-4 rounded-sm border border-border sm:flex-row sm:items-center">
+            {/* Input de Búsqueda */}
             <div className="relative flex-1 group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-tertiary group-focus-within:text-accent-warm transition-colors" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                 <Input
                     placeholder="Buscar por ticket, cliente o DNI..."
-                    className="pl-10 h-11 bg-bg-primary border-border-default focus-visible:ring-accent-warm text-text-primary placeholder:text-text-tertiary"
+                    className="pl-10 h-11 bg-background border-border focus-visible:ring-ring text-foreground placeholder:text-muted-foreground rounded-sm"
                     defaultValue={searchParams.get("search") ?? ""}
                     onChange={(e) => handleSearch(e.target.value)}
                 />
             </div>
 
-            {/* Grupo de Selectores */}
+            {/* Selectores */}
             <div className="flex flex-wrap items-center gap-2">
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
-                            className="h-11 justify-start text-left font-normal px-4 border-border-default bg-bg-primary hover:bg-bg-tertiary text-text-primary min-w-[240px]"
+                            className="h-11 justify-start text-left font-normal px-4 border-border bg-background hover:bg-muted text-foreground min-w-[240px] rounded-sm"
                         >
-                            <CalendarIcon className="mr-2 size-4 text-accent-warm" />
+                            <CalendarIcon className="mr-2 size-4 text-muted-foreground" />
                             {searchParams.get("startDate") ? (
-                                <span className="text-sm">
+                                <span className="text-sm font-medium">
                                     {format(dateRange[0].startDate!, "dd MMM", { locale: es })} -{" "}
                                     {format(dateRange[0].endDate!, "dd MMM, yyyy", { locale: es })}
                                 </span>
                             ) : (
-                                <span className="text-text-secondary">Rango de fechas</span>
+                                <span className="text-muted-foreground">Rango de fechas</span>
                             )}
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 border-border-default shadow-2xl" align="end">
+                    <PopoverContent className="w-auto p-0 border-border bg-popover shadow-md rounded-sm" align="end">
                         <DateRange
                             ranges={dateRange}
                             onChange={handleDateChange}
@@ -129,8 +120,8 @@ export function SalesFilters() {
                             months={1}
                             direction="vertical"
                             locale={es}
-                            rangeColors={["#F97316"]} // --color-accent-warm
-                            className="rounded-lg text-sm"
+                            rangeColors={["#a7c7aa"]}
+                            className="text-sm bg-popover text-popover-foreground"
                             editableDateInputs={true}
                         />
                     </PopoverContent>
@@ -140,14 +131,14 @@ export function SalesFilters() {
                     <Button
                         variant="ghost"
                         onClick={handleClear}
-                        className="h-11 px-3 text-accent-warm hover:bg-accent-warm-light"
+                        className="h-11 px-3 text-muted-foreground hover:text-foreground hover:bg-muted rounded-sm"
                     >
                         <X className="size-4 mr-2" />
                         Limpiar
                     </Button>
                 )}
 
-                <div className="h-8 w-px bg-border-default mx-1 hidden sm:block" />
+                <div className="h-8 w-px bg-border mx-1 hidden sm:block" />
 
                 <ExportButton />
             </div>

@@ -1,8 +1,3 @@
-/* File: src/components/pos/ProductGrid.tsx 
-    @Author: whramos 
-    @Description: Responsive grid for products. Zero-Any implementation.
-*/
-
 "use client";
 
 import React from 'react';
@@ -15,7 +10,7 @@ interface ProductGridProps {
 
 export const ProductGrid = ({ products }: ProductGridProps) => {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 lg:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 animate-in fade-in duration-300">
             {products.map((product) => (
                 <ProductCard 
                     key={product._id} 

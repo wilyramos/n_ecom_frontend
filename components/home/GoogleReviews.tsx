@@ -7,49 +7,225 @@ import "react-multi-carousel/lib/styles.css";
 import { ExternalLink } from "lucide-react";
 import HeaderReviews from "@/components/ui/Headerreviews";
 
-const GOOGLE_MAPS_LINK = "https://www.google.com/maps/place/Neoshop+Importaciones/@-12.1203426,-76.9977364,10z/data=!4m6!3m5!1s0x9105c7e5102df947:0x3c711f9098ede003!8m2!3d-12.1138673!4d-76.9918252!16s%2Fg%2F11nhlq2d6p?entry=ttu&g_ep=EgoyMDI2MDYwMS4wIKXMDSoASAFQAw%3D%3D";
+const GOOGLE_MAPS_LINK = "https://www.google.com/maps/place/Neoshop+Importaciones/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m6!3m5!1s0x9105c7e5102df947:0x3c711f9098ede003!8m2!3d-12.1138673!4d-76.9918252!16s%2Fg%2F11nhlq2d6p";
+
 const reviews = [
     {
-        name: "Grassli Cabrera",
-        text: "¡Totalmente recomendados! Tuve temor de pedir un iPhone a provincia, pero su paciencia y excelente atención me dieron toda la confianza.",
-        date: "Hace 4 días",
-        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjWXwTP0n0861IgJio8xwKhJlsRQZucX6cG5TFnI0WeoRb24CxjQ=w45-h45-p-rp-mo-br100",
-        reviewUrl: "https://maps.app.goo.gl/CHPe3jv3H9S8Yw5C7",
+        name: "Brenda Huallpa",
+        text: "Excelente atención al cliente! Te explican a detalle las características del producto",
+        date: "hace 2 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocIRwpPdjFuSZ6BAZw0M_exPcJ_bfrXmmfCsUO13u1LdKP4mRg=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
     },
     {
-        name: "Angel San Martin",
-        text: "Excelentes productos, buenísimos precios y con garantía total.",
+        name: "Julio C. Patiño",
+        text: "Trato amable desde el ingreso a la tienda, buenos precios y buena experiencia para la compra en Neoshop",
+        date: "hace 2 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjWO637N56NDNxsb141AIyKzKhRf88kLFZsybwLcIauNhX7-TcKRIg=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Ada angella Quispe ayala",
+        text: "Excelente atención y muy buena experiencia de compra. Me orientaron muy bien y respondieron todas mis dudas. La tienda es 100% confiable.",
+        date: "hace 2 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjXDlc10-DTeBklFbxpWP0NXDhUTw-Rkv728nX5HFPhGrH-HUHzk=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Diego PremYT",
+        text: "Muy buena atención y excelente calidad de productos , muy recomendado.",
+        date: "hace 4 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocLvdub-BnkUzF_rJk9wC29Yjak0pfDhZdaj7rvidLQ3AKoaYg=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Diana Millones",
+        text: "Buena experiencia, la atención excelente! Recomendado!",
+        date: "hace 4 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjWedBBkmNvyrr-s2tEoyVKWExiVwFnRNh6yaaCndEaNeJtSHI-O=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Paula Aranda",
+        text: "Muy bonita tienda y muy buena atención recomendado",
+        date: "hace 5 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocK8B3TuPgTT_ELQpB9-DgdF4QT-RglNNhyEJfOKL7wEaUdY2V4=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "aracely inga silva",
+        text: "Lugar muy bonito y personal super amable qué me explico los diferentes modelos que tienen disponibles y me dio mucha comodidad comprar. Recomendado!!!",
+        date: "hace 5 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocLO9to_0zaQZjOkhc6p2KJR3Tv1JLNNmQrDZqpMMQJs1Y9hPQ=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Flavio Sm",
+        text: "Todo bien, iphone sellado",
+        date: "hace 6 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocLDfDfZvpOwK81FJBrtr44pfN4TYICL954K59SR4yepIQm7Ug=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Yamile Abarca",
+        text: "Muy buena experiencia, buena atención! Lo recomiendo ✨️",
+        date: "hace 6 días",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocLYZQ6lz9mCwi3sOJktoyWmVP1L_bPUrt8oKCAV85JZ0pz0XQ=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "heyser Ruiz Garay",
+        text: "Excelente servicio, te enseñan todas las características del equipo y te brindan seguridad al comprarlo. 💪🏻🙌🏻…",
+        date: "Hace una semana",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocKoT_y0-4aO4TlgeE-mDepK-ox15ZpRHuz1tR7_a5nBl7DVeA=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "xiomara cabana meza",
+        text: "Muy contenta con mi compra, El iPhone en perfectas condiciones, tal como se mostraba, bien protegido y dentro del tiempo acordado. Excelente atención y servicio. ¡100% recomendado! 😊…",
+        date: "Hace una semana",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjWF72rfW3SxAL5WevNbRPaeLBxLQpuWFsDWqNaXRnAy5iYk-Ox7=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "José Luis AT",
+        text: "Adquirí mi primer iPhone y me encanto se los recomiendo.Gracias Neoshop!!",
+        date: "Hace una semana",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjVWK4NdTgjMqCRMCkfW-vDAPhkhK0TwlGc4X8olbmIBUiSlmDUZ=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Richard David Luna Olave",
+        text: "La atención es sumamente rápida, no hubo demora, y sobre todo que es empresa y te da la seguridad ante cualquier imprevisto.",
         date: "Hace 2 semanas",
-        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjXjv-fRLTSO8EBbkyzB_T_AQLZju17wUZ67ItDeqvz9ZZMW_gOP3Q=w45-h45-p-rp-mo-br100",
-        reviewUrl: "https://maps.app.goo.gl/shvTKMGREAaukkjd7",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjXM97NauZjwd_2aNkZLM3FMH2l3Yn5WgP2G_9ct25yIWOxDFdi66w=w50-h50-p-rp-mo-ba12-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
     },
     {
-        name: "Ana Ruth Cisneros",
-        text: "Calidad 10/10 y una muy buena atención. Super recomendados.",
+        name: "SOFIA OROZCO",
+        text: "muy buena atención de ani, muy amable, quede contenta con mi compra 🥰…",
         date: "Hace 2 semanas",
-        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocKz5QwxfgnUBHXDfeLvh32wC1lrxD8A8fc4RB0fOuJ-LP5TZw=w45-h45-p-rp-mo-br100",
-        reviewUrl: "https://maps.app.goo.gl/uwxdDEiGeadhBgUC9",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocKjHYZhzOLygtif582hhj50JXYTSsvS8SSbPF46-PVEgsHuxQ=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
     },
     {
-        name: "Stefany Ravello Cueva",
-        text: "Me encanta la tienda, pero sobre todo la forma en que me atienden, la paciencia que tienen para explicar y las recomendaciones que dan para llevarme lo mejor.",
-        date: "Hace 2 semanas",
-        profilePhotoUrl: "",
-        reviewUrl: "https://maps.app.goo.gl/dwFJvjaDmBbt7jcS7",
-    },
-    {
-        name: "Maria Elena Ramos",
-        text: "Me gustó como me atendieron y tienen productos variados y buenos precios, salí feliz y contenta.",
-        date: "Hace 2 semanas",
-        profilePhotoUrl: "",
-        reviewUrl: "https://maps.app.goo.gl/wKvQGWE1nMBisti9A",
-    },
-    {
-        name: "Mafer cp",
-        text: "Excelente atención, muy amables y pacientes. Me ayudaron a elegir el producto que mejor se adaptaba a mis necesidades y presupuesto. Además, los precios son muy competitivos. Sin duda volveré a comprar aquí.",
+        name: "Betsabe Ardela",
+        text: "Excelente y tienen mucha paciencia y te brinda confiabilidad",
         date: "Hace 3 semanas",
-        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjVCCk2UGIhgfM6L8hpPcdSEEqQ4Iat_qNHLgkqqg9nMq4VvjbXb=w45-h45-p-rp-mo-ba12-br100",
-        reviewUrl: "https://maps.app.goo.gl/fWzhaLVGgskPXqva8",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjUuI3dm7_pD2TNyQj6CpZ1ITNApRp0AzV3Rc-eRDPF36R36TTqW1A=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Lizbethd Alexandra Condori Fajardo",
+        text: "Buen trato\nBuen precio",
+        date: "Hace 3 semanas",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjUosFy_lJGbeFIKEwICPK5n7jv_VSenk3fH7_w6wlkc43h_kAT6Lw=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Mariluz Cochachin",
+        text: "Muy buena atención y excelente servicio. Mi pedido llegó a provincia en perfectas condiciones y todo salió muy bien. Siempre estuvieron atentos y respondieron mis dudas con mucha amabilidad. ¡Muy contenta con mi compra!",
+        date: "Hace 3 semanas",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocIUV9duqUj5hynK_yy3ZyVH8n0tU1eqWBYqR_xqBzUxmnBvUA=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Carlos Chicoma",
+        text: "Buenos precios!",
+        date: "Hace un mes",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjV-gw52fEB26mzm8Xz6g8Sr3yh56bb1nA-KfB3RpQoXoGuVhbw9vA=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Alejandro García",
+        text: "TODO MUY EXCELENTE. LA ATENCION Y EL TRATO DE PARTE DE LAS SEÑORITAS, MI PEDIDO ME LLEGO A MI PROVINCIA, GRACIAS A NEOSHOP, PRONTO PEDIRE MAS COSAS",
+        date: "Hace un mes",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjXwbmqMoCUasRCw1we1yesEMzFgmrqFPMTkjCB6tvcCWSHQJ65Y=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "fanny lu",
+        text: "Excelente atencion",
+        date: "Hace un mes",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjUO79A928LgfsI6Tg7GHChYvv_-WE4eYZ7hI-SB75L3TwpHswQqog=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Victoria Herebia",
+        text: "Excelente atención. Me ayudaron a elegir el equipo que necesitaba y resolvieron todas mis dudas con mucha paciencia. El proceso de compra fue rápido y todo salió perfecto. Muy recomendados!",
+        date: "Hace un mes",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjWdUr0M-2aT6txyg21nHEfPlqcBQ14enxYBuXMKSD5mbRU5phWC=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Antoni Llallico",
+        text: "Hace poco adquirí un equipo sellado y todo va muy bien, al principio tenia mis dudas obviamente pero me dieron mucha confianza, revisaron los IMEIs y estaban ok. Algo que destaco es la comunicación y acompañamiento que tienen con el cliente…",
+        date: "Hace un mes",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocLZj4VcqN5OuDbdXvdvY52CoaANHU9mxIE6RN_-LUAJ1pLD1Q=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Noemi Anabella Ledesma De La Cruz",
+        text: "Excelente atencion, te atienden con amabilidad y brindan toda Información del producto",
+        date: "Hace un mes",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjXiYtRbgfhdhY38S5g2I0566diKEIh4utKFfcRknzy29XDbo84X=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Eglyhec Chirinos",
+        text: "Una atención personalizada, un grato ambiente y excelente equipos",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjVE2hXSJhHg7jpwhRg3KYOAaCx4z8JyMHHqJjmv6GEp31WeYsmx=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Pedro Cárdenas Cabrera",
+        text: "Muy buena experiencia, muy atentos todos los chicos. Recomendado!",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjVeLueseKOsDj-ZAcfbFyLfklXFFDWGLDFHF60VNj7fNVyuOik=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Marcelo Cruz Aguilar",
+        text: "Compré un iPhone 17 en esta tienda y la experiencia fue excelente. Desde que llegué recibí una atención muy amable y profesional. Además, ofrecen bebidas de cortesía mientras esperas, un detalle que hace la experiencia aún más agradable.…",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjU2nfyUmziEfJcstuSodSrzF98J-UjKM9feXABXpMIdZP_kI28Z=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Milagros motta jesus",
+        text: "Excelente atención, muy amable y atentos. Quedé muy satisfecha con el servicio. ¡Totalmente recomendado!",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjW5-5bkgOndWf7101lp_T4AU8esvsoETsN5yDI5UZAEeKfatDhI=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Alison Andrea",
+        text: "Super buena atención, confiable e inmediato",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjUAfteV3aNldMAoI7Wq8Cs2iirUkF1AMr1PyoTRpfuijRth8uq6hg=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "CARLOS HENDRHYS VASQUEZ SANCHEZ",
+        text: "Excelente servicio, muy amables y con respecto al equipo todo original y un 100/10. 100% confiables 😎✌🏻…",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocK9jfYbmuc10Q7UHGlILnRdvzsPVCQiFS2CfAN7jxhpWNtljQ=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Cristina",
+        text: "Excelente atención, 100% confiable y recomendable.",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a/ACg8ocKmhRFiwxUmaW1fVcr6qBeHsHCRya3GHVeWEgYqV-z_pJ2nsNCS=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
+    },
+    {
+        name: "Monica Quispe Gomez",
+        text: "100% seguro , equipo registrado en lista blanca que era lo más importante para mí , totalmente nuevo y sellado , buena atención por parte de los trabajadores ✨",
+        date: "Hace 2 meses",
+        profilePhotoUrl: "https://lh3.googleusercontent.com/a-/ALV-UjW48dsLDXvw9k8Xh6jXh3ZwvFNW5Zfq_FEg_kl7M--jue5BAJou=w50-h50-p-rp-mo-br100",
+        reviewUrl: "https://www.google.com/maps/contrib/115036562531835912416/reviews/@-12.1138673,-76.9918252,17z/data=!3m1!4b1!4m3!8m2!3m1!1e1?hl=es-PE",
     },
 ];
 
@@ -141,10 +317,7 @@ function ReviewCard({
     review: (typeof reviews)[0];
     index: number;
 }) {
-    const hasValidLink =
-        review.reviewUrl &&
-        !review.reviewUrl.includes("maps.google.com/9") &&
-        review.reviewUrl !== "";
+    const hasValidLink = Boolean(review.reviewUrl);
 
     return (
         <div className="h-[220px] bg-background border border-brand-silver-border rounded-2xl p-5 flex flex-col gap-3">

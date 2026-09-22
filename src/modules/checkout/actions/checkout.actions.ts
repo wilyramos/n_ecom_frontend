@@ -1,11 +1,10 @@
 // File: frontend/src/modules/checkout/actions/checkout.actions.ts
-// CAMBIO 3: Pasar deviceFingerprint al backend (actualizar interfaz si es necesario)
 
 'use server';
 
 import { checkoutSchema, CheckoutFormData } from '../schemas/checkout.schema';
 import { cookies } from 'next/headers';
-import { ICrearPedidoResponse } from '../types/pedido.types';
+import { ICrearPedidoResponse, IPedido } from '../types/pedido.types';
 
 interface ICrearPedidoActionInput extends CheckoutFormData {
   items: Array<{
@@ -19,6 +18,33 @@ interface ICrearPedidoActionInput extends CheckoutFormData {
   }>;
   shippingCost: number;
   currency?: string;
+}
+
+export interface IParameters3DS {
+  eci?: string;
+  xid?: string;
+  cavv?: string;
+  protocolVersion?: string;
+  directoryServerTransactionId?: string;
+  [key: string]: unknown;
+}
+
+export interface ICargoCulqiData {
+  status: 'approved' | 'requires_3ds' | 'pending';
+  pedido: IPedido;
+  paymentCode?: string;
+}
+
+export interface IProcesarCargoCulqiResponse {
+  success: boolean;
+  message?: string;
+  data?: ICargoCulqiData;
+}
+
+interface IBackendResponse<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
 }
 
 export async function crearPedidoAction(
@@ -57,15 +83,19 @@ export async function crearPedidoAction(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(payload),
       cache: 'no-store',
     });
 
-    const result = await response.json();
+    const result = (await response.json()) as IBackendResponse<{
+      pedido: IPedido;
+      initPoint?: string | null;
+      culqiOrderId?: string | null;
+    }>;
 
-    if (!response.ok) {
+    if (!response.ok || !result.data) {
       return { success: false, message: result.message || 'Error al registrar el pedido.' };
     }
 
@@ -77,8 +107,9 @@ export async function crearPedidoAction(
         culqiOrderId: result.data.culqiOrderId || null,
       },
     };
-  } catch (error) {
-    console.error('💥 [Server Action Error]:', error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Fallo de conexión con el servidor.';
+    console.error('💥 [Server Action Error]:', errorMessage);
     return { success: false, message: 'Fallo de conexión con el servidor.' };
   }
 }
@@ -86,10 +117,10 @@ export async function crearPedidoAction(
 export async function procesarCargoCulqiAction(
   orderNumber: string,
   culqiToken: string,
-  parameters3DS?: any,
+  parameters3DS?: IParameters3DS,
   deviceFingerPrintId?: string,
   installments?: number
-) {
+): Promise<IProcesarCargoCulqiResponse> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('ecommerce-token')?.value;
@@ -99,28 +130,33 @@ export async function procesarCargoCulqiAction(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({
         orderNumber,
         culqiToken,
         parameters3DS,
         deviceFingerPrintId,
-        installments: installments || 1
+        installments: typeof installments === 'number' && installments > 0 ? installments : 1,
       }),
       cache: 'no-store',
     });
 
-    const result = await response.json();
-    if (!response.ok) return { success: false, message: result.message || 'La pasarela rechazó la transacción.' };
+    const result = (await response.json()) as IBackendResponse<ICargoCulqiData>;
+
+    if (!response.ok) {
+      return { success: false, message: result.message || 'La pasarela rechazó la transacción.' };
+    }
+
     return { success: true, data: result.data };
-  } catch (error) {
-    console.error('💥 [procesarCargoCulqiAction Error]:', error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Error de conexión al procesar el cobro.';
+    console.error('💥 [procesarCargoCulqiAction Error]:', errorMessage);
     return { success: false, message: 'Error de conexión al procesar el cobro.' };
   }
 }
 
-export async function cancelarPedidoAction(orderNumber: string) {
+export async function cancelarPedidoAction(orderNumber: string): Promise<void> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('ecommerce-token')?.value;
@@ -130,11 +166,12 @@ export async function cancelarPedidoAction(orderNumber: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       cache: 'no-store',
     });
-  } catch (error) {
-    console.error('💥 [cancelarPedidoAction Error]:', error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+    console.error('💥 [cancelarPedidoAction Error]:', errorMessage);
   }
 }

@@ -373,7 +373,7 @@ export default function GoogleReviews() {
                 arrows={false}
                 renderButtonGroupOutside
                 customButtonGroup={<AbsoluteHeaderWrapper />}
-                itemClass="px-2 md:px-3 py-4"
+                itemClass="py-4"
                 className="pt-12"
             >
                 {reviews.map((review, index) => (

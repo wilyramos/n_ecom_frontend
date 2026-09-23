@@ -59,8 +59,8 @@ export default function ProductDetails({ producto }: Props) {
 
     const matched = Object.keys(initialAttrs).length > 0
       ? producto.variants?.find((v) =>
-          Object.keys(initialAttrs).every((k) => initialAttrs[k] === v.atributos[k])
-        ) ?? null
+        Object.keys(initialAttrs).every((k) => initialAttrs[k] === v.atributos[k])
+      ) ?? null
       : null;
 
     setSelectedVariant(matched);
@@ -258,15 +258,16 @@ export default function ProductDetails({ producto }: Props) {
                             disabled={outOfStock}
                             title={val}
                             className={cn(
-                              "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-background cursor-pointer",
-                              selected ? "border-brand-charcoal ring-1 ring-brand-charcoal" : "border-brand-silver-border hover:border-brand-charcoal",
-                              outOfStock && "opacity-55 cursor-not-allowed"
+                              "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-background",
+                              selected ? "border-brand-charcoal ring-1 ring-brand-charcoal" : "border-brand-silver-border",
+                              !outOfStock && !selected && "hover:border-brand-charcoal cursor-pointer",
+                              outOfStock && "cursor-not-allowed"
                             )}
                           >
-                            <div className={cn("relative w-7 h-7 rounded-full border border-brand-silver-border overflow-hidden shrink-0", outOfStock && "grayscale brightness-90")}>
+                            <div className="relative w-7 h-7 rounded-full border border-brand-silver-border overflow-hidden shrink-0">
                               <ColorCircle color={variantForValue?.atributos[key] || val} size={28} />
                               {outOfStock && (
-                                <span className="absolute inset-0 flex items-center justify-center z-10">
+                                <span className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                                   <div className="w-[120%] border-t border-brand-gris -rotate-45" />
                                 </span>
                               )}
@@ -293,7 +294,7 @@ export default function ProductDetails({ producto }: Props) {
                               disabled={outOfStock}
                               className={cn(
                                 "cursor-pointer text-sm",
-                                outOfStock && "opacity-40 line-through text-brand-gris"
+                                outOfStock && "line-through text-brand-gris decoration-brand-gris"
                               )}
                             >
                               {val}
@@ -314,22 +315,17 @@ export default function ProductDetails({ producto }: Props) {
                             onClick={() => !outOfStock && updateSelectedVariant(key, val)}
                             disabled={outOfStock}
                             className={cn(
-                              "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden cursor-pointer",
+                              "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden",
                               selected
-                                ? "border-brand-charcoal ring-1 ring-brand-charcoal bg-background text-brand-charcoal font-semibold"
+                                ? "border-brand-charcoal ring-1 ring-brand-charcoal bg-background text-brand-charcoal font-semibold cursor-pointer"
                                 : outOfStock
-                                ? "border-brand-silver-border bg-brand-silver-border/30 text-brand-gris cursor-not-allowed line-through"
-                                : "border-brand-silver-border bg-background text-brand-charcoal hover:border-brand-charcoal"
+                                  ? "border-brand-silver-border bg-background text-brand-gris cursor-not-allowed line-through decoration-brand-gris"
+                                  : "border-brand-silver-border bg-background text-brand-charcoal hover:border-brand-charcoal cursor-pointer"
                             )}
                           >
-                            <span className={cn("block", outOfStock && "line-through decoration-brand-gris")}>
+                            <span className="block">
                               {val}
                             </span>
-                            {outOfStock && (
-                              <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <div className="w-[110%] -rotate-[15deg]" />
-                              </span>
-                            )}
                           </button>
                         );
                       })}

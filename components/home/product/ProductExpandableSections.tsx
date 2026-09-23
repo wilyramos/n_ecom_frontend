@@ -31,9 +31,9 @@ export default function ProductExpandableSections({ producto }: Props) {
   if (!hasDescripcion && !hasSpecs) return null;
 
   return (
-    <Accordion type="multiple" className="w-full space-y-2 bg-background pt-2">
+    <Accordion type="multiple" className="w-full space-y-2 bg-background pt-2 cursor-pointer">
       {hasDescripcion && (
-        <AccordionItem value="info" className=" overflow-hidden px-1">
+        <AccordionItem value="info" className=" overflow-hidden px-1 cursor-pointer">
           <AccordionTrigger className="hover:no-underline group py-4">
             
             <span className="text-sm font-semibold tracking-tight text-brand-charcoal">

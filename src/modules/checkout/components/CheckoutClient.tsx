@@ -1,3 +1,5 @@
+// File: frontend/src/modules/checkout/components/CheckoutClient.tsx
+
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
@@ -52,6 +54,14 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         tipoDocumento: 'DNI',
         numeroDocumento: '',
       },
+      hasDifferentReceiver: false,
+      receiverInfo: {
+        nombre: '',
+        apellidos: '',
+        telefono: '',
+        tipoDocumento: 'DNI',
+        numeroDocumento: '',
+      },
       deliveryMethod: 'shipping',
       shippingAddress: {
         departamento: '',
@@ -62,6 +72,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         pisoDpto: '',
         referencia: '',
       },
+      deliveryNotes: '',
       invoiceInfo: { type: 'boleta', documentNumber: '', businessName: '' },
       payment: { provider: 'culqi', method: 'online', paymentCode: '' },
       acceptTerms: true,
@@ -107,8 +118,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const culqiGlobal = (window as any).Culqi;
 
-        // 🔴 Culqi V4 guarda los installments en una propiedad interna diferente,
-        // Si no la encontramos, forzamos un '1' absoluto y tipado.
         let installments = 1;
         try {
           const rawInst = culqiGlobal?.token?.metadata?.installments;
@@ -119,7 +128,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
             }
           }
         } catch (e) {
-          console.warn("⚠️ No se pudo extraer installments de Culqi, forzando a 1.", e);
+          console.warn('⚠️ No se pudo extraer installments de Culqi, forzando a 1.', e);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -159,7 +168,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
               card: { email: methods.getValues('customerProfile.email').trim().toLowerCase() },
             };
 
-            // Iniciar timeout de 5 minutos con referencia limpiable
             if (timeout3DSRef.current) clearTimeout(timeout3DSRef.current);
             timeout3DSRef.current = setTimeout(async () => {
               if (activeOrderNumberRef.current) {
@@ -192,7 +200,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
     [clearCart, router, methods, totalFinalCalculado, deviceFingerprint]
   );
 
-  // Listener para el resultado del 3DS Modal
   useEffect(() => {
     const handle3DSMessage = async (event: MessageEvent) => {
       if (
@@ -203,7 +210,6 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         const orderNumber = activeOrderNumberRef.current;
 
         if (response.parameters3DS) {
-          // Limpiar timeout de cancelación
           if (timeout3DSRef.current) {
             clearTimeout(timeout3DSRef.current);
             timeout3DSRef.current = null;
@@ -259,13 +265,15 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
           message: issue.message,
         });
       });
-      toast.error('Por favor, completa los campos requeridos y acepta los términos.');
+      toast.error('Por favor, completa los campos requeridos marcados en rojo.');
       document.querySelector('[aria-invalid="true"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
     const orderPayload = {
       ...parsed.data,
+      receiverInfo: parsed.data.hasDifferentReceiver ? parsed.data.receiverInfo : undefined,
+      deliveryNotes: parsed.data.deliveryNotes?.trim() ? parsed.data.deliveryNotes.trim() : undefined,
       shippingAddress:
         formData.deliveryMethod === 'pickup'
           ? {
@@ -363,7 +371,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         onLoad={handleScriptLoad}
         onError={handleScriptError}
       />
-      {/* 2. Culqi Antifraud (Requerido para generar device_finger_print_id) */}
+      {/* 2. Culqi Antifraud */}
       <Script
         id="culqi-antifraud"
         src="https://checkout.culqi.com/plugins/v2/culqi-antifraud.js"

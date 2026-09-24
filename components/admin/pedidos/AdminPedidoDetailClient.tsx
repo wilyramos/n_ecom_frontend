@@ -1,3 +1,5 @@
+// File: frontend/app/admin/pedidos/[id]/AdminPedidoDetailClient.tsx
+
 'use client';
 
 import { useState } from 'react';
@@ -22,6 +24,9 @@ import {
   Building2,
   QrCode,
   Layers,
+  UserCheck,
+  MessageSquareQuote,
+  IdCard,
 } from 'lucide-react';
 
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
@@ -65,6 +70,12 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
   const isPickup = pedido.deliveryMethod === 'pickup';
   const totalItemsCount = pedido.items?.reduce((acc, it) => acc + it.quantity, 0) || 0;
   const paymentDetails = pedido.payment?.details;
+  const hasDistinctReceiver = Boolean(
+    pedido.receiverInfo?.nombre &&
+    (pedido.receiverInfo.nombre !== pedido.customerProfile?.nombre ||
+      pedido.receiverInfo.apellidos !== pedido.customerProfile?.apellidos ||
+      pedido.receiverInfo.telefono !== pedido.customerProfile?.telefono)
+  );
 
   return (
     <AdminPageContainer maxWidth="default" padding="default" spacing="compact">
@@ -98,7 +109,7 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
 
       {/* Grid Principal */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        {/* Columna Izquierda: Artículos y Totales */}
+        {/* Columna Izquierda: Artículos, Notas y Totales */}
         <div className="lg:col-span-2 space-y-3">
           <AdminCardWrapper padding="default">
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
@@ -162,6 +173,23 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
               })}
             </div>
           </AdminCardWrapper>
+
+          {/* Instrucciones Especiales de Entrega */}
+          {pedido.deliveryNotes && (
+            <AdminCardWrapper padding="default">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100">
+                <MessageSquareQuote className="h-4 w-4 text-amber-600" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-800">
+                  Instrucciones Especiales de Entrega
+                </h3>
+              </div>
+              <div className="pt-2.5">
+                <div className="rounded-lg bg-amber-50/70 border border-amber-200/80 p-3 text-xs text-amber-950 leading-relaxed whitespace-pre-wrap">
+                  {pedido.deliveryNotes}
+                </div>
+              </div>
+            </AdminCardWrapper>
+          )}
 
           {/* Desglose de Totales */}
           <AdminCardWrapper padding="default">
@@ -352,11 +380,16 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
             </div>
           </AdminCardWrapper>
 
-          {/* Cliente */}
+          {/* Cliente (Comprador) */}
           <AdminCardWrapper padding="default">
-            <div className="flex items-center gap-2 mb-3 text-zinc-900">
-              <User className="h-4 w-4 text-zinc-500" />
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">Datos del Cliente</h3>
+            <div className="flex items-center justify-between mb-3 text-zinc-900">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-zinc-500" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">Datos del Cliente</h3>
+              </div>
+              <span className="text-[10.5px] font-medium text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded-md">
+                Titular / Comprador
+              </span>
             </div>
 
             <div className="space-y-2.5 text-xs text-zinc-600">
@@ -364,7 +397,8 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                 <p className="font-semibold text-zinc-900 text-sm">
                   {pedido.customerProfile?.nombre} {pedido.customerProfile?.apellidos}
                 </p>
-                <p className="text-[11px] text-zinc-500 font-medium">
+                <p className="text-[11px] text-zinc-500 font-medium flex items-center gap-1 mt-0.5">
+                  <IdCard className="h-3 w-3 text-zinc-400" />
                   {pedido.customerProfile?.tipoDocumento}: {pedido.customerProfile?.numeroDocumento}
                 </p>
               </div>
@@ -380,6 +414,58 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                 </p>
               </div>
             </div>
+          </AdminCardWrapper>
+
+          {/* Quien Recibe / Recoge el Pedido */}
+          <AdminCardWrapper padding="default">
+            <div className="flex items-center justify-between mb-3 text-zinc-900">
+              <div className="flex items-center gap-2">
+                <UserCheck className="h-4 w-4 text-zinc-500" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">
+                  {isPickup ? 'Autorizado para Recojo' : 'Receptor del Envío'}
+                </h3>
+              </div>
+              <span
+                className={`text-[10.5px] font-medium px-2 py-0.5 rounded-md ${hasDistinctReceiver
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-zinc-100 text-zinc-600'
+                  }`}
+              >
+                {hasDistinctReceiver ? 'Tercero Autorizado' : 'Mismo Titular'}
+              </span>
+            </div>
+
+            {hasDistinctReceiver && pedido.receiverInfo ? (
+              <div className="space-y-2.5 text-xs text-zinc-600">
+                <div>
+                  <p className="font-semibold text-zinc-900 text-sm">
+                    {pedido.receiverInfo.nombre} {pedido.receiverInfo.apellidos}
+                  </p>
+                  {pedido.receiverInfo.numeroDocumento && (
+                    <p className="text-[11px] text-zinc-500 font-medium flex items-center gap-1 mt-0.5">
+                      <IdCard className="h-3 w-3 text-zinc-400" />
+                      {pedido.receiverInfo.tipoDocumento || 'DOC'}: {pedido.receiverInfo.numeroDocumento}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-2 border-t border-zinc-100 text-[11.5px]">
+                  <p className="flex items-center gap-2 text-zinc-700">
+                    <Phone className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                    <span className="font-medium text-zinc-900">{pedido.receiverInfo.telefono}</span>
+                    <span className="text-[10px] text-zinc-400">(Contacto de entrega)</span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-zinc-500 leading-relaxed">
+                El pedido será recibido o retirado directamente por el titular de la compra (
+                <span className="font-medium text-zinc-800">
+                  {pedido.customerProfile?.nombre} {pedido.customerProfile?.apellidos}
+                </span>
+                ).
+              </p>
+            )}
           </AdminCardWrapper>
 
           {/* Entrega */}

@@ -63,6 +63,9 @@ export default function PaymentSelector() {
                 <div className="h-5 w-8 relative flex items-center justify-center bg-white border border-neutral-200 rounded px-1">
                   <Image src="/payments/diners.png" alt="Diners Club" width={24} height={18} className="object-contain" />
                 </div>
+                <div className="h-5 w-8 relative flex items-center justify-center bg-white border border-neutral-200 rounded px-1">
+                  <Image src="/payments/yape.png" alt="JCB" width={24} height={18} className="object-contain" />
+                </div>
               </div>
             </label>
 
@@ -85,7 +88,7 @@ export default function PaymentSelector() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium text-neutral-900">Powerpay
-                    <span className="ml-1 text-[10px] font-normal text-neutral-500">(Pago en cuotas)</span>
+                    <span className="ml-1 text-[10px] font-normal text-neutral-500">(Pagos en cuotas)</span>
                   </span>
 
                 </div>

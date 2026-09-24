@@ -71,7 +71,7 @@ export default function SuccessClient({ order }: { order: TOrderPopulated }) {
                         Seguir comprando
                     </Link>
                     <Link
-                        href="/profile/orders"
+                        href="/profile/pedidos"
                         className="w-full sm:w-auto bg-[var(--color-primary)] text-[var(--color-primary-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-action-primary-hover)] transition flex items-center justify-center gap-2 "
                     >
                         <BsClipboardCheck className="text-lg" />

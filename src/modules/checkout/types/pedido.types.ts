@@ -1,4 +1,6 @@
-export type TipoDocumento = 'DNI' | 'CE' | 'RUC' | 'PASAPORTE' | 'OTRO';
+// File: frontend/src/modules/checkout/types/pedido.types.ts
+
+export type TipoDocumento = 'DNI' | 'CE' | 'RUC' | 'PASAPORTE';
 export type TipoComprobante = 'boleta' | 'factura';
 export type MetodoEntrega = 'shipping' | 'pickup';
 
@@ -19,6 +21,14 @@ export interface IPerfilCliente {
   telefono: string;
   tipoDocumento: TipoDocumento;
   numeroDocumento: string;
+}
+
+export interface IInfoReceptor {
+  nombre: string;
+  apellidos: string;
+  telefono: string;
+  tipoDocumento?: TipoDocumento;
+  numeroDocumento?: string;
 }
 
 export interface IDireccionEnvio {
@@ -74,7 +84,9 @@ export interface IPedido {
   orderNumber: string;
   user?: string;
   customerProfile: IPerfilCliente;
+  receiverInfo?: IInfoReceptor;
   deliveryMethod: MetodoEntrega;
+  deliveryNotes?: string;
   invoiceInfo?: IInfoFacturacion;
   items: IItemPedido[];
   subtotal: number;

@@ -18,6 +18,8 @@ interface ICrearPedidoActionInput extends CheckoutFormData {
   }>;
   shippingCost: number;
   currency?: string;
+  receiverInfo?: CheckoutFormData['receiverInfo'];
+  deliveryNotes?: string;
 }
 
 export interface IParameters3DS {
@@ -66,6 +68,8 @@ export async function crearPedidoAction(
 
     const payload = {
       customerProfile: parsed.data.customerProfile,
+      receiverInfo: parsed.data.hasDifferentReceiver ? parsed.data.receiverInfo : undefined,
+      deliveryNotes: parsed.data.deliveryNotes?.trim() || undefined,
       deliveryMethod: parsed.data.deliveryMethod,
       shippingAddress: data.shippingAddress,
       invoiceInfo: parsed.data.invoiceInfo?.type === 'factura' ? parsed.data.invoiceInfo : undefined,

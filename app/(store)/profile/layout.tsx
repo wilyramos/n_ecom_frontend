@@ -1,76 +1,85 @@
-// File: frontend/app/admin/profile/layout.tsx
+// File: frontend/app/(store)/profile/layout.tsx
+
 import { verifySession } from '@/src/auth/dal';
 import { redirect } from 'next/navigation';
 import { logout } from '@/actions/logout-user-action';
-import { FiLogOut } from 'react-icons/fi';
+import { LogOut } from 'lucide-react';
 import SidebarProfileNav from '@/components/profile/SidebarProfileNav';
 
-export default async function ProfileLayout({ children }: { children: React.ReactNode }) {
-    const { user } = await verifySession();
+export default async function ProfileLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await verifySession();
 
-    // 1. Validar autenticación
-    if (!user) {
-        redirect('/auth/login');
-    }
+  // 1. Verificación de autenticación
+  if (!session?.user) {
+    redirect('/auth/login?redirect=/profile');
+  }
 
-    // 2. REDIRECCIÓN AUTOMÁTICA POR ROL
-    if (user.rol === 'administrador') {
-        redirect('/admin');
-    }
+  const user = session.user;
 
-    if (user.rol === 'vendedor') {
-        redirect('/pos');
-    }
+  // 2. Redirección por roles operativos/administrativos
+  if (user.rol === 'administrador') {
+    redirect('/admin');
+  }
 
-    if (user.rol === 'colaborador') {
-        redirect('/staff/attendance');
-    }
+  if (user.rol === 'vendedor') {
+    redirect('/pos');
+  }
 
-    // Si llega aquí, es un 'cliente' y puede ver su perfil normalmente
-    return (
-        <div className="flex flex-col md:flex-row max-w-7xl mx-auto min-h-screen">
-            {/* Sidebar */}
-            <aside className="w-full md:w-80 bg-[var(--color-bg-secondary)] p-8 flex flex-col justify-between border-r border-[var(--color-border-subtle)] min-h-[auto] md:min-h-screen">
-                <div className="space-y-10">
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <p className="text-xl font-bold text-[var(--color-text-primary)] tracking-tight">
-                                {user.nombre} {user.apellidos}
-                            </p>
-                            <p className="text-xs font-medium text-[var(--color-text-tertiary)] truncate">
-                                {user.email}
-                            </p>
-                            <span className="inline-block mt-2 px-2 py-1 text-xs font-semibold rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] uppercase">
-                                {user.rol}
-                            </span>
-                        </div>
+  if (user.rol === 'colaborador') {
+    redirect('/staff/attendance');
+  }
 
-                        {/* Botón Cerrar Sesión */}
-                        <form action={logout}>
-                            <button
-                                type="submit"
-                                className="flex items-center gap-2 text-[var(--color-error)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-error)] hover:opacity-80 transition-all cursor-pointer group"
-                            >
-                                <FiLogOut className="text-base transition-transform group-hover:-translate-x-1" />
-                                <span>Cerrar sesión</span>
-                            </button>
-                        </form>
-                    </div>
+  return (
+    <div className="min-h-[calc(100vh-64px)] bg-background border-t border-border">
+      <div className="flex flex-col md:flex-row max-w-6xl mx-auto min-h-full">
+        {/* Sidebar */}
+        <aside className="w-full md:w-64 p-6 md:py-10 md:pr-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border shrink-0">
+          <div className="space-y-6">
+            {/* Cabecera del usuario */}
+            <div className="space-y-1">
+              <p className="text-sm font-semibold tracking-tight text-foreground">
+                {user.nombre} {user.apellidos || ''}
+              </p>
+              <p className="text-xs text-muted-foreground truncate" title={user.email}>
+                {user.email}
+              </p>
+              <div className="pt-2">
+                <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium tracking-wide uppercase bg-secondary text-muted-foreground rounded-full border border-border">
+                </span>
+              </div>
+            </div>
 
-                    <div className="h-px bg-[var(--color-border-default)] w-full" />
+            <div className="h-px bg-border w-full" />
 
-                    <nav className="space-y-1">
-                        <SidebarProfileNav />
-                    </nav>
-                </div>
-            </aside>
+            {/* Navegación interna */}
+            <SidebarProfileNav />
+          </div>
 
-            {/* Contenido principal */}
-            <main className="flex-1 p-6 md:p-12 lg:p-16 min-h-screen bg-[var(--color-bg-primary)]">
-                <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    {children}
-                </div>
-            </main>
-        </div>
-    );
+          {/* Acción de salida */}
+          <div className="pt-8 md:pt-0">
+            <form action={logout}>
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-destructive transition-colors cursor-pointer group select-none"
+              >
+                <LogOut className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+                <span>Cerrar sesión</span>
+              </button>
+            </form>
+          </div>
+        </aside>
+
+        {/* Contenido principal */}
+        <main className="flex-1 p-6 md:p-10 lg:p-12 bg-background">
+          <div className="max-w-3xl mx-auto animate-in fade-in duration-300">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

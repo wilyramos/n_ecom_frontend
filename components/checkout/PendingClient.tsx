@@ -1,6 +1,8 @@
+// File: frontend/components/checkout/PendingClient.tsx
+
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCartStore } from '@/src/store/cartStore';
 import { IPedido } from '@/src/modules/checkout/types/pedido.types';
 import Link from 'next/link';
@@ -10,7 +12,7 @@ import { toast } from 'sonner';
 // --- Subcomponentes de UI (Diseño de Ticket) ---
 
 const PrinterHeader = () => (
-  <div className="relative z-20 bg-[#1c1c1e] rounded-t-2xl p-4 pb-2 shadow-xl mx-auto w-[100%]">
+  <div className="relative z-20 bg-[#1c1c1e] rounded-t-2xl p-4 pb-2 shadow-xl mx-auto w-full">
     <div className="flex justify-between items-center mb-3 px-2">
       <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-400 font-mono font-semibold">
         NEOSHOP
@@ -50,8 +52,10 @@ interface PendingClientProps {
 
 export default function PendingClient({ order }: PendingClientProps) {
   const clearCart = useCartStore((state) => state.clearCart);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (order?.payment?.status === 'pending') {
       clearCart();
     }
@@ -62,9 +66,24 @@ export default function PendingClient({ order }: PendingClientProps) {
 
   const formatCurrency = (amount: number) => `S/ ${amount.toFixed(2)}`;
 
-  const fechaCompra = order.createdAt
-    ? new Date(order.createdAt).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-    : new Date().toLocaleDateString('es-PE');
+  // Formateo determinista seguro: reemplaza espacios no separables (U+202F) por espacios estándar
+  const formatOrderDate = (dateStr: string | Date | undefined) => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      return d
+        .toLocaleDateString('es-PE', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+        .replace(/\u202F/g, ' '); // Elimina discrepancia de espaciado UTF-8 entre Node y Browser
+    } catch {
+      return '';
+    }
+  };
 
   const copyToClipboard = () => {
     if (order.payment?.paymentCode) {
@@ -91,7 +110,6 @@ export default function PendingClient({ order }: PendingClientProps) {
         <div className="relative z-10 w-full overflow-hidden -mt-2 pt-2">
           <div className="animate-print relative drop-shadow-2xl pb-4">
             <div className="bg-white pt-8 pb-6 rounded-b-none overflow-hidden">
-              
               <div className="px-8 flex flex-col items-center text-center mb-4">
                 <div className="w-14 h-14 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center mb-4">
                   <Clock size={28} strokeWidth={2.5} className="animate-pulse" />
@@ -116,9 +134,10 @@ export default function PendingClient({ order }: PendingClientProps) {
                   <div className="font-mono text-3xl font-black text-neutral-900 tracking-wider py-1">
                     {order.payment.paymentCode}
                   </div>
-                  <button 
+                  <button
+                    type="button"
                     onClick={copyToClipboard}
-                    className="mt-2 text-[11px] text-orange-600 flex items-center justify-center gap-1.5 w-full font-semibold hover:text-orange-700 transition-colors uppercase tracking-wider"
+                    className="mt-2 text-[11px] text-orange-600 flex items-center justify-center gap-1.5 w-full font-semibold hover:text-orange-700 transition-colors uppercase tracking-wider cursor-pointer"
                   >
                     <Copy size={13} strokeWidth={2.5} /> Copiar código
                   </button>
@@ -134,14 +153,35 @@ export default function PendingClient({ order }: PendingClientProps) {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Fecha</span>
-                  <span className="font-mono text-xs text-neutral-900">{fechaCompra}</span>
+                  {/* suppressHydrationWarning evita la alerta por discrepancias de microespacios de locale */}
+                  <span
+                    suppressHydrationWarning
+                    className="font-mono text-xs text-neutral-900"
+                  >
+                    {mounted ? formatOrderDate(order.createdAt) : formatOrderDate(order.createdAt)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Método</span>
                   <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-neutral-900 uppercase">
-                    {provider === 'powerpay' && <><Zap size={13} /><span>Powerpay</span></>}
-                    {provider === 'transferencia' && <><ReceiptText size={13} /><span>Transferencia</span></>}
-                    {!['powerpay', 'transferencia'].includes(provider) && <><CreditCard size={13} /><span>{provider}</span></>}
+                    {provider === 'powerpay' && (
+                      <>
+                        <Zap size={13} />
+                        <span>Powerpay</span>
+                      </>
+                    )}
+                    {provider === 'transferencia' && (
+                      <>
+                        <ReceiptText size={13} />
+                        <span>Transferencia</span>
+                      </>
+                    )}
+                    {!['powerpay', 'transferencia'].includes(provider) && (
+                      <>
+                        <CreditCard size={13} />
+                        <span>{provider}</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -156,7 +196,9 @@ export default function PendingClient({ order }: PendingClientProps) {
                       <div key={idx} className="flex justify-between items-start text-sm">
                         <div className="flex flex-col pr-4">
                           <span className="font-medium text-neutral-900 leading-tight">{item.nombre}</span>
-                          <span className="font-mono text-xs text-neutral-500 mt-0.5">{item.quantity} x {formatCurrency(item.price)}</span>
+                          <span className="font-mono text-xs text-neutral-500 mt-0.5">
+                            {item.quantity} x {formatCurrency(item.price)}
+                          </span>
                         </div>
                         <span className="font-mono text-neutral-900 font-medium whitespace-nowrap">
                           {formatCurrency(item.quantity * item.price)}
@@ -195,23 +237,28 @@ export default function PendingClient({ order }: PendingClientProps) {
               <TicketDivider />
 
               <div className="px-8 py-4 bg-neutral-50/50">
-                <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">Detalles de Entrega</div>
+                <div className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">
+                  Detalles de Entrega
+                </div>
                 <div className="space-y-4">
                   <div className="flex gap-2.5 items-start">
-                    <User size={15} className="text-neutral-400 mt-0.5" />
+                    <User size={15} className="text-neutral-400 mt-0.5 shrink-0" />
                     <div className="flex flex-col">
-                      <span className="text-xs font-semibold text-neutral-900">{customerProfile.nombre} {customerProfile.apellidos}</span>
+                      <span className="text-xs font-semibold text-neutral-900">
+                        {customerProfile.nombre} {customerProfile.apellidos}
+                      </span>
                       <span className="text-[11px] font-mono text-neutral-500">{customerProfile.email}</span>
                     </div>
                   </div>
                   <div className="flex gap-2.5 items-start">
-                    <MapPin size={15} className="text-neutral-400 mt-0.5" />
+                    <MapPin size={15} className="text-neutral-400 mt-0.5 shrink-0" />
                     <div className="flex flex-col">
                       <span className="text-xs font-semibold text-neutral-900">
                         {order.deliveryMethod === 'pickup' ? 'Recojo en Tienda' : 'Dirección de Envío'}
                       </span>
                       <span className="text-[11px] text-neutral-500 leading-relaxed mt-0.5">
-                        {shippingAddress.direccion}<br />
+                        {shippingAddress.direccion}
+                        <br />
                         {shippingAddress.distrito}, {shippingAddress.provincia}
                       </span>
                     </div>
@@ -228,7 +275,6 @@ export default function PendingClient({ order }: PendingClientProps) {
 
         {/* --- Botones de Acción --- */}
         <div className="mt-6 flex flex-col gap-3 px-2">
-          {/* Botón Verificar Pago */}
           <Link
             href={`/checkout-result/verifying?orderNumber=${order.orderNumber}`}
             className="w-full flex items-center justify-center gap-2 h-12 bg-neutral-900 hover:bg-black text-white rounded-xl text-sm font-medium transition-all shadow-md hover:shadow-lg"
@@ -236,7 +282,6 @@ export default function PendingClient({ order }: PendingClientProps) {
             <RefreshCw size={16} /> Ya pagué, verificar pago
           </Link>
 
-          {/* Botón Volver a la Tienda */}
           <Link
             href="/"
             className="w-full flex items-center justify-center gap-2 h-12 bg-white border border-neutral-300 text-neutral-700 hover:bg-neutral-50 rounded-xl text-sm font-medium transition-all shadow-sm"

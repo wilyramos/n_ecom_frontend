@@ -81,8 +81,9 @@ export interface IInfoPago {
 
 // NUEVO: Interfaz para el historial de estados
 export interface IHistorialEstado {
-  status: string; // o EstadoPedido
+  status: string;
   changedAt: string;
+  changedBy?: { _id: string; nombre: string; apellidos?: string }; // <-- Agregado para tipar la respuesta
 }
 
 export interface IPedido {

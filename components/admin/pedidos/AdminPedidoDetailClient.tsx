@@ -108,12 +108,12 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
           </Link>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold tracking-tight text-zinc-900 font-mono">
+            <span className="text-sm font-semibold tracking-tight text-zinc-900 ">
               {primaryCodeDisplay}
             </span>
 
             {pedido.codigoPedido && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 bg-zinc-50 border border-zinc-200/70 px-2 py-0.5 rounded-md">
+              <span className="inline-flex items-center gap-1 text-[11px]  text-zinc-400 bg-zinc-50 border border-zinc-200/70 px-2 py-0.5 rounded-md">
                 <span>{pedido.orderNumber}</span>
                 <button
                   type="button"
@@ -296,9 +296,17 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                             >
                               {STATUS_LABELS_ES[historyItem.status] || historyItem.status.replace(/_/g, ' ')}
                             </span>
-                            <span className="text-[10px] font-mono text-zinc-400 shrink-0">
-                              {formatDate(historyItem.changedAt)}
-                            </span>
+                            <div className="flex flex-col items-end gap-0.5">
+                              <span className="text-[10px]  text-zinc-400 shrink-0">
+                                {formatDate(historyItem.changedAt)}
+                              </span>
+                              {/* Auditoría visual: Quién hizo el cambio */}
+                              <span className="text-[9px] font-medium text-zinc-500 uppercase tracking-wider">
+                                {historyItem.changedBy 
+                                  ? `Por: ${historyItem.changedBy.nombre}` 
+                                  : (idx === pedido.statusHistory!.length - 1 ? 'Por: Cliente' : 'Por: Sistema')}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -402,7 +410,7 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                     Código CIP (PagoEfectivo)
                   </span>
                   <div className="flex items-center justify-between gap-2 bg-amber-50/60 px-2.5 py-1.5 rounded-lg border border-amber-200/80">
-                    <span className="text-xs font-mono font-semibold text-amber-900 select-all">
+                    <span className="text-xs  font-semibold text-amber-900 select-all">
                       {pedido.payment.paymentCode}
                     </span>
                     <button

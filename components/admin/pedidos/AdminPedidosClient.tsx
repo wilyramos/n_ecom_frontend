@@ -307,14 +307,14 @@ export default function AdminPedidosClient({
                       <div className="flex flex-col min-w-0 pr-2 space-y-0.5">
                         <Link
                           href={`/admin/pedidos/${targetUrlSlug}`}
-                          className="font-semibold text-zinc-950 hover:underline hover:text-blue-600 truncate block text-[12.5px] font-mono"
+                          className="font-semibold text-zinc-950 hover:underline hover:text-blue-600 truncate block text-[12.5px] "
                           title={`Ver pedido ${displayCode}`}
                         >
                           {displayCode}
                         </Link>
                         <div className="flex items-center gap-1">
                           <span
-                            className="text-[10px] font-mono text-zinc-400 truncate max-w-[95px]"
+                            className="text-[10px] text-zinc-400 truncate max-w-[95px]"
                             title={ped.orderNumber}
                           >
                             {ped.orderNumber}

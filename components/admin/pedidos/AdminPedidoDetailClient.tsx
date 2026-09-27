@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { IPedido } from '@/src/modules/checkout/types/pedido.types';
+import { IPedido, IHistorialEstado } from '@/src/modules/checkout/types/pedido.types';
 import { formatDate } from '@/lib/utils';
 import {
   User,
@@ -38,6 +38,15 @@ import AdminChangeStatusModal from './AdminChangeStatusModal';
 interface AdminPedidoDetailClientProps {
   initialPedido: IPedido;
 }
+
+const STATUS_LABELS_ES: Record<string, string> = {
+  awaiting_payment: 'Esperando Pago',
+  processing: 'En Preparación',
+  shipped: 'Enviado',
+  delivered: 'Entregado',
+  canceled: 'Cancelado',
+  paid_but_out_of_stock: 'Sin Stock',
+};
 
 export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDetailClientProps) {
   const [pedido, setPedido] = useState<IPedido>(initialPedido);
@@ -78,9 +87,9 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
   const paymentDetails = pedido.payment?.details;
   const hasDistinctReceiver = Boolean(
     pedido.receiverInfo?.nombre &&
-      (pedido.receiverInfo.nombre !== pedido.customerProfile?.nombre ||
-        pedido.receiverInfo.apellidos !== pedido.customerProfile?.apellidos ||
-        pedido.receiverInfo.telefono !== pedido.customerProfile?.telefono)
+    (pedido.receiverInfo.nombre !== pedido.customerProfile?.nombre ||
+      pedido.receiverInfo.apellidos !== pedido.customerProfile?.apellidos ||
+      pedido.receiverInfo.telefono !== pedido.customerProfile?.telefono)
   );
 
   const primaryCodeDisplay = pedido.codigoPedido ? `#${pedido.codigoPedido}` : `#${pedido.orderNumber}`;
@@ -155,8 +164,8 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
               {pedido.items?.map((item, idx) => {
                 const attrs = item.variantAttributes
                   ? Object.entries(item.variantAttributes)
-                      .map(([k, v]) => `${k}: ${v}`)
-                      .join(' • ')
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(' • ')
                   : null;
 
                 return (
@@ -256,6 +265,48 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
               </div>
             </div>
           </AdminCardWrapper>
+
+          {/* Historial de Estados (Timeline) */}
+          {pedido.statusHistory && pedido.statusHistory.length > 0 && (
+            <AdminCardWrapper padding="default">
+              <div className="flex items-center gap-2 mb-4 text-zinc-900">
+                <Clock className="h-4 w-4 text-zinc-500" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">
+                  Historial de Estados
+                </h3>
+              </div>
+
+              <div className="relative pl-3 space-y-4 before:absolute before:inset-y-1 before:left-[15px] before:w-[2px] before:bg-zinc-100">
+                {pedido.statusHistory
+                  .sort((a: IHistorialEstado, b: IHistorialEstado) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime())
+                  .map((historyItem: IHistorialEstado, idx: number) => {
+                    const isLatest = idx === 0;
+
+                    return (
+                      <div key={idx} className="relative flex items-start gap-3">
+                        <div
+                          className={`absolute -left-[18px] top-1.5 h-2 w-2 rounded-full border-2 border-white box-content ${isLatest ? 'bg-zinc-800' : 'bg-zinc-300'
+                            }`}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <span
+                              className={`text-[11.5px] font-medium uppercase tracking-wide ${isLatest ? 'text-zinc-900' : 'text-zinc-500'
+                                }`}
+                            >
+                              {STATUS_LABELS_ES[historyItem.status] || historyItem.status.replace(/_/g, ' ')}
+                            </span>
+                            <span className="text-[10px] font-mono text-zinc-400 shrink-0">
+                              {formatDate(historyItem.changedAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </AdminCardWrapper>
+          )}
         </div>
 
         {/* Columna Derecha: Tarjetas de Información */}
@@ -453,11 +504,10 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                 </h3>
               </div>
               <span
-                className={`text-[10.5px] font-medium px-2 py-0.5 rounded-md ${
-                  hasDistinctReceiver
+                className={`text-[10.5px] font-medium px-2 py-0.5 rounded-md ${hasDistinctReceiver
                     ? 'bg-amber-100 text-amber-800'
                     : 'bg-zinc-100 text-zinc-600'
-                }`}
+                  }`}
               >
                 {hasDistinctReceiver ? 'Tercero Autorizado' : 'Mismo Titular'}
               </span>

@@ -27,8 +27,8 @@ export interface IInfoReceptor {
   nombre: string;
   apellidos: string;
   telefono: string;
-  tipoDocumento: TipoDocumento;  // Obligatorio
-  numeroDocumento: string;        // Obligatorio para agencias (Olva/Shalom) y retiro
+  tipoDocumento: TipoDocumento;
+  numeroDocumento: string;
 }
 
 export interface IDireccionEnvio {
@@ -79,6 +79,12 @@ export interface IInfoPago {
   gatewayData?: Record<string, unknown>;
 }
 
+// NUEVO: Interfaz para el historial de estados
+export interface IHistorialEstado {
+  status: string; // o EstadoPedido
+  changedAt: string;
+}
+
 export interface IPedido {
   _id: string;
   codigoPedido?: string;
@@ -97,6 +103,7 @@ export interface IPedido {
   totalPrice: number;
   currency: string;
   status: EstadoPedido;
+  statusHistory?: IHistorialEstado[]; // NUEVO: Agregado a la interfaz principal
   shippingAddress: IDireccionEnvio;
   payment: IInfoPago;
   createdAt: string;

@@ -5,14 +5,13 @@ import { IPedido } from '../types/pedido.types';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:4000/api';
 
 /**
- * Obtiene el detalle de un pedido por su ID de MongoDB (_id)
- * Valida pertenencia de usuario en el backend.
+ * Obtiene el detalle de un pedido por su ObjectId de MongoDB (_id)
  */
 export async function obtenerPedidoPorId(id: string, token?: string): Promise<IPedido | null> {
-  if (!id || id === 'undefined') return null;
+  if (!id || id === 'undefined' || id.trim() === '') return null;
 
   try {
-    const res = await fetch(`${API_URL}/pedidos/${id}`, {
+    const res = await fetch(`${API_URL}/pedidos/${encodeURIComponent(id.trim())}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -23,7 +22,7 @@ export async function obtenerPedidoPorId(id: string, token?: string): Promise<IP
 
     if (!res.ok) return null;
     const responseData = await res.json();
-    return responseData.data as IPedido;
+    return (responseData.data as IPedido) || null;
   } catch (error) {
     console.error('[obtenerPedidoPorId] Error al conectar con el servidor:', error);
     return null;
@@ -31,7 +30,7 @@ export async function obtenerPedidoPorId(id: string, token?: string): Promise<IP
 }
 
 /**
- * Obtiene la lista de pedidos del usuario autenticado (incluye compras previas como invitado)
+ * Obtiene la lista de pedidos del usuario autenticado
  */
 export async function obtenerMisPedidos(token: string): Promise<IPedido[]> {
   if (!token) return [];
@@ -48,7 +47,7 @@ export async function obtenerMisPedidos(token: string): Promise<IPedido[]> {
 
     if (!res.ok) return [];
     const responseData = await res.json();
-    return responseData.data as IPedido[];
+    return (responseData.data as IPedido[]) || [];
   } catch (error) {
     console.error('[obtenerMisPedidos] Error al obtener historial:', error);
     return [];
@@ -56,13 +55,13 @@ export async function obtenerMisPedidos(token: string): Promise<IPedido[]> {
 }
 
 /**
- * Obtiene el pedido por su número de orden para la pantalla de éxito / checkout-result
+ * Obtiene el pedido por su identificador público (admite tanto `codigoPedido` ej: "10015" como `orderNumber`)
  */
-export async function obtenerPedidoPorNumero(orderNumber?: string): Promise<IPedido | null> {
-  if (!orderNumber || orderNumber === 'undefined' || orderNumber.trim() === '') return null;
+export async function obtenerPedidoPorNumero(identificador?: string): Promise<IPedido | null> {
+  if (!identificador || identificador === 'undefined' || identificador.trim() === '') return null;
 
   try {
-    const res = await fetch(`${API_URL}/pedidos/tracking/${orderNumber.trim()}`, {
+    const res = await fetch(`${API_URL}/pedidos/tracking/${encodeURIComponent(identificador.trim())}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       cache: 'no-store',
@@ -70,7 +69,7 @@ export async function obtenerPedidoPorNumero(orderNumber?: string): Promise<IPed
 
     if (!res.ok) return null;
     const responseData = await res.json();
-    return responseData.data as IPedido;
+    return (responseData.data as IPedido) || null;
   } catch (error) {
     console.error('[obtenerPedidoPorNumero] Error al consultar orden:', error);
     return null;
@@ -78,22 +77,25 @@ export async function obtenerPedidoPorNumero(orderNumber?: string): Promise<IPed
 }
 
 /**
- * Consulta de tracking público seguro con doble validación (orderNumber + email/documento)
+ * Consulta de tracking público seguro con doble validación (código legible u orderNumber + DNI/Email)
  */
-export async function consultarTrackingPublico(orderNumber: string, emailOrDoc: string): Promise<IPedido | null> {
-  if (!orderNumber || !emailOrDoc) return null;
+export async function consultarTrackingPublico(identificador: string, emailOrDoc: string): Promise<IPedido | null> {
+  if (!identificador || !emailOrDoc) return null;
 
   try {
     const query = new URLSearchParams({ emailOrDoc: emailOrDoc.trim() });
-    const res = await fetch(`${API_URL}/pedidos/tracking/${orderNumber.trim()}?${query.toString()}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      cache: 'no-store',
-    });
+    const res = await fetch(
+      `${API_URL}/pedidos/tracking/${encodeURIComponent(identificador.trim())}?${query.toString()}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+      }
+    );
 
     if (!res.ok) return null;
     const responseData = await res.json();
-    return responseData.data as IPedido;
+    return (responseData.data as IPedido) || null;
   } catch (error) {
     console.error('[consultarTrackingPublico] Error:', error);
     return null;

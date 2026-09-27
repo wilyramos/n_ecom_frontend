@@ -2,19 +2,34 @@
 
 'use client';
 
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { CheckoutFormData } from '../../schemas/checkout.schema';
 import { InputV2 } from '@/components/ui/InputV2';
 import { SelectV2 } from '@/components/ui/SelectV2';
+import { Lock } from 'lucide-react';
 
 interface CustomerInfoProps {
   isAuth: boolean;
 }
 
 export default function CustomerInfo({ isAuth }: CustomerInfoProps) {
-  const { register, formState: { errors } } = useFormContext<CheckoutFormData>();
+  const {
+    register,
+    control,
+    setValue,
+    formState: { errors },
+  } = useFormContext<CheckoutFormData>();
   const router = useRouter();
+
+  const tipoDocumento = useWatch({
+    control,
+    name: 'customerProfile.tipoDocumento',
+  });
+
+  const isDni = tipoDocumento === 'DNI';
+  const isRuc = tipoDocumento === 'RUC';
+  const maxDocLength = isDni ? 8 : isRuc ? 11 : 15;
 
   return (
     <section>
@@ -54,48 +69,66 @@ export default function CustomerInfo({ isAuth }: CustomerInfoProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {/* Email */}
         <div className="sm:col-span-2">
-          <InputV2
-            label="Correo electrónico"
-            type="email"
-            readOnly={isAuth}
-            tabIndex={isAuth ? -1 : 0}
-            className={isAuth ? 'bg-neutral-100/70 text-neutral-600 cursor-not-allowed select-none' : ''}
-            {...register('customerProfile.email')}
-            aria-invalid={!!errors.customerProfile?.email}
-          />
+          <div className="relative">
+            <InputV2
+              label="Correo electrónico *"
+              type="email"
+              readOnly={isAuth}
+              tabIndex={isAuth ? -1 : 0}
+              className={isAuth ? 'bg-neutral-100/70 text-neutral-600 cursor-not-allowed select-none pr-8' : ''}
+              {...register('customerProfile.email')}
+              aria-invalid={!!errors.customerProfile?.email}
+            />
+            {isAuth && (
+              <Lock
+                size={13}
+                className="hidden absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+              />
+            )}
+          </div>
           {errors.customerProfile?.email && (
-            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">{errors.customerProfile.email.message}</p>
+            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">
+              {errors.customerProfile.email.message}
+            </p>
           )}
         </div>
 
+        {/* Nombres */}
         <div>
           <InputV2
-            label="Nombres"
+            label="Nombres *"
             type="text"
             {...register('customerProfile.nombre')}
             aria-invalid={!!errors.customerProfile?.nombre}
           />
           {errors.customerProfile?.nombre && (
-            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">{errors.customerProfile.nombre.message}</p>
+            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">
+              {errors.customerProfile.nombre.message}
+            </p>
           )}
         </div>
 
+        {/* Apellidos */}
         <div>
           <InputV2
-            label="Apellidos"
+            label="Apellidos *"
             type="text"
             {...register('customerProfile.apellidos')}
             aria-invalid={!!errors.customerProfile?.apellidos}
           />
           {errors.customerProfile?.apellidos && (
-            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">{errors.customerProfile.apellidos.message}</p>
+            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">
+              {errors.customerProfile.apellidos.message}
+            </p>
           )}
         </div>
 
+        {/* Tipo de Documento */}
         <div>
           <SelectV2
-            label="Documento"
+            label="Tipo de documento *"
             {...register('customerProfile.tipoDocumento')}
             aria-invalid={!!errors.customerProfile?.tipoDocumento}
           >
@@ -105,32 +138,54 @@ export default function CustomerInfo({ isAuth }: CustomerInfoProps) {
             <option value="PASAPORTE">Pasaporte</option>
           </SelectV2>
           {errors.customerProfile?.tipoDocumento && (
-            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">{errors.customerProfile.tipoDocumento.message}</p>
+            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">
+              {errors.customerProfile.tipoDocumento.message}
+            </p>
           )}
         </div>
 
+        {/* Número de Documento */}
         <div>
           <InputV2
-            label="Número de documento"
+            label={`Número de ${tipoDocumento || 'documento'} *`}
             type="text"
-            {...register('customerProfile.numeroDocumento')}
+            maxLength={maxDocLength}
+            {...register('customerProfile.numeroDocumento', {
+              onChange: (e) => {
+                if (isDni || isRuc) {
+                  const cleaned = e.target.value.replace(/\D/g, '');
+                  setValue('customerProfile.numeroDocumento', cleaned, { shouldValidate: true });
+                }
+              },
+            })}
             aria-invalid={!!errors.customerProfile?.numeroDocumento}
           />
           {errors.customerProfile?.numeroDocumento && (
-            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">{errors.customerProfile.numeroDocumento.message}</p>
+            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">
+              {errors.customerProfile.numeroDocumento.message}
+            </p>
           )}
         </div>
 
+        {/* Teléfono móvil */}
         <div className="sm:col-span-2">
           <InputV2
-            label="Teléfono móvil (9 dígitos)"
+            label="Teléfono móvil (9 dígitos) *"
             type="tel"
             maxLength={9}
-            {...register('customerProfile.telefono')}
+            placeholder="9XXXXXXXX"
+            {...register('customerProfile.telefono', {
+              onChange: (e) => {
+                const cleaned = e.target.value.replace(/\D/g, '');
+                setValue('customerProfile.telefono', cleaned, { shouldValidate: true });
+              },
+            })}
             aria-invalid={!!errors.customerProfile?.telefono}
           />
           {errors.customerProfile?.telefono && (
-            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">{errors.customerProfile.telefono.message}</p>
+            <p className="text-[11px] text-rose-500 font-medium mt-1 ml-0.5">
+              {errors.customerProfile.telefono.message}
+            </p>
           )}
         </div>
       </div>

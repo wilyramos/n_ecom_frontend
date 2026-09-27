@@ -238,7 +238,7 @@ export function useCulqi({ onSuccess, onError, onClose }: UseCulqiProps) {
 
       const config: CulqiCheckoutConfig = {
         settings: {
-          title: orderNumber ? `Orden #${orderNumber}` : 'NeoShop',
+          title: 'Neoshop Importaciones',
           currency: 'PEN',
           amount: amountInCents,
           ...(culqiOrderId && { order: culqiOrderId }),

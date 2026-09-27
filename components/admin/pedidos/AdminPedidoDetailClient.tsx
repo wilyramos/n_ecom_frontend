@@ -28,6 +28,7 @@ import {
   MessageSquareQuote,
   IdCard,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
 import { AdminCardWrapper } from '@/src/components/admin/layout/admin-card-wrapper';
@@ -41,18 +42,23 @@ interface AdminPedidoDetailClientProps {
 export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDetailClientProps) {
   const [pedido, setPedido] = useState<IPedido>(initialPedido);
   const [copiedTxId, setCopiedTxId] = useState(false);
+  const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
   const [copiedPaymentCode, setCopiedPaymentCode] = useState(false);
 
-  const handleCopy = (text?: string, type: 'tx' | 'code' = 'tx') => {
+  const handleCopy = (text?: string, type: 'tx' | 'code' | 'order' = 'tx') => {
     if (!text) return;
     navigator.clipboard.writeText(text);
     if (type === 'tx') {
       setCopiedTxId(true);
       setTimeout(() => setCopiedTxId(false), 2000);
+    } else if (type === 'order') {
+      setCopiedOrderNumber(true);
+      setTimeout(() => setCopiedOrderNumber(false), 2000);
     } else {
       setCopiedPaymentCode(true);
       setTimeout(() => setCopiedPaymentCode(false), 2000);
     }
+    toast.success('Copiado al portapapeles');
   };
 
   if (!pedido || !pedido.status) {
@@ -72,10 +78,12 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
   const paymentDetails = pedido.payment?.details;
   const hasDistinctReceiver = Boolean(
     pedido.receiverInfo?.nombre &&
-    (pedido.receiverInfo.nombre !== pedido.customerProfile?.nombre ||
-      pedido.receiverInfo.apellidos !== pedido.customerProfile?.apellidos ||
-      pedido.receiverInfo.telefono !== pedido.customerProfile?.telefono)
+      (pedido.receiverInfo.nombre !== pedido.customerProfile?.nombre ||
+        pedido.receiverInfo.apellidos !== pedido.customerProfile?.apellidos ||
+        pedido.receiverInfo.telefono !== pedido.customerProfile?.telefono)
   );
+
+  const primaryCodeDisplay = pedido.codigoPedido ? `#${pedido.codigoPedido}` : `#${pedido.orderNumber}`;
 
   return (
     <AdminPageContainer maxWidth="default" padding="default" spacing="compact">
@@ -84,16 +92,35 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
         <div className="flex items-center gap-3 min-w-0">
           <Link
             href="/admin/pedidos"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors cursor-pointer"
             title="Volver a pedidos"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-semibold tracking-tight text-zinc-900">
-              #{pedido.orderNumber}
+            <span className="text-sm font-semibold tracking-tight text-zinc-900 font-mono">
+              {primaryCodeDisplay}
             </span>
+
+            {pedido.codigoPedido && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 bg-zinc-50 border border-zinc-200/70 px-2 py-0.5 rounded-md">
+                <span>{pedido.orderNumber}</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(pedido.orderNumber, 'order')}
+                  className="text-zinc-400 hover:text-zinc-700 cursor-pointer"
+                  title="Copiar referencia de pasarela"
+                >
+                  {copiedOrderNumber ? (
+                    <Check className="h-3 w-3 text-emerald-600 stroke-[2.5]" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </button>
+              </span>
+            )}
+
             <span className="text-zinc-300 hidden sm:inline">•</span>
             <span className="text-[11.5px] text-zinc-500 hidden sm:inline">
               {formatDate(pedido.createdAt)}
@@ -128,8 +155,8 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
               {pedido.items?.map((item, idx) => {
                 const attrs = item.variantAttributes
                   ? Object.entries(item.variantAttributes)
-                    .map(([k, v]) => `${k}: ${v}`)
-                    .join(' • ')
+                      .map(([k, v]) => `${k}: ${v}`)
+                      .join(' • ')
                   : null;
 
                 return (
@@ -426,10 +453,11 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                 </h3>
               </div>
               <span
-                className={`text-[10.5px] font-medium px-2 py-0.5 rounded-md ${hasDistinctReceiver
-                  ? 'bg-amber-100 text-amber-800'
-                  : 'bg-zinc-100 text-zinc-600'
-                  }`}
+                className={`text-[10.5px] font-medium px-2 py-0.5 rounded-md ${
+                  hasDistinctReceiver
+                    ? 'bg-amber-100 text-amber-800'
+                    : 'bg-zinc-100 text-zinc-600'
+                }`}
               >
                 {hasDistinctReceiver ? 'Tercero Autorizado' : 'Mismo Titular'}
               </span>

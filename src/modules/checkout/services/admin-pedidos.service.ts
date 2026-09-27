@@ -1,19 +1,19 @@
+// File: frontend/src/modules/checkout/services/admin-pedidos.service.ts
 
-//File: frontend/src/modules/checkout/services/admin-pedidos.service.ts
 import { IPedido, EstadoPedido } from '@/src/modules/checkout/types/pedido.types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:4000/api';
 
 export interface IAdminPedidosParams {
   page?: number;
   limit?: number;
   status?: EstadoPedido | string;
-  paymentStatus?: string; // 
+  paymentStatus?: string;
   paymentProvider?: string;
   deliveryMethod?: string;
   dateFrom?: string;
   dateTo?: string;
-  search?: string;
+  search?: string; // Permite buscar por "10015", DNI, email u orderNumber
 }
 
 export interface IAdminPedidosStats {
@@ -49,7 +49,7 @@ export async function getAdminPedidos(
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.status && params.status !== 'all') queryParams.append('status', params.status);
-    if (params.paymentStatus && params.paymentStatus !== 'all') queryParams.append('paymentStatus', params.paymentStatus); // 👈 nuevo
+    if (params.paymentStatus && params.paymentStatus !== 'all') queryParams.append('paymentStatus', params.paymentStatus);
     if (params.paymentProvider && params.paymentProvider !== 'all') queryParams.append('paymentProvider', params.paymentProvider);
     if (params.deliveryMethod && params.deliveryMethod !== 'all') queryParams.append('deliveryMethod', params.deliveryMethod);
     if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);
@@ -91,7 +91,7 @@ export async function getAdminPedidosStats(token: string): Promise<IAdminPedidos
     if (!res.ok) return null;
 
     const responseData = await res.json();
-    return responseData.data as IAdminPedidosStats;
+    return (responseData.data as IAdminPedidosStats) || null;
   } catch (error) {
     console.error('[getAdminPedidosStats Error]:', error);
     return null;
@@ -99,11 +99,21 @@ export async function getAdminPedidosStats(token: string): Promise<IAdminPedidos
 }
 
 /**
- * Obtiene el detalle de un pedido por su ID de MongoDB
+ * Obtiene el detalle de un pedido admitiendo tanto `codigoPedido` ("10015"), `orderNumber` ("260924...") o `_id`
  */
-export async function getAdminPedidoById(id: string, token: string): Promise<IPedido | null> {
+export async function getAdminPedidoById(identifier: string, token: string): Promise<IPedido | null> {
+  if (!identifier || identifier === 'undefined' || identifier.trim() === '') return null;
+
+  const cleanId = identifier.trim();
+  const isMongoId = /^[0-9a-fA-F]{24}$/.test(cleanId);
+
+  // Si tiene formato de ObjectId, consulta la ruta directa /:id; de lo contrario usa /tracking/:identifier
+  const endpoint = isMongoId
+    ? `${API_URL}/pedidos/${encodeURIComponent(cleanId)}`
+    : `${API_URL}/pedidos/tracking/${encodeURIComponent(cleanId)}`;
+
   try {
-    const res = await fetch(`${API_URL}/pedidos/${id}`, {
+    const res = await fetch(endpoint, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -115,9 +125,41 @@ export async function getAdminPedidoById(id: string, token: string): Promise<IPe
     if (!res.ok) return null;
 
     const responseData = await res.json();
-    return responseData.data as IPedido;
+    return (responseData.data as IPedido) || null;
   } catch (error) {
     console.error('[getAdminPedidoById Error]:', error);
     return null;
+  }
+}
+
+/**
+ * Actualiza el estado logístico del pedido desde el panel de control
+ */
+export async function updateAdminPedidoStatus(
+  id: string,
+  status: EstadoPedido,
+  token: string
+): Promise<{ success: boolean; message?: string; data?: IPedido }> {
+  try {
+    const res = await fetch(`${API_URL}/pedidos/${encodeURIComponent(id.trim())}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+      cache: 'no-store',
+    });
+
+    const result = await res.json();
+    if (!res.ok) {
+      return { success: false, message: result.message || 'Error al actualizar el estado.' };
+    }
+
+    return { success: true, data: result.data };
+  } catch (error) {
+    const err = error as Error;
+    console.error('[updateAdminPedidoStatus Error]:', err);
+    return { success: false, message: err.message || 'Error de conexión con el servidor.' };
   }
 }

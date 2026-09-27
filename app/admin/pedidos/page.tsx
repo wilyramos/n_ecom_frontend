@@ -1,4 +1,4 @@
-//File: frontend/app/admin/pedidos/page.tsx
+// File: frontend/app/admin/pedidos/page.tsx
 
 import React from 'react';
 import { redirect } from 'next/navigation';

@@ -84,7 +84,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">
-                Orden #{pedido.orderNumber}
+                Orden #{pedido.codigoPedido || pedido.orderNumber}
               </h1>
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${currentStatus.bg} ${currentStatus.text}`}>
                 <StatusIcon size={13} />
@@ -107,8 +107,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           <div className="flex items-center gap-2 text-xs">
             <span className="text-neutral-500">Pago:</span>
             <span className={`font-semibold capitalize px-2.5 py-0.5 rounded text-[11px] ${isApproved ? 'bg-emerald-100 text-emerald-800' :
-                isPending ? 'bg-amber-100 text-amber-800' :
-                  isRejected ? 'bg-rose-100 text-rose-800' : 'bg-neutral-100 text-neutral-800'
+              isPending ? 'bg-amber-100 text-amber-800' :
+                isRejected ? 'bg-rose-100 text-rose-800' : 'bg-neutral-100 text-neutral-800'
               }`}>
               {pedido.payment.status === 'approved' ? 'Aprobado' :
                 pedido.payment.status === 'pending' ? 'Pendiente de Pago' :

@@ -8,16 +8,25 @@ import { InputV2 } from '@/components/ui/InputV2';
 import { SelectV2 } from '@/components/ui/SelectV2';
 import UbigeoSelector from './UbigeoSelector';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { MapPin, ExternalLink, Clock } from 'lucide-react';
+
+const STORE_MAPS_URL =
+  'https://www.google.com/maps/search/?api=1&query=Neoshop+Importaciones+Av+caminos+del+inca+257+Surco';
 
 export default function ShippingInfo() {
   const {
     register,
     control,
+    setValue,
     formState: { errors },
   } = useFormContext<CheckoutFormData>();
 
   const hasDifferentReceiver = useWatch({ control, name: 'hasDifferentReceiver' });
   const deliveryMethod = useWatch({ control, name: 'deliveryMethod' });
+  const tipoDocReceptor = useWatch({ control, name: 'receiverInfo.tipoDocumento' });
+
+  const isDniReceptor = tipoDocReceptor === 'DNI';
+  const maxDocLength = isDniReceptor ? 8 : 15;
 
   return (
     <section>
@@ -54,7 +63,7 @@ export default function ShippingInfo() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="sm:col-span-2">
                   <InputV2
-                    label="Dirección y número"
+                    label="Dirección y número *"
                     type="text"
                     {...register('shippingAddress.direccion')}
                     aria-invalid={!!errors.shippingAddress?.direccion}
@@ -83,10 +92,32 @@ export default function ShippingInfo() {
             </TabsContent>
 
             <TabsContent value="pickup" className="mt-3">
-              <div className="p-3 rounded-md border border-neutral-200 bg-neutral-50/50 text-xs text-neutral-600 space-y-1">
-                <p className="font-semibold text-neutral-900">NEOSHOP Surco</p>
-                <p>Av. Caminos del Inca 257, Tienda 326, Santiago de Surco, Lima</p>
-                <p className="text-neutral-500 pt-1">Horario: Lun a Sáb 9:00am - 7:00pm (Gratis)</p>
+              <div className="p-3.5 rounded-lg border border-neutral-200 bg-neutral-50/70 text-xs text-neutral-600 space-y-2.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1 min-w-0">
+                    <p className="font-semibold text-neutral-900 text-sm">NEOSHOP Surco</p>
+                    <p className="text-neutral-700 leading-snug">
+                      Av. Caminos del Inca 257, Piso 3 - Tda 326, Santiago de Surco, Lima
+                    </p>
+                    <p className="text-[11.5px] text-neutral-500 flex items-center gap-1.5 pt-0.5">
+                      <Clock size={13} className="shrink-0 text-neutral-400" />
+                      <span>Lun a Sáb: 12:00 pm - 8:00 pm</span>
+                    
+                    </p>
+                  </div>
+
+                  <a
+                    href={STORE_MAPS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11.5px] font-semibold text-neutral-900 bg-white hover:bg-neutral-100 rounded-md   transition-colors shrink-0 cursor-pointer"
+                    title="Ver ubicación en Google Maps"
+                  >
+                    <MapPin size={13} className="text-rose-500" />
+                    <span>Ver mapa</span>
+                    <ExternalLink size={12} className="text-neutral-400" />
+                  </a>
+                </div>
               </div>
             </TabsContent>
           </Tabs>
@@ -116,7 +147,7 @@ export default function ShippingInfo() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
             <div>
               <InputV2
-                label="Nombres de quien recibe"
+                label="Nombres de quien recibe *"
                 type="text"
                 {...register('receiverInfo.nombre')}
                 aria-invalid={!!errors.receiverInfo?.nombre}
@@ -130,7 +161,7 @@ export default function ShippingInfo() {
 
             <div>
               <InputV2
-                label="Apellidos de quien recibe"
+                label="Apellidos de quien recibe *"
                 type="text"
                 {...register('receiverInfo.apellidos')}
                 aria-invalid={!!errors.receiverInfo?.apellidos}
@@ -144,10 +175,16 @@ export default function ShippingInfo() {
 
             <div className="sm:col-span-2">
               <InputV2
-                label="Teléfono móvil (9 dígitos)"
+                label="Teléfono móvil (9 dígitos) *"
                 type="tel"
                 maxLength={9}
-                {...register('receiverInfo.telefono')}
+                placeholder="9XXXXXXXX"
+                {...register('receiverInfo.telefono', {
+                  onChange: (e) => {
+                    const cleaned = e.target.value.replace(/\D/g, '');
+                    setValue('receiverInfo.telefono', cleaned, { shouldValidate: true });
+                  },
+                })}
                 aria-invalid={!!errors.receiverInfo?.telefono}
               />
               {errors.receiverInfo?.telefono && (
@@ -159,7 +196,7 @@ export default function ShippingInfo() {
 
             <div>
               <SelectV2
-                label="Documento"
+                label="Tipo de documento *"
                 {...register('receiverInfo.tipoDocumento')}
                 aria-invalid={!!errors.receiverInfo?.tipoDocumento}
               >
@@ -176,9 +213,17 @@ export default function ShippingInfo() {
 
             <div>
               <InputV2
-                label={`Número de documento ${deliveryMethod === 'pickup' ? '*' : '(Opcional)'}`}
+                label={`Número de ${tipoDocReceptor || 'documento'} *`}
                 type="text"
-                {...register('receiverInfo.numeroDocumento')}
+                maxLength={maxDocLength}
+                {...register('receiverInfo.numeroDocumento', {
+                  onChange: (e) => {
+                    if (isDniReceptor) {
+                      const cleaned = e.target.value.replace(/\D/g, '');
+                      setValue('receiverInfo.numeroDocumento', cleaned, { shouldValidate: true });
+                    }
+                  },
+                })}
                 aria-invalid={!!errors.receiverInfo?.numeroDocumento}
               />
               {errors.receiverInfo?.numeroDocumento && (
@@ -195,7 +240,7 @@ export default function ShippingInfo() {
         <InputV2
           label="Instrucciones especiales de entrega (Opcional)"
           type="text"
-          placeholder="Ej: Dejar en portería, empaquetar para regalo..."
+          placeholder="Ej: Dejar en portería, agencia Shalom/Olva..."
           {...register('deliveryNotes')}
           aria-invalid={!!errors.deliveryNotes}
         />

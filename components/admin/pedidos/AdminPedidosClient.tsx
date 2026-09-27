@@ -1,4 +1,5 @@
 // File: frontend/components/admin/pedidos/AdminPedidosClient.tsx
+
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -9,7 +10,16 @@ import {
   IAdminPedidosParams,
   IAdminPedidosStats,
 } from '@/src/modules/checkout/services/admin-pedidos.service';
-import { DollarSign, CheckCircle2, Clock, Truck } from 'lucide-react';
+import {
+  DollarSign,
+  CheckCircle2,
+  Clock,
+  Truck,
+  CreditCard,
+  Package,
+  ExternalLink
+} from 'lucide-react';
+
 // Layout & UI
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
 import { AdminCardWrapper } from '@/src/components/admin/layout/admin-card-wrapper';
@@ -28,10 +38,6 @@ import { AdminStatsRow } from '@/src/components/admin/layout/admin-stats-row';
 import { AdminStatusBadge } from '@/src/components/admin/layout/admin-status-badge';
 import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
-import {
-  CreditCard,
-  Package, ExternalLink
-} from 'lucide-react';
 
 export interface AdminPedidosClientProps {
   initialData: IPedido[];
@@ -123,48 +129,48 @@ export default function AdminPedidosClient({
     <AdminPageContainer maxWidth="default" padding="default" spacing="compact">
       {/* KPIs Compactos */}
       <AdminStatsRow
-  stats={[
-    {
-      label: 'Total pagadas',
-      value: `S/ ${stats.totalRecaudado.toLocaleString('es-PE', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`,
-      icon: DollarSign,
-      iconColor: 'emerald',
-      active: currentFilters.status === 'all' && currentFilters.paymentStatus === 'all',
-      onClick: () => updateUrlFilters({ status: 'all', paymentStatus: 'all', page: 1 }),
-    },
-    {
-      label: 'Pagadas',
-      value: stats.totalApprovedOrders,
-      icon: CheckCircle2,
-      iconColor: 'indigo',
-      active: currentFilters.paymentStatus === 'approved',
-      onClick: () => handleQuickFilter('paymentStatus', 'approved'),
-    },
-    {
-      label: 'Preparando',
-      value: stats.enProcesoCount,
-      icon: Clock,
-      iconColor: 'blue',
-      active: currentFilters.status === 'processing',
-      onClick: () => handleQuickFilter('status', 'processing'),
-    },
-    {
-      label: 'En Reparto',
-      value: stats.enviadosCount,
-      icon: Truck,
-      iconColor: 'amber',
-      active: currentFilters.status === 'shipped',
-      onClick: () => handleQuickFilter('status', 'shipped'),
-    },
-  ]}
-/>
+        stats={[
+          {
+            label: 'Total pagadas',
+            value: `S/ ${stats.totalRecaudado.toLocaleString('es-PE', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`,
+            icon: DollarSign,
+            iconColor: 'emerald',
+            active: currentFilters.status === 'all' && currentFilters.paymentStatus === 'all',
+            onClick: () => updateUrlFilters({ status: 'all', paymentStatus: 'all', page: 1 }),
+          },
+          {
+            label: 'Pagadas',
+            value: stats.totalApprovedOrders,
+            icon: CheckCircle2,
+            iconColor: 'indigo',
+            active: currentFilters.paymentStatus === 'approved',
+            onClick: () => handleQuickFilter('paymentStatus', 'approved'),
+          },
+          {
+            label: 'Preparando',
+            value: stats.enProcesoCount,
+            icon: Clock,
+            iconColor: 'blue',
+            active: currentFilters.status === 'processing',
+            onClick: () => handleQuickFilter('status', 'processing'),
+          },
+          {
+            label: 'En Reparto',
+            value: stats.enviadosCount,
+            icon: Truck,
+            iconColor: 'amber',
+            active: currentFilters.status === 'shipped',
+            onClick: () => handleQuickFilter('status', 'shipped'),
+          },
+        ]}
+      />
 
       {/* Barra de Filtros */}
       <AdminFilterBar
-        searchPlaceholder="Buscar por orden, cliente, DNI..."
+        searchPlaceholder="Buscar por código (#10015), orden, cliente o DNI..."
         searchValue={search}
         onSearchChange={handleSearchSubmit}
         activeCount={activeFilterCount}
@@ -203,9 +209,8 @@ export default function AdminPedidosClient({
               className="h-7 py-0 px-2 text-[11px] w-28 font-medium text-zinc-700 bg-white border-zinc-200"
             >
               <option value="all">Pasarelas</option>
-              <option value="powerpay">Powerpay</option>
               <option value="culqi">Culqi</option>
-              <option value="mercadopago">Mercado Pago</option>
+              <option value="powerpay">Powerpay</option>
               <option value="transferencia">Transferencia</option>
             </AdminSelect>
 
@@ -257,12 +262,12 @@ export default function AdminPedidosClient({
         </div>
       </AdminFilterDrawer>
 
-      {/* Tabla con min-width explícito para respetar todas las columnas en móviles */}
+      {/* Tabla con ancho estructurado */}
       <AdminCardWrapper padding="none" className="border-zinc-200/80 shadow-2xs">
-        <AdminTable className="min-w-[980px]">
+        <AdminTable className="min-w-[1020px]">
           <AdminTableHead>
             <tr>
-              <AdminTableHeaderCell width="140px">Orden</AdminTableHeaderCell>
+              <AdminTableHeaderCell width="150px">Código / Orden</AdminTableHeaderCell>
               <AdminTableHeaderCell width="130px">Fecha</AdminTableHeaderCell>
               <AdminTableHeaderCell width="200px">Cliente</AdminTableHeaderCell>
               <AdminTableHeaderCell width="240px">Productos</AdminTableHeaderCell>
@@ -288,20 +293,35 @@ export default function AdminPedidosClient({
                 const totalItemsCount = ped.items?.reduce((acc, it) => acc + it.quantity, 0) || 0;
                 const extraProductsCount = (ped.items?.length || 0) - 1;
 
+                // Identificador principal en URL: código corto si existe, sino orderNumber
+                const targetUrlSlug = ped.codigoPedido || ped.orderNumber || ped._id;
+                const displayCode = ped.codigoPedido ? `#${ped.codigoPedido}` : `#${ped.orderNumber}`;
+
                 return (
                   <tr
                     key={ped._id}
                     className="hover:bg-zinc-50/60 transition-colors text-xs"
                   >
-                    {/* Orden */}
-                    <AdminTableCell bold className="text-zinc-900  w-[140px]">
-                      <Link
-                        href={`/admin/pedidos/${ped._id}`}
-                        className="hover:underline hover:text-blue-600 block truncate"
-                        title={ped.orderNumber}
-                      >
-                        {ped.orderNumber}
-                      </Link>
+                    {/* Código / Orden */}
+                    <AdminTableCell className="w-[150px]">
+                      <div className="flex flex-col min-w-0 pr-2 space-y-0.5">
+                        <Link
+                          href={`/admin/pedidos/${targetUrlSlug}`}
+                          className="font-semibold text-zinc-950 hover:underline hover:text-blue-600 truncate block text-[12.5px] font-mono"
+                          title={`Ver pedido ${displayCode}`}
+                        >
+                          {displayCode}
+                        </Link>
+                        <div className="flex items-center gap-1">
+                          <span
+                            className="text-[10px] font-mono text-zinc-400 truncate max-w-[95px]"
+                            title={ped.orderNumber}
+                          >
+                            {ped.orderNumber}
+                          </span>
+                         
+                        </div>
+                      </div>
                     </AdminTableCell>
 
                     {/* Fecha */}
@@ -312,10 +332,13 @@ export default function AdminPedidosClient({
                     {/* Cliente */}
                     <AdminTableCell className="w-[200px]">
                       <div className="flex flex-col min-w-0 pr-2">
-                        <span className="font-medium text-zinc-900 truncate" title={`${ped.customerProfile.nombre} ${ped.customerProfile.apellidos}`}>
+                        <span
+                          className="font-medium text-zinc-900 truncate"
+                          title={`${ped.customerProfile.nombre} ${ped.customerProfile.apellidos}`}
+                        >
                           {ped.customerProfile.nombre} {ped.customerProfile.apellidos}
                         </span>
-                        <span className="text-[10px] text-zinc-400 truncate">
+                        <span className="text-[10.5px] text-zinc-400 truncate">
                           {ped.customerProfile.tipoDocumento}: {ped.customerProfile.numeroDocumento}
                         </span>
                       </div>
@@ -385,7 +408,7 @@ export default function AdminPedidosClient({
                     </AdminTableCell>
 
                     {/* Total */}
-                    <AdminTableCell bold className="text-zinc-950 font-semibold text-xs whitespace-nowrap  w-[110px]">
+                    <AdminTableCell bold className="text-zinc-950 font-semibold text-xs whitespace-nowrap w-[110px]">
                       S/ {ped.totalPrice.toFixed(2)}
                     </AdminTableCell>
 
@@ -400,10 +423,10 @@ export default function AdminPedidosClient({
                         asChild
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md"
-                        title="Ver detalles"
+                        className="h-6 w-6 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-md cursor-pointer"
+                        title="Ver detalles del pedido"
                       >
-                        <Link href={`/admin/pedidos/${ped._id}`}>
+                        <Link href={`/admin/pedidos/${targetUrlSlug}`}>
                           <ExternalLink className="h-3.5 w-3.5" />
                           <span className="sr-only">Ver Pedido</span>
                         </Link>

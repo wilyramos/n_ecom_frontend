@@ -46,10 +46,11 @@ export const checkoutSchema = z
         nombre: z.string().optional(),
         apellidos: z.string().optional(),
         telefono: z.string().optional(),
-        tipoDocumento: z.enum(['DNI', 'CE', 'RUC', 'PASAPORTE']).optional(),
+        tipoDocumento: z.enum(['DNI', 'CE', 'PASAPORTE']).optional(),
         numeroDocumento: z.string().optional(),
       })
       .optional(),
+
     deliveryNotes: z
       .string()
       .max(300, { message: 'Las notas no pueden superar los 300 caracteres' })
@@ -118,6 +119,7 @@ export const checkoutSchema = z
     }),
   })
   .superRefine((data, ctx) => {
+    // 1. Validación de documento del titular
     const docCliente = data.customerProfile.numeroDocumento.trim();
     if (data.customerProfile.tipoDocumento === 'DNI' && !dniRegex.test(docCliente)) {
       ctx.addIssue({
@@ -139,6 +141,7 @@ export const checkoutSchema = z
       });
     }
 
+    // 2. Validación de dirección para envíos
     if (data.deliveryMethod === 'shipping') {
       if (!data.shippingAddress?.departamento?.trim()) {
         ctx.addIssue({
@@ -176,6 +179,7 @@ export const checkoutSchema = z
       }
     }
 
+    // 3. Validación de Receptor / Tercero autorizado (OBLIGATORIO para agencias Olva/Shalom y retiro)
     if (data.hasDifferentReceiver) {
       if (!data.receiverInfo?.nombre?.trim()) {
         ctx.addIssue({
@@ -208,25 +212,31 @@ export const checkoutSchema = z
         });
       }
 
+      if (!data.receiverInfo?.tipoDocumento) {
+        ctx.addIssue({
+          path: ['receiverInfo', 'tipoDocumento'],
+          message: 'Selecciona el tipo de documento del receptor',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
       const docReceptor = data.receiverInfo?.numeroDocumento?.trim() || '';
-      if (data.deliveryMethod === 'pickup') {
-        if (!docReceptor) {
-          ctx.addIssue({
-            path: ['receiverInfo', 'numeroDocumento'],
-            message: 'El documento es obligatorio para retiro en tienda',
-            code: z.ZodIssueCode.custom,
-          });
-        } else if (data.receiverInfo?.tipoDocumento === 'DNI' && !dniRegex.test(docReceptor)) {
-          ctx.addIssue({
-            path: ['receiverInfo', 'numeroDocumento'],
-            message: 'El DNI del receptor debe tener 8 dígitos numéricos',
-            code: z.ZodIssueCode.custom,
-          });
-        }
-      } else if (docReceptor && data.receiverInfo?.tipoDocumento === 'DNI' && !dniRegex.test(docReceptor)) {
+      if (!docReceptor) {
         ctx.addIssue({
           path: ['receiverInfo', 'numeroDocumento'],
-          message: 'El DNI debe tener 8 dígitos numéricos',
+          message: 'El número de documento es obligatorio para la entrega / retiro',
+          code: z.ZodIssueCode.custom,
+        });
+      } else if (data.receiverInfo?.tipoDocumento === 'DNI' && !dniRegex.test(docReceptor)) {
+        ctx.addIssue({
+          path: ['receiverInfo', 'numeroDocumento'],
+          message: 'El DNI del receptor debe tener exactamente 8 dígitos numéricos',
+          code: z.ZodIssueCode.custom,
+        });
+      } else if (docReceptor.length < 4) {
+        ctx.addIssue({
+          path: ['receiverInfo', 'numeroDocumento'],
+          message: 'Documento del receptor inválido (mínimo 4 caracteres)',
           code: z.ZodIssueCode.custom,
         });
       }

@@ -27,8 +27,8 @@ export interface IInfoReceptor {
   nombre: string;
   apellidos: string;
   telefono: string;
-  tipoDocumento?: TipoDocumento;
-  numeroDocumento?: string;
+  tipoDocumento: TipoDocumento;  // Obligatorio
+  numeroDocumento: string;        // Obligatorio para agencias (Olva/Shalom) y retiro
 }
 
 export interface IDireccionEnvio {
@@ -81,6 +81,7 @@ export interface IInfoPago {
 
 export interface IPedido {
   _id: string;
+  codigoPedido?: string;
   orderNumber: string;
   user?: string;
   customerProfile: IPerfilCliente;

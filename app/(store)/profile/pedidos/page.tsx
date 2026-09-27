@@ -123,9 +123,9 @@ export default async function ProfilePedidosPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               {/* Bloque Identificador y Fecha */}
               <div className="space-y-1">
-                <div className="flex items-center gap-2">
+               <div className="flex items-center gap-2">
                   <span className="font-mono text-xs font-semibold text-foreground tracking-tight">
-                    #{pedido.orderNumber}
+                    #{pedido.codigoPedido || pedido.orderNumber}
                   </span>
                   {renderStatusBadge(pedido.status, pedido.payment.status)}
                 </div>

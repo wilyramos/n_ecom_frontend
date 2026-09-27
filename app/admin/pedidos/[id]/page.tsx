@@ -1,4 +1,5 @@
 // File: frontend/app/admin/pedidos/[id]/page.tsx
+
 import React from 'react';
 import { redirect, notFound } from 'next/navigation';
 import { verifySession } from '@/src/auth/dal';
@@ -7,7 +8,7 @@ import AdminPedidoDetailClient from '@/components/admin/pedidos/AdminPedidoDetai
 
 interface PedidoDetailPageProps {
   params: Promise<{
-    id: string;
+    id: string; // Puede ser codigoPedido ("10015"), orderNumber ("260924...") o _id
   }>;
 }
 

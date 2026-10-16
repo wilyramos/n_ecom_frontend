@@ -1,5 +1,4 @@
 // File: frontend/app/(store)/layout.tsx
-
 import Footer from "@/components/home/Footer";
 import NavBar from "@/components/navigation/NavBar";
 import { metadata as globalMetadata } from "@/app/layout";
@@ -19,10 +18,10 @@ export const metadata: Metadata = {
         ...globalMetadata.openGraph,
         title: "Neoshop",
         description: "Productos, compras, cuenta y soporte dentro de la tienda Neoshop.",
-        url: "https://neoshop.pe/productos",
+        url: "https://www.neoshopimportaciones.com/catalogo",
         images: [
             {
-                url: "https://neoshop.pe/favicon.ico",
+                url: "https://www.neoshopimportaciones.com/miniaturagris.png",
                 width: 1200,
                 height: 630,
                 alt: "Neoshop Tienda"
@@ -33,10 +32,10 @@ export const metadata: Metadata = {
         ...globalMetadata.twitter,
         title: "Neoshop | Tienda",
         description: "Explora productos, compras y soporte en la tienda Neoshop.",
-        images: ["https://neoshop.pe/favicon.ico"]
+        images: ["https://www.neoshopimportaciones.com/miniaturagris.png"]
     },
     alternates: {
-        canonical: "https://neoshop.pe/catalogo"
+        canonical: "https://www.neoshopimportaciones.com/catalogo"
     }
 };
 
@@ -44,21 +43,16 @@ export default function layout({ children }: { children: React.ReactNode }) {
     return (
         <>
             <ScrollToTop /> 
-
             <PowerpayHeader />
-
             <section className="flex flex-col min-h-screen">
                 <header className="w-full z-50 sticky top-0">
                     <NavBar />
                 </header>
-
                 <main className="flex-1">
                     {children}
                 </main>
-
                 <Footer />
             </section>
-
             <WhatsappButton />
         </>
     );

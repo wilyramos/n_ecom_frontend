@@ -31,10 +31,10 @@ export const metadata: Metadata = {
         ...globalMetadata.openGraph,
         title: "Neoshop - ",
         description: "Compra los productos Apple a un precio increíble en Neoshop, tu tienda de tecnología de confianza en . Encuentra iPhones, accesorios y más.",
-        url: "https://Neoshop.pe",
+        url: "https://neoshopimportaciones.com",
         images: [
             {
-                url: "https://Neoshop.pe/favicon.ico",
+                url: "https://neoshopimportaciones.com/favicon.ico",
                 width: 1200,
                 height: 630,
                 alt: "Neoshop Home - Accesorios y Tecnología",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
         ...globalMetadata.twitter,
         title: "Neoshop - Venta de accesorios y tecnología en ",
         description: "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en .",
-        images: ["https://Neoshop.pe/favicon.ico"],
+        images: ["https://neoshopimportaciones.com/favicon.ico"],
     }
 };
 

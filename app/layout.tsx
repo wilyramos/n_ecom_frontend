@@ -14,42 +14,56 @@ const montserrat = Montserrat({
 });
 
 const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
+    subsets: ["latin"],
+    variable: "--font-inter",
+    display: "swap",
 });
 
 export const metadata: Metadata = {
     metadataBase: new URL("https://www.neoshopimportaciones.com"),
     title: {
-        default: "Neoshop Importaciones",
-        template: "%s | Neoshop Importaciones"
+        default: "Neoshop Importaciones | Tienda de tecnología en Perú",
+        template: "%s | Neoshop Importaciones",
     },
-    description: "iPhones, accesorios, repuestos y tecnología con envío rápido en Perú. Neoshop: calidad, garantía y atención personalizada desde Lima - Perú.",
-    keywords: [
-        "Neoshop", "iPhone Perú", "Apple", "Accesorios iPhone", "Tecnología",
-        "Repuestos iPhone", "Tienda online", "Lima - Perú", "Electrónica"
+    description:
+        "Compra iPhone, iPad, MacBook, Apple Watch, AirPods y accesorios en Neoshop Importaciones. Explora nuestro catálogo de tecnología y consulta las opciones de envío y garantía en Perú.",
+    applicationName: "Neoshop Importaciones",
+    authors: [
+        {
+            name: "Neoshop Importaciones",
+            url: "https://www.neoshopimportaciones.com",
+        },
     ],
-    authors: [{ name: "Neoshop Importaciones", url: "https://www.neoshopimportaciones.com" }],
     creator: "Neoshop Importaciones",
     openGraph: {
-        title: "Neoshop Importaciones | Tienda de Tecnología",
-        description: "Compra iPhones, accesorios y repuestos con garantía y envío rápido.",
-        url: "https://www.neoshopimportaciones.com",
-        siteName: "Neoshop Importaciones",
-        locale: "es_PE",
         type: "website",
-        images: [{ url: "https://www.neoshopimportaciones.com/miniaturagris.png", width: 1200, height: 630, alt: "Neoshop Importaciones" }]
+        locale: "es_PE",
+        url: "https://www.neoshopimportaciones.com/",
+        siteName: "Neoshop Importaciones",
+        title: "Neoshop Importaciones | Tienda de tecnología en Perú",
+        description:
+            "Explora iPhone, iPad, MacBook, Apple Watch, AirPods y accesorios en Neoshop Importaciones.",
+        images: [
+            {
+                url: "/miniaturagris.png",
+                width: 1200,
+                height: 630,
+                alt: "Neoshop Importaciones",
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Neoshop Importaciones",
-        description: "Tecnología con garantía, precios competitivos y atención personalizada.",
-        images: ["https://www.neoshopimportaciones.com/miniaturagris.png"]
+        title: "Neoshop Importaciones | Tienda de tecnología en Perú",
+        description:
+            "Explora nuestro catálogo de productos Apple y accesorios tecnológicos.",
+        images: ["/miniaturagris.png"],
     },
-    icons: { icon: "/favicon.ico", apple: "/favicon.ico", shortcut: "/favicon.ico" },
-    alternates: { canonical: "https://www.neoshopimportaciones.com" },
-    category: "technology"
+    icons: {
+        icon: "/favicon.ico",
+        shortcut: "/favicon.ico",
+        apple: "/favicon.ico",
+    },
 };
 
 export default function RootLayout({

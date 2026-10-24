@@ -1,56 +1,63 @@
-// File: frontend/app/(store)/layout.tsx
-import Footer from "@/components/home/Footer";
-import NavBar from "@/components/navigation/NavBar";
-import { metadata as globalMetadata } from "@/app/layout";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { metadata as globalMetadata } from "@/app/layout";
+import Footer from "@/components/home/Footer";
 import WhatsappButton from "@/components/home/WhatsappButton";
+import NavBar from "@/components/navigation/NavBar";
 import ScrollToTop from "@/components/navigation/ScrollToTop";
 import PowerpayHeader from "@/src/components/powerpay/PowerpayHeader";
+
+const BASE_URL = "https://www.neoshopimportaciones.com";
+const DEFAULT_IMAGE = `${BASE_URL}/miniaturagris.png`;
 
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "Neoshop",
-        template: "%s",
+        default: "Neoshop | Tienda online",
+        template: "%s | Neoshop",
     },
-    description: "Sección principal de la tienda Neoshop: productos, compras, cuenta y soporte.",
+    description:
+        "Explora el catálogo de Neoshop Importaciones y descubre productos tecnológicos, accesorios y novedades. Encuentra información sobre compras, pagos y soporte.",
     openGraph: {
         ...globalMetadata.openGraph,
-        title: "Neoshop",
-        description: "Productos, compras, cuenta y soporte dentro de la tienda Neoshop.",
-        url: "https://www.neoshopimportaciones.com/catalogo",
+        type: "website",
+        siteName: "Neoshop Importaciones",
+        title: "Neoshop | Tienda online",
+        description:
+            "Explora el catálogo de Neoshop Importaciones y descubre productos tecnológicos, accesorios y novedades.",
         images: [
             {
-                url: "https://www.neoshopimportaciones.com/miniaturagris.png",
+                url: DEFAULT_IMAGE,
                 width: 1200,
                 height: 630,
-                alt: "Neoshop Tienda"
-            }
-        ]
+                alt: "Neoshop Importaciones",
+            },
+        ],
     },
     twitter: {
         ...globalMetadata.twitter,
-        title: "Neoshop | Tienda",
-        description: "Explora productos, compras y soporte en la tienda Neoshop.",
-        images: ["https://www.neoshopimportaciones.com/miniaturagris.png"]
+        card: "summary_large_image",
+        title: "Neoshop | Tienda online",
+        description:
+            "Explora el catálogo de Neoshop Importaciones y descubre productos tecnológicos, accesorios y novedades.",
+        images: [DEFAULT_IMAGE],
     },
-    alternates: {
-        canonical: "https://www.neoshopimportaciones.com/catalogo"
-    }
 };
 
-export default function layout({ children }: { children: React.ReactNode }) {
+export default function StoreLayout({
+    children,
+}: {
+    children: ReactNode;
+}) {
     return (
         <>
-            <ScrollToTop /> 
+            <ScrollToTop />
             <PowerpayHeader />
-            <section className="flex flex-col min-h-screen">
-                <header className="w-full z-50 sticky top-0">
+            <section className="flex min-h-screen flex-col">
+                <header className="sticky top-0 z-50 w-full">
                     <NavBar />
                 </header>
-                <main className="flex-1">
-                    {children}
-                </main>
+                <main className="flex-1">{children}</main>
                 <Footer />
             </section>
             <WhatsappButton />

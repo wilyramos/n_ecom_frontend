@@ -2,7 +2,6 @@
 // File: frontend/app/(store)/page.tsx
 
 import { Metadata } from "next";
-import { metadata as globalMetadata } from "@/app/layout";
 import ProductosDestacados from "@/components/home/ProductosDestacados";
 import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasWrapper";
 import FeatureCards from "@/components/home/FeatureCards";
@@ -14,39 +13,37 @@ import GlobalAdContainer from "@/components/home/GlobalAdContainer";
 import PowerpayBanner from "@/src/components/powerpay/PowerpayBanner";
 
 export const metadata: Metadata = {
-    ...globalMetadata,
-    title: {
-        default: "Neoshop importaciones",
-        template: "%s / Neoshop importaciones",
-    },
-    description: "Neoshop es tu tienda de productos apple en Perú. Encuentra iPhones, accesorios y tecnología de calidad a precios competitivos. ¡Visítanos y descubre lo mejor!",
+    title: "Neoshop Importaciones | Tienda de tecnología en Perú",
+    description: "Encuentra iPhones, iPads, MacBooks, Apple Watch, AirPods y accesorios en Neoshop Importaciones. Envíos a todo el Perú y garantía oficial.",
     keywords: [
-        "Neoshop", "tienda iPhone ", "venta de celulares ", "accesorios para celulares",
-        "tecnología en ", "comprar iPhone ", "gadgets ", "tienda online ", "Neoshop Perú",
-        "cases y fundas ", "cargadores y cables ", "auriculares y audífonos ",
-        "repuestos y reparación de celulares", "ofertas de tecnología ", "smartphones en ",
-        "tienda de tecnología en ", "iPhone", "audífonos", "cases"
+        "Neoshop", "tienda iPhone Perú", "venta de celulares", "accesorios Apple",
+        "comprar iPhone Lima", "gadgets Perú", "tienda online Apple"
     ],
+    alternates: {
+        canonical: "https://www.neoshopimportaciones.com",
+    },
     openGraph: {
-        ...globalMetadata.openGraph,
-        title: "Neoshop - ",
-        description: "Compra los productos Apple a un precio increíble en Neoshop, tu tienda de tecnología de confianza en . Encuentra iPhones, accesorios y más.",
-        url: "https://neoshopimportaciones.com",
+        title: "Neoshop Importaciones | Tienda de tecnología en Perú",
+        description: "Compra productos Apple y tecnología al mejor precio en Perú. Envíos a todo el país y garantía oficial.",
+        url: "https://www.neoshopimportaciones.com",
+        siteName: "Neoshop Importaciones",
+        locale: "es_PE",
+        type: "website",
         images: [
             {
-                url: "https://neoshopimportaciones.com/favicon.ico",
+                url: "https://www.neoshopimportaciones.com/miniaturagris.png",
                 width: 1200,
                 height: 630,
-                alt: "Neoshop Home - Accesorios y Tecnología",
+                alt: "Neoshop Importaciones - Productos Apple y Tecnología",
             },
         ],
     },
     twitter: {
-        ...globalMetadata.twitter,
-        title: "Neoshop - Venta de accesorios y tecnología en ",
-        description: "Compra iPhones, accesorios y más en Neoshop, tu tienda online de confianza en .",
-        images: ["https://neoshopimportaciones.com/favicon.ico"],
-    }
+        card: "summary_large_image",
+        title: "Neoshop Importaciones | Tienda de tecnología en Perú",
+        description: "Compra productos Apple y tecnología al mejor precio en Perú.",
+        images: ["https://www.neoshopimportaciones.com/miniaturagris.png"],
+    },
 };
 
 export default function HomePage() {

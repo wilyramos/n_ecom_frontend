@@ -1,108 +1,117 @@
-// File: frontend/app/(store)/productos/[slug]/page.tsx
 
-import { GetProductsBySlug } from '@/src/services/products';
-import ProductPageServer from '@/components/home/product/ProductPageServer';
-import { Suspense } from 'react';
-import SpinnerLoading from '@/components/ui/SpinnerLoading';
+import { cache, Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound } from 'next/navigation';
-import ProductJsonLd from '@/components/seo/ProductJsonLd';
+import { notFound } from "next/navigation";
 
-type Params = Promise<{ slug: string }>;
+import { GetProductsBySlug } from "@/src/services/products";
+import ProductPageServer from "@/components/home/product/ProductPageServer";
+import SpinnerLoading from "@/components/ui/SpinnerLoading";
+import ProductJsonLd from "@/components/seo/ProductJsonLd";
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+type Params = {
+    params: Promise<{ slug: string }>;
+};
+
+const getProduct = cache(async (slug: string) => {
+    return GetProductsBySlug(slug);
+});
+
+const BASE_URL = "https://www.neoshopimportaciones.com";
+
+function stripHtml(value?: string | null): string {
+    return (value ?? "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+export async function generateMetadata({
+    params,
+}: Params): Promise<Metadata> {
     const { slug } = await params;
-    const product = await GetProductsBySlug(slug);
+    const product = await getProduct(slug);
 
-    if (!product) notFound();
+    if (!product) {
+        notFound();
+    }
 
-    const categoryName = product.categoria?.nombre || 'General';
-    const image = product.imagenes?.[0] || 'https://www.neoshopimportaciones.com/favicon.ico';
-    const url = `https://www.neoshopimportaciones.com/productos/${product.slug}`;
+    const title = product.metaTitle?.trim() || product.nombre;
 
-    const title = product.metaTitle?.trim()
-        ? `${product.metaTitle.trim()} | Neoshop`
-        : `${product.nombre} | Neoshop`;
+    const description =
+        product.metaDescription?.trim() ||
+        stripHtml(product.descripcion).slice(0, 160) ||
+        `Conoce ${product.nombre} en Neoshop Importaciones. Compra tecnología y accesorios en Perú.`;
 
-    const description = product.metaDescription?.trim()
-        || (product.descripcion
-            ? product.descripcion.replace(/<[^>]+>/g, '').slice(0, 160)
-            : 'Descubre nuestros productos en neoshop. Calidad y tecnología a tu alcance.');
+    const canonicalUrl = `${BASE_URL}/productos/${encodeURIComponent(product.slug)}`;
 
-    const productTags = product.tags ?? [];
-    const keywords = [
-        product.nombre,
-        categoryName,
-        ...productTags,
-        'Neoshop',
-        'Lima - Perú',
-        'Productos',
-        'Tienda Online',
-        'Perú',
-        'iPhone',
-        'Celulares',
-        'Accesorios',
-        'Tecnología',
-        'Smartphones',
-    ].filter(Boolean);
+    const images = (product.imagenes ?? []).filter(
+        (image): image is string =>
+            typeof image === "string" && image.trim().length > 0
+    );
+
+    const openGraphImages = images.length
+        ? images.map((image) => ({
+            url: image,
+            alt: product.nombre,
+        }))
+        : [
+            {
+                url: "/miniaturagris.png",
+                alt: "Neoshop Importaciones",
+            },
+        ];
 
     return {
         title,
         description,
-        keywords,
+        alternates: {
+            canonical: canonicalUrl,
+        },
         openGraph: {
+            type: "website",
+            locale: "es_PE",
+            url: canonicalUrl,
+            siteName: "Neoshop Importaciones",
             title,
             description,
-            url,
-            siteName: 'Neoshop',
-            type: 'website',
-            images: [
-                {
-                    url: image,
-                    alt: product.nombre,
-                    width: 1200,
-                    height: 630,
-                },
-            ],
-            locale: 'es_PE',
+            images: openGraphImages,
         },
         twitter: {
-            card: 'summary_large_image',
+            card: "summary_large_image",
             title,
             description,
-            images: [image],
-            creator: '@neoshop',
-        },
-        icons: {
-            icon: "/favicon.ico",
-            apple: "/favicon.ico",
-        },
-        alternates: {
-            canonical: url,
+            images: openGraphImages.map((image) => image.url),
         },
         robots: {
             index: true,
             follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                "max-image-preview": "large",
+                "max-snippet": -1,
+                "max-video-preview": -1,
+            },
         },
-        other: {
-            "product:category": categoryName,
-            "product:availability": (product?.stock ?? 0) > 0 ? "in stock" : "out of stock",
-            "product:price:amount": product?.precio ? product.precio.toFixed(2) : "",
-            "product:price:currency": "PEN",
-            ...(product.weight && {
-                "product:weight": `${product.weight} kg`,
-            }),
-        }
     };
 }
 
-export default async function pageProduct({ params }: { params: Params }) {
+export default async function ProductPage({ params }: Params) {
     const { slug } = await params;
-    const producto = await GetProductsBySlug(slug);
+    const producto = await getProduct(slug);
+
+    if (!producto) {
+        notFound();
+    }
 
     return (
-        <main className='md:max-w-7xl mx-auto'>
+        <main className="mx-auto md:max-w-7xl">
             <ProductJsonLd producto={producto} />
+
             <Suspense fallback={<SpinnerLoading />}>
                 <ProductPageServer producto={producto} />
             </Suspense>

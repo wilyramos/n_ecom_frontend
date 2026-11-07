@@ -1,85 +1,107 @@
-import type { ProductWithCategoryResponse } from "@/src/schemas"
 
-export default function ProductJsonLd({ producto }: { producto: ProductWithCategoryResponse }) {
-    if (!producto) return null
+import type { ProductWithCategoryResponse } from "@/src/schemas";
 
-    const firstImage = producto.imagenes?.[0] || 'https://www.neoshopimportaciones.com/logomini.svg'
-    const url = `https://www.neoshopimportaciones.com/productos/${producto.slug}`
-    const brand = producto.atributos?.Marca || 'neoshop'
+const BASE_URL = "https://www.neoshopimportaciones.com";
 
-    // Price siempre como string con 2 decimales
-    const price = (producto.precio ?? 0).toFixed(2)
+type Props = {
+    producto: ProductWithCategoryResponse;
+};
 
-    const availability = (producto.stock ?? 0) > 0
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock'
+function stripHtml(value?: string | null): string {
+    return (value ?? "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+export default function ProductJsonLd({ producto }: Props) {
+    if (!producto) return null;
+
+    const images = (producto.imagenes ?? []).filter(
+        (image): image is string =>
+            typeof image === "string" && image.trim().length > 0
+    );
+
+    const url = `${BASE_URL}/productos/${encodeURIComponent(producto.slug)}`;
+
+    const brandName =
+        producto.brand &&
+            typeof producto.brand === "object" &&
+            "nombre" in producto.brand
+            ? String(producto.brand.nombre)
+            : typeof producto.atributos?.Marca === "string"
+                ? producto.atributos.Marca
+                : "Neoshop";
+
+    const price = Number(producto.precio);
+
+    const availability =
+        Number(producto.stock ?? 0) > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock";
+
+    const description =
+        stripHtml(producto.descripcion) ||
+        `Conoce ${producto.nombre} en Neoshop Importaciones.`;
+
+    const sku =
+        typeof producto.sku === "string" && producto.sku.trim()
+            ? producto.sku.trim()
+            : undefined;
+
+    const barcode =
+        typeof producto.barcode === "string"
+            ? producto.barcode.replace(/\D/g, "")
+            : "";
 
     const structuredData = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
+        "@context": "https://schema.org",
+        "@type": "Product",
         name: producto.nombre,
-        image: [firstImage],
-        description:
-            producto.descripcion?.replace(/\r?\n|\r/g, ' ').trim() ||
-            'No description available',        // category: producto.categoria?.nombre || 'General',
-        sku: producto.sku?.replace(/[^a-zA-Z0-9_-]/g, ''),
-        gtin13: producto.barcode,
+        description,
+        image: images.length ? images : undefined,
+        url,
+        ...(sku ? { sku } : {}),
+        ...(barcode.length === 13 ? { gtin13: barcode } : {}),
+        ...(producto.categoria?.nombre
+            ? { category: producto.categoria.nombre }
+            : {}),
         brand: {
-            '@type': 'Brand',
-            name: brand,
+            "@type": "Brand",
+            name: brandName,
         },
-        releaseDate: producto.createdAt,
-        offers: {
-            '@type': 'Offer',
-            url,
-            price,
-            priceCurrency: 'PEN',
-            itemCondition: 'https://schema.org/NewCondition',
-            availability,
-            seller: {
-                '@type': 'Organization',
-                name: 'neoshop',
-            },
-            shippingDetails: {
-                '@type': 'OfferShippingDetails',
-                shippingRate: {
-                    '@type': 'MonetaryAmount',
-                    value: '10.00',
-                    currency: 'PEN'
-                },
-                shippingDestination: {
-                    '@type': 'DefinedRegion',
-                    addressCountry: 'PE'
-                },
-                deliveryTime: {
-                    '@type': 'ShippingDeliveryTime',
-                    handlingTime: {
-                        '@type': 'QuantitativeValue',
-                        value: 1,
-                        unitCode: 'd'
+        ...(Number.isFinite(price) && price >= 0
+            ? {
+                offers: {
+                    "@type": "Offer",
+                    url,
+                    price: price.toFixed(2),
+                    priceCurrency: "PEN",
+                    availability,
+                    seller: {
+                        "@type": "Organization",
+                        name: "Neoshop Importaciones",
+                        url: BASE_URL,
                     },
-                    transitTime: {
-                        '@type': 'QuantitativeValue',
-                        value: 3,
-                        unitCode: 'd'
-                    }
-                }
-            },
-            hasMerchantReturnPolicy: {
-                '@type': 'MerchantReturnPolicy',
-                returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-                merchantReturnDays: 7,
-                returnMethod: 'https://schema.org/ReturnByMail',
-                applicableCountry: 'PE',
-                returnFees: 'https://schema.org/FreeReturn'
+                },
             }
-        }
-    }
+            : {}),
+    };
+
+    // Evita que contenido del producto pueda cerrar la etiqueta script.
+    const jsonLd = JSON.stringify(structuredData)
+        .replace(/</g, "\\u003c")
+        .replace(/>/g, "\\u003e")
+        .replace(/&/g, "\\u0026");
 
     return (
         <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+            dangerouslySetInnerHTML={{ __html: jsonLd }}
         />
-    )
+    );
 }

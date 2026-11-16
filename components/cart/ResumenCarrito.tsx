@@ -20,7 +20,7 @@ export default function ResumenCarrito() {
                 <FaShoppingCart size={50} className="text-muted-foreground/40 mb-4" />
                 <p className="text-muted-foreground mb-6 text-sm">Tu carrito está vacío.</p>
                 <Button
-                    onClick={() => router.push("/productos")}
+                    onClick={() => router.push("/catalogo")}
                     variant="primary"
                     className="px-6 rounded-full"
                 >

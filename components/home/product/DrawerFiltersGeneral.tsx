@@ -65,7 +65,7 @@ export default function DrawerFiltersGeneral({ categorias }: Props) {
     const clearFilters = () => {
         setFilters({ category: "", priceRange: "" });
         setPriceValues([MIN, MAX]);
-        router.push("/productos");
+        router.push("/catalogo");
         setOpen(false);
     };
 

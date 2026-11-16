@@ -16,6 +16,8 @@ interface CatalogLayoutProps {
     pagination: CatalogResponse['pagination'];
     context: CatalogResponse['context'];
     isFallback: boolean;
+    /** Nivel del título del header (por defecto h1). */
+    titleAs?: "h1" | "h2";
 }
 
 export default function CatalogLayout({
@@ -23,7 +25,8 @@ export default function CatalogLayout({
     filters,
     pagination,
     context,
-    isFallback
+    isFallback,
+    titleAs = "h1"
 }: CatalogLayoutProps) {
     const getTitle = () => {
         if (context.searchQuery) {
@@ -56,6 +59,7 @@ export default function CatalogLayout({
                     totalProducts={pagination.totalItems}
                     breadcrumbs={breadcrumbs}
                     filters={filters} // Pasamos los filtros para el Drawer móvil
+                    titleAs={titleAs}
                 />
             </div>
 

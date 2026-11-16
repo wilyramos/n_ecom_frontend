@@ -3,6 +3,7 @@ import { getCatalogDataOffers } from "@/src/services/catalog";
 import CatalogLayout from "@/components/catalog/CatalogLayout";
 import type { Metadata } from "next";
 import CatalogPageWrapper from "@/components/catalog/CatalogPageWrapper";
+import { absoluteUrl } from "@/lib/site";
 
 
 // Props para Next.js 15
@@ -17,15 +18,15 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     console.log("Search params en metadata de ofertas: ", resolvedSearchParams);
 
     return {
-        title: "Ofertas y Liquidación | neoshop",
+        title: "Ofertas y Liquidación",
         description: "Aprovecha descuentos exclusivos en celulares, audio y accesorios. Precios rebajados por tiempo limitado en neoshop Perú.",
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/ofertas`,
+            canonical: absoluteUrl("/ofertas"),
         },
         openGraph: {
-            title: "Ofertas Exclusivas | neoshop",
+            title: "Ofertas Exclusivas | Neoshop",
             description: "Tecnología premium a precios de oportunidad.",
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/ofertas`,
+            url: absoluteUrl("/ofertas"),
             type: "website",
         }
     };
@@ -58,6 +59,7 @@ export default async function OffersPage({ searchParams }: Props) {
                 pagination={data.pagination}
                 context={offersContext}
                 isFallback={data.isFallback}
+                titleAs="h2" // el h1 lo pone CatalogPageWrapper
             />
         </CatalogPageWrapper>
     );

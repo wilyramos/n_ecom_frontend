@@ -54,10 +54,6 @@ export default async function ProductPageServer({ producto }: Props) {
 
     return (
         <>
-            <h1 className="sr-only">
-                {producto.nombre} - neoshop
-            </h1>
-
             <section className="container mx-auto px-2 md:px-6 pt-1">
                 <Breadcrumbs
                     items={breadcrumbSegments}

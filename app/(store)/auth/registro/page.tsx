@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import RegisterForm from "@/components/auth/RegisterForm";
 
 export const metadata: Metadata = {
-    title: "neoshop - Registro de cuenta",
+    title: "Registro de cuenta",
     description: "Crea tu cuenta en neoshop para acceder a pedidos, favoritos y promociones.",
     keywords: "registro, neoshop, cuenta",
 };

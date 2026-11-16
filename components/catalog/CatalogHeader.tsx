@@ -11,12 +11,15 @@ interface Props {
     totalProducts: number;
     breadcrumbs: { label: string; href: string }[];
     filters: CatalogFilters;
+    /** Nivel del título. Usar "h2" cuando la página ya tiene su propio h1 (p. ej. CatalogPageWrapper). */
+    titleAs?: "h1" | "h2";
 }
 
 export default function CatalogHeader({
     title,
     totalProducts,
     breadcrumbs,
+    titleAs: TitleTag = "h1",
 }: Props) {
     return (
         <div className="w-full flex flex-col gap-6 py-6 md:py-8 border-b border-brand-silver-border">
@@ -63,9 +66,9 @@ export default function CatalogHeader({
             {/* Title */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-baseline gap-3">
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-brand-gris uppercase">
+                    <TitleTag className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-brand-gris uppercase">
                         {title}
-                    </h1>
+                    </TitleTag>
 
                     <div className="flex items-center gap-1.5 text-xs text-brand-gris whitespace-nowrap">
                         <span>({totalProducts.toLocaleString()})</span>

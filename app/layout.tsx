@@ -38,7 +38,6 @@ export const metadata: Metadata = {
     openGraph: {
         type: "website",
         locale: "es_PE",
-        url: "https://www.neoshopimportaciones.com/",
         siteName: "Neoshop Importaciones",
         title: "Neoshop Importaciones | Tienda de tecnología en Perú",
         description:

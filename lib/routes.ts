@@ -22,7 +22,7 @@ export const routes = {
     },
 
     // Para un producto específico
-    product: (slug: string) => `/producto/${slug}`,
+    product: (slug: string) => `/productos/${slug}`,
     
     // Para contacto
     whatsapp: (productName?: string) => {

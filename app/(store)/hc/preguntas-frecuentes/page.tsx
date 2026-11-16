@@ -9,7 +9,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Preguntas Frecuentes | neoshop",
+    title: "Preguntas Frecuentes",
     description: "Resuelve tus dudas más comunes sobre compras, envíos, garantías y más en neoshop.",
 };
 

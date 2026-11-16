@@ -5,7 +5,14 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, ImageOff, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function ImagenesProductoCarousel({ images }: { images: string[] }) {
+export default function ImagenesProductoCarousel({
+    images,
+    productName = "Producto",
+}: {
+    images: string[];
+    /** Nombre del producto, usado en los textos alternativos (SEO/accesibilidad). */
+    productName?: string;
+}) {
     const uniqueImages = useMemo(() => {
         return Array.from(new Set(images.filter(img => typeof img === 'string' && img.length > 0)));
     }, [images]);
@@ -137,7 +144,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                         <Image
                             key={currentImgSrc}
                             src={currentImgSrc}
-                            alt="Producto principal"
+                            alt={`${productName} - imagen ${selectedIndex + 1}`}
                             fill
                             priority
                             className={cn(
@@ -213,7 +220,7 @@ export default function ImagenesProductoCarousel({ images }: { images: string[] 
                             >
                                 <Image
                                     src={img}
-                                    alt={`Miniatura ${idx + 1}`}
+                                    alt={`${productName} - miniatura ${idx + 1}`}
                                     fill
                                     className="object-contain p-1"
                                     sizes="(max-width: 768px) 48px, 80px"

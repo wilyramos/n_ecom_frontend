@@ -150,7 +150,7 @@ export default function ProductDetails({ producto }: Props) {
       <article className="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto bg-background px-4 py-4 rounded-lg">
         {/* Imagen y Carrusel */}
         <div className="lg:col-span-7 w-full">
-          <ImagenesProductoCarousel images={variantImages} />
+          <ImagenesProductoCarousel images={variantImages} productName={producto.nombre} />
         </div>
 
         {/* Detalles del Producto */}

@@ -1,18 +1,8 @@
-import Link from "next/link";
+// File: frontend/app/(store)/[...missing]/page.tsx
+// Captura cualquier ruta inexistente de la tienda y responde un 404 real.
+// La interfaz se renderiza desde app/(store)/not-found.tsx.
+import { notFound } from "next/navigation";
 
-export default function NotFoundPage() {
-    return (
-        <div className="flex flex-col items-center justify-center text-center px-6 pt-10">
-            <h1 className="text-4xl font-bold text-gray-800">404 - Página no encontrada</h1>
-            <p className="text-gray-500 mt-3 max-w-md">
-                Lo sentimos, no pudimos encontrar la página que estás buscando.
-            </p>
-            <Link
-                href="/"
-                className="mt-6 inline-block bg-gray-900 text-white px-5 py-2 rounded-md hover:bg-gray-700 transition-colors"
-            >
-                Volver al inicio
-            </Link>
-        </div>
-    );
+export default function MissingPage() {
+    notFound();
 }

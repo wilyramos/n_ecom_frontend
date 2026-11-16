@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Política de Cookies | neoshop",
+    title: "Política de Cookies",
     description: "Información sobre el uso de cookies en el sitio web de neoshop.",
 };
 

@@ -4,6 +4,7 @@ import { getProductsMainPage } from "@/src/services/products";
 import ProductGrid from "@/components/product/product-grid";
 import Pagination from "@/components/ui/Pagination";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { absoluteUrl, NOINDEX_ROBOTS } from "@/lib/site";
 
 // 1. Tipado de Props (Next.js 15 utiliza Promesas para params)
 interface SearchPageProps {
@@ -14,27 +15,24 @@ interface SearchPageProps {
 // Permite que cada combinación de búsqueda/categoría tenga su propio título e indexación
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
     const params = await searchParams;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
 
     const query = params.q ? `Resultados para "${params.q}"` : "Catálogo de Productos";
     const category = params.category ? ` en ${params.category}` : "";
     const page = params.page ? ` - Página ${params.page}` : "";
 
     return {
-        title: `${query}${category}${page} | neoshop`,
+        title: `${query}${category}${page}`,
         description: `Encuentra los mejores productos de ${query}${category}. Calidad, garantía oficial y envíos a todo el país.`,
         alternates: {
-            canonical: `${baseUrl}/search`, // Agrupa la autoridad de todas las páginas de búsqueda en la principal
+            canonical: absoluteUrl("/search"),
         },
-        robots: {
-            // Evitamos indexar búsquedas internas muy profundas o vacías para ahorrar "Crawl Budget"
-            index: true,
-            follow: true,
-        },
+        // Las búsquedas internas no se indexan (contenido duplicado/infinito),
+        // pero se siguen sus enlaces para descubrir productos.
+        robots: NOINDEX_ROBOTS,
         openGraph: {
-            title: `${query} | neoshop`,
+            title: query,
             description: `Explora nuestra selección de productos.`,
-            url: `${baseUrl}/search`,
+            url: absoluteUrl("/search"),
             type: "website",
         },
     };
@@ -73,12 +71,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         "itemListElement": data.products.map((product, index) => ({
             "@type": "ListItem",
             "position": index + 1,
-            "url": `${process.env.NEXT_PUBLIC_BASE_URL}/productos/${product.slug}`,
+            "url": absoluteUrl(`/productos/${encodeURIComponent(product.slug)}`),
         })),
     };
 
     // 5. DEFINICIÓN DE BREADCRUMBS
-    const breadcrumbSegments = [{ label: "Catálogo", href: "/productos" }];
+    const breadcrumbSegments = [{ label: "Catálogo", href: "/catalogo" }];
     if (params.category) {
         breadcrumbSegments.push({ label: params.category, href: `/search?category=${params.category}` });
     }

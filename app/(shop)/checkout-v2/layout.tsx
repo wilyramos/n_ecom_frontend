@@ -4,6 +4,14 @@ import React from "react";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
+import { NOINDEX_ROBOTS } from "@/lib/site";
+
+// SEO: página transaccional/privada, no debe aparecer en buscadores.
+export const metadata: Metadata = {
+    title: "Finalizar compra",
+    robots: NOINDEX_ROBOTS,
+};
 
 export default function CheckoutLayout({ children }: { children: React.ReactNode }) {
   return (

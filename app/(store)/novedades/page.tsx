@@ -3,6 +3,7 @@ import { getCatalogDataNewArrivals } from "@/src/services/catalog";
 import CatalogLayout from "@/components/catalog/CatalogLayout";
 import type { Metadata } from "next";
 import CatalogPageWrapper from "@/components/catalog/CatalogPageWrapper";
+import { absoluteUrl } from "@/lib/site";
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -12,8 +13,17 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
     console.log("Generando metadata para Novedades con searchParams:", await searchParams);
     return {
-        title: "Novedades | neoshop",
-        description: "Lo último en tecnología premium.",
+        title: "Novedades",
+        description: "Descubre lo último en tecnología en Neoshop Importaciones: nuevos iPhone, iPad, MacBook, accesorios y más, con envíos a todo el Perú.",
+        alternates: {
+            canonical: absoluteUrl("/novedades"),
+        },
+        openGraph: {
+            title: "Novedades | Neoshop",
+            description: "Lo último en tecnología premium.",
+            url: absoluteUrl("/novedades"),
+            type: "website",
+        },
     };
 }
 
@@ -37,6 +47,7 @@ export default async function NewsPage({ searchParams }: Props) {
                 pagination={data.pagination}
                 context={{ ...data.context, categoryName: "Novedades" }}
                 isFallback={data.isFallback}
+                titleAs="h2" // el h1 lo pone CatalogPageWrapper
             />
         </CatalogPageWrapper>
     );

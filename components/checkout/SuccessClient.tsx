@@ -64,7 +64,7 @@ export default function SuccessClient({ order }: { order: TOrderPopulated }) {
                 {/* Acciones */}
                 <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
                     <Link
-                        href={`/productos`}
+                        href={`/catalogo`}
                         className="w-full sm:w-auto  text-[var(--color-foreground)] py-2.5 px-6 rounded-full text-sm tracking-wide hover:bg-[var(--color-accent)] transition flex items-center justify-center gap-2"
                     >
                         <FiArrowLeftCircle className="text-lg" />

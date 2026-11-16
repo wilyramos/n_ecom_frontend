@@ -50,6 +50,11 @@ export const CatalogResponseSchema = z.object({
         categoryName: z.string().nullable(),
         brandName: z.string().nullable(),
         lineName: z.string().nullable(),
+        // Campos SEO (solo los envía /catalog/resolve; opcionales para el resto de endpoints)
+        categorySlug: z.string().nullable().optional(),
+        brandSlug: z.string().nullable().optional(),
+        lineSlug: z.string().nullable().optional(),
+        unresolvedSlugs: z.array(z.string()).optional(),
         searchQuery: z.string().nullable(),
     }),
     isFallback: z.boolean(),

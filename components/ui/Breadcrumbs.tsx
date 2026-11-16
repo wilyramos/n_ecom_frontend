@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight, Home, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SITE_URL, absoluteUrl } from "@/lib/site";
 
 interface BreadcrumbItem {
     label: string;
@@ -16,35 +17,36 @@ interface Props {
 }
 
 export default function Breadcrumbs({ items, current, className }: Props) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neoshopimportaciones.com";
-    
     // Lógica de colapso: si hay más de 3 items, mostramos el primero, ... y el último
     const shouldCollapse = items.length > 4;
     const displayItems = shouldCollapse 
         ? [items[0], { label: "...", href: "#" }, items[items.length - 1]] 
         : items;
 
-    const schemaItems = [
+    // "Inicio" ya se añade como primer nivel; se omite si quien llama también lo pasa.
+    const schemaItems: Array<{ "@type": "ListItem"; position: number; name: string; item?: string }> = [
         {
             "@type": "ListItem",
             "position": 1,
             "name": "Inicio",
-            "item": baseUrl
+            "item": SITE_URL
         },
-        ...items.map((item, index) => ({
-            "@type": "ListItem",
-            "position": index + 2,
-            "name": item.label,
-            "item": `${baseUrl}${item.href}`
-        }))
+        ...items
+            .filter((item) => item.href !== "/")
+            .map((item, index) => ({
+                "@type": "ListItem" as const,
+                "position": index + 2,
+                "name": item.label,
+                "item": absoluteUrl(item.href)
+            }))
     ];
 
+    // El último nivel (página actual) puede ir sin "item", según la guía de Google.
     if (current) {
         schemaItems.push({
             "@type": "ListItem",
             "position": schemaItems.length + 1,
             "name": current,
-            "item": typeof window !== 'undefined' ? window.location.href : `${baseUrl}/#`
         });
     }
 

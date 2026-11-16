@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Políticas de Privacidad | neoshop importaciones",
+    title: "Políticas de Privacidad",
     description: "Política de privacidad y protección de datos personales de neoshop importaciones, conforme a la Ley N° 29733.",
 };
 

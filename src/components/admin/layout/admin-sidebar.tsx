@@ -29,6 +29,8 @@ type NavChild = {
   isExternal?: boolean;
 };
 
+type Accent = "emerald" | "amber" | "violet" | "slate" | "rose";
+
 type NavItem = {
   label: string;
   icon: LucideIcon;
@@ -36,6 +38,16 @@ type NavItem = {
   tag?: string;
   isExternal?: boolean;
   children?: NavChild[];
+  accent?: Accent;
+};
+
+// Clases completas (no generadas) para que Tailwind las detecte
+const accentStyles: Record<Accent, { icon: string; activeBg: string; activeText: string; subActive: string }> = {
+  emerald: { icon: "text-emerald-500", activeBg: "bg-emerald-50", activeText: "text-emerald-900", subActive: "bg-emerald-100 text-emerald-900" },
+  amber: { icon: "text-amber-500", activeBg: "bg-amber-50", activeText: "text-amber-900", subActive: "bg-amber-100 text-amber-900" },
+  violet: { icon: "text-violet-500", activeBg: "bg-violet-50", activeText: "text-violet-900", subActive: "bg-violet-100 text-violet-900" },
+  slate: { icon: "text-slate-500", activeBg: "bg-slate-100", activeText: "text-slate-900", subActive: "bg-slate-200 text-slate-900" },
+  rose: { icon: "text-rose-500", activeBg: "bg-rose-50", activeText: "text-rose-900", subActive: "bg-rose-100 text-rose-900" },
 };
 
 const navItems: NavItem[] = [
@@ -46,6 +58,7 @@ const navItems: NavItem[] = [
   {
     icon: Layers3,
     label: "Clasificación",
+    accent: "emerald",
     children: [
       { href: "/admin/products/category", label: "Categorías" },
       { href: "/admin/brands", label: "Marcas" },
@@ -55,6 +68,7 @@ const navItems: NavItem[] = [
   {
     icon: BarChart3,
     label: "Métricas",
+    accent: "amber",
     children: [
       { href: "/admin/claims", label: "Reclamaciones" },
       { href: "/admin/reports", label: "Reportes" },
@@ -63,6 +77,7 @@ const navItems: NavItem[] = [
   {
     icon: Palette,
     label: "Contenido",
+    accent: "violet",
     children: [
       { href: "/admin/slider", label: "Banners" },
       { href: "/admin/sections", label: "Secciones" },
@@ -73,6 +88,7 @@ const navItems: NavItem[] = [
   {
     icon: Settings,
     label: "Sistema",
+    accent: "slate",
     children: [
       { href: "/admin/users", label: "Usuarios" },
       { href: "/admin/attendance", label: "Asistencias" },
@@ -81,6 +97,7 @@ const navItems: NavItem[] = [
   {
     icon: Store,
     label: "Accesos",
+    accent: "rose",
     children: [
       { href: "/pos", label: "Punto de Venta", isExternal: true },
       { href: "/", label: "Tienda Online", isExternal: true },
@@ -143,7 +160,8 @@ export function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-2 py-2.5 space-y-3">
         {navItems.map((item) => {
-          const { href, icon: Icon, label, children, tag, isExternal } = item;
+          const { href, icon: Icon, label, children, tag, isExternal, accent = "slate" } = item;
+          const styles = accentStyles[accent];
 
           if (children) {
             const isChildActive = children.some(
@@ -160,7 +178,7 @@ export function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
                   className={cn(
                     "group w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-all text-xs font-medium",
                     isChildActive
-                      ? "bg-blue-50 text-blue-900"
+                      ? cn(styles.activeBg, styles.activeText)
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
                     !isOpen && "md:justify-center md:px-0"
                   )}
@@ -169,7 +187,7 @@ export function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
                   <Icon
                     className={cn(
                       "h-4 w-4 flex-shrink-0 transition-colors",
-                      isChildActive ? "text-blue-600" : "text-slate-500 group-hover:text-slate-700"
+                      isChildActive ? styles.icon : `${styles.icon} group-hover:opacity-80`
                     )}
                   />
                   {isOpen && (
@@ -206,7 +224,7 @@ export function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
                             className={cn(
                               "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] transition-all",
                               isSubActive
-                                ? "bg-blue-100 text-blue-900 font-semibold"
+                                ? cn(styles.subActive, "font-semibold")
                                 : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                             )}
                           >
@@ -252,7 +270,7 @@ export function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
                 <div className="flex items-center gap-1.5 flex-1 min-w-0">
                   <span className="truncate">{label}</span>
                   {tag && (
-                    <span className="px-1.5 py-0.2 text-[9px] font-bold rounded-full bg-amber-100 text-amber-700 flex-shrink-0">
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-amber-100 text-amber-700 flex-shrink-0">
                       {tag}
                     </span>
                   )}

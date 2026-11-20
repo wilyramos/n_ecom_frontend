@@ -11,6 +11,7 @@ export interface IAdminPedidosParams {
   paymentStatus?: string;
   paymentProvider?: string;
   deliveryMethod?: string;
+  cupon?: string; // 'con' | 'sin' | código exacto
   dateFrom?: string;
   dateTo?: string;
   search?: string; // Permite buscar por "10015", DNI, email u orderNumber
@@ -52,6 +53,7 @@ export async function getAdminPedidos(
     if (params.paymentStatus && params.paymentStatus !== 'all') queryParams.append('paymentStatus', params.paymentStatus);
     if (params.paymentProvider && params.paymentProvider !== 'all') queryParams.append('paymentProvider', params.paymentProvider);
     if (params.deliveryMethod && params.deliveryMethod !== 'all') queryParams.append('deliveryMethod', params.deliveryMethod);
+    if (params.cupon && params.cupon !== 'all') queryParams.append('cupon', params.cupon);
     if (params.dateFrom) queryParams.append('dateFrom', params.dateFrom);
     if (params.dateTo) queryParams.append('dateTo', params.dateTo);
     if (params.search?.trim()) queryParams.append('search', params.search.trim());

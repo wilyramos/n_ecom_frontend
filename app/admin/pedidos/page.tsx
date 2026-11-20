@@ -18,6 +18,7 @@ interface PedidosPageProps {
     paymentStatus?: string;
     provider?: string;
     delivery?: string;
+    cupon?: string;
     dateFrom?: string;
     dateTo?: string;
     search?: string;
@@ -40,6 +41,7 @@ export default async function AdminPedidosPage({ searchParams }: PedidosPageProp
     paymentStatus: query.paymentStatus || 'all',
     paymentProvider: query.provider || 'all',
     deliveryMethod: query.delivery || 'all',
+    cupon: query.cupon || 'all',
     dateFrom: query.dateFrom || '',
     dateTo: query.dateTo || '',
     search: query.search || '',

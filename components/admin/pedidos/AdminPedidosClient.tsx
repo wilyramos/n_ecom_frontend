@@ -64,9 +64,11 @@ export default function AdminPedidosClient({
 
   const [search, setSearch] = useState(currentFilters.search || '');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const cuponEsCodigo = !!currentFilters.cupon && !['all', 'con', 'sin'].includes(currentFilters.cupon);
   const [tempFilters, setTempFilters] = useState({
     dateFrom: currentFilters.dateFrom || '',
     dateTo: currentFilters.dateTo || '',
+    cupon: cuponEsCodigo ? currentFilters.cupon || '' : '',
   });
 
   const updateUrlFilters = (newParams: Record<string, string | number | undefined>) => {
@@ -101,16 +103,19 @@ export default function AdminPedidosClient({
   };
 
   const handleApplyDrawerFilters = () => {
+    const codigo = tempFilters.cupon.trim().toUpperCase();
     updateUrlFilters({
       dateFrom: tempFilters.dateFrom,
       dateTo: tempFilters.dateTo,
+      // Si no se escribió código, se conserva el filtro rápido ('con' / 'sin') o se limpia el código anterior
+      cupon: codigo || (cuponEsCodigo ? undefined : currentFilters.cupon),
       page: 1,
     });
   };
 
   const handleResetFilters = () => {
     setSearch('');
-    setTempFilters({ dateFrom: '', dateTo: '' });
+    setTempFilters({ dateFrom: '', dateTo: '', cupon: '' });
     startTransition(() => {
       router.push('/admin/pedidos');
     });
@@ -121,6 +126,7 @@ export default function AdminPedidosClient({
     currentFilters.paymentStatus && currentFilters.paymentStatus !== 'all',
     currentFilters.paymentProvider && currentFilters.paymentProvider !== 'all',
     currentFilters.deliveryMethod && currentFilters.deliveryMethod !== 'all',
+    currentFilters.cupon && currentFilters.cupon !== 'all',
     currentFilters.dateFrom,
     currentFilters.dateTo,
     currentFilters.search,
@@ -224,6 +230,19 @@ export default function AdminPedidosClient({
               <option value="shipping">Envío</option>
               <option value="pickup">Recojo</option>
             </AdminSelect>
+
+            <AdminSelect
+              value={currentFilters.cupon || 'all'}
+              onChange={(e) => handleQuickFilter('cupon', e.target.value)}
+              className="h-7 py-0 px-2 text-[11px] w-32 font-medium text-zinc-700 bg-white border-zinc-200"
+            >
+              <option value="all">Cupón: Todos</option>
+              <option value="con">Con cupón</option>
+              <option value="sin">Sin cupón</option>
+              {cuponEsCodigo && (
+                <option value={currentFilters.cupon}>Código: {currentFilters.cupon}</option>
+              )}
+            </AdminSelect>
           </div>
         }
       />
@@ -232,10 +251,10 @@ export default function AdminPedidosClient({
       <AdminFilterDrawer
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-        title="Filtro por Fecha"
-        description="Selecciona un intervalo de fechas para consultar las órdenes registradas."
+        title="Filtros avanzados"
+        description="Filtra por intervalo de fechas o por un código de cupón específico."
         onApply={handleApplyDrawerFilters}
-        onReset={() => setTempFilters({ dateFrom: '', dateTo: '' })}
+        onReset={() => setTempFilters({ dateFrom: '', dateTo: '', cupon: '' })}
       >
         <div className="space-y-3">
           <div>
@@ -258,6 +277,18 @@ export default function AdminPedidosClient({
               value={tempFilters.dateTo}
               onChange={(e) => setTempFilters((prev) => ({ ...prev, dateTo: e.target.value }))}
               className="w-full bg-zinc-50 border border-zinc-200 rounded-md p-2 text-xs text-zinc-900 outline-none focus:border-zinc-400"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-semibold text-zinc-600 block mb-1">
+              Código de cupón:
+            </label>
+            <input
+              type="text"
+              value={tempFilters.cupon}
+              placeholder="Ej: VERANO10"
+              onChange={(e) => setTempFilters((prev) => ({ ...prev, cupon: e.target.value }))}
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-md p-2 text-xs text-zinc-900 uppercase outline-none focus:border-zinc-400"
             />
           </div>
         </div>

@@ -13,6 +13,8 @@ import { validarCuponAction } from '../actions/cupones.actions';
 function itemsDelCarrito(cart: ReturnType<typeof useCartStore.getState>['cart']) {
   return cart.map((item) => ({
     productId: item._id,
+    variantId: item.variant?._id,
+    nombre: item.nombre,
     quantity: item.cantidad,
     price: item.variant?.precio ?? item.precio ?? 0,
   }));

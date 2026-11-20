@@ -90,7 +90,7 @@ export async function eliminarCuponAction(id: string): Promise<IAccionCuponRespo
 export async function validarCuponAction(input: {
   codigo: string;
   email?: string;
-  items: Array<{ productId: string; quantity: number; price: number }>;
+  items: Array<{ productId: string; variantId?: string; nombre?: string; quantity: number; price: number }>;
 }): Promise<{ success: boolean; message?: string; data?: IResultadoCupon }> {
   try {
     const res = await fetch(`${API_URL}/cupones/validar`, {

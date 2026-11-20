@@ -9,12 +9,16 @@ import { useCartStore } from '@/src/store/cartStore';
 import { CheckoutFormData } from '../schemas/checkout.schema';
 import { Package } from 'lucide-react';
 import { CASH_PROVIDER, calcularDescuentoEfectivo, contarUnidadesIphone } from '../utils/cash-discount';
+import { useCuponStore, selectDescuentoCupon } from '@/src/modules/cupones/store/useCuponStore';
+import CuponInput from '@/src/modules/cupones/components/CuponInput';
 
 const MP_SURCHARGE_RATE = 0.12;
 
 export default function OrderSummary() {
   const { cart, total } = useCartStore();
   const { control } = useFormContext<CheckoutFormData>();
+  const cupon = useCuponStore((s) => s.cupon);
+  const descuentoCupon = useCuponStore(selectDescuentoCupon);
 
   const paymentProvider = useWatch({
     control,
@@ -29,10 +33,11 @@ export default function OrderSummary() {
   const shippingCost: number = deliveryMethod === 'shipping' ? 0 : 0;
   const safeTotal: number = typeof total === 'number' && !isNaN(total) ? total : 0;
   const recargoFinanciero: number =
-    paymentProvider === 'mercadopago' ? safeTotal * MP_SURCHARGE_RATE : 0;
+    paymentProvider === 'mercadopago' ? (safeTotal - descuentoCupon) * MP_SURCHARGE_RATE : 0;
   const descuentoEfectivo: number =
     paymentProvider === CASH_PROVIDER ? calcularDescuentoEfectivo(cart) : 0;
-  const totalFinal: number = safeTotal + shippingCost + recargoFinanciero - descuentoEfectivo;
+  const totalFinal: number =
+    safeTotal + shippingCost + recargoFinanciero - descuentoEfectivo - descuentoCupon;
 
   if (cart.length === 0) {
     return (
@@ -109,6 +114,11 @@ export default function OrderSummary() {
         })}
       </div>
 
+      {/* Cupón de descuento */}
+      <div className="pt-4 mt-2 border-t border-neutral-200/80">
+        <CuponInput />
+      </div>
+
       {/* Desglose de Totales */}
       <div className="space-y-2 pt-4 mt-2 border-t border-neutral-200/80 text-xs">
         <div className="flex justify-between text-neutral-600">
@@ -131,6 +141,13 @@ export default function OrderSummary() {
             <span className="font-medium text-neutral-900 tabular-nums">
               − S/ {descuentoEfectivo.toFixed(2)}
             </span>
+          </div>
+        )}
+
+        {cupon && descuentoCupon > 0 && (
+          <div className="flex justify-between text-emerald-700">
+            <span>Cupón {cupon.codigo}</span>
+            <span className="font-medium tabular-nums">− S/ {descuentoCupon.toFixed(2)}</span>
           </div>
         )}
 

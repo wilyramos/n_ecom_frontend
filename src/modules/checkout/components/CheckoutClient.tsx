@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PowerpayCheckoutWidget from '@/src/components/powerpay/PowerpayCheckoutWidget';
 import { crearPedidoAction, procesarCargoCulqiAction, cancelarPedidoAction } from '../actions/checkout.actions';
+import { useCuponStore, selectDescuentoCupon } from '@/src/modules/cupones/store/useCuponStore';
 
 interface CheckoutClientProps {
   initialCustomerData: {
@@ -44,6 +45,13 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { cart, total, clearCart } = useCartStore();
+  const cuponCodigo = useCuponStore((s) => s.cupon?.codigo);
+  const descuentoCupon = useCuponStore(selectDescuentoCupon);
+
+  // Si el carrito queda vacío (pedido creado o carrito limpiado), se quita el cupón
+  useEffect(() => {
+    if (cart.length === 0) useCuponStore.getState().quitar();
+  }, [cart.length]);
 
   const activeOrderNumberRef = useRef<string | null>(null);
   const activeCulqiTokenRef = useRef<string | null>(null);
@@ -88,7 +96,8 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const deliveryMethod = methods.watch('deliveryMethod');
 
   const shippingCost = deliveryMethod === 'shipping' ? 0 : 0;
-  const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
+  // El recargo se calcula sobre lo que se cobra por productos (con cupón), igual que en el servidor
+  const recargoFinanciero = paymentProvider === 'mercadopago' ? (total - descuentoCupon) * MP_SURCHARGE_RATE : 0;
   // Pago en efectivo: S/ 100 de descuento por unidad de iPhone (solo si hay iPhone en el carrito)
   const tieneIphone = contarUnidadesIphone(cart) > 0;
 
@@ -99,7 +108,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
     }
   }, [tieneIphone, methods]);
   const descuentoEfectivo = paymentProvider === CASH_PROVIDER ? calcularDescuentoEfectivo(cart) : 0;
-  const totalFinalCalculado = total + shippingCost + recargoFinanciero - descuentoEfectivo;
+  const totalFinalCalculado = total + shippingCost + recargoFinanciero - descuentoEfectivo - descuentoCupon;
 
   const {
     isScriptLoaded,
@@ -272,6 +281,11 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       return;
     }
 
+    if (totalFinalCalculado <= 0) {
+      toast.error('El total a pagar debe ser mayor a S/ 0.00. Revisa el cupón aplicado.');
+      return;
+    }
+
     const parsed = checkoutSchema.safeParse(formData);
     if (!parsed.success) {
       parsed.error.issues.forEach((issue) => {
@@ -312,6 +326,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
         imagen: item.variant?.imagenes?.[0] ?? item.imagenes?.[0],
       })),
       shippingCost,
+      cuponCodigo,
       currency: 'PEN',
       payment: {
         provider: parsed.data.payment.provider,

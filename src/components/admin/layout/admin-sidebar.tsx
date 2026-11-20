@@ -104,6 +104,7 @@ const sections: NavSection[] = [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
       { href: "/admin/tickets-v2", label: "Comprobantes", icon: FileText },
+      { href: "/admin/cupones", label: "Cupones", icon: Ticket },
     ],
   },
   {
@@ -141,7 +142,6 @@ const sections: NavSection[] = [
     accent: "slate",
     items: [
       { href: "#", label: "Clientes", icon: UserRound, soon: true },
-      { href: "#", label: "Cupones", icon: Ticket, soon: true },
       { href: "#", label: "Envíos y zonas", icon: Truck, soon: true },
       { href: "#", label: "Inventario", icon: Warehouse, soon: true },
     ],

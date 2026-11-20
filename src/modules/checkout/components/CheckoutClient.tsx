@@ -91,6 +91,13 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
   const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
   // Pago en efectivo: S/ 100 de descuento por unidad de iPhone (solo si hay iPhone en el carrito)
   const tieneIphone = contarUnidadesIphone(cart) > 0;
+
+  // Si se quita el iPhone del carrito, la opción de efectivo desaparece: volver a tarjetas
+  useEffect(() => {
+    if (!tieneIphone && methods.getValues('payment.provider') === CASH_PROVIDER) {
+      methods.setValue('payment.provider', 'culqi');
+    }
+  }, [tieneIphone, methods]);
   const descuentoEfectivo = paymentProvider === CASH_PROVIDER ? calcularDescuentoEfectivo(cart) : 0;
   const totalFinalCalculado = total + shippingCost + recargoFinanciero - descuentoEfectivo;
 

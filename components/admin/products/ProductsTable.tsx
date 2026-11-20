@@ -265,7 +265,7 @@ export default function ProductsTable({
                         {p.nombre}
                       </Link>
                       {p.isFrontPage && (
-                        <span className="inline-block text-[9.5px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200/60">
+                        <span className="inline-block text-[9.5px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60">
                           Portada
                         </span>
                       )}

@@ -41,15 +41,65 @@ type NavItem = {
   soon?: boolean;
 };
 
+type Accent = "blue" | "emerald" | "violet" | "amber" | "rose" | "slate";
+
 type NavSection = {
   title: string;
+  accent: Accent;
   items: NavItem[];
+};
+
+// Clases completas (no generadas) para que Tailwind las detecte
+const accents: Record<Accent, { title: string; icon: string; activeIcon: string; active: string; bar: string }> = {
+  blue: {
+    title: "text-blue-600",
+    icon: "text-blue-500",
+    activeIcon: "text-blue-700",
+    active: "bg-blue-50 text-blue-900",
+    bar: "bg-blue-500",
+  },
+  emerald: {
+    title: "text-emerald-600",
+    icon: "text-emerald-500",
+    activeIcon: "text-emerald-700",
+    active: "bg-emerald-50 text-emerald-900",
+    bar: "bg-emerald-500",
+  },
+  violet: {
+    title: "text-violet-600",
+    icon: "text-violet-500",
+    activeIcon: "text-violet-700",
+    active: "bg-violet-50 text-violet-900",
+    bar: "bg-violet-500",
+  },
+  amber: {
+    title: "text-amber-600",
+    icon: "text-amber-500",
+    activeIcon: "text-amber-700",
+    active: "bg-amber-50 text-amber-900",
+    bar: "bg-amber-500",
+  },
+  rose: {
+    title: "text-rose-600",
+    icon: "text-rose-500",
+    activeIcon: "text-rose-700",
+    active: "bg-rose-50 text-rose-900",
+    bar: "bg-rose-500",
+  },
+  slate: {
+    title: "text-zinc-400",
+    icon: "text-zinc-500",
+    activeIcon: "text-zinc-900",
+    active: "bg-zinc-100 text-zinc-900",
+    bar: "bg-zinc-900",
+  },
 };
 
 // Orden según el flujo de trabajo: operar → catálogo → web pública → gestión → accesos
 const sections: NavSection[] = [
   {
     title: "Operación",
+    accent: "blue",
     items: [
       { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
       { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
@@ -58,6 +108,7 @@ const sections: NavSection[] = [
   },
   {
     title: "Catálogo",
+    accent: "emerald",
     items: [
       { href: "/admin/products", label: "Productos", icon: Package },
       { href: "/admin/products/category", label: "Categorías", icon: Tags },
@@ -67,6 +118,7 @@ const sections: NavSection[] = [
   },
   {
     title: "Página principal",
+    accent: "violet",
     items: [
       { href: "/admin/slider", label: "Banners", icon: Images },
       { href: "/admin/sections", label: "Secciones", icon: Layers },
@@ -76,6 +128,7 @@ const sections: NavSection[] = [
   },
   {
     title: "Gestión",
+    accent: "amber",
     items: [
       { href: "/admin/reports", label: "Reportes", icon: BarChart3 },
       { href: "/admin/claims", label: "Reclamaciones", icon: ShieldAlert },
@@ -85,6 +138,7 @@ const sections: NavSection[] = [
   },
   {
     title: "Próximamente",
+    accent: "slate",
     items: [
       { href: "#", label: "Clientes", icon: UserRound, soon: true },
       { href: "#", label: "Cupones", icon: Ticket, soon: true },
@@ -94,6 +148,7 @@ const sections: NavSection[] = [
   },
   {
     title: "Accesos",
+    accent: "rose",
     items: [
       { href: "/pos", label: "Punto de venta", icon: Store, isExternal: true },
       { href: "/", label: "Tienda online", icon: Home, isExternal: true },
@@ -157,11 +212,14 @@ function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanel
 
       {/* Navegación */}
       <nav aria-label="Menú de administración" className="flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden px-2 py-2">
-        {sections.map((section) => (
+        {sections.map((section) => {
+          const acc = accents[section.accent];
+          return (
           <div key={section.title} className="space-y-px">
             <p
               className={cn(
-                "whitespace-nowrap px-2 pb-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-400 transition-opacity duration-150",
+                "whitespace-nowrap px-2 pb-0.5 text-[9px] font-semibold uppercase tracking-wider transition-opacity duration-150",
+                acc.title,
                 textReveal
               )}
             >
@@ -206,15 +264,15 @@ function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanel
                     "relative flex items-center gap-2.5 rounded-md px-2 py-1.5 text-xs transition-colors duration-150",
                     iconOnly,
                     active
-                      ? "bg-zinc-100 font-semibold text-zinc-900"
+                      ? cn("font-semibold", acc.active)
                       : "font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                   )}
                 >
                   {active && (
-                    <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-zinc-900" aria-hidden />
+                    <span className={cn("absolute inset-y-1.5 left-0 w-0.5 rounded-full", acc.bar)} aria-hidden />
                   )}
 
-                  <Icon className={cn("h-3.5 w-3.5 shrink-0", active ? "text-zinc-900" : "text-zinc-500")} />
+                  <Icon className={cn("h-3.5 w-3.5 shrink-0", active ? acc.activeIcon : acc.icon)} />
 
                   <span
                     className={cn(
@@ -229,13 +287,14 @@ function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanel
               );
             })}
           </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* Pie: usuario conectado */}
       <div className="shrink-0 border-t border-zinc-200/80 p-2">
         <div className={cn("flex items-center gap-2 rounded-md px-1 py-1", iconOnly)}>
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-bold text-white">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-600 text-[10px] font-bold text-white">
             {initialsOf(user)}
           </div>
           <div className={cn("min-w-0 whitespace-nowrap transition-opacity duration-150", textReveal)}>

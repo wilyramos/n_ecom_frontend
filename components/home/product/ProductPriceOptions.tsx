@@ -1,7 +1,6 @@
 // File: frontend/components/home/product/ProductPriceOptions.tsx
 "use client";
 
-import { cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,

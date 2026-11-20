@@ -40,9 +40,11 @@ export default function CuponInput() {
       if (res.success && res.data) {
         aplicar(res.data);
       } else {
+        // Se nombra el cupón y el motivo, para que el cliente entienda por qué desapareció
+        const mensaje = `Se quitó el cupón ${cupon.codigo}: ${res.message ?? 'ya no es válido para tu carrito'}`;
         quitar();
-        setError(res.message ?? 'El cupón ya no es válido para tu carrito');
-        toast.error(res.message ?? 'El cupón ya no es válido para tu carrito');
+        setError(mensaje);
+        toast.error(mensaje);
       }
     })();
     return () => {
@@ -123,7 +125,11 @@ export default function CuponInput() {
           Aplicar
         </button>
       </div>
-      {error && <p className="text-[11px] text-rose-600">{error}</p>}
+      {error && (
+        <p role="alert" className="text-[11px] font-medium text-rose-600">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

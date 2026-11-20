@@ -281,6 +281,11 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
       return;
     }
 
+    if (totalFinalCalculado <= 0) {
+      toast.error('El total a pagar debe ser mayor a S/ 0.00. Revisa el cupón aplicado.');
+      return;
+    }
+
     const parsed = checkoutSchema.safeParse(formData);
     if (!parsed.success) {
       parsed.error.issues.forEach((issue) => {

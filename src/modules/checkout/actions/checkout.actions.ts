@@ -17,6 +17,8 @@ interface ICrearPedidoActionInput extends CheckoutFormData {
     imagen?: string;
   }>;
   shippingCost: number;
+  /** Código de cupón validado en el checkout; el servidor recalcula el descuento */
+  cuponCodigo?: string;
   currency?: string;
   receiverInfo?: CheckoutFormData['receiverInfo'];
   deliveryNotes?: string;
@@ -75,6 +77,7 @@ export async function crearPedidoAction(
       invoiceInfo: parsed.data.invoiceInfo?.type === 'factura' ? parsed.data.invoiceInfo : undefined,
       items: data.items,
       shippingCost: data.shippingCost ?? 0,
+      cuponCodigo: data.cuponCodigo?.trim() || undefined,
       currency: data.currency || 'PEN',
       payment: {
         provider: parsed.data.payment.provider,

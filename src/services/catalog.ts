@@ -1,5 +1,10 @@
 import "server-only"; // Asegura que esto solo corre en el servidor
-import { CatalogResponseSchema, type CatalogResponse } from "@/src/schemas/catalog";
+import {
+    CatalogResponseSchema,
+    CatalogSitemapPathsResponseSchema,
+    type CatalogResponse,
+    type CatalogSitemapPath,
+} from "@/src/schemas/catalog";
 
 export const getCatalogData = async (
     slugs: string[],
@@ -121,6 +126,33 @@ export const getCatalogDataNewArrivals = async (
 
     } catch (error) {
         console.error("Error fetching news data:", error);
+        return null;
+    }
+};
+
+/**
+ * Combinaciones de catálogo (categoría/marca/línea) con productos activos,
+ * para el sitemap. Devuelve null si la API falla, para que el sitemap
+ * pueda usar las categorías como respaldo.
+ */
+export const getCatalogSitemapPaths = async (): Promise<CatalogSitemapPath[] | null> => {
+    try {
+        const res = await fetch(`${process.env.API_URL}/seo/catalog-paths`, { method: "GET" });
+
+        if (!res.ok) {
+            console.error(`Catalog sitemap API Error: ${res.status}`);
+            return null;
+        }
+
+        const parsed = CatalogSitemapPathsResponseSchema.safeParse(await res.json());
+        if (!parsed.success) {
+            console.error("Error validando rutas de catálogo para el sitemap:", parsed.error);
+            return null;
+        }
+
+        return parsed.data.paths;
+    } catch (error) {
+        console.error("Error fetching catalog sitemap paths:", error);
         return null;
     }
 };

@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 
 import { GetAllProductsSlug } from "@/src/services/products";
 import { getCategories } from "@/src/services/categorys";
+import { getCatalogSitemapPaths } from "@/src/services/catalog";
+import type { CatalogSitemapPath } from "@/src/schemas/catalog";
 import { SITE_URL } from "@/lib/site";
 
 const BASE_URL = SITE_URL;
@@ -28,6 +30,31 @@ function isValidSlug<T extends { slug?: string | null }>(
         typeof item.slug === "string" &&
         item.slug.trim().length > 0
     );
+}
+
+// Prioridad relativa: páginas amplias (categoría, marca) por encima de las combinaciones.
+const CATALOG_PRIORITY: Record<CatalogSitemapPath["type"], number> = {
+    category: 0.7,
+    brand: 0.7,
+    "category-brand": 0.6,
+    "category-line": 0.6,
+    "category-brand-line": 0.6,
+};
+
+async function getCategoryFallbackRoutes(): Promise<MetadataRoute.Sitemap> {
+    const categories: Categories = await getCategories().catch((error) => {
+        console.error("Sitemap: error obteniendo categorías", error);
+        return [] as Categories;
+    });
+
+    return categories
+        .filter(isValidSlug)
+        .map((category) => ({
+            url: `${BASE_URL}/catalogo/${encodeURIComponent(category.slug)}`,
+            lastModified: getValidDate(category.updatedAt),
+            changeFrequency: "weekly",
+            priority: 0.7,
+        }));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -104,16 +131,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Si la API falla, se publican igualmente las rutas estáticas en lugar de
     // devolver error (getCategories llama a notFound() ante una respuesta no OK).
-    const [products, categories]: [Products, Categories] =
+    const [products, catalogPaths]: [Products, CatalogSitemapPath[] | null] =
         await Promise.all([
             GetAllProductsSlug().catch((error) => {
                 console.error("Sitemap: error obteniendo productos", error);
                 return [] as Products;
             }),
-            getCategories().catch((error) => {
-                console.error("Sitemap: error obteniendo categorías", error);
-                return [] as Categories;
-            }),
+            getCatalogSitemapPaths(),
         ]);
 
     // Productos: /productos/[slug]
@@ -126,15 +150,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.8,
         }));
 
-    // Categorías: /catalogo/[slug]
-    const categoryRoutes: MetadataRoute.Sitemap = categories
-        .filter(isValidSlug)
-        .map((category) => ({
-            url: `${BASE_URL}/catalogo/${encodeURIComponent(category.slug)}`,
-            lastModified: getValidDate(category.updatedAt),
+    // Catálogo: combinaciones categoría / marca / línea con productos activos
+    // (calculadas en el backend, sin duplicados). Si la API falla, se usan
+    // las categorías como antes.
+    const categoryRoutes: MetadataRoute.Sitemap = catalogPaths
+        ? catalogPaths.map((entry) => ({
+            url: `${BASE_URL}${entry.path
+                .split("/")
+                .map((segment) => encodeURIComponent(segment))
+                .join("/")}`,
+            lastModified: getValidDate(entry.lastModified),
             changeFrequency: "weekly",
-            priority: 0.7,
-        }));
+            priority: CATALOG_PRIORITY[entry.type],
+        }))
+        : await getCategoryFallbackRoutes();
 
     // Eliminar URLs duplicadas.
     const uniqueRoutes = new Map<

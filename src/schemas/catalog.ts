@@ -63,3 +63,19 @@ export const CatalogResponseSchema = z.object({
 export type CatalogFilters = z.infer<typeof CatalogFiltersSchema>;
 export type CatalogResponse = z.infer<typeof CatalogResponseSchema>;
 export type FilterItem = z.infer<typeof FilterItemSchema>;
+
+// Rutas de catálogo para el sitemap (GET /api/seo/catalog-paths)
+export const CatalogSitemapPathSchema = z.object({
+    path: z.string().startsWith("/catalogo/"),
+    type: z.enum(["category", "brand", "category-brand", "category-line", "category-brand-line"]),
+    productCount: z.number(),
+    lastModified: z.string(),
+});
+
+export const CatalogSitemapPathsResponseSchema = z.object({
+    success: z.boolean(),
+    total: z.number(),
+    paths: z.array(CatalogSitemapPathSchema),
+});
+
+export type CatalogSitemapPath = z.infer<typeof CatalogSitemapPathSchema>;

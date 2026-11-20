@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -11,82 +10,243 @@ import {
   ShoppingCart,
   FileText,
   Package,
-  Layers3,
+  Tags,
+  Building2,
+  GitFork,
+  Images,
+  Layers,
+  Megaphone,
+  FileStack,
+  Home,
+  ShieldAlert,
   BarChart3,
-  Palette,
-  Settings,
-  Store,
-  ChevronDown,
-  PanelLeftClose,
+  Users,
   Fingerprint,
+  Store,
   ExternalLink,
+  PanelLeftClose,
+  UserRound,
+  Ticket,
+  Truck,
+  Warehouse,
   LucideIcon,
 } from "lucide-react";
 
-type NavChild = {
+type NavItem = {
   href: string;
   label: string;
-  isExternal?: boolean;
-};
-
-type NavItem = {
-  label: string;
   icon: LucideIcon;
-  href?: string;
-  tag?: string;
   isExternal?: boolean;
-  children?: NavChild[];
+  /** Opción futura: se muestra desactivada y sin enlace */
+  soon?: boolean;
 };
 
-const navItems: NavItem[] = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/pedidos", icon: ShoppingCart, label: "Pedidos", tag: "NUEVO" },
-  { href: "/admin/tickets-v2", icon: FileText, label: "Comprobantes" },
-  { href: "/admin/products", icon: Package, label: "Productos" },
+type NavSection = {
+  title: string;
+  items: NavItem[];
+};
+
+// Orden según el flujo de trabajo: operar → catálogo → web pública → gestión → accesos
+const sections: NavSection[] = [
   {
-    icon: Layers3,
-    label: "Clasificación",
-    children: [
-      { href: "/admin/products/category", label: "Categorías" },
-      { href: "/admin/brands", label: "Marcas" },
-      { href: "/admin/lines", label: "Líneas" },
+    title: "Operación",
+    items: [
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
+      { href: "/admin/tickets-v2", label: "Comprobantes", icon: FileText },
     ],
   },
   {
-    icon: BarChart3,
-    label: "Métricas",
-    children: [
-      { href: "/admin/claims", label: "Reclamaciones" },
-      { href: "/admin/reports", label: "Reportes" },
+    title: "Catálogo",
+    items: [
+      { href: "/admin/products", label: "Productos", icon: Package },
+      { href: "/admin/products/category", label: "Categorías", icon: Tags },
+      { href: "/admin/brands", label: "Marcas", icon: Building2 },
+      { href: "/admin/lines", label: "Líneas", icon: GitFork },
     ],
   },
   {
-    icon: Palette,
-    label: "Contenido",
-    children: [
-      { href: "/admin/slider", label: "Banners" },
-      { href: "/admin/sections", label: "Secciones" },
-      { href: "/admin/advertisements", label: "Avisos" },
-      { href: "/admin/pages", label: "Páginas" },
+    title: "Página principal",
+    items: [
+      { href: "/admin/slider", label: "Banners", icon: Images },
+      { href: "/admin/sections", label: "Secciones", icon: Layers },
+      { href: "/admin/advertisements", label: "Avisos", icon: Megaphone },
+      { href: "/admin/pages", label: "Páginas", icon: FileStack },
     ],
   },
   {
-    icon: Settings,
-    label: "Sistema",
-    children: [
-      { href: "/admin/users", label: "Usuarios" },
-      { href: "/admin/attendance", label: "Asistencias" },
+    title: "Gestión",
+    items: [
+      { href: "/admin/reports", label: "Reportes", icon: BarChart3 },
+      { href: "/admin/claims", label: "Reclamaciones", icon: ShieldAlert },
+      { href: "/admin/users", label: "Usuarios", icon: Users },
+      { href: "/admin/attendance", label: "Asistencias", icon: Fingerprint },
     ],
   },
   {
-    icon: Store,
-    label: "Accesos",
-    children: [
-      { href: "/pos", label: "Punto de Venta", isExternal: true },
-      { href: "/", label: "Tienda Online", isExternal: true },
+    title: "Próximamente",
+    items: [
+      { href: "#", label: "Clientes", icon: UserRound, soon: true },
+      { href: "#", label: "Cupones", icon: Ticket, soon: true },
+      { href: "#", label: "Envíos y zonas", icon: Truck, soon: true },
+      { href: "#", label: "Inventario", icon: Warehouse, soon: true },
+    ],
+  },
+  {
+    title: "Accesos",
+    items: [
+      { href: "/pos", label: "Punto de venta", icon: Store, isExternal: true },
+      { href: "/", label: "Tienda online", icon: Home, isExternal: true },
     ],
   },
 ];
+
+function initialsOf(user: User) {
+  const nombre = user.nombre?.trim() ?? "";
+  const apellido = user.apellidos?.trim() ?? "";
+  return `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase() || "A";
+}
+
+interface SidebarPanelProps {
+  user: User;
+  /** Móvil: siempre muestra texto. Escritorio: el texto aparece al expandirse (fijada o hover) */
+  variant: "mobile" | "desktop";
+  /** Escritorio: true cuando la barra está fijada expandida desde el navbar */
+  expanded?: boolean;
+  onClose?: () => void;
+}
+
+function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanelProps) {
+  const pathname = usePathname();
+  const isDesktop = variant === "desktop";
+  const collapsedDesktop = isDesktop && !expanded;
+
+  const isActive = (href: string) =>
+    href === "/admin"
+      ? pathname === "/admin"
+      : pathname === href || pathname.startsWith(`${href}/`);
+
+  // Texto visible si está fijada, o si el contenedor está en hover (solo escritorio colapsado)
+  const textReveal = collapsedDesktop ? "md:opacity-0 md:group-hover:opacity-100" : "opacity-100";
+  const iconOnly = collapsedDesktop ? "md:justify-center md:group-hover:justify-start" : "";
+
+  return (
+    <div className="flex h-full w-full flex-col bg-white">
+      {/* Cabecera: misma altura que el navbar (h-14) */}
+      <div className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200/80 px-4">
+        <Link href="/admin" className="flex min-w-0 items-center">
+          {collapsedDesktop && (
+            <Logo version="icono" className="h-6 w-6 shrink-0 md:block md:group-hover:hidden" />
+          )}
+          <Logo
+            version="completa"
+            className={cn("h-6 w-28", collapsedDesktop ? "hidden md:group-hover:block" : "block")}
+          />
+        </Link>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar menú"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Navegación */}
+      <nav aria-label="Menú de administración" className="flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden px-2 py-2">
+        {sections.map((section) => (
+          <div key={section.title} className="space-y-px">
+            <p
+              className={cn(
+                "whitespace-nowrap px-2 pb-0.5 text-[9px] font-semibold uppercase tracking-wider text-zinc-400 transition-opacity duration-150",
+                textReveal
+              )}
+            >
+              {section.title}
+            </p>
+
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              const active = !item.isExternal && isActive(item.href);
+
+              if (item.soon) {
+                return (
+                  <div
+                    key={`${section.title}-${item.label}`}
+                    aria-disabled="true"
+                    title={isDesktop ? `${item.label} · Próximamente` : undefined}
+                    className={cn(
+                      "flex cursor-not-allowed items-center gap-2.5 rounded-md px-2 py-1.5 text-xs text-zinc-400",
+                      iconOnly
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0 text-zinc-300" />
+                    <span className={cn("flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap transition-opacity duration-150", textReveal)}>
+                      <span className="truncate">{item.label}</span>
+                      <span className="ml-auto rounded-full border border-zinc-200 px-1.5 text-[8px] font-normal uppercase text-zinc-400">
+                        No disponible
+                      </span>
+                    </span>
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={`${section.title}-${item.label}`}
+                  href={item.href}
+                  target={item.isExternal ? "_blank" : undefined}
+                  rel={item.isExternal ? "noopener noreferrer" : undefined}
+                  aria-current={active ? "page" : undefined}
+                  title={isDesktop ? item.label : undefined}
+                  className={cn(
+                    "relative flex items-center gap-2.5 rounded-md px-2 py-1.5 text-xs transition-colors duration-150",
+                    iconOnly,
+                    active
+                      ? "bg-zinc-100 font-semibold text-zinc-900"
+                      : "font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                  )}
+                >
+                  {active && (
+                    <span className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-zinc-900" aria-hidden />
+                  )}
+
+                  <Icon className={cn("h-3.5 w-3.5 shrink-0", active ? "text-zinc-900" : "text-zinc-500")} />
+
+                  <span
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap transition-opacity duration-150",
+                      textReveal
+                    )}
+                  >
+                    <span className="truncate">{item.label}</span>
+                    {item.isExternal && <ExternalLink className="ml-auto h-3 w-3 shrink-0 text-zinc-400" />}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
+
+      {/* Pie: usuario conectado */}
+      <div className="shrink-0 border-t border-zinc-200/80 p-2">
+        <div className={cn("flex items-center gap-2 rounded-md px-1 py-1", iconOnly)}>
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-bold text-white">
+            {initialsOf(user)}
+          </div>
+          <div className={cn("min-w-0 whitespace-nowrap transition-opacity duration-150", textReveal)}>
+            <p className="truncate text-xs font-medium text-zinc-900">{user.nombre}</p>
+            <p className="truncate text-[10px] text-zinc-500">Administrador</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -94,196 +254,37 @@ interface AdminSidebarProps {
   user: User;
 }
 
-export function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
-  const pathname = usePathname();
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-
-  const toggleMenu = (label: string) => {
-    if (!isOpen && window.innerWidth >= 768) {
-      onToggle();
-      setTimeout(() => setOpenMenus((p) => ({ ...p, [label]: true })), 150);
-      return;
-    }
-    setOpenMenus((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
-
+/**
+ * Escritorio: la barra ocupa su ancho en el layout (w-16). Al pasar el mouse el
+ * contenedor se ensancha a w-60 y el contenido de la página se reduce a la par.
+ * Móvil: drawer deslizable controlado por `isOpen`.
+ */
+export function AdminSidebar({ isOpen, onToggle, user }: AdminSidebarProps) {
   return (
-    <aside
-      className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col bg-white transition-all duration-300 md:static",
-        "border-r border-slate-200 shadow-md md:shadow-none",
-        isOpen ? "w-56 translate-x-0" : "w-56 -translate-x-full md:w-16 md:translate-x-0"
-      )}
-    >
-      {/* Header */}
+    <>
+      {/* Escritorio: empuja el contenido. Fijada (isOpen) o expandida al pasar el mouse */}
       <div
         className={cn(
-          "flex items-center justify-between h-14 border-b border-slate-200 transition-all duration-300",
-          isOpen ? "px-3" : "md:px-0 md:justify-center"
+          "group relative z-40 hidden h-full shrink-0 border-r border-zinc-200/80 bg-white md:block",
+          "transition-[width] duration-150 ease-out",
+          isOpen ? "md:w-52" : "md:w-16 md:hover:w-52"
         )}
       >
-        <Link href="/admin" className="flex items-center justify-center w-full md:w-auto">
-          {isOpen ? (
-            <div className="w-full flex items-center">
-              <Logo version="completa" className="h-7 w-32" />
-            </div>
-          ) : (
-            <Logo version="icono" className="h-6 w-6" />
-          )}
-        </Link>
-        <button
-          type="button"
-          onClick={onToggle}
-          className="md:hidden p-1 hover:bg-slate-100 rounded-md transition-colors text-slate-500 hover:text-slate-700 flex-shrink-0"
-        >
-          <PanelLeftClose className="h-4 w-4" />
-        </button>
+        <div className="absolute inset-y-0 left-0 w-full overflow-hidden">
+          <SidebarPanel user={user} variant="desktop" expanded={isOpen} />
+        </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-2 py-2.5 space-y-3">
-        {navItems.map((item) => {
-          const { href, icon: Icon, label, children, tag, isExternal } = item;
-
-          if (children) {
-            const isChildActive = children.some(
-              (c: NavChild) =>
-                pathname === c.href || (c.href !== "/admin" && pathname.startsWith(`${c.href}/`))
-            );
-            const isMenuOpen = openMenus[label] !== undefined ? openMenus[label] : isChildActive;
-
-            return (
-              <div key={label} className="space-y-0.5">
-                <button
-                  type="button"
-                  onClick={() => toggleMenu(label)}
-                  className={cn(
-                    "group w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-all text-xs font-medium",
-                    isChildActive
-                      ? "bg-blue-50 text-blue-900"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
-                    !isOpen && "md:justify-center md:px-0"
-                  )}
-                  title={!isOpen ? label : undefined}
-                >
-                  <Icon
-                    className={cn(
-                      "h-4 w-4 flex-shrink-0 transition-colors",
-                      isChildActive ? "text-blue-600" : "text-slate-500 group-hover:text-slate-700"
-                    )}
-                  />
-                  {isOpen && (
-                    <>
-                      <span className="flex-1 text-left truncate">{label}</span>
-                      <ChevronDown
-                        className={cn(
-                          "h-3.5 w-3.5 transition-transform duration-200 text-slate-400",
-                          isMenuOpen && "rotate-180 text-slate-600"
-                        )}
-                      />
-                    </>
-                  )}
-                </button>
-
-                {isOpen && (
-                  <div
-                    className={cn(
-                      "grid overflow-hidden transition-all duration-200",
-                      isMenuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                    )}
-                  >
-                    <div className="min-h-0 space-y-0.5 pl-6">
-                      {children.map((sub: NavChild) => {
-                        const isSubActive =
-                          pathname === sub.href ||
-                          (sub.href !== "/admin" && pathname.startsWith(`${sub.href}/`));
-                        return (
-                          <Link
-                            key={sub.href}
-                            href={sub.href}
-                            target={sub.isExternal ? "_blank" : undefined}
-                            rel={sub.isExternal ? "noopener noreferrer" : undefined}
-                            className={cn(
-                              "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] transition-all",
-                              isSubActive
-                                ? "bg-blue-100 text-blue-900 font-semibold"
-                                : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                            )}
-                          >
-                            <span className="flex-1 truncate">{sub.label}</span>
-                            {sub.isExternal && (
-                              <ExternalLink className="h-3 w-3 flex-shrink-0 text-slate-400" />
-                            )}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          const isActive =
-            href && (pathname === href || (href !== "/admin" && pathname.startsWith(`${href}/`)));
-
-          return (
-            <Link
-              key={label}
-              href={href || "#"}
-              target={isExternal ? "_blank" : undefined}
-              rel={isExternal ? "noopener noreferrer" : undefined}
-              className={cn(
-                "group flex items-center gap-2.5 px-2.5 py-1.5 rounded-md transition-all text-xs font-medium",
-                isActive
-                  ? "bg-blue-50 text-blue-900"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
-                !isOpen && "md:justify-center md:px-0"
-              )}
-              title={!isOpen ? label : undefined}
-            >
-              <Icon
-                className={cn(
-                  "h-4 w-4 flex-shrink-0 transition-colors",
-                  isActive ? "text-blue-600" : "text-slate-500 group-hover:text-slate-700"
-                )}
-              />
-              {isOpen && (
-                <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                  <span className="truncate">{label}</span>
-                  {tag && (
-                    <span className="px-1.5 py-0.2 text-[9px] font-bold rounded-full bg-amber-100 text-amber-700 flex-shrink-0">
-                      {tag}
-                    </span>
-                  )}
-                </div>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Footer */}
-      <div className="border-t border-slate-200 p-2 space-y-1.5">
-        <Link
-          href="/staff/attendance"
-          target="_blank"
-          rel="noopener noreferrer"
-          title={!isOpen ? "Asistencia" : undefined}
-          className={cn(
-            "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors",
-            !isOpen && "justify-center px-0"
-          )}
-        >
-          <Fingerprint className="h-4 w-4 flex-shrink-0 text-indigo-600" />
-          {isOpen && (
-            <>
-              <span className="flex-1 truncate">Asistencia</span>
-              <ExternalLink className="h-3 w-3 text-slate-400 flex-shrink-0" />
-            </>
-          )}
-        </Link>
-      </div>
-    </aside>
+      {/* Móvil: drawer */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 w-52 border-r border-zinc-200/80 shadow-xl md:hidden",
+          "transition-transform duration-200 ease-out",
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <SidebarPanel user={user} variant="mobile" onClose={onToggle} />
+      </aside>
+    </>
   );
 }

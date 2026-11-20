@@ -8,6 +8,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useCartStore } from '@/src/store/cartStore';
 import { CheckoutFormData } from '../schemas/checkout.schema';
 import { Package } from 'lucide-react';
+import { CASH_PROVIDER, calcularDescuentoEfectivo, contarUnidadesIphone } from '../utils/cash-discount';
 
 const MP_SURCHARGE_RATE = 0.12;
 
@@ -29,7 +30,9 @@ export default function OrderSummary() {
   const safeTotal: number = typeof total === 'number' && !isNaN(total) ? total : 0;
   const recargoFinanciero: number =
     paymentProvider === 'mercadopago' ? safeTotal * MP_SURCHARGE_RATE : 0;
-  const totalFinal: number = safeTotal + shippingCost + recargoFinanciero;
+  const descuentoEfectivo: number =
+    paymentProvider === CASH_PROVIDER ? calcularDescuentoEfectivo(cart) : 0;
+  const totalFinal: number = safeTotal + shippingCost + recargoFinanciero - descuentoEfectivo;
 
   if (cart.length === 0) {
     return (
@@ -121,6 +124,15 @@ export default function OrderSummary() {
             {shippingCost === 0 ? 'Gratis' : `S/ ${shippingCost.toFixed(2)}`}
           </span>
         </div>
+
+        {descuentoEfectivo > 0 && (
+          <div className="flex justify-between text-neutral-600">
+            <span>Descuento efectivo ({contarUnidadesIphone(cart)} iPhone × S/ 100)</span>
+            <span className="font-medium text-neutral-900 tabular-nums">
+              − S/ {descuentoEfectivo.toFixed(2)}
+            </span>
+          </div>
+        )}
 
         {paymentProvider === 'mercadopago' && recargoFinanciero > 0 && (
           <div className="flex justify-between text-neutral-600">

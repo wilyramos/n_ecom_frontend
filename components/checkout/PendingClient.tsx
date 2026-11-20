@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { useCartStore } from '@/src/store/cartStore';
 import { IPedido } from '@/src/modules/checkout/types/pedido.types';
 import Link from 'next/link';
-import { Clock, ShoppingBag, MapPin, User, ReceiptText, CreditCard, Zap, Copy, RefreshCw } from 'lucide-react';
+import { Clock, ShoppingBag, MapPin, User, ReceiptText, CreditCard, Zap, Copy, RefreshCw, Banknote } from 'lucide-react';
 import { toast } from 'sonner';
 
 // --- Subcomponentes de UI (Diseño de Ticket) ---
@@ -62,6 +62,7 @@ export default function PendingClient({ order }: PendingClientProps) {
   }, [order, clearCart]);
 
   const { provider } = order.payment;
+  const isEfectivo = provider === 'efectivo';
   const { customerProfile, shippingAddress, items } = order;
 
   const formatCurrency = (amount: number) => `S/ ${amount.toFixed(2)}`;
@@ -115,13 +116,15 @@ export default function PendingClient({ order }: PendingClientProps) {
                   <Clock size={28} strokeWidth={2.5} className="animate-pulse" />
                 </div>
                 <h1 className="text-xl font-bold tracking-widest text-neutral-900 uppercase font-mono">
-                  Pago en Proceso
+                  {isEfectivo ? 'Pedido Registrado' : 'Pago en Proceso'}
                 </h1>
                 <p className="text-[10px] text-orange-600 mt-1 uppercase tracking-wider font-semibold">
-                  Esperando confirmación
+                  {isEfectivo ? 'Pago pendiente de confirmación' : 'Esperando confirmación'}
                 </p>
                 <p className="text-xs text-neutral-500 mt-3 leading-relaxed max-w-[260px]">
-                  Completa la acción en tu app bancaria o agente autorizado para confirmar tu compra.
+                  {isEfectivo
+                    ? 'Nuestro equipo se comunicará contigo por WhatsApp para coordinar el pago en efectivo o transferencia y confirmar tu pedido.'
+                    : 'Completa la acción en tu app bancaria o agente autorizado para confirmar tu compra.'}
                 </p>
               </div>
 
@@ -176,7 +179,13 @@ export default function PendingClient({ order }: PendingClientProps) {
                         <span>Transferencia</span>
                       </>
                     )}
-                    {!['powerpay', 'transferencia'].includes(provider) && (
+                    {isEfectivo && (
+                      <>
+                        <Banknote size={13} />
+                        <span>Efectivo / Transferencia</span>
+                      </>
+                    )}
+                    {!['powerpay', 'transferencia', 'efectivo'].includes(provider) && (
                       <>
                         <CreditCard size={13} />
                         <span>{provider}</span>

@@ -15,8 +15,7 @@ import ShopNowButton from "./ShopNowButton";
 import ImagenesProductoCarousel from "./ImagenesProductoCarousel";
 import ProductExpandableSections from "./ProductExpandableSections";
 import ColorCircle from "@/components/ui/ColorCircle";
-import PowerpayPdp from "@/src/components/powerpay/PowerpayPdp";
-import PaymentMethods from "../PaymentMethods";
+import ProductPriceOptions from "./ProductPriceOptions";
 
 import {
   Select,
@@ -121,10 +120,22 @@ export default function ProductDetails({ producto }: Props) {
     return cleaned.length > 0 ? cleaned : ["/logoapp.png"];
   }, [selectedVariant, producto.imagenes, producto.variants]);
 
-  const precio = selectedVariant?.precio ?? producto.precio ?? 0;
-  const precioComparativo = selectedVariant?.precioComparativo ?? producto.precioComparativo ?? null;
+  // Sin variante elegida: se muestra el precio más bajo real de las variantes (marcado como "Desde")
+  const variantPrices = (producto.variants ?? [])
+    .map((v) => v.precio)
+    .filter((p): p is number => typeof p === "number" && p > 0);
+  const precioMinimoVariantes = variantPrices.length > 0 ? Math.min(...variantPrices) : null;
+  const precioSinSeleccion = hasVariants && !selectedVariant;
+  const precio = selectedVariant?.precio ?? (precioSinSeleccion ? precioMinimoVariantes : null) ?? producto.precio ?? 0;
+  const varianteMinima = precioSinSeleccion
+    ? producto.variants?.find((v) => v.precio === precioMinimoVariantes)
+    : undefined;
+  const precioComparativo =
+    selectedVariant?.precioComparativo ??
+    varianteMinima?.precioComparativo ??
+    producto.precioComparativo ??
+    null;
   const stock = !selectedVariant ? producto.stock ?? 0 : selectedVariant.stock ?? 0;
-  const hasDiscount = precioComparativo !== null && precioComparativo > precio;
   const allAttributesSelected = Object.keys(allAttributes).every((key) => selectedAttributes[key]);
 
   const isOptionOutOfStock = (attrKey: string, attrValue: string) => {
@@ -147,14 +158,14 @@ export default function ProductDetails({ producto }: Props) {
 
   return (
     <>
-      <article className="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto bg-background px-4 py-4 rounded-lg">
+      <article className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-12 gap-6 max-w-7xl mx-auto bg-background px-4 py-4 rounded-lg">
         {/* Imagen y Carrusel */}
         <div className="lg:col-span-7 w-full">
           <ImagenesProductoCarousel images={variantImages} productName={producto.nombre} />
         </div>
 
         {/* Detalles del Producto */}
-        <section className="lg:col-span-5 flex flex-col space-y-4">
+        <section className="lg:col-span-5 flex flex-col space-y-2 min-w-0 w-full">
           <header className="space-y-1.5 pb-2">
             <div className="flex items-center justify-between gap-2 flex-wrap text-xs tracking-wide uppercase font-medium">
               <div className="flex items-center gap-1 text-brand-gris">
@@ -194,24 +205,6 @@ export default function ProductDetails({ producto }: Props) {
             )}
 
             <div className="flex items-center gap-3 pt-2 flex-wrap">
-              {hasDiscount && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xl md:text-2xl text-brand-gris line-through">
-                    S/ {precioComparativo!.toFixed(2)}
-                  </span>
-                  <span className="text-xl md:text-2xl px-2 bg-destructive text-destructive-foreground font-normal text-brand-silver-border">
-                    −{Math.round(((precioComparativo! - precio) / precioComparativo!) * 100)}%
-                  </span>
-                </div>
-              )}
-
-              <div className="flex items-baseline text-brand-charcoal">
-                <span className="text-base font-medium mr-0.5">S/</span>
-                <span className="text-xl md:text-2xl font-semibold tracking-tight">
-                  {precio.toFixed(2)}
-                </span>
-              </div>
-
               {stock === 0 && (
                 <span className="text-xs font-medium text-brand-charcoal bg-brand-silver-border px-2.5 py-1 rounded-sm">
                   Sin stock
@@ -220,13 +213,17 @@ export default function ProductDetails({ producto }: Props) {
             </div>
           </header>
 
-          {/* Widget Oficial Powerpay PDP */}
-          <div>
-            <PowerpayPdp price={precio} />
-          </div>
+          {/* Precios: tarjeta de precio, PowerPay y efectivo (iPhone) */}
+          <ProductPriceOptions
+            precio={precio}
+            precioComparativo={precioComparativo}
+            esDesde={precioSinSeleccion}
+            categoriaNombre={producto.categoria?.nombre}
+            categoriaSlug={producto.categoria?.slug}
+          />
 
           {/* Variantes y Atributos */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Object.entries(allAttributes).map(([key]) => {
               const availableValues = getAvailableValues(key);
               const isColor = key.toLowerCase() === "color";
@@ -258,10 +255,12 @@ export default function ProductDetails({ producto }: Props) {
                             disabled={outOfStock}
                             title={val}
                             className={cn(
-                              "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-background",
-                              selected ? "border-brand-charcoal ring-1 ring-brand-charcoal" : "border-brand-silver-border",
-                              !outOfStock && !selected && "hover:border-brand-charcoal cursor-pointer",
-                              outOfStock && "cursor-not-allowed"
+                              "relative flex items-center justify-center w-9 h-9 rounded-full border transition-all duration-150 bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-action focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                              selected
+                                ? "border-brand-charcoal ring-2 ring-brand-action ring-offset-2 ring-offset-background shadow-sm"
+                                : "border-brand-silver-border",
+                              !outOfStock && !selected && "hover:border-brand-action hover:shadow-sm cursor-pointer",
+                              outOfStock && "cursor-not-allowed opacity-60"
                             )}
                           >
                             <div className="relative w-7 h-7 rounded-full border border-brand-silver-border overflow-hidden shrink-0">
@@ -315,12 +314,12 @@ export default function ProductDetails({ producto }: Props) {
                             onClick={() => !outOfStock && updateSelectedVariant(key, val)}
                             disabled={outOfStock}
                             className={cn(
-                              "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden",
+                              "h-9 px-4 text-xs font-medium border rounded-md transition-all relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-action focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                               selected
-                                ? "border-brand-charcoal ring-1 ring-brand-charcoal bg-background text-brand-charcoal font-semibold cursor-pointer"
+                                ? "border-brand-charcoal bg-brand-charcoal text-background font-semibold shadow-sm cursor-pointer"
                                 : outOfStock
-                                  ? "border-brand-silver-border bg-background text-brand-gris cursor-not-allowed line-through decoration-brand-gris"
-                                  : "border-brand-silver-border bg-background text-brand-charcoal hover:border-brand-charcoal cursor-pointer"
+                                  ? "border-brand-silver-border bg-brand-silver-border/40 text-brand-gris cursor-not-allowed line-through decoration-brand-gris"
+                                  : "border-brand-silver-border bg-background text-brand-charcoal hover:border-brand-action hover:bg-brand-action/10 cursor-pointer"
                             )}
                           >
                             <span className="block">
@@ -337,7 +336,7 @@ export default function ProductDetails({ producto }: Props) {
           </div>
 
           {/* Acciones de Compra */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row sm:items-stretch gap-2">
             <div className="hidden md:block flex-1 w-full">
               <AddProductToCart
                 product={producto}
@@ -354,21 +353,13 @@ export default function ProductDetails({ producto }: Props) {
             </div>
           </div>
 
-          {/* Métodos de Pago */}
-          <div className="pt-2 flex flex-col gap-2">
-            <span className="text-xs text-brand-gris font-medium uppercase tracking-wider">
-              Medios de pago aceptados
-            </span>
-            <PaymentMethods />
-          </div>
-
           {/* Información y Confianza */}
-          <div className="pt-1 flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             {/* Tarjeta de Garantía */}
             <div className="flex items-center justify-between p-3 rounded-xl border border-brand-silver-border bg-background">
               <div className="flex items-center gap-2.5 text-sm font-semibold text-brand-charcoal">
                 <ShieldCheck className="w-5 h-5 text-brand-action shrink-0" />
-                <span>1 año de garantía</span>
+                <span>1 año de garantía Apple</span>
               </div>
               <Link
                 href="/cambios-devoluciones"

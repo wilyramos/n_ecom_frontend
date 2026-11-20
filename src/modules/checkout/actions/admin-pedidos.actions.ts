@@ -89,6 +89,55 @@ export async function updateAdminPedidoStatusAction(
   }
 }
 
+/**
+ * Confirma manualmente un pago en efectivo o transferencia (solo pedidos con esos medios).
+ */
+export async function confirmAdminPedidoPaymentAction(
+  pedidoId: string
+): Promise<{ success: boolean; message?: string; data?: IPedido }> {
+  try {
+    const validation = z
+      .string()
+      .regex(objectIdRegex, { message: 'Identificador de pedido inválido.' })
+      .safeParse(pedidoId);
+    if (!validation.success) {
+      return { success: false, message: validation.error.issues[0]?.message };
+    }
+
+    const token = await getAuthToken();
+    if (!token) {
+      return { success: false, message: 'Sesión expirada o permisos insuficientes.' };
+    }
+
+    const res = await fetch(`${API_URL}/pedidos/${encodeURIComponent(validation.data)}/confirmar-pago`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+
+    const responseData = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: responseData.message || 'No se pudo confirmar el pago.',
+      };
+    }
+
+    revalidatePath('/admin/pedidos');
+    revalidatePath(`/admin/pedidos/${validation.data}`);
+
+    return {
+      success: true,
+      data: responseData.data,
+      message: 'Pago confirmado. El pedido pasa a preparación.',
+    };
+  } catch (error) {
+    console.error('[confirmAdminPedidoPaymentAction Error]:', error);
+    return { success: false, message: 'Fallo de red al conectar con el servidor.' };
+  }
+}
+
 export async function updateBulkAdminPedidoStatusAction(
   pedidoIds: string[],
   newStatus: EstadoPedido

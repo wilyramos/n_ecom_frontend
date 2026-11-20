@@ -110,6 +110,10 @@ export const useCartStore = create<Store>()(
                                     stock,
                                     imagenes,
                                     slug: item.slug,  // 👈
+                                    categoriaNombre:
+                                        'categoria' in item && item.categoria && typeof item.categoria === 'object'
+                                            ? item.categoria.nombre
+                                            : null,
                                     variant: variant
                                         ? {
                                             _id: variant._id,

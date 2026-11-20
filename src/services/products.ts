@@ -32,13 +32,19 @@ export const getProduct = async (id: string) => {
 };
 
 export const GetProductsBySlug = async (slug: string) => {
-    const url = `${process.env.API_URL}/products/slug/${slug}`;
+    const url = `${process.env.API_URL}/products/slug/${encodeURIComponent(slug)}`;
 
     const req = await fetch(url, {
     });
 
-    if (!req.ok) {
+    // Solo un 404 real del backend es "producto inexistente". Un 5xx se propaga
+    // como error (500) para que Google reintente en vez de desindexar la URL.
+    if (req.status === 404) {
         return notFound();
+    }
+
+    if (!req.ok) {
+        throw new Error(`Error al obtener el producto "${slug}": HTTP ${req.status}`);
     }
 
     const json = await req.json();

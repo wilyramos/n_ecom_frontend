@@ -3,6 +3,13 @@ import ToastNotification from '@/components/ui/ToastNotification'
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { getSession } from '@/src/auth/dal';
+import type { Metadata } from "next";
+import { NOINDEX_ROBOTS } from "@/lib/site";
+
+// SEO: página transaccional/privada, no debe aparecer en buscadores.
+export const metadata: Metadata = {
+    robots: NOINDEX_ROBOTS,
+};
 
 export default async function layoutAuth({ children }: { children: React.ReactNode }) {
     const session = await getSession();

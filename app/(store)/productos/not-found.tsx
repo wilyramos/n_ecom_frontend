@@ -10,7 +10,7 @@ export default function NotFound() {
             <div className="flex items-center text-sm text-gray-500 pb-2">
                 <Link href="/" className="hover:text-gray-900">Inicio</Link>
                 <span className="mx-2">/</span>
-                <Link href="/productos" className="hover:text-gray-900">Productos</Link>
+                <Link href="/catalogo" className="hover:text-gray-900">Productos</Link>
                 <span className="mx-2">/</span>
                 <span className="text-gray-900 font-medium">No encontrado</span>
             </div>
@@ -55,7 +55,7 @@ export default function NotFound() {
                             <p className="text-sm font-medium text-gray-700">Te sugerimos:</p>
 
                             <div className="flex flex-col sm:flex-row gap-3">
-                                <Link href="/productos" className="flex-1">
+                                <Link href="/catalogo" className="flex-1">
                                     <Button
                                         variant="default"
                                         size="sm"

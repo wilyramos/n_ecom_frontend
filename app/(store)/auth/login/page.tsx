@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 import LoginForm from '@/components/auth/LoginForm'
 
 export const metadata: Metadata = {
-    title: 'neoshop - Iniciar Sesión',
+    title: 'Iniciar Sesión',
     description: 'Inicia sesión en tu cuenta de neoshop para acceder a tus pedidos, favoritos y más.',
     keywords: 'iniciar sesión, neoshop, cuenta',
 }

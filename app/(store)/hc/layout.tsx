@@ -1,9 +1,15 @@
 import React from "react";
 import Sidebarcs from "@/components/home/clientservice/Sidebarcs";
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE, SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-    title: "Centro de Ayuda | neoshop",
+    // Objeto con plantilla: un título en texto plano anularía la plantilla
+    // "%s | Neoshop" para las subpáginas del centro de ayuda.
+    title: {
+        default: "Centro de Ayuda",
+        template: "%s | Neoshop",
+    },
     description:
         "Encuentra soporte, políticas de compra, garantías, devoluciones y ayuda en neoshop. Atención personalizada y respuestas rápidas a tus consultas.",
     keywords: [
@@ -22,12 +28,11 @@ export const metadata: Metadata = {
         title: "Centro de Ayuda | neoshop Perú",
         description:
             "Soporte y soluciones rápidas para tus compras en neoshop. Revisa garantías, devoluciones, políticas, contacto y más.",
-        url: "https://neoshopimportaciones.com/hc",
-        siteName: "neoshop Perú",
+        siteName: SITE_NAME,
         type: "website",
         images: [
             {
-                url: "https://neoshopimportaciones.com/og-image.jpg", // *Si no tienes imagen aún, puedo generarte una*
+                url: DEFAULT_OG_IMAGE,
                 width: 1200,
                 height: 630,
                 alt: "Centro de Ayuda neoshop Perú"

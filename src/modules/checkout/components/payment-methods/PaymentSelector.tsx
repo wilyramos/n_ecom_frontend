@@ -7,8 +7,14 @@ import { useFormContext, Controller } from 'react-hook-form';
 import { CheckoutFormData } from '../../schemas/checkout.schema';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
+import { Banknote } from 'lucide-react';
 
-export default function PaymentSelector() {
+type PaymentSelectorProps = {
+  /** Muestra la opción de efectivo (solo si el carrito tiene productos iPhone) */
+  showEfectivo?: boolean;
+};
+
+export default function PaymentSelector({ showEfectivo = false }: PaymentSelectorProps) {
   const { control } = useFormContext<CheckoutFormData>();
 
   return (
@@ -98,6 +104,36 @@ export default function PaymentSelector() {
                 <Image src="/payments/powerpay.svg" alt="Powerpay" width={52} height={16} className="object-contain" />
               </div>
             </label>
+
+            {/* Efectivo / transferencia (solo iPhone, después de PowerPay) */}
+            {showEfectivo && (
+              <label
+                className={cn(
+                  "flex items-center justify-between p-3.5 cursor-pointer transition-colors",
+                  field.value === 'efectivo' ? "bg-neutral-50/60" : "hover:bg-neutral-50/30"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem value="efectivo" id="efectivo" className="sr-only" />
+                  <div
+                    className={cn(
+                      "w-4 h-4 rounded-full border flex items-center justify-center transition-colors",
+                      field.value === 'efectivo' ? "border-neutral-900 bg-neutral-900" : "border-neutral-300 bg-white"
+                    )}
+                  >
+                    {field.value === 'efectivo' && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-medium text-neutral-900">Efectivo o transferencia</span>
+                    <span className="text-[10px] font-normal text-neutral-500">
+                      S/ 100 de descuento por cada equipo iPhone
+                    </span>
+                  </div>
+                </div>
+
+                <Banknote className="w-4 h-4 text-neutral-500" />
+              </label>
+            )}
 
             {/* Mercado Pago */}
             {/* <label

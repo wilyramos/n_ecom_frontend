@@ -5,13 +5,14 @@ import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import Link from "next/link";
 import React from "react";
 import { routes } from "@/lib/routes";
+import { absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
-    title: "Categorías | neoshop",
+    title: "Categorías",
     description:
         "Explora todas nuestras subcategorías y encuentra productos específicos organizados para ti.",
     alternates: {
-        canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/categorias`,
+        canonical: absoluteUrl("/categorias"),
     },
 };
 
@@ -25,7 +26,7 @@ export default async function CategoriesPage() {
         itemListElement: subcategories.map((c, i) => ({
             "@type": "ListItem",
             position: i + 1,
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/categoria/${c.slug}`,
+            url: absoluteUrl(routes.catalog({ category: c.slug })),
         })),
     };
 

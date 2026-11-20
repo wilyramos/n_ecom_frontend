@@ -5,6 +5,14 @@ import { redirect } from 'next/navigation';
 import { logout } from '@/actions/logout-user-action';
 import { LogOut } from 'lucide-react';
 import SidebarProfileNav from '@/components/profile/SidebarProfileNav';
+import type { Metadata } from "next";
+import { NOINDEX_ROBOTS } from "@/lib/site";
+
+// SEO: página transaccional/privada, no debe aparecer en buscadores.
+export const metadata: Metadata = {
+    title: "Mi cuenta",
+    robots: NOINDEX_ROBOTS,
+};
 
 export default async function ProfileLayout({
   children,

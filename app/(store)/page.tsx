@@ -13,7 +13,7 @@ import GlobalAdContainer from "@/components/home/GlobalAdContainer";
 import PowerpayBanner from "@/src/components/powerpay/PowerpayBanner";
 
 export const metadata: Metadata = {
-    title: "Neoshop Importaciones | Tienda de tecnología en Perú",
+    title: { absolute: "Neoshop Importaciones | Tienda de tecnología en Perú" },
     description: "Encuentra iPhones, iPads, MacBooks, Apple Watch, AirPods y accesorios en Neoshop Importaciones. Envíos a todo el Perú y garantía oficial.",
     keywords: [
         "Neoshop", "tienda iPhone Perú", "venta de celulares", "accesorios Apple",
@@ -49,6 +49,11 @@ export const metadata: Metadata = {
 export default function HomePage() {
     return (
         <div className="w-full">
+            {/* SEO: único h1 de la home (visualmente oculto para no alterar el diseño) */}
+            <h1 className="sr-only">
+                Neoshop Importaciones: tienda de tecnología Apple y accesorios en Perú
+            </h1>
+
             <GlobalAdContainer />
 
             {/* Envolvemos en un flex column para controlar el flujo natural en móviles */}

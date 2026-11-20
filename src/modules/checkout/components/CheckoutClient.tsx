@@ -11,6 +11,11 @@ import CustomerInfo from './form-sections/CustomerInfo';
 import ShippingInfo from './form-sections/ShippingInfo';
 import InvoiceInfo from './form-sections/InvoiceInfo';
 import PaymentSelector from './payment-methods/PaymentSelector';
+import {
+  CASH_PROVIDER,
+  calcularDescuentoEfectivo,
+  contarUnidadesIphone,
+} from '../utils/cash-discount';
 import OrderSummary from './OrderSummary';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/src/store/cartStore';
@@ -84,7 +89,17 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
 
   const shippingCost = deliveryMethod === 'shipping' ? 0 : 0;
   const recargoFinanciero = paymentProvider === 'mercadopago' ? total * MP_SURCHARGE_RATE : 0;
-  const totalFinalCalculado = total + shippingCost + recargoFinanciero;
+  // Pago en efectivo: S/ 100 de descuento por unidad de iPhone (solo si hay iPhone en el carrito)
+  const tieneIphone = contarUnidadesIphone(cart) > 0;
+
+  // Si se quita el iPhone del carrito, la opción de efectivo desaparece: volver a tarjetas
+  useEffect(() => {
+    if (!tieneIphone && methods.getValues('payment.provider') === CASH_PROVIDER) {
+      methods.setValue('payment.provider', 'culqi');
+    }
+  }, [tieneIphone, methods]);
+  const descuentoEfectivo = paymentProvider === CASH_PROVIDER ? calcularDescuentoEfectivo(cart) : 0;
+  const totalFinalCalculado = total + shippingCost + recargoFinanciero - descuentoEfectivo;
 
   const {
     isScriptLoaded,
@@ -346,6 +361,10 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
           toast.error('Error al redirigir al portal de pago.');
           setIsSubmitting(false);
         }
+      } else if (formData.payment.provider === CASH_PROVIDER) {
+        // Pago en efectivo/transferencia: el pedido queda pendiente hasta confirmar por WhatsApp
+        clearCart();
+        router.push(`/checkout-result/pending?orderNumber=${pedidoCreado.orderNumber}`);
       } else {
         toast.success('Pedido registrado.');
         clearCart();
@@ -406,7 +425,7 @@ export default function CheckoutClient({ initialCustomerData, isAuth }: Checkout
               <ShippingInfo />
 
               <div>
-                <PaymentSelector />
+                <PaymentSelector showEfectivo={tieneIphone} />
                 {paymentProvider === 'powerpay' && (
                   <div className="mt-3">
                     <PowerpayCheckoutWidget total={totalFinalCalculado} />

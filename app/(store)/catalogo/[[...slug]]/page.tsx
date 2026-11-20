@@ -3,12 +3,52 @@ import { notFound } from "next/navigation";
 import { getCatalogData } from "@/src/services/catalog";
 import CatalogLayout from "@/components/catalog/CatalogLayout";
 import type { Metadata } from "next";
+import type { CatalogResponse } from "@/src/schemas/catalog";
+import { routes } from "@/lib/routes";
+import { absoluteUrl, DEFAULT_OG_IMAGE, SITE_NAME } from "@/lib/site";
 
 // Definición de Props para Next.js 15
 type Props = {
     params: Promise<{ slug?: string[] }>;
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
+
+type SearchParams = Awaited<Props["searchParams"]>;
+
+/**
+ * Una URL de catálogo es válida solo si todos sus slugs se resolvieron a
+ * una categoría, marca o línea. Si el backend aún no envía `unresolvedSlugs`
+ * (despliegue antiguo), se exige al menos un contexto resuelto.
+ */
+function hasInvalidSlugs(slugs: string[], data: CatalogResponse): boolean {
+    if (slugs.length === 0) return false;
+
+    const { unresolvedSlugs, categoryName, brandName, lineName } = data.context;
+    if (Array.isArray(unresolvedSlugs)) return unresolvedSlugs.length > 0;
+
+    return !categoryName && !brandName && !lineName;
+}
+
+/** Ruta canónica en orden fijo categoría → marca → línea. */
+function getCanonicalPath(slugs: string[], data: CatalogResponse): string {
+    const { categorySlug, brandSlug, lineSlug } = data.context;
+
+    if (categorySlug || brandSlug || lineSlug) {
+        return routes.catalog({
+            category: categorySlug ?? undefined,
+            brand: brandSlug ?? undefined,
+            line: lineSlug ?? undefined,
+        });
+    }
+
+    return slugs.length > 0 ? `/catalogo/${slugs.join("/")}` : "/catalogo";
+}
+
+function getPageNumber(searchParams: SearchParams): number {
+    const raw = Array.isArray(searchParams.page) ? searchParams.page[0] : searchParams.page;
+    const page = Number.parseInt(raw ?? "1", 10);
+    return Number.isFinite(page) && page > 1 ? page : 1;
+}
 
 // =====================================================================
 // METADATA - SEO
@@ -19,14 +59,13 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
     const slugs = slug || [];
 
-    // Obtenemos los datos (deduplicado automáticamente por Next.js)
     const data = await getCatalogData(slugs, resolvedSearchParams);
 
-    if (!data) return { title: "Catálogo | Neoshop" };
+    if (!data || hasInvalidSlugs(slugs, data)) notFound();
 
     const { categoryName, brandName, lineName, searchQuery } = data.context;
 
-    // 1. Construcción Inteligente del Título
+    // 1. Construcción del título (la plantilla del layout añade "| Neoshop")
     let title = "Catálogo de Tecnología";
 
     if (searchQuery) {
@@ -44,27 +83,30 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         }
     }
 
-    const fullTitle = `${title} | Neoshop`;
+    const page = getPageNumber(resolvedSearchParams);
+    const pageSuffix = page > 1 ? ` - Página ${page}` : "";
+
     const description = `Compra ${title} al mejor precio en Perú. Envíos a todo el país y garantía oficial. Descubre ofertas en ${brandName || 'tecnología'} y más.`;
 
-    // 2. URL Canónica
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neoshopimportaciones.com";
-    const canonicalPath = slugs.length > 0 ? `/catalogo/${slugs.join("/")}` : "/catalogo";
+    // 2. URL canónica: ruta normalizada; la paginación conserva ?page=N,
+    //    el resto de filtros (orden, precio, atributos) apunta a la URL limpia.
+    const canonicalPath = getCanonicalPath(slugs, data);
+    const canonicalUrl = absoluteUrl(page > 1 ? `${canonicalPath}?page=${page}` : canonicalPath);
 
     return {
-        title: fullTitle,
+        title: `${title}${pageSuffix}`,
         description: description,
         alternates: {
-            canonical: `${baseUrl}${canonicalPath}`,
+            canonical: canonicalUrl,
         },
         openGraph: {
-            title: fullTitle,
+            title: `${title} | Neoshop`,
             description: description,
-            url: `${baseUrl}${canonicalPath}`,
-            siteName: "Neoshop",
+            url: canonicalUrl,
+            siteName: SITE_NAME,
             images: [
                 {
-                    url: `${baseUrl}/images/og-catalog.jpg`,
+                    url: DEFAULT_OG_IMAGE,
                     width: 1200,
                     height: 630,
                     alt: title,
@@ -75,7 +117,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         },
         twitter: {
             card: "summary_large_image",
-            title: fullTitle,
+            title: `${title} | Neoshop`,
             description: description,
         },
         robots: {
@@ -98,47 +140,56 @@ export default async function Page({ params, searchParams }: Props) {
     // Llamada al servicio
     const data = await getCatalogData(slugs, resolvedSearchParams);
 
-    if (!data) return notFound();
+    if (!data || hasInvalidSlugs(slugs, data)) return notFound();
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://neoshopimportaciones.com";
+    const { categorySlug, brandSlug, lineSlug } = data.context;
+    const canonicalPath = getCanonicalPath(slugs, data);
 
-    // 1. Schema de Migas de Pan (Breadcrumbs)
-    const breadcrumbList = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Inicio", "item": baseUrl },
-            { "@type": "ListItem", "position": 2, "name": "Catálogo", "item": `${baseUrl}/catalogo` },
-        ]
-    };
+    // 1. Schema de Migas de Pan (Breadcrumbs) con URL progresiva por nivel
+    const breadcrumbItems: Array<{ name: string; path: string }> = [
+        { name: "Inicio", path: "/" },
+        { name: "Catálogo", path: "/catalogo" },
+    ];
 
-    // Agregar slugs al breadcrumb si existen
     if (data.context.categoryName) {
-        breadcrumbList.itemListElement.push({
-            "@type": "ListItem",
-            "position": 3,
-            "name": data.context.categoryName,
-            "item": `${baseUrl}/catalogo/${slugs.join('/')}`
+        breadcrumbItems.push({
+            name: data.context.categoryName,
+            path: categorySlug ? routes.catalog({ category: categorySlug }) : canonicalPath,
         });
     }
 
     if (data.context.brandName) {
-        breadcrumbList.itemListElement.push({
-            "@type": "ListItem",
-            "position": breadcrumbList.itemListElement.length + 1,
-            "name": data.context.brandName,
-            "item": `${baseUrl}/catalogo/${slugs.join('/')}`
+        breadcrumbItems.push({
+            name: data.context.brandName,
+            path: brandSlug
+                ? routes.catalog({ category: categorySlug ?? undefined, brand: brandSlug })
+                : canonicalPath,
         });
     }
 
     if (data.context.lineName) {
-        breadcrumbList.itemListElement.push({
-            "@type": "ListItem",
-            "position": breadcrumbList.itemListElement.length + 1,
-            "name": data.context.lineName,
-            "item": `${baseUrl}/catalogo/${slugs.join('/')}`
+        breadcrumbItems.push({
+            name: data.context.lineName,
+            path: lineSlug
+                ? routes.catalog({
+                    category: categorySlug ?? undefined,
+                    brand: brandSlug ?? undefined,
+                    line: lineSlug,
+                })
+                : canonicalPath,
         });
     }
+
+    const breadcrumbList = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbItems.map((item, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "name": item.name,
+            "item": absoluteUrl(item.path),
+        })),
+    };
 
     // 2. Schema de Colección
     const collectionSchema = {
@@ -146,14 +197,14 @@ export default async function Page({ params, searchParams }: Props) {
         "@type": "CollectionPage",
         "name": data.context.searchQuery ? `Resultados para ${data.context.searchQuery}` : "Catálogo de Productos",
         "description": "Explora nuestra variada selección de tecnología.",
-        "url": `${baseUrl}/catalogo/${slugs.join('/')}`,
+        "url": absoluteUrl(canonicalPath),
         "numberOfItems": data.pagination.totalItems,
         "mainEntity": {
             "@type": "ItemList",
             "itemListElement": data.products.map((product, index) => ({
                 "@type": "ListItem",
                 "position": index + 1,
-                "url": `${baseUrl}/producto/${product.slug}`,
+                "url": absoluteUrl(`/productos/${encodeURIComponent(product.slug)}`),
                 "name": product.nombre
             }))
         }

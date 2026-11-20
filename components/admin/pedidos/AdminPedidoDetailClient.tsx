@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 
 import { AdminPageContainer } from '@/src/components/admin/layout/admin-page-container';
 import { AdminCardWrapper } from '@/src/components/admin/layout/admin-card-wrapper';
+import { confirmAdminPedidoPaymentAction } from '@/src/modules/checkout/actions/admin-pedidos.actions';
 import { AdminStatusBadge } from '@/src/components/admin/layout/admin-status-badge';
 import AdminChangeStatusModal from './AdminChangeStatusModal';
 
@@ -53,6 +54,20 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
   const [copiedTxId, setCopiedTxId] = useState(false);
   const [copiedOrderNumber, setCopiedOrderNumber] = useState(false);
   const [copiedPaymentCode, setCopiedPaymentCode] = useState(false);
+  const [confirmingPayment, setConfirmingPayment] = useState(false);
+
+  const handleConfirmPayment = async () => {
+    setConfirmingPayment(true);
+    const result = await confirmAdminPedidoPaymentAction(pedido._id);
+    setConfirmingPayment(false);
+
+    if (!result.success || !result.data) {
+      toast.error(result.message || 'No se pudo confirmar el pago.');
+      return;
+    }
+    setPedido(result.data);
+    toast.success(result.message);
+  };
 
   const handleCopy = (text?: string, type: 'tx' | 'code' | 'order' = 'tx') => {
     if (!text) return;
@@ -336,6 +351,25 @@ export default function AdminPedidoDetailClient({ initialPedido }: AdminPedidoDe
                   {pedido.payment?.provider}
                 </span>
               </div>
+
+              {/* Confirmación manual: efectivo / transferencia pendientes de cobro */}
+              {['efectivo', 'transferencia'].includes(pedido.payment?.provider?.toLowerCase() ?? '') &&
+                pedido.payment?.status !== 'approved' &&
+                pedido.status !== 'canceled' && (
+                  <div className="flex flex-col gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                    <p className="text-[11px] text-amber-800">
+                      Pago pendiente. Confírmalo cuando recibas el efectivo o la transferencia.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={confirmingPayment}
+                      onClick={handleConfirmPayment}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-60"
+                    >
+                      {confirmingPayment ? 'Confirmando…' : 'Confirmar pago recibido'}
+                    </button>
+                  </div>
+                )}
 
               {/* Detalles Estructurados de Culqi / Tarjeta / CIP */}
               {paymentDetails && (

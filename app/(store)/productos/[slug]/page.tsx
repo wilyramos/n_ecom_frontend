@@ -7,6 +7,7 @@ import { GetProductsBySlug } from "@/src/services/products";
 import ProductPageServer from "@/components/home/product/ProductPageServer";
 import SpinnerLoading from "@/components/ui/SpinnerLoading";
 import ProductJsonLd from "@/components/seo/ProductJsonLd";
+import { DEFAULT_OG_IMAGE, NOINDEX_ROBOTS, SITE_URL } from "@/lib/site";
 
 type Params = {
     params: Promise<{ slug: string }>;
@@ -16,7 +17,7 @@ const getProduct = cache(async (slug: string) => {
     return GetProductsBySlug(slug);
 });
 
-const BASE_URL = "https://www.neoshopimportaciones.com";
+const BASE_URL = SITE_URL;
 
 function stripHtml(value?: string | null): string {
     return (value ?? "")
@@ -60,7 +61,7 @@ export async function generateMetadata({
         }))
         : [
             {
-                url: "/miniaturagris.png",
+                url: DEFAULT_OG_IMAGE,
                 alt: "Neoshop Importaciones",
             },
         ];
@@ -86,7 +87,9 @@ export async function generateMetadata({
             description,
             images: openGraphImages.map((image) => image.url),
         },
-        robots: {
+        // Producto desactivado: la página sigue accesible (enlaces y carritos
+        // existentes no se rompen) pero no se indexa.
+        robots: product.isActive === false ? NOINDEX_ROBOTS : {
             index: true,
             follow: true,
             googleBot: {

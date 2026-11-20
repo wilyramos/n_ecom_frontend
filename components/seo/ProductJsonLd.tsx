@@ -1,7 +1,8 @@
 
 import type { ProductWithCategoryResponse } from "@/src/schemas";
+import { SITE_URL } from "@/lib/site";
 
-const BASE_URL = "https://www.neoshopimportaciones.com";
+const BASE_URL = SITE_URL;
 
 type Props = {
     producto: ProductWithCategoryResponse;
@@ -82,6 +83,7 @@ export default function ProductJsonLd({ producto }: Props) {
                     price: price.toFixed(2),
                     priceCurrency: "PEN",
                     availability,
+                    itemCondition: "https://schema.org/NewCondition",
                     seller: {
                         "@type": "Organization",
                         name: "Neoshop Importaciones",

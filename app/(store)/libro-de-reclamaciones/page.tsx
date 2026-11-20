@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import ClaimForm from "@/components/claim/ClaimForm";
 
 export const metadata: Metadata = {
-    title: "Libro de Reclamaciones | neoshop",
+    title: "Libro de Reclamaciones",
     description: "Libro de Reclamaciones Virtual de neoshop conforme a la normativa vigente de INDECOPI.",
 };
 

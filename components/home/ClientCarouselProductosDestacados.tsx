@@ -17,7 +17,7 @@ const AbsoluteHeaderWrapper = (props: ButtonGroupProps) => {
             <HeaderConTituloConControles
                 {...props}
                 title={<>Productos Destacados</>}
-                viewAllHref="/productos"
+                viewAllHref="/catalogo"
             />
         </div>
     );

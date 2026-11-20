@@ -3,6 +3,7 @@
 import { notFound } from "next/navigation";
 import { PageService } from "@/src/services/page-service";
 import type { Metadata } from "next";
+import { absoluteUrl, NOINDEX_ROBOTS } from "@/lib/site";
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -17,12 +18,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
         const page = await PageService.getPageBySlug(slug);
         
+        const canonicalUrl = absoluteUrl(`/${encodeURIComponent(slug)}`);
+
         return {
-            title: page.seo?.metaTitle || `${page.title} | Neoshop`,
+            title: page.seo?.metaTitle || page.title,
             description: page.seo?.metaDescription || `Información oficial y detalles sobre ${page.title}.`,
+            alternates: {
+                canonical: canonicalUrl,
+            },
             openGraph: {
                 title: page.seo?.metaTitle || page.title,
                 description: page.seo?.metaDescription || `Información oficial y detalles sobre ${page.title}.`,
+                url: canonicalUrl,
                 type: "article",
             }
         };
@@ -30,7 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         console.error(`Error al generar metadata para la página con slug "${slug}":`, error);
         // Retornamos un objeto de metadata por defecto para evitar lanzar la excepción en el StreamingMetadataOutlet
         return {
-            title: "Página no encontrada | Neoshop",
+            title: "Página no encontrada",
+            robots: NOINDEX_ROBOTS,
         };
     }
 }

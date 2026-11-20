@@ -13,7 +13,7 @@ const DEFAULT_IMAGE = `${BASE_URL}/miniaturagris.png`;
 export const metadata: Metadata = {
     ...globalMetadata,
     title: {
-        default: "Neoshop | Tienda online",
+        absolute: "Neoshop | Tienda online",
         template: "%s | Neoshop",
     },
     description:

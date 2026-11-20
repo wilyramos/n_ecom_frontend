@@ -2,8 +2,12 @@ import type { MetadataRoute } from "next";
 
 import { GetAllProductsSlug } from "@/src/services/products";
 import { getCategories } from "@/src/services/categorys";
+import { SITE_URL } from "@/lib/site";
 
-const BASE_URL = "https://www.neoshopimportaciones.com";
+const BASE_URL = SITE_URL;
+
+// Regenerar el sitemap cada hora (antes quedaba fijo desde el último deploy).
+export const revalidate = 3600;
 
 type Products = Awaited<ReturnType<typeof GetAllProductsSlug>>;
 type Categories = Awaited<ReturnType<typeof getCategories>>;
@@ -44,12 +48,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
         {
             url: `${BASE_URL}/categorias`,
-            lastModified: now,
-            changeFrequency: "weekly",
-            priority: 0.7,
-        },
-        {
-            url: `${BASE_URL}/colecciones`,
             lastModified: now,
             changeFrequency: "weekly",
             priority: 0.7,
@@ -104,10 +102,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     ];
 
+    // Si la API falla, se publican igualmente las rutas estáticas en lugar de
+    // devolver error (getCategories llama a notFound() ante una respuesta no OK).
     const [products, categories]: [Products, Categories] =
         await Promise.all([
-            GetAllProductsSlug(),
-            getCategories(),
+            GetAllProductsSlug().catch((error) => {
+                console.error("Sitemap: error obteniendo productos", error);
+                return [] as Products;
+            }),
+            getCategories().catch((error) => {
+                console.error("Sitemap: error obteniendo categorías", error);
+                return [] as Categories;
+            }),
         ]);
 
     // Productos: /productos/[slug]

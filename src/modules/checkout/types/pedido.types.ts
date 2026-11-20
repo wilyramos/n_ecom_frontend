@@ -86,6 +86,13 @@ export interface IHistorialEstado {
   changedBy?: { _id: string; nombre: string; apellidos?: string }; // <-- Agregado para tipar la respuesta
 }
 
+export interface ICuponPedido {
+  codigo: string;
+  tipo: string;
+  valor: number;
+  descuento: number;
+}
+
 export interface IPedido {
   _id: string;
   codigoPedido?: string;
@@ -101,6 +108,10 @@ export interface IPedido {
   igv: number;
   shippingCost: number;
   recargoFinanciero: number;
+  descuentoEfectivo?: number;
+  descuentoCupon?: number;
+  /** Snapshot del cupón aplicado al momento de la compra */
+  cupon?: ICuponPedido;
   totalPrice: number;
   currency: string;
   status: EstadoPedido;

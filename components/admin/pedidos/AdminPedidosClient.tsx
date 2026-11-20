@@ -17,7 +17,8 @@ import {
   Truck,
   CreditCard,
   Package,
-  ExternalLink
+  ExternalLink,
+  Tag,
 } from 'lucide-react';
 
 // Layout & UI
@@ -409,7 +410,20 @@ export default function AdminPedidosClient({
 
                     {/* Total */}
                     <AdminTableCell bold className="text-zinc-950 font-semibold text-xs whitespace-nowrap w-[110px]">
-                      S/ {ped.totalPrice.toFixed(2)}
+                      <div className="flex flex-col items-start gap-0.5">
+                        <span>S/ {ped.totalPrice.toFixed(2)}</span>
+                        {ped.cupon?.codigo && (
+                          <span
+                            className="inline-flex items-center gap-1 text-[10px] font-normal text-zinc-400 font-mono"
+                            title={`Cupón aplicado: ${ped.cupon.codigo}${
+                              ped.descuentoCupon ? ` (−S/ ${ped.descuentoCupon.toFixed(2)})` : ''
+                            }`}
+                          >
+                            <Tag className="h-2.5 w-2.5 shrink-0" />
+                            {ped.cupon.codigo}
+                          </span>
+                        )}
+                      </div>
                     </AdminTableCell>
 
                     {/* Estado */}

@@ -201,6 +201,18 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                 </div>
               )}
 
+              {pedido.cupon && (pedido.descuentoCupon ?? 0) > 0 && (
+                <div className="flex justify-between text-neutral-600 pt-2">
+                  <span className="inline-flex items-center gap-1.5">
+                    Cupón
+                    <span className="rounded bg-emerald-50 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wide text-emerald-700 border border-emerald-200">
+                      {pedido.cupon.codigo}
+                    </span>
+                  </span>
+                  <span className="font-medium text-emerald-700 tabular-nums">− S/ {(pedido.descuentoCupon ?? 0).toFixed(2)}</span>
+                </div>
+              )}
+
               <div className="pt-3 flex justify-between items-baseline text-base font-bold text-neutral-900">
                 <span>Total pagado</span>
                 <span className="text-lg tabular-nums">S/ {pedido.totalPrice.toFixed(2)}</span>

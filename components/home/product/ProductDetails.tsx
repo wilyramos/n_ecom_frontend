@@ -423,7 +423,7 @@ export default function ProductDetails({ producto }: Props) {
                         </h4>
                       </div>
                       <p className="text-sm font-bold text-brand-charcoal pt-2">
-                        S/ {comp.precio.toFixed(2)}
+                        S/ {Number(comp.precio ?? 0).toFixed(2)}
                       </p>
                     </Link>
                   );

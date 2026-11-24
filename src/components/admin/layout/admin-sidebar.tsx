@@ -211,7 +211,7 @@ function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanel
       </div>
 
       {/* Navegación */}
-      <nav aria-label="Menú de administración" className="flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden px-2 py-2">
+      <nav aria-label="Menú de administración" className="flex-1 space-y-2.5 overflow-y-auto overflow-x-hidden px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {sections.map((section) => {
           const acc = accents[section.accent];
           return (

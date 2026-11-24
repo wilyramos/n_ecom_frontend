@@ -2,7 +2,7 @@ import "server-only";
 
 
 import getToken from "../auth/token";
-import { apiProductListSchema, productsResponseAllSchema, ApiProductsSchema, ApiProductFullSchema } from "@/src/schemas";
+import { apiProductListSchema, productResponseAllSchema, type TProductResponseAll, ApiProductsSchema, ApiProductFullSchema } from "@/src/schemas";
 
 // new
 
@@ -364,18 +364,36 @@ export const GetAllProductsSlug = async () => {
     const url = `${process.env.API_URL}/products/all/slug`;
     const req = await fetch(url, {
         method: 'GET',
+        next: { revalidate: 3600 },
     });
     if (!req.ok) {
+        console.error(`Sitemap: la API respondió ${req.status} al listar slugs de productos`);
         return [];
     }
 
     const json = await req.json();
-    const parsed = productsResponseAllSchema.safeParse(json);
-    if (!parsed.success) {
-        console.error("Error validando productos:", parsed.error);
+    if (!Array.isArray(json)) {
+        console.error("Sitemap: la respuesta de slugs de productos no es una lista");
         return [];
     }
-    return parsed.data;
+
+    // Validación por elemento: un producto con datos incompletos se omite,
+    // pero no hace caer la lista completa (antes un único registro inválido
+    // dejaba el sitemap sin ningún producto).
+    const valid: TProductResponseAll[] = [];
+    let invalid = 0;
+    for (const item of json) {
+        const parsed = productResponseAllSchema.safeParse(item);
+        if (parsed.success) {
+            valid.push(parsed.data);
+        } else {
+            invalid++;
+        }
+    }
+    if (invalid > 0) {
+        console.warn(`Sitemap: ${invalid} producto(s) omitido(s) por datos inválidos`);
+    }
+    return valid;
 }
 
 export const getProductsByBrandSlug = async (brandSlug: string) => {

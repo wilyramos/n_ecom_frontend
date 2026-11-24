@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
     DndContext,
     closestCenter,
@@ -34,7 +35,7 @@ import SpecificationsSection from "./SpecificationsSection";
 import ProductDescriptionEditor from "./ProductDescriptionEditor";
 import BrandCombobox from "./BrandCombobox";
 import ProductVariantsForm from "./ProductVariantsForm";
-import MediaLibraryDialog from "./MediaLibraryDialog";
+import { MediaPicker, MediaPickerField } from "@/src/modules/media";
 import ComplementaryProductsSection from "./ComplementaryProductsSection";
 import SEOProduct from "./SEOproduct";
 import SortableImageItem from "./SortableImageItem";
@@ -56,6 +57,7 @@ export default function ProductForm({
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>(product?.categoria?._id);
     const [selectedBrandId, setSelectedBrandId] = useState<string | undefined>(initialBrandId);
     const [masterImages, setMasterImages] = useState<string[]>(() => Array.from(new Set(product?.imagenes || [])));
+    const [videos, setVideos] = useState<string[]>(() => Array.from(new Set(product?.videos ?? [])));
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -81,10 +83,6 @@ export default function ProductForm({
 
     const handleRemoveImage = (url: string) => {
         setMasterImages((prev) => prev.filter((i) => i !== url));
-    };
-
-    const handleAddImagesToPool = (newImages: string[]) => {
-        setMasterImages((prev) => Array.from(new Set([...prev, ...newImages])));
     };
 
     const filteredLines = lines.filter((line) => {
@@ -121,12 +119,14 @@ export default function ProductForm({
                         <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">
                             Archivos Multimedia
                         </h3>
-                        <MediaLibraryDialog
-                            selectedImages={masterImages}
-                            globalImagesPool={masterImages}
-                            onConfirmSelection={setMasterImages}
-                            onUploadSuccess={handleAddImagesToPool}
-                            triggerLabel="Agregar"
+                        <MediaPicker
+                            kind="image"
+                            folder="products"
+                            max={15}
+                            value={masterImages}
+                            onChange={setMasterImages}
+                            title="Galería del producto"
+                            trigger={<Button type="button" variant="outline" size="sm">Agregar</Button>}
                         />
                     </div>
 
@@ -161,6 +161,21 @@ export default function ProductForm({
                             </SortableContext>
                         </DndContext>
                     )}
+                </AdminCardWrapper>
+
+                {/* Videos del producto (módulo de medios) */}
+                <AdminCardWrapper padding="default">
+                    <MediaPickerField
+                        name="videos[]"
+                        kind="video"
+                        folder="products"
+                        max={5}
+                        value={videos}
+                        onChange={setVideos}
+                        label="Videos"
+                        helpText="MP4, MOV o WEBM · máx. 100 MB"
+                        emptyText="Sin videos asociados. Los videos se muestran en la ficha del producto."
+                    />
                 </AdminCardWrapper>
 
                 {/* Precios */}
@@ -295,8 +310,6 @@ export default function ProductForm({
                     <ProductVariantsForm
                         product={product}
                         categoryAttributes={dynamicCategoryAttributes}
-                        globalImagesPool={masterImages}
-                        onUploadToPool={handleAddImagesToPool}
                     />
                 </AdminCardWrapper>
 

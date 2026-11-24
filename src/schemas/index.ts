@@ -224,6 +224,8 @@ export const productBaseSchema = z.object({
     precioComparativo: z.number().min(0, 'El precio comparativo no puede ser negativo').optional(),
     costo: z.number().min(0, 'El costo no puede ser negativo').optional(),
     imagenes: z.array(z.string().url('Debe ser una URL válida')).optional(),
+    videos: z.array(z.string().url('Debe ser una URL válida')).max(5, 'Máximo 5 videos').optional(),
+    variantAxes: z.array(z.string()).optional(),
     categoria: z.string().min(1, 'La categoría es obligatoria'),
     stock: z.number().min(0, 'El stock no puede ser negativo').optional(),
     diasEnvio: z.number().min(1, 'Los días de envío deben ser un número positivo').optional(),

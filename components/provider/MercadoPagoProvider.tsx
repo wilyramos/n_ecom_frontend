@@ -4,20 +4,29 @@ import { initMercadoPago } from "@mercadopago/sdk-react";
 import { useEffect } from "react";
 import { useRef } from "react";
 
-
+/**
+ * Inicializa el SDK de Mercado Pago una sola vez.
+ * Se monta en el layout raíz: cualquier excepción aquí tumba TODA la app,
+ * por eso no se inicializa sin clave y el fallo se registra sin propagarse.
+ */
 export default function MercadoPagoProvider() {
     const initialized = useRef(false);
 
     useEffect(() => {
         if (initialized.current) return;
-
-        // console.log("Inicializando Mercado Pago SDK...");
-        // console.log("Public Key:", process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY);
-        initMercadoPago(process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY ?? "", {
-            locale: "es-PE",
-        });
         initialized.current = true;
-        // console.log("Mercado Pago SDK inicializado.");
+
+        const publicKey = process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY?.trim();
+        if (!publicKey) {
+            console.warn("Mercado Pago: falta NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY; SDK no inicializado.");
+            return;
+        }
+
+        try {
+            initMercadoPago(publicKey, { locale: "es-PE" });
+        } catch (error) {
+            console.error("Mercado Pago: no se pudo inicializar el SDK", error);
+        }
     }, []);
 
     return null;

@@ -91,6 +91,8 @@ export async function EditProduct(id: string, prevState: ActionStateType, formDa
         sku: formData.get("sku") || undefined,
         barcode: formData.get("barcode") || undefined,
         imagenes: formData.getAll("imagenes[]") as string[],
+        videos: formData.getAll("videos[]") as string[],
+        variantAxes: formData.getAll("variantAxes[]") as string[],
         atributos,
         especificaciones,
         variants: cleanedVariants,
@@ -130,7 +132,11 @@ console.log("Variantes enviadas:", JSON.stringify(cleanedVariants, null, 2));
 
     const json = await req.json();
     if (!req.ok) {
-        return { errors: [json.message], success: "" };
+        // El backend envía `errors` con todos los problemas; `message` es el primero.
+        const messages = Array.isArray(json.errors) && json.errors.length > 0
+            ? json.errors
+            : [json.message || "Error al actualizar el producto."];
+        return { errors: messages, success: "" };
     }
 
     const success = SuccessResponse.parse(json);

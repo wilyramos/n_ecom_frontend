@@ -38,7 +38,7 @@ export default function CreateProductForm({
             router.push("/admin/products");
         }
         if (state.errors && state.errors.length > 0) {
-            state.errors.forEach((error) => {
+            state.errors.forEach((error: string) => {
                 toast.error(error);
             });
         }
@@ -48,11 +48,22 @@ export default function CreateProductForm({
         a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
     );
 
+    // Bloquea el envío si la configuración de variantes tiene errores.
+    // Sin esto, el campo oculto envía "[]" y el producto se crea sin variantes en silencio.
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        const formData = new FormData(e.currentTarget);
+        if (formData.get("variants_error") === "true") {
+            e.preventDefault();
+            toast.error("Corrige los errores en la configuración de variantes antes de guardar.");
+        }
+    };
+
     return (
         <form
             className="w-full space-y-4 pb-20"
             noValidate
             action={dispatch}
+            onSubmit={handleSubmit}
         >
             <ProductForm
                 product={initialData}

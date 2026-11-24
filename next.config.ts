@@ -2,8 +2,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverActions: {
-    bodySizeLimit: "4mb",
+  // Next 15 requiere estas opciones bajo `experimental`; en la raíz se ignoran (y Next avisa).
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
   },
   
   images: {

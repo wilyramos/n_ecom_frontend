@@ -38,12 +38,24 @@ export default function ProductJsonLd({ producto }: Props) {
                 ? producto.atributos.Marca
                 : "Neoshop";
 
-    const price = Number(producto.precio);
+    // Con variantes, el precio real está en cada variante (el precio del producto puede ser 0).
+    const variantPrices = (producto.variants ?? [])
+        .map((v: { precio?: unknown }) => Number(v.precio))
+        .filter((p) => Number.isFinite(p) && p > 0);
+    const hasVariantPrices = variantPrices.length > 0;
+    const lowPrice = hasVariantPrices ? Math.min(...variantPrices) : Number(producto.precio);
+    const highPrice = hasVariantPrices ? Math.max(...variantPrices) : lowPrice;
 
     const availability =
         Number(producto.stock ?? 0) > 0
             ? "https://schema.org/InStock"
             : "https://schema.org/OutOfStock";
+
+    const seller = {
+        "@type": "Organization",
+        name: "Neoshop Importaciones",
+        url: BASE_URL,
+    };
 
     const description =
         stripHtml(producto.descripcion) ||
@@ -75,21 +87,31 @@ export default function ProductJsonLd({ producto }: Props) {
             "@type": "Brand",
             name: brandName,
         },
-        ...(Number.isFinite(price) && price >= 0
+        // Solo se publica oferta con precio positivo: un "0.00" es una oferta inválida para Google.
+        ...(Number.isFinite(lowPrice) && lowPrice > 0
             ? {
-                offers: {
-                    "@type": "Offer",
-                    url,
-                    price: price.toFixed(2),
-                    priceCurrency: "PEN",
-                    availability,
-                    itemCondition: "https://schema.org/NewCondition",
-                    seller: {
-                        "@type": "Organization",
-                        name: "Neoshop Importaciones",
-                        url: BASE_URL,
-                    },
-                },
+                offers:
+                    hasVariantPrices && highPrice > lowPrice
+                        ? {
+                            "@type": "AggregateOffer",
+                            url,
+                            lowPrice: lowPrice.toFixed(2),
+                            highPrice: highPrice.toFixed(2),
+                            offerCount: variantPrices.length,
+                            priceCurrency: "PEN",
+                            availability,
+                            itemCondition: "https://schema.org/NewCondition",
+                            seller,
+                        }
+                        : {
+                            "@type": "Offer",
+                            url,
+                            price: lowPrice.toFixed(2),
+                            priceCurrency: "PEN",
+                            availability,
+                            itemCondition: "https://schema.org/NewCondition",
+                            seller,
+                        },
             }
             : {}),
     };

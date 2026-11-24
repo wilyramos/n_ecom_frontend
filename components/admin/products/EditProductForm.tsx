@@ -36,7 +36,7 @@ export default function EditProductForm({
 
     useEffect(() => {
         if (state.errors && state.errors.length > 0) {
-            state.errors.forEach((error) => toast.error(error));
+            state.errors.forEach((error: string) => toast.error(error));
         }
         if (state.success) {
             toast.success(state.success);

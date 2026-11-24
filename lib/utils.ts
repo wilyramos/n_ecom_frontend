@@ -40,17 +40,27 @@ export function getProvincesByDepartment(department: string): string[] {
     return data.find(item => item.department === department)?.provinces || [];
 }
 
+// Acceso defensivo: localStorage puede estar bloqueado (modo privado, políticas del
+// navegador) o contener un valor corrupto. Nunca debe romper la página.
 export function getSearchHistory(): string[] {
     if (typeof window === "undefined") return [];
-    const saved = JSON.parse(localStorage.getItem("search-history") || "[]");
-    return Array.isArray(saved) ? saved : [];
+    try {
+        const saved: unknown = JSON.parse(localStorage.getItem("search-history") || "[]");
+        return Array.isArray(saved) ? saved.filter((s): s is string => typeof s === "string") : [];
+    } catch {
+        return [];
+    }
 }
 
 export function saveSearchTerm(term: string): void {
     if (typeof window === "undefined" || !term) return;
-    const history = getSearchHistory();
-    const updated = [term, ...history.filter(h => h !== term)].slice(0, 5);
-    localStorage.setItem("search-history", JSON.stringify(updated));
+    try {
+        const history = getSearchHistory();
+        const updated = [term, ...history.filter(h => h !== term)].slice(0, 5);
+        localStorage.setItem("search-history", JSON.stringify(updated));
+    } catch {
+        // Sin historial de búsqueda, pero sin error para el usuario.
+    }
 }
 
 export function getDeliveryRange(days: number): string {

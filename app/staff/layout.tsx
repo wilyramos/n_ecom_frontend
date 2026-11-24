@@ -6,6 +6,13 @@ import Link from 'next/link';
 import { LayoutDashboard, MonitorSmartphone, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { logout } from '@/actions/logout-user-action';
+import type { Metadata } from 'next';
+import { NOINDEX_ROBOTS } from '@/lib/site';
+
+// Área privada del personal: no indexar.
+export const metadata: Metadata = {
+  robots: NOINDEX_ROBOTS,
+};
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
     const { user } = await verifySession();

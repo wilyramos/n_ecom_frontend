@@ -89,6 +89,8 @@ export async function createProduct(prevState: ActionStateType, formData: FormDa
         sku: formData.get('sku') || undefined,
         barcode: formData.get('barcode') || undefined,
         imagenes: formData.getAll('imagenes[]') as string[],
+        videos: formData.getAll('videos[]') as string[],
+        variantAxes: formData.getAll('variantAxes[]') as string[],
         atributos,
         especificaciones,
         variants: cleanedVariants,
@@ -129,7 +131,11 @@ export async function createProduct(prevState: ActionStateType, formData: FormDa
 
         const json = await response.json();
         if (!response.ok) {
-            return { errors: [json.message || "Error al crear el producto."], success: "" };
+            // El backend envía `errors` con todos los problemas; `message` es el primero.
+            const messages = Array.isArray(json.errors) && json.errors.length > 0
+                ? json.errors
+                : [json.message || "Error al crear el producto."];
+            return { errors: messages, success: "" };
         }
 
         return { errors: [], success: "Producto creado exitosamente" };

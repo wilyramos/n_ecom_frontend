@@ -2,19 +2,16 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Image from "next/image";
-import { X, ImageIcon } from "lucide-react";
 import type { CategoryResponse } from "@/src/schemas";
 import AttributeFields from "./AttributeFields";
 import CategorySwitches from "./CategorySwitches";
-import MediaLibraryDialog from "@/components/admin/products/MediaLibraryDialog";
+import { MediaPickerField } from "@/src/modules/media";
 import {
     AdminFormGroup,
     AdminInput,
     AdminSelect,
 } from "@/src/components/admin/layout/admin-form-group";
 import { AdminSectionDivider } from "@/src/components/admin/layout/admin-section-divider";
-import { AdminButton } from "@/src/components/admin/layout/admin-button";
 
 type Props = {
   category?: CategoryResponse;
@@ -24,9 +21,6 @@ type Props = {
 export default function CategoryForm({ category, categories }: Props) {
   const [selectedImage, setSelectedImage] = useState<string>(
     category?.image || ""
-  );
-  const [imagesPool, setImagesPool] = useState<string[]>(
-    category?.image ? [category.image] : []
   );
 
   const availableParents = useMemo(() => {
@@ -40,17 +34,6 @@ export default function CategoryForm({ category, categories }: Props) {
       : typeof category?.parent === "string"
         ? category.parent
         : "";
-
-  const handleConfirmSelection = (images: string[]) => {
-    setSelectedImage(images[0] || "");
-  };
-
-  const handleUploadSuccess = (newImages: string[]) => {
-    setImagesPool((prev) => Array.from(new Set([...newImages, ...prev])));
-    if (newImages.length > 0) {
-      setSelectedImage(newImages[0]);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -100,79 +83,19 @@ export default function CategoryForm({ category, categories }: Props) {
       <AdminSectionDivider label="Multimedia y Publicación" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        {/* Selector de Imagen */}
-        <div className="space-y-2">
-          <span className="text-xs font-medium text-slate-700 block">
-            Imagen de portada
-          </span>
-
-          <input type="hidden" name="image" value={selectedImage} />
-
-          {selectedImage ? (
-            <div className="flex items-center gap-3 p-2.5 rounded-xl border border-slate-200 bg-slate-50/60">
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-2xs">
-                <Image
-                  src={selectedImage}
-                  alt="Categoría"
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-
-              <div className="flex-1 min-w-0 space-y-1">
-                <p className="text-xs font-medium text-slate-800 truncate">
-                  {selectedImage.split("/").pop()}
-                </p>
-                <div className="flex items-center gap-2">
-                  <MediaLibraryDialog
-                    selectedImages={selectedImage ? [selectedImage] : []}
-                    globalImagesPool={imagesPool}
-                    onConfirmSelection={handleConfirmSelection}
-                    onUploadSuccess={handleUploadSuccess}
-                    allowMultiple={false}
-                    triggerLabel="Cambiar"
-                    triggerVariant="outline"
-                    size="sm"
-                  />
-                  <AdminButton
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedImage("")}
-                    className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 text-xs"
-                  >
-                    <X className="w-3.5 h-3.5 mr-1" />
-                    Quitar
-                  </AdminButton>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between p-3.5 border border-dashed border-slate-300 rounded-xl bg-slate-50/50">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-white border border-slate-200 text-slate-400">
-                  <ImageIcon className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-slate-700">Sin imagen</p>
-                  <p className="text-[11px] text-slate-400">JPG, PNG o WebP (mín. 400x400)</p>
-                </div>
-              </div>
-
-              <MediaLibraryDialog
-                selectedImages={[]}
-                globalImagesPool={imagesPool}
-                onConfirmSelection={handleConfirmSelection}
-                onUploadSuccess={handleUploadSuccess}
-                allowMultiple={false}
-                triggerLabel="Examinar"
-                triggerVariant="outline"
-                size="sm"
-              />
-            </div>
-          )}
-        </div>
+        {/* Selector de Imagen (módulo de medios, selección simple) */}
+        <MediaPickerField
+          name="image"
+          kind="image"
+          folder="categories"
+          max={1}
+          value={selectedImage ? [selectedImage] : []}
+          onChange={(urls) => setSelectedImage(urls[0] ?? "")}
+          label="Imagen de portada"
+          helpText="JPG, PNG, WebP o AVIF"
+          emptyText="Sin imagen de portada"
+          emitEmpty
+        />
 
         {/* Interruptores de Estado */}
         <div className="space-y-2 md:border-l md:border-slate-100 md:pl-6">

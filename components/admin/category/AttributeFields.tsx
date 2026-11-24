@@ -66,7 +66,9 @@ export default function AttributeFields({ defaultAttributes }: AttributeFieldsPr
 
     const addAttribute = () => {
         const nextKey = `item-${attributes.length}`;
-        setAttributes([...attributes, { name: "", values: [""], isVariant: true }]);
+        // Por defecto es un atributo informativo; el administrador lo marca como
+        // "de variante" de forma explícita (evita variantes creadas sin querer).
+        setAttributes([...attributes, { name: "", values: [""], isVariant: false }]);
         setOpenItems((prev) => [...prev, nextKey]);
     };
 

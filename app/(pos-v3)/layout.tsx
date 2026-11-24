@@ -7,6 +7,13 @@ import { redirect } from "next/navigation";
 import { verifySession } from "@/src/auth/dal";
 import { Sidebar } from "@/src/components/shared/Sidebar";
 import { Header } from "@/src/components/shared/Header";
+import type { Metadata } from "next";
+import { NOINDEX_ROBOTS } from "@/lib/site";
+
+// Punto de venta: área privada, no indexar.
+export const metadata: Metadata = {
+  robots: NOINDEX_ROBOTS,
+};
 
 export default async function PosV3Layout({
     children,

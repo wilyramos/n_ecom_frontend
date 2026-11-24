@@ -11,8 +11,6 @@ import {
     ToggleLeft,
     ToggleRight,
     ImageIcon,
-    PanelLeft,
-    SquareSplitHorizontal,
     Maximize,
 } from "lucide-react";
 import { toggleSliderBannerAction } from "@/actions/slider-actions";
@@ -25,18 +23,8 @@ const LAYOUT_CONFIG: Record<
     string,
     { label: string; icon: ElementType; style: string }
 > = {
-    "default": {
-        label: "Texto + Imagen",
-        icon: SquareSplitHorizontal,
-        style: "bg-blue-50 text-blue-700 border-blue-200",
-    },
-    "media-left": {
-        label: "Imagen Izquierda",
-        icon: PanelLeft,
-        style: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    },
     "background-media": {
-        label: "Fondo Completo",
+        label: "Medio de fondo",
         icon: Maximize,
         style: "bg-purple-50 text-purple-700 border-purple-200",
     },
@@ -82,10 +70,7 @@ export default function BannerRow({ banner, onError }: BannerRowProps) {
                                 src={banner.media.imageUrl}
                                 alt={banner.title || "Banner Image"}
                                 fill
-                                className={cn(
-                                    "object-cover",
-                                    banner.media.objectFit === "contain" && "object-contain"
-                                )}
+                                className="object-cover"
                                 sizes="64px"
                             />
                         ) : (

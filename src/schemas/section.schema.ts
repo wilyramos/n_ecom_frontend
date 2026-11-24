@@ -9,7 +9,8 @@ import { z } from "zod";
 export const SectionTypeEnum = z.enum([
     'featured_collections',
     'product_grid',
-    'rich_text'
+    'rich_text',
+    'image_gallery'
 ]);
 export type SectionType = z.infer<typeof SectionTypeEnum>;
 
@@ -115,10 +116,12 @@ export const SECTION_TYPE_LABELS: Record<SectionType, string> = {
     featured_collections: 'Grilla de Colecciones / Imágenes',
     product_grid:         'Cuadrícula de Productos',
     rich_text:            'Contenido de Texto Enriquecido',
+    image_gallery:        'Galería de Imágenes (Ubicación)',
 };
 
 export const SECTION_TYPE_COLORS: Record<SectionType, string> = {
     featured_collections: 'indigo',
     product_grid:         'emerald',
     rich_text:            'amber',
+    image_gallery:        'sky',
 };

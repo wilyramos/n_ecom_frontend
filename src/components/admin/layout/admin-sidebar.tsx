@@ -29,6 +29,14 @@ import {
   Ticket,
   Truck,
   Warehouse,
+  Star,
+  Heart,
+  Mail,
+  RotateCcw,
+  Gift,
+  MessageCircle,
+  CreditCard,
+  LineChart,
   LucideIcon,
 } from "lucide-react";
 
@@ -132,6 +140,7 @@ const sections: NavSection[] = [
     accent: "amber",
     items: [
       { href: "/admin/reports", label: "Reportes", icon: BarChart3 },
+      { href: "/admin/analytics", label: "Analíticas", icon: LineChart },
       { href: "/admin/claims", label: "Reclamaciones", icon: ShieldAlert },
       { href: "/admin/users", label: "Usuarios", icon: Users },
       { href: "/admin/attendance", label: "Asistencias", icon: Fingerprint },
@@ -144,6 +153,15 @@ const sections: NavSection[] = [
       { href: "#", label: "Clientes", icon: UserRound, soon: true },
       { href: "#", label: "Envíos y zonas", icon: Truck, soon: true },
       { href: "#", label: "Inventario", icon: Warehouse, soon: true },
+      { href: "#", label: "Reseñas de productos", icon: Star, soon: true },
+      { href: "#", label: "Preguntas de clientes", icon: MessageCircle, soon: true },
+      { href: "#", label: "Carritos abandonados", icon: ShoppingCart, soon: true },
+      { href: "#", label: "Listas de deseos", icon: Heart, soon: true },
+      { href: "#", label: "Devoluciones", icon: RotateCcw, soon: true },
+      { href: "#", label: "Boletas y facturas (SUNAT)", icon: FileText, soon: true },
+      { href: "#", label: "Correo y newsletter", icon: Mail, soon: true },
+      { href: "#", label: "Programa de puntos", icon: Gift, soon: true },
+      { href: "#", label: "Métodos de pago", icon: CreditCard, soon: true },
     ],
   },
   {
@@ -235,7 +253,7 @@ function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanel
                   <div
                     key={`${section.title}-${item.label}`}
                     aria-disabled="true"
-                    title={isDesktop ? `${item.label} · Próximamente` : undefined}
+                    title={isDesktop ? `${item.label} · No disponibles` : undefined}
                     className={cn(
                       "flex cursor-not-allowed items-center gap-2.5 rounded-md px-2 py-1.5 text-xs text-zinc-400",
                       iconOnly
@@ -244,9 +262,7 @@ function SidebarPanel({ user, variant, expanded = false, onClose }: SidebarPanel
                     <Icon className="h-3.5 w-3.5 shrink-0 text-zinc-300" />
                     <span className={cn("flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap transition-opacity duration-150", textReveal)}>
                       <span className="truncate">{item.label}</span>
-                      <span className="ml-auto rounded-full border border-zinc-200 px-1.5 text-[8px] font-normal uppercase text-zinc-400">
-                        No disponible
-                      </span>
+                    
                     </span>
                   </div>
                 );

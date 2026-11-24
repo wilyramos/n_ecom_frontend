@@ -21,12 +21,15 @@ interface NavItem {
     href: string;
     icon: LucideIcon;
     roles?: string[];
+    /** Visible pero no disponible: se muestra atenuado y no navega. */
+    disabled?: boolean;
 }
 
 const ROUTES: NavItem[] = [
-    { label: "POS", href: "/pos", icon: ShoppingCart, roles: ["administrador", "vendedor"] },
-    { label: "Caja", href: "/cash-shift", icon: DollarSign, roles: ["administrador", "vendedor"] },
-    { label: "Ventas", href: "/sales", icon: History, roles: ["administrador", "vendedor"] },
+    // Temporalmente fuera de uso: se muestran deshabilitados (sin navegar).
+    { label: "POS", href: "/pos", icon: ShoppingCart, roles: ["administrador", "vendedor"], disabled: true },
+    { label: "Caja", href: "/cash-shift", icon: DollarSign, roles: ["administrador", "vendedor"], disabled: true },
+    { label: "Ventas", href: "/sales", icon: History, roles: ["administrador", "vendedor"], disabled: true },
 ];
 
 export const Sidebar = ({ user }: { user: User }) => {
@@ -58,6 +61,24 @@ export const Sidebar = ({ user }: { user: User }) => {
             <nav className="flex w-full flex-col items-center gap-2">
                 {filteredRoutes.map((route) => {
                     const isActive = pathname.startsWith(route.href);
+                    if (route.disabled) {
+                        return (
+                            <div
+                                key={route.href}
+                                aria-disabled="true"
+                                title={`${route.label} · No disponible por ahora`}
+                                className="flex h-14 w-16 cursor-not-allowed flex-col items-center justify-center gap-0.5 rounded-sm text-muted-foreground/40 opacity-60"
+                            >
+                                <route.icon size={18} />
+                                <span className="text-[8px] font-black uppercase tracking-tighter leading-none">
+                                    {route.label}
+                                </span>
+                                <span className="text-[7px] font-semibold uppercase tracking-tight leading-none">
+                                    Pronto
+                                </span>
+                            </div>
+                        );
+                    }
                     return (
                         <Link
                             key={route.href}

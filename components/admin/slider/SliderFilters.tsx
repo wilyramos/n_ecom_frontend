@@ -98,10 +98,8 @@ export default function SliderFilters({ filters }: SliderFiltersProps) {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="all">Todos los layouts</SelectItem>
-                    <SelectItem value="default">Texto + Imagen (Default)</SelectItem>
-                    <SelectItem value="media-left">Imagen a la Izquierda</SelectItem>
-                    <SelectItem value="background-media">Fondo Completo</SelectItem>
-                    <SelectItem value="image-only">Solo Imagen</SelectItem>
+                    <SelectItem value="image-only">Solo medio</SelectItem>
+                    <SelectItem value="background-media">Medio de fondo con texto</SelectItem>
                 </SelectContent>
             </Select>
 

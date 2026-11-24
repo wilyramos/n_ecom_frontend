@@ -1,6 +1,6 @@
 // API pública del módulo de medios del frontend. Importar solo desde aquí.
 
-export { MediaPicker } from "./components/MediaPicker";
+export { MediaPicker, MediaThumb } from "./components/MediaPicker";
 export type { MediaPickerProps } from "./components/MediaPicker";
 export { MediaPickerField } from "./components/MediaPickerField";
 export type { MediaPickerFieldProps } from "./components/MediaPickerField";

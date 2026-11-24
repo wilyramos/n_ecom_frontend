@@ -24,7 +24,7 @@ const responsive = {
   },
 };
 
-const storeImages = [
+const DEFAULT_STORE_IMAGES = [
   "/locacion1.webp",
   "/locacion2.webp",
   "/location3.webp",
@@ -50,7 +50,9 @@ const CustomRightArrow = ({ onClick }: { onClick: () => void }) => (
   </button>
 );
 
-export default function StoreLocation() {
+export default function StoreLocation({ images }: { images?: string[] }) {
+  // Imágenes configuradas desde Secciones (admin). Sin configuración, se usan las fotos por defecto.
+  const storeImages = images && images.length > 0 ? images : DEFAULT_STORE_IMAGES;
   return (
     <section className="py-6 text-brand-gris">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">

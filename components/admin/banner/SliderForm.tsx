@@ -1,33 +1,26 @@
-// File: frontend/src/components/admin/banner/SliderForm.tsx
+// File: frontend/components/admin/banner/SliderForm.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Info, ImageIcon, Link as LinkIcon, DollarSign, Palette, RotateCcw, Calendar } from "lucide-react";
+import { useState } from "react";
+import { Info, Link as LinkIcon, Calendar, Palette, Image as ImageIcon, Film, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/Alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
 import { LabelWithTooltip } from "@/components/utils/LabelWithTooltip";
-import MediaLibraryDialog from "@/components/admin/products/MediaLibraryDialog";
 import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapper";
+import { MediaPicker, MediaThumb } from "@/src/modules/media";
 import {
     SliderLayoutEnum,
     SliderThemeEnum,
-    SliderObjectFitEnum,
     type SliderBanner,
 } from "@/src/schemas/slider.schema";
 import { z } from "zod";
 
-type SliderTheme = z.infer<typeof SliderThemeEnum>;
 type SliderLayout = z.infer<typeof SliderLayoutEnum>;
-
-interface ColorPalette {
-    bgColor: string;
-    accentColor: string;
-    textColor: string;
-}
+type SliderTheme = z.infer<typeof SliderThemeEnum>;
+type MediaType = "image" | "video";
 
 interface SliderFormProps {
     initialData?: SliderBanner;
@@ -36,92 +29,61 @@ interface SliderFormProps {
     generalError?: string;
 }
 
-const LAYOUT_LABELS: Record<SliderLayout, string> = {
-    "image-only": "Solo imagen",
-    default: "Default (Media Derecha)",
-    "media-left": "Media Izquierda",
-    "background-media": "Fondo con Media",
+const LAYOUTS: { value: SliderLayout; label: string; description: string }[] = [
+    {
+        value: "image-only",
+        label: "Solo medio",
+        description: "La imagen o video ocupa todo el banner. Ideal para campañas visuales.",
+    },
+    {
+        value: "background-media",
+        label: "Medio de fondo con texto",
+        description: "El medio va de fondo y el título y subtítulo se muestran encima.",
+    },
+];
+
+const THEMES: { value: SliderTheme; label: string }[] = [
+    { value: "dark", label: "Oscuro (texto claro)" },
+    { value: "light", label: "Claro (texto oscuro)" },
+];
+
+/** Convierte una fecha a formato de <input type="datetime-local"> (hora local). */
+const toLocalInput = (date?: Date | string | null) => {
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    const offset = d.getTimezoneOffset() * 60000;
+    return new Date(d.getTime() - offset).toISOString().slice(0, 16);
 };
 
-const THEME_PRESETS: Record<Exclude<SliderTheme, "custom">, ColorPalette> = {
-    dark: { bgColor: "#000000", accentColor: "#a0a0a0", textColor: "#cbcbcb" },
-    light: { bgColor: "#ffffff", accentColor: "#a0a0a0", textColor: "#a0a0a0" },
-};
-
-const COLOR_LABELS: Record<keyof ColorPalette, string> = {
-    bgColor: "Fondo",
-    accentColor: "Acento",
-    textColor: "Texto",
-};
-
-export default function SliderForm({
-    initialData,
-    fields,
-    fieldErrors,
-    generalError,
-}: SliderFormProps) {
-    const [availableImages, setAvailableImages] = useState<string[]>(
-        initialData?.media?.imageUrl ? [initialData.media.imageUrl] : []
-    );
-    const [selectedImageUrl, setSelectedImageUrl] = useState<string>(
-        fields?.["media.imageUrl"] || initialData?.media?.imageUrl || ""
-    );
-
-    const [theme, setTheme] = useState<SliderTheme>(
-        (fields?.["design.theme"] as SliderTheme) || initialData?.design?.theme || "dark"
-    );
-    const [layout, setLayout] = useState<SliderLayout>(
-        (fields?.["design.layout"] as SliderLayout) || initialData?.design?.layout || "default"
-    );
-    const [colors, setColors] = useState<ColorPalette>({
-        bgColor: fields?.["design.bgColor"] || initialData?.design?.bgColor || THEME_PRESETS.dark.bgColor,
-        accentColor: fields?.["design.accentColor"] || initialData?.design?.accentColor || THEME_PRESETS.dark.accentColor,
-        textColor: fields?.["design.textColor"] || initialData?.design?.textColor || THEME_PRESETS.dark.textColor,
-    });
-
-    const isCustom = theme === "custom";
-
-    useEffect(() => {
-        if (!isCustom) {
-            setColors(THEME_PRESETS[theme]);
-        }
-    }, [theme, isCustom]);
-
+export default function SliderForm({ initialData, fields, fieldErrors, generalError }: SliderFormProps) {
     const val = (name: string, fallback?: string) => fields?.[name] ?? fallback ?? "";
     const err = (name: string) => fieldErrors?.[name]?.[0];
+    const mediaError = err("media");
 
-    const toDatetimeLocal = (date?: Date | string | null) => {
-        if (!date) return "";
-        const d = new Date(date);
-        return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16);
+    // Medio: un solo archivo, imagen o video.
+    const initialVideo = fields?.["media.videoUrl"] || initialData?.media?.videoUrl || "";
+    const initialImage = fields?.["media.imageUrl"] || initialData?.media?.imageUrl || "";
+    const [mediaType, setMediaType] = useState<MediaType>(initialVideo ? "video" : "image");
+    const [mediaUrl, setMediaUrl] = useState<string>(initialVideo || initialImage);
+
+    const [layout, setLayout] = useState<SliderLayout>(
+        (fields?.["design.layout"] as SliderLayout) ||
+            (initialData?.design?.layout as SliderLayout) ||
+            "image-only"
+    );
+    const [theme, setTheme] = useState<SliderTheme>(
+        (fields?.["design.theme"] as SliderTheme) || (initialData?.design?.theme as SliderTheme) || "dark"
+    );
+
+    /** Cambiar de tipo descarta el archivo anterior: un banner tiene un solo medio. */
+    const changeMediaType = (type: MediaType) => {
+        if (type === mediaType) return;
+        setMediaType(type);
+        setMediaUrl("");
     };
 
-    const handleUploadSuccess = (newImages: string[]) => {
-        setAvailableImages((prev) => [...prev, ...newImages]);
-    };
-
-    const handleConfirmSelection = (selectedImages: string[]) => {
-        if (selectedImages.length > 0) {
-            const url = selectedImages[0];
-            setSelectedImageUrl(url);
-            const input = document.querySelector('input[name="media.imageUrl"]') as HTMLInputElement;
-            if (input) {
-                input.value = url;
-                input.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-        }
-    };
-
-    const handleColorChange = (key: keyof ColorPalette, value: string) => {
-        if (!isCustom) return;
-        setColors((prev) => ({ ...prev, [key]: value }));
-    };
-
-    const resetAppearance = () => {
-        setTheme("dark");
-        setLayout("default");
-        setColors(THEME_PRESETS.dark);
-    };
+    const clearMedia = () => setMediaUrl("");
 
     return (
         <div className="space-y-3">
@@ -132,546 +94,270 @@ export default function SliderForm({
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-                {/* Columna Principal */}
-                <div className="lg:col-span-8 space-y-3">
-                    {/* INFORMACIÓN GENERAL */}
+                <div className="space-y-3 lg:col-span-8">
+                    {/* CONTENIDO */}
                     <AdminCardWrapper padding="default">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
-                            <Info className="w-3.5 h-3.5" />
-                            <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                Información General
-                            </h3>
+                        <div className="mb-3 flex items-center gap-2 border-b border-zinc-100 pb-2.5 text-zinc-700">
+                            <Info className="h-3.5 w-3.5" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">Contenido</h3>
                         </div>
 
                         <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <LabelWithTooltip
                                     htmlFor="title"
-                                    label="Título Principal"
+                                    label="Título"
                                     required
-                                    tooltip="Texto principal y destacado del banner."
+                                    tooltip="Texto principal del banner (máx. 120 caracteres)."
                                 />
                                 <Input
                                     id="title"
                                     name="title"
+                                    maxLength={120}
                                     defaultValue={val("title", initialData?.title)}
-                                    placeholder="Ej: Nueva Colección de Invierno"
+                                    placeholder="Ej: Nueva colección de invierno"
                                     className={`h-8 text-xs font-medium ${err("title") ? "border-rose-500" : ""}`}
                                 />
                                 {err("title") && <p className="text-[10px] text-rose-600">{err("title")}</p>}
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="subtitle"
                                         label="Subtítulo"
-                                        tooltip="Texto secundario complementario opcional."
+                                        tooltip="Texto secundario opcional (máx. 200 caracteres)."
                                     />
                                     <Input
                                         id="subtitle"
                                         name="subtitle"
+                                        maxLength={200}
                                         defaultValue={val("subtitle", initialData?.subtitle)}
                                         placeholder="Ej: Hasta 50% de descuento"
                                         className="h-8 text-xs font-medium"
                                     />
                                 </div>
+
                                 <div className="space-y-1.5">
                                     <LabelWithTooltip
                                         htmlFor="destUrl"
-                                        label="URL de Destino"
-                                        tooltip="Enlace de redirección al hacer clic en el banner."
+                                        label="Enlace de destino"
+                                        tooltip="Ruta interna (/catalogo) o URL externa a la que lleva el banner al hacer clic."
                                     />
                                     <div className="relative">
-                                        <LinkIcon className="absolute left-2.5 top-2.5 w-3 h-3 text-zinc-400" />
+                                        <LinkIcon className="absolute left-2.5 top-2.5 h-3 w-3 text-zinc-400" />
                                         <Input
                                             id="destUrl"
                                             name="destUrl"
                                             defaultValue={val("destUrl", initialData?.destUrl)}
-                                            placeholder="/categorias/invierno"
-                                            className="h-8 text-xs font-medium pl-7"
+                                            placeholder="/catalogo"
+                                            className="h-8 pl-7 text-xs font-medium"
                                         />
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 pt-0.5">
+                            <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-700">
                                 <input
                                     type="checkbox"
-                                    id="openInNewTab"
                                     name="openInNewTab"
                                     value="true"
-                                    defaultChecked={initialData?.openInNewTab ?? false}
-                                    className="w-3.5 h-3.5 accent-zinc-900 rounded cursor-pointer"
+                                    defaultChecked={fields?.openInNewTab === "true" || initialData?.openInNewTab === true}
+                                    className="h-3.5 w-3.5 rounded border-zinc-300"
                                 />
-                                <LabelWithTooltip
-                                    htmlFor="openInNewTab"
-                                    label="Abrir enlace en nueva pestaña"
-                                    tooltip="Abre el destino en un tab secundario del navegador."
-                                />
-                            </div>
-
-                            <div className="space-y-1.5 pt-1">
-                                <LabelWithTooltip
-                                    htmlFor="description"
-                                    label="Descripción"
-                                    tooltip="Texto explicativo adicional dentro del banner."
-                                />
-                                <Textarea
-                                    id="description"
-                                    name="description"
-                                    defaultValue={val("description", initialData?.description)}
-                                    rows={2}
-                                    placeholder="Detalles sobre la campaña o lanzamiento..."
-                                    className="text-xs"
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <LabelWithTooltip
-                                    htmlFor="terms"
-                                    label="Términos y condiciones"
-                                    tooltip="Letra pequeña y restricciones operativas de la promoción."
-                                />
-                                <Textarea
-                                    id="terms"
-                                    name="terms"
-                                    defaultValue={val("terms", initialData?.terms)}
-                                    rows={2}
-                                    placeholder="*Válido hasta agotar stock o vigencia estipulada..."
-                                    className="text-xs"
-                                />
-                            </div>
+                                Abrir el enlace en una pestaña nueva
+                            </label>
                         </div>
                     </AdminCardWrapper>
 
-                    {/* PRECIO PROMOCIONAL */}
+                    {/* MEDIO */}
                     <AdminCardWrapper padding="default">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
-                            <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
-                            <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                Precio Promocional
+                        <div className="mb-3 flex items-center justify-between border-b border-zinc-100 pb-2.5">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700">
+                                Medio del banner
                             </h3>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="price.current"
-                                        label="Precio actual"
-                                        tooltip="Monto de oferta destacado en el banner."
-                                    />
-                                    <Input
-                                        id="price.current"
-                                        name="price.current"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        defaultValue={val("price.current", initialData?.price?.current?.toString())}
-                                        placeholder="0.00"
-                                        className={`h-8 text-xs font-medium ${err("price.current") ? "border-rose-500" : ""}`}
-                                    />
-                                    {err("price.current") && (
-                                        <p className="text-[10px] text-rose-600">{err("price.current")}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="price.compare"
-                                        label="Precio comparativo"
-                                        tooltip="Precio tachado regular de referencia."
-                                    />
-                                    <Input
-                                        id="price.compare"
-                                        name="price.compare"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        defaultValue={val("price.compare", initialData?.price?.compare?.toString())}
-                                        placeholder="0.00"
-                                        className={`h-8 text-xs font-medium ${err("price.compare") ? "border-rose-500" : ""}`}
-                                    />
-                                    {err("price.compare") && (
-                                        <p className="text-[10px] text-rose-600">{err("price.compare")}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="price.label"
-                                        label="Etiqueta"
-                                        tooltip="Texto previo al importe numérico (ej. Desde)."
-                                    />
-                                    <Input
-                                        id="price.label"
-                                        name="price.label"
-                                        defaultValue={val("price.label", initialData?.price?.label)}
-                                        placeholder="Ej: Desde"
-                                        className="h-8 text-xs font-medium"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="price.suffix"
-                                        label="Sufijo"
-                                        tooltip="Texto posterior al precio (ej. / mes)."
-                                    />
-                                    <Input
-                                        id="price.suffix"
-                                        name="price.suffix"
-                                        defaultValue={val("price.suffix", initialData?.price?.suffix)}
-                                        placeholder="Ej: / unidad"
-                                        className="h-8 text-xs font-medium"
-                                    />
-                                </div>
+                            <div className="inline-flex rounded-lg border border-zinc-200 p-0.5">
+                                <button
+                                    type="button"
+                                    onClick={() => changeMediaType("image")}
+                                    className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer ${
+                                        mediaType === "image" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:bg-zinc-100"
+                                    }`}
+                                >
+                                    <ImageIcon className="h-3.5 w-3.5" /> Imagen
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => changeMediaType("video")}
+                                    className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium cursor-pointer ${
+                                        mediaType === "video" ? "bg-zinc-900 text-white" : "text-zinc-600 hover:bg-zinc-100"
+                                    }`}
+                                >
+                                    <Film className="h-3.5 w-3.5" /> Video
+                                </button>
                             </div>
                         </div>
-                    </AdminCardWrapper>
 
-                    {/* RECURSOS MULTIMEDIA */}
-                    <AdminCardWrapper padding="default">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
-                            <ImageIcon className="w-3.5 h-3.5" />
-                            <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                Recursos Multimedia
-                            </h3>
-                        </div>
-
-                        <div className="space-y-3">
-                            <input type="hidden" name="media.imageUrl" value={selectedImageUrl} />
-
-                            <div className="space-y-2 p-2.5 border border-zinc-200/80 bg-zinc-50/50 rounded-lg">
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                        <LabelWithTooltip
-                                            htmlFor="media.imageUrl"
-                                            label="Imagen seleccionada"
-                                            tooltip="Dirección del archivo de imagen asignado."
+                        {mediaUrl ? (
+                            <div className="flex items-center gap-3">
+                                <div className="relative aspect-video w-48 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50">
+                                    <MediaThumb item={{ kind: mediaType, url: mediaUrl, originalName: "banner" }} />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <p className="max-w-xs truncate text-[11px] text-zinc-500">{mediaUrl}</p>
+                                    <div className="flex items-center gap-2">
+                                        <MediaPicker
+                                            kind={mediaType}
+                                            folder="sliders"
+                                            max={1}
+                                            value={[mediaUrl]}
+                                            onChange={(urls) => setMediaUrl(urls[0] ?? "")}
+                                            title={mediaType === "video" ? "Video del banner" : "Imagen del banner"}
+                                            trigger={<Button type="button" variant="outline" size="sm">Cambiar</Button>}
                                         />
-                                        <p className="text-[10.5px] text-zinc-400">
-                                            Proporción panorámica recomendada: <strong>27:9</strong> (mínimo 140px de alto, ej: 1920x640 px o 2160x720 px).
-                                        </p>
-                                        <p className="text-[11.5px] text-zinc-600 truncate">
-                                            {selectedImageUrl || "Ningún archivo vinculado"}
-                                        </p>
+                                        <Button type="button" variant="ghost" size="sm" onClick={clearMedia} className="text-rose-600">
+                                            <X className="mr-1 h-3.5 w-3.5" /> Quitar
+                                        </Button>
                                     </div>
-
-                                    <MediaLibraryDialog
-                                        selectedImages={selectedImageUrl ? [selectedImageUrl] : []}
-                                        globalImagesPool={availableImages}
-                                        onConfirmSelection={handleConfirmSelection}
-                                        onUploadSuccess={handleUploadSuccess}
-                                        allowMultiple={false}
-                                        triggerLabel={selectedImageUrl ? "Cambiar Imagen" : "Examinar"}
-                                    />
-                                </div>
-
-                                {selectedImageUrl ? (
-                                    <div className="relative w-full aspect-[27/9] min-h-[140px] rounded-md overflow-hidden border border-zinc-200 bg-zinc-900 shadow-xs">
-                                        <Image
-                                            src={selectedImageUrl}
-                                            alt="Vista previa del banner"
-                                            fill
-                                            className="object-cover"
-                                            unoptimized
-                                        />
-                                        <span className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9.5px] font-medium px-1.5 py-0.5 rounded backdrop-blur-xs">
-                                            27:9
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <div className="w-full aspect-[27/9] min-h-[140px] border border-dashed border-zinc-200 rounded-md bg-zinc-50/70 flex flex-col items-center justify-center p-3 text-center space-y-1">
-                                        <p className="text-xs text-zinc-500">Sin imagen vinculada</p>
-                                        <p className="text-[10.5px] text-zinc-400">El contenedor del banner se renderizará en proporción 27:9</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="media.videoUrl"
-                                        label="URL del Video (opcional)"
-                                        tooltip="Dirección MP4 de fondo si aplica."
-                                    />
-                                    <Input
-                                        id="media.videoUrl"
-                                        name="media.videoUrl"
-                                        defaultValue={val("media.videoUrl", initialData?.media?.videoUrl)}
-                                        placeholder="https://dominio.com/video.mp4"
-                                        className="h-8 text-xs font-medium"
-                                    />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="media.objectFit"
-                                        label="Ajuste de Imagen"
-                                        tooltip="Regla CSS para escalar dentro del contenedor."
-                                    />
-                                    <Select
-                                        name="media.objectFit"
-                                        defaultValue={val("media.objectFit", initialData?.media?.objectFit ?? "cover")}
-                                    >
-                                        <SelectTrigger className="h-8 text-xs">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {SliderObjectFitEnum.options.map((opt) => (
-                                                <SelectItem key={opt} value={opt} className="text-xs uppercase">
-                                                    {opt}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
                                 </div>
                             </div>
-                        </div>
-                    </AdminCardWrapper>
-
-                    {/* CONTADOR REGRESIVO */}
-                    <AdminCardWrapper padding="default">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
-                            <Calendar className="w-3.5 h-3.5 text-amber-600" />
-                            <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                Contador Regresivo (Countdown)
-                            </h3>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="countdown.endsAt"
-                                        label="Fecha Límite"
-                                        tooltip="Momento en el cual el contador llega a cero."
-                                    />
-                                    <Input
-                                        id="countdown.endsAt"
-                                        name="countdown.endsAt"
-                                        type="datetime-local"
-                                        defaultValue={toDatetimeLocal(initialData?.countdown?.endsAt)}
-                                        className="h-8 text-xs font-medium"
-                                    />
-                                </div>
-                                <div className="space-y-1.5">
-                                    <LabelWithTooltip
-                                        htmlFor="countdown.label"
-                                        label="Etiqueta del Reloj"
-                                        tooltip="Texto encima del contador de tiempo."
-                                    />
-                                    <Input
-                                        id="countdown.label"
-                                        name="countdown.label"
-                                        defaultValue={val("countdown.label", initialData?.countdown?.label)}
-                                        placeholder="Ej: La oferta finaliza en:"
-                                        className="h-8 text-xs font-medium"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2 pt-0.5">
-                                <input
-                                    type="checkbox"
-                                    id="countdown.showDays"
-                                    name="countdown.showDays"
-                                    value="true"
-                                    defaultChecked={initialData?.countdown?.showDays ?? true}
-                                    className="w-3.5 h-3.5 accent-zinc-900 rounded cursor-pointer"
-                                />
-                                <LabelWithTooltip
-                                    htmlFor="countdown.showDays"
-                                    label="Incluir bloque de días"
-                                    tooltip="Muestra u oculta la caja de días restantes."
+                        ) : (
+                            <div className="flex items-center justify-between rounded-lg border border-dashed border-zinc-300 bg-zinc-50/60 p-4">
+                                <p className="text-xs text-zinc-600">
+                                    {mediaType === "video"
+                                        ? "Sube o elige un video (MP4, MOV o WEBM, máx. 100 MB)."
+                                        : "Sube o elige una imagen (JPG, PNG, WEBP o AVIF, máx. 10 MB)."}
+                                </p>
+                                <MediaPicker
+                                    kind={mediaType}
+                                    folder="sliders"
+                                    max={1}
+                                    value={[]}
+                                    onChange={(urls) => setMediaUrl(urls[0] ?? "")}
+                                    title={mediaType === "video" ? "Video del banner" : "Imagen del banner"}
+                                    trigger={<Button type="button" variant="outline" size="sm">Seleccionar</Button>}
                                 />
                             </div>
-                        </div>
+                        )}
+
+                        {mediaError && <p className="mt-2 text-[10px] text-rose-600">{mediaError}</p>}
+
+                        {/* Solo se envía el medio activo; el otro va vacío para que el servidor lo limpie. */}
+                        <input type="hidden" name="media.imageUrl" value={mediaType === "image" ? mediaUrl : ""} />
+                        <input type="hidden" name="media.videoUrl" value={mediaType === "video" ? mediaUrl : ""} />
                     </AdminCardWrapper>
                 </div>
 
-                {/* Columna Lateral */}
-                <aside className="lg:col-span-4 space-y-3 lg:sticky lg:top-18">
-                    {/* APARIENCIA Y ESTILO */}
+                <div className="space-y-3 lg:col-span-4">
+                    {/* DISEÑO */}
                     <AdminCardWrapper padding="default">
-                        <div className="flex items-center justify-between pb-2.5 border-b border-zinc-100 mb-3">
-                            <div className="flex items-center gap-2 text-zinc-700">
-                                <Palette className="w-3.5 h-3.5" />
-                                <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                    Apariencia
-                                </h3>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={resetAppearance}
-                                className="h-6 w-6 inline-flex items-center justify-center text-zinc-400 hover:text-zinc-700 rounded-md hover:bg-zinc-100 transition-colors cursor-pointer"
-                                title="Restablecer tema"
-                            >
-                                <RotateCcw className="w-3 h-3" />
-                            </button>
+                        <div className="mb-3 flex items-center gap-2 border-b border-zinc-100 pb-2.5 text-zinc-700">
+                            <Palette className="h-3.5 w-3.5" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">Diseño</h3>
                         </div>
 
                         <div className="space-y-3">
                             <div className="space-y-1.5">
-                                <LabelWithTooltip
-                                    htmlFor="design.layout"
-                                    label="Distribución (Layout)"
-                                    tooltip="Disposición estructural de textos e imagen."
-                                />
-                                <Select
-                                    name="design.layout"
-                                    value={layout}
-                                    onValueChange={(v: SliderLayout) => setLayout(v)}
-                                >
-                                    <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SliderLayoutEnum.options.map((opt) => (
-                                            <SelectItem key={opt} value={opt} className="text-xs">
-                                                {LAYOUT_LABELS[opt]}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label className="text-xs font-medium">Estilo</Label>
+                                <div className="space-y-2">
+                                    {LAYOUTS.map((option) => (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() => setLayout(option.value)}
+                                            aria-pressed={layout === option.value}
+                                            className={`w-full rounded-lg border p-2.5 text-left cursor-pointer transition ${
+                                                layout === option.value
+                                                    ? "border-indigo-500 bg-indigo-50"
+                                                    : "border-zinc-200 hover:border-zinc-400"
+                                            }`}
+                                        >
+                                            <p className="text-xs font-semibold text-zinc-800">{option.label}</p>
+                                            <p className="text-[11px] text-zinc-500">{option.description}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                                <input type="hidden" name="design.layout" value={layout} />
                             </div>
 
                             <div className="space-y-1.5">
-                                <LabelWithTooltip
-                                    htmlFor="design.theme"
-                                    label="Tema de Color"
-                                    tooltip="Paleta cromática preconfigurada o personalizada."
-                                />
-                                <Select
-                                    name="design.theme"
+                                <Label htmlFor="design.theme" className="text-xs font-medium">Tema del texto</Label>
+                                <NativeSelect
+                                    id="design.theme"
                                     value={theme}
-                                    onValueChange={(v: SliderTheme) => setTheme(v)}
+                                    onChange={(e) => setTheme(e.target.value as SliderTheme)}
+                                    className="w-full"
                                 >
-                                    <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SliderThemeEnum.options.map((opt) => (
-                                            <SelectItem key={opt} value={opt} className="text-xs capitalize">
-                                                {opt}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="space-y-2 pt-1 border-t border-zinc-100">
-                                {(Object.keys(colors) as Array<keyof ColorPalette>).map((key) => (
-                                    <div key={key} className="space-y-1">
-                                        <Label className="text-[10px] uppercase font-semibold text-zinc-500">
-                                            {COLOR_LABELS[key]}
-                                        </Label>
-                                        <input type="hidden" name={`design.${key}`} value={colors[key]} />
-                                        <div className="flex gap-2 items-center">
-                                            <Input
-                                                type="text"
-                                                value={colors[key]}
-                                                onChange={(e) => handleColorChange(key, e.target.value)}
-                                                disabled={!isCustom}
-                                                maxLength={7}
-                                                className="h-8 text-xs uppercase font-mono"
-                                            />
-                                            <div className="relative w-9 h-8 shrink-0 rounded-md border border-zinc-200/80 overflow-hidden">
-                                                <input
-                                                    type="color"
-                                                    value={colors[key]}
-                                                    onChange={(e) => handleColorChange(key, e.target.value)}
-                                                    disabled={!isCustom}
-                                                    className="absolute inset-0 w-full h-full cursor-pointer scale-150 disabled:cursor-not-allowed disabled:opacity-40"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                    {THEMES.map((t) => (
+                                        <option key={t.value} value={t.value}>{t.label}</option>
+                                    ))}
+                                </NativeSelect>
+                                <input type="hidden" name="design.theme" value={theme} />
+                                <p className="text-[11px] text-zinc-500">Solo aplica al estilo “Medio de fondo con texto”.</p>
                             </div>
                         </div>
                     </AdminCardWrapper>
 
-                    {/* PLANIFICACIÓN Y PUBLICACIÓN */}
+                    {/* PUBLICACIÓN */}
                     <AdminCardWrapper padding="default">
-                        <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-100 mb-3 text-zinc-700">
-                            <Calendar className="w-3.5 h-3.5" />
-                            <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                Planificación
-                            </h3>
+                        <div className="mb-3 flex items-center gap-2 border-b border-zinc-100 pb-2.5 text-zinc-700">
+                            <Calendar className="h-3.5 w-3.5" />
+                            <h3 className="text-xs font-semibold uppercase tracking-wider">Publicación</h3>
                         </div>
 
                         <div className="space-y-3">
-                            <div className="space-y-1.5">
-                                <LabelWithTooltip
-                                    htmlFor="order"
-                                    label="Posición en el carrusel"
-                                    tooltip="Índice ordinal de visualización (menor a mayor)."
+                            <label className="flex cursor-pointer items-center gap-2 text-xs text-zinc-700">
+                                <input
+                                    type="checkbox"
+                                    name="isActive"
+                                    value="true"
+                                    defaultChecked={fields ? fields.isActive === "true" : (initialData?.isActive ?? true)}
+                                    className="h-3.5 w-3.5 rounded border-zinc-300"
                                 />
+                                Activo (visible en la tienda)
+                            </label>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="order" className="text-xs font-medium">Orden</Label>
                                 <Input
                                     id="order"
                                     name="order"
                                     type="number"
-                                    min="0"
-                                    defaultValue={initialData?.order ?? 0}
-                                    className="h-8 text-xs font-medium"
+                                    min={0}
+                                    defaultValue={val("order", initialData?.order?.toString())}
+                                    className="h-8 text-xs"
                                 />
                             </div>
 
-                            <div className="space-y-1.5">
-                                <LabelWithTooltip
-                                    htmlFor="schedule.startsAt"
-                                    label="Fecha de inicio"
-                                    tooltip="Fecha y hora de activación automática en la tienda."
-                                />
-                                <Input
-                                    id="schedule.startsAt"
-                                    name="schedule.startsAt"
-                                    type="datetime-local"
-                                    defaultValue={toDatetimeLocal(initialData?.schedule?.startsAt)}
-                                    className="h-8 text-xs font-medium"
-                                />
+                            <div className="grid grid-cols-1 gap-3">
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="schedule.startsAt" className="text-xs font-medium">Mostrar desde</Label>
+                                    <Input
+                                        id="schedule.startsAt"
+                                        name="schedule.startsAt"
+                                        type="datetime-local"
+                                        defaultValue={val("schedule.startsAt", toLocalInput(initialData?.schedule?.startsAt))}
+                                        className="h-8 text-xs"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <Label htmlFor="schedule.endsAt" className="text-xs font-medium">Mostrar hasta</Label>
+                                    <Input
+                                        id="schedule.endsAt"
+                                        name="schedule.endsAt"
+                                        type="datetime-local"
+                                        defaultValue={val("schedule.endsAt", toLocalInput(initialData?.schedule?.endsAt))}
+                                        className={`h-8 text-xs ${err("schedule.endsAt") ? "border-rose-500" : ""}`}
+                                    />
+                                    {err("schedule.endsAt") && (
+                                        <p className="text-[10px] text-rose-600">{err("schedule.endsAt")}</p>
+                                    )}
+                                </div>
                             </div>
-
-                            <div className="space-y-1.5">
-                                <LabelWithTooltip
-                                    htmlFor="schedule.endsAt"
-                                    label="Fecha de término"
-                                    tooltip="Fecha y hora de expiración automática del banner."
-                                />
-                                <Input
-                                    id="schedule.endsAt"
-                                    name="schedule.endsAt"
-                                    type="datetime-local"
-                                    defaultValue={toDatetimeLocal(initialData?.schedule?.endsAt)}
-                                    className={`h-8 text-xs font-medium ${err("schedule.endsAt") ? "border-rose-500" : ""}`}
-                                />
-                                {err("schedule.endsAt") && (
-                                    <p className="text-[10px] text-rose-600">{err("schedule.endsAt")}</p>
-                                )}
-                            </div>
-
-                            <div className="flex items-center justify-between pt-2.5 border-t border-zinc-100">
-                                <LabelWithTooltip
-                                    htmlFor="isActive"
-                                    label="Estado Activo"
-                                    tooltip="Control maestro de visibilidad del banner."
-                                />
-                                <input
-                                    type="checkbox"
-                                    id="isActive"
-                                    name="isActive"
-                                    value="true"
-                                    defaultChecked={initialData?.isActive ?? true}
-                                    className="w-4 h-4 accent-zinc-900 rounded cursor-pointer"
-                                />
-                            </div>
+                            <p className="text-[11px] text-zinc-500">Déjalo vacío para mostrarlo siempre.</p>
                         </div>
                     </AdminCardWrapper>
-                </aside>
+                </div>
             </div>
         </div>
     );

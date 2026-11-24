@@ -4,8 +4,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import SliderPrice from "../ui/SliderPrice";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { bannerPalette } from "../palette";
 import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
 interface LayoutBackgroundMediaProps {
@@ -14,14 +14,11 @@ interface LayoutBackgroundMediaProps {
 }
 
 export default function LayoutBackgroundMedia({ banner, isPriority = false }: LayoutBackgroundMediaProps) {
-    const { design, media, title, subtitle, description, terms, price, destUrl, openInNewTab } = banner;
+    const { design, media, title, subtitle, destUrl, openInNewTab } = banner;
     const [loaded, setLoaded] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    const isDark = design.theme !== "light";
-    const bg = design.bgColor ?? (isDark ? "#000000" : "#ffffff");
-    const text = design.textColor ?? (isDark ? "#cbcbcb" : "#171411");
-    const accent = design.accentColor ?? "#a0a0a0";
+    const { bg, text, accent } = bannerPalette(design.theme);
 
     useEffect(() => {
         const t = setTimeout(() => setLoaded(true), 80);
@@ -59,7 +56,7 @@ export default function LayoutBackgroundMedia({ banner, isPriority = false }: La
                     src={getOptimizedImageUrl(media.imageUrl)}
                     alt={title ?? "Banner Background"}
                     fill
-                    className={`absolute inset-0 ${media.objectFit === "contain" ? "object-contain" : "object-cover"}`}
+                    className="absolute inset-0 object-cover"
                     sizes="100vw"
                     priority={isPriority}
                     loading={isPriority ? "eager" : "lazy"}
@@ -107,33 +104,6 @@ export default function LayoutBackgroundMedia({ banner, isPriority = false }: La
                         </h2>
                     )}
 
-                    {description && (
-                        <p
-                            className="mt-0.5 sm:mt-2 md:mt-4 text-[9px] sm:text-[13px] md:text-sm leading-tight sm:leading-[1.7] max-w-[40ch] line-clamp-1 sm:line-clamp-2"
-                            style={{ opacity: 0.75, ...fadeUp(0.28) }}
-                        >
-                            {description}
-                        </p>
-                    )}
-
-                    {price?.current !== undefined && price.current !== null && (
-                        <div className="mt-0.5 sm:mt-2 md:mt-4" style={fadeUp(0.35)}>
-                            <SliderPrice
-                                price={price}
-                                textColor={text}
-                                accentColor={accent}
-                                isDark={isDark}
-                            />
-                        </div>
-                    )}
-
-                    {terms && (
-                        <div style={fadeUp(0.40)} className="mt-0.5 sm:mt-3 md:mt-5">
-                            <p className="text-[7px] sm:text-[9px] font-medium tracking-wide uppercase line-clamp-1" style={{ opacity: 0.45 }}>
-                                {terms}
-                            </p>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

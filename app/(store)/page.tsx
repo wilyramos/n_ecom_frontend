@@ -7,7 +7,7 @@ import CategoriasDestacadasWrapper from "@/components/home/CategoriasDestacadasW
 import FeatureCards from "@/components/home/FeatureCards";
 import GoogleReviews from "@/components/home/GoogleReviews";
 import CarruselPrincipal from "@/components/home/CarruselPrincipal";
-import StoreLocation from "@/components/home/StoreLocation";
+import StoreLocationSection from "@/components/home/StoreLocationSection";
 import HomepageSectionsWrapper from "@/components/home/sections/HomepageSectionsWrapper";
 import GlobalAdContainer from "@/components/home/GlobalAdContainer";
 import PowerpayBanner from "@/src/components/powerpay/PowerpayBanner";
@@ -92,7 +92,7 @@ export default function HomePage() {
             </section>
 
             <section>
-                <StoreLocation />
+                <StoreLocationSection />
             </section>
         </div>
     );

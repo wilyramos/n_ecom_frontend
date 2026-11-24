@@ -10,6 +10,12 @@ import { useCashStore } from "@/src/store/useCashStore";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
+/**
+ * Ventas y proformas del POS deshabilitadas temporalmente (el POS no está en uso).
+ * Para reactivarlas, cambiar a true.
+ */
+const POS_SALES_ENABLED = false;
+
 interface CartSidebarProps {
     onClose?: () => void;
     userId: string;
@@ -33,6 +39,7 @@ export const CartSidebar = ({ onClose }: CartSidebarProps) => {
     const { executeCheckout, executeQuote, isPending } = useCheckoutStore();
 
     const handlePayment = async () => {
+        if (!POS_SALES_ENABLED) return;
         if (cart.length === 0) return toast.error("El carrito está vacío");
         if (!isOpen || !currentShiftId) return toast.error("Debe abrir turno de caja primero");
 
@@ -51,6 +58,7 @@ export const CartSidebar = ({ onClose }: CartSidebarProps) => {
     };
 
     const handleQuote = async () => {
+        if (!POS_SALES_ENABLED) return;
         if (cart.length === 0) return toast.error("Agregue productos para proformar");
         if (!isOpen || !currentShiftId) return toast.error("Caja requerida para proformas");
 
@@ -213,14 +221,16 @@ export const CartSidebar = ({ onClose }: CartSidebarProps) => {
                 <div className="grid grid-cols-2 gap-2 pt-1">
                     <button
                         onClick={handlePayment}
-                        disabled={cart.length === 0 || isPending || !isOpen}
+                        disabled={!POS_SALES_ENABLED || cart.length === 0 || isPending || !isOpen}
+                        title={POS_SALES_ENABLED ? undefined : "Ventas deshabilitadas temporalmente"}
                         className="py-3.5 rounded-sm bg-brand-action text-brand-charcoal font-black uppercase text-[10px] tracking-widest hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
                     >
                         {isPending ? <Loader2 className="size-4 animate-spin" /> : "Procesar Venta"}
                     </button>
                     <button
                         onClick={handleQuote}
-                        disabled={cart.length === 0 || isPending || !isOpen}
+                        disabled={!POS_SALES_ENABLED || cart.length === 0 || isPending || !isOpen}
+                        title={POS_SALES_ENABLED ? undefined : "Ventas deshabilitadas temporalmente"}
                         className="py-3.5 rounded-sm border border-white/20 text-white font-black uppercase text-[10px] tracking-widest hover:bg-white/10 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         Proforma

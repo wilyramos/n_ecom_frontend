@@ -23,7 +23,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import MediaLibraryDialog from "../products/MediaLibraryDialog";
+import { MediaPicker } from "@/src/modules/media";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -56,6 +56,7 @@ const SECTION_TYPE_DESCRIPTIONS: Record<SectionType, string> = {
     featured_collections: "Bloques de imagen con enlace. Ideal para destacar categorías o campañas visuales.",
     product_grid: "Cuadrícula de productos vinculados por ID. Requiere al menos un bloque con productId o imagen.",
     rich_text: "Contenido editorial libre. No utiliza bloques; usa el campo de cuerpo de texto.",
+    image_gallery: "Imágenes de la sección “Ubicación” de la portada, en el orden de los bloques. Reemplaza las fotos fijas de la tienda.",
 };
 
 function Required() {
@@ -248,7 +249,6 @@ export default function SectionFormUI({
     const hasErrors = state.fields && Object.keys(state.fields).length > 0;
     const isMaxBlocksReached = blocks.length >= 8;
 
-    const [allImages, setAllImages] = useState<string[]>([]);
 
     return (
         <>
@@ -623,14 +623,18 @@ export default function SectionFormUI({
                                                                     />
                                                                 </div>
                                                             )}
-                                                            <MediaLibraryDialog
-                                                                selectedImages={block.imageUrl ? [block.imageUrl] : []}
-                                                                globalImagesPool={allImages}
-                                                                allowMultiple={false}
-                                                                triggerLabel={block.imageUrl ? "Cambiar imagen" : "Seleccionar imagen"}
-                                                                triggerVariant="outline"
-                                                                onConfirmSelection={(urls) => handleBlockChange(index, "imageUrl", urls[0] ?? "")}
-                                                                onUploadSuccess={(newImages) => setAllImages(prev => [...prev, ...newImages])}
+                                                            <MediaPicker
+                                                                kind="image"
+                                                                folder="sections"
+                                                                max={1}
+                                                                value={block.imageUrl ? [block.imageUrl] : []}
+                                                                onChange={(urls) => handleBlockChange(index, "imageUrl", urls[0] ?? "")}
+                                                                title="Imagen del bloque"
+                                                                trigger={
+                                                                    <Button type="button" variant="outline" size="sm">
+                                                                        {block.imageUrl ? "Cambiar imagen" : "Seleccionar imagen"}
+                                                                    </Button>
+                                                                }
                                                             />
                                                         </div>
                                                     </div>

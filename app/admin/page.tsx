@@ -1,6 +1,7 @@
 // File: frontend/app/admin/page.tsx
 
 import Link from "next/link";
+import AnalyticsMiniChart from "@/components/admin/analytics/AnalyticsMiniChart";
 import {
   ShoppingCart,
   Package,
@@ -162,6 +163,8 @@ export default async function AdminPage() {
           <QuickAction key={item.href + item.label} item={item} />
         ))}
       </div>
+
+      <AnalyticsMiniChart />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {sections.map((section) => (

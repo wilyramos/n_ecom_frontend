@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
 import type { SliderBanner } from "@/src/schemas/slider.schema";
+import { bannerPalette } from "../palette";
 import { getOptimizedImageUrl } from "@/src/utils/cloudinary";
 
 interface LayoutImageOnlyProps {
@@ -17,7 +18,7 @@ export default function LayoutImageOnly({ banner, isPriority = false }: LayoutIm
     const videoRef = useRef<HTMLVideoElement>(null);
 
     const isVideo = Boolean(media?.videoUrl);
-    const bg = design.bgColor ?? "#000000";
+    const { bg } = bannerPalette(design.theme);
 
     const content = (
         <div
@@ -40,7 +41,7 @@ export default function LayoutImageOnly({ banner, isPriority = false }: LayoutIm
     src={getOptimizedImageUrl(media.imageUrl)}
     alt={title ?? "Banner"}
     fill
-    className={media.objectFit === "contain" ? "object-contain" : "object-cover"}
+    className="object-cover"
     sizes="100vw"
     priority={isPriority}
     loading={isPriority ? "eager" : "lazy"}

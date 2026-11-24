@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import MercadoPagoProvider from "@/components/provider/MercadoPagoProvider";
 import Script from 'next/script';
+import { Analytics } from "@vercel/analytics/next";
 
 const montserrat = Montserrat({
     subsets: ["latin"],
@@ -126,6 +127,9 @@ export default function RootLayout({
                         richColors={false}
                     />
                 </GoogleOAuthProvider>
+
+                {/* Analíticas de Vercel: visitas y páginas vistas (solo producción). */}
+                <Analytics />
 
                 {/* Script ESM de Powerpay Web Components */}
                 <Script

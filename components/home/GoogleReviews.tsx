@@ -320,7 +320,7 @@ function ReviewCard({
     const hasValidLink = Boolean(review.reviewUrl);
 
     return (
-        <div className="h-[220px] bg-background border border-brand-silver-border rounded-2xl p-5 flex flex-col gap-3">
+        <article className="h-full min-h-[230px] bg-background border border-brand-silver-border rounded-2xl p-5 md:p-6 flex flex-col gap-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
             <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-3">
                     <Avatar src={review.profilePhotoUrl} name={review.name} index={index} />
@@ -349,10 +349,10 @@ function ReviewCard({
 
             <StarRating />
 
-            <p className="text-sm text-brand-charcoal leading-relaxed line-clamp-3 flex-1">
+            <p className="text-sm text-brand-charcoal leading-relaxed line-clamp-4 flex-1">
                 {review.text}
             </p>
-        </div>
+        </article>
     );
 }
 
@@ -373,7 +373,7 @@ export default function GoogleReviews() {
                 arrows={false}
                 renderButtonGroupOutside
                 customButtonGroup={<AbsoluteHeaderWrapper />}
-                itemClass="py-4"
+                itemClass="px-2.5 md:px-3 py-4"
                 className="pt-12"
             >
                 {reviews.map((review, index) => (

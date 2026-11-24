@@ -6,10 +6,8 @@ import {
     SliderBannerSchema,
     SliderLayoutEnum,
     SliderThemeEnum,
-    SliderObjectFitEnum,
     type SliderBanner,
     type SliderBannerFormValues,
-    type SliderPrice,
     type SliderDesign,
     type SliderMedia,
 } from "@/src/schemas/slider.schema";
@@ -73,64 +71,18 @@ function formBool(formData: FormData, key: string): boolean {
 }
 
 function mapFormDataToBanner(formData: FormData): SliderBannerFormValues {
-    // ── Price (Removido 'price.currency' ya que no existe en tu Backend Model) ──
-    const priceCurrent = formNumber(formData, "price.current");
-    const priceCompare = formNumber(formData, "price.compare");
-    const priceLabel = formString(formData, "price.label");
-    const priceSuffix = formString(formData, "price.suffix");
+    // Un solo medio: el formulario envía media.imageUrl o media.videoUrl (el otro vacío).
+    const imageUrl = formString(formData, "media.imageUrl") ?? "";
+    const videoUrl = formString(formData, "media.videoUrl") ?? "";
+    const media: SliderMedia | undefined = imageUrl || videoUrl ? { imageUrl, videoUrl } : undefined;
 
-    const price: SliderPrice | undefined = (priceCurrent !== undefined || priceCompare !== undefined || priceLabel || priceSuffix)
-        ? {
-            current: priceCurrent,
-            compare: priceCompare,
-            label: priceLabel,
-            suffix: priceSuffix,
-        }
-        : undefined;
-
-    // ── Media ──────────────────────────────────────────────
-    const imageUrl = formString(formData, "media.imageUrl");
-    const videoUrl = formString(formData, "media.videoUrl");
-    const rawObjectFit = formString(formData, "media.objectFit");
-
-    const parsedObjectFit = SliderObjectFitEnum.safeParse(rawObjectFit);
-    const objectFit = parsedObjectFit.success ? parsedObjectFit.data : "cover";
-
-    const media: SliderMedia | undefined = (imageUrl || videoUrl)
-        ? {
-            imageUrl: imageUrl || undefined,
-            videoUrl: videoUrl || undefined,
-            objectFit,
-        }
-        : undefined;
-
-    // ── Design ─────────────────────────────────────────────
     const rawLayout = formString(formData, "design.layout");
     const rawTheme = formString(formData, "design.theme");
-
-    const parsedLayout = SliderLayoutEnum.safeParse(rawLayout);
-    const parsedTheme = SliderThemeEnum.safeParse(rawTheme);
-
     const design: SliderDesign = {
-        layout: parsedLayout.success ? parsedLayout.data : "default",
-        theme: parsedTheme.success ? parsedTheme.data : "dark",
-        bgColor: formString(formData, "design.bgColor"),
-        accentColor: formString(formData, "design.accentColor"),
-        textColor: formString(formData, "design.textColor"),
+        layout: SliderLayoutEnum.catch("image-only").parse(rawLayout),
+        theme: SliderThemeEnum.catch("dark").parse(rawTheme),
     };
 
-    // ── Countdown ──────────────────────────────────────────
-    const countdownEndsAt = formString(formData, "countdown.endsAt");
-    const countdownLabel = formString(formData, "countdown.label");
-    const countdown: SliderBannerFormValues["countdown"] = (countdownEndsAt || countdownLabel)
-        ? {
-            endsAt: countdownEndsAt ? new Date(countdownEndsAt) : undefined,
-            label: countdownLabel,
-            showDays: formBool(formData, "countdown.showDays"),
-        }
-        : undefined;
-
-    // ── Schedule ───────────────────────────────────────────
     const scheduleStartsAt = formString(formData, "schedule.startsAt");
     const scheduleEndsAt = formString(formData, "schedule.endsAt");
     const schedule: SliderBannerFormValues["schedule"] = (scheduleStartsAt || scheduleEndsAt)
@@ -143,16 +95,12 @@ function mapFormDataToBanner(formData: FormData): SliderBannerFormValues {
     return {
         title: formString(formData, "title") ?? "",
         subtitle: formString(formData, "subtitle"),
-        description: formString(formData, "description"),
-        terms: formString(formData, "terms"),
         destUrl: formString(formData, "destUrl"),
         openInNewTab: formBool(formData, "openInNewTab"),
         isActive: formBool(formData, "isActive"),
         order: formNumber(formData, "order"),
-        price,
         media,
         design,
-        countdown,
         schedule,
     };
 }

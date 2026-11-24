@@ -13,6 +13,11 @@ export default function HomepageSections2({ sections }: HomepageSectionsProps) {
     return (
         <div className="space-y-8 md:space-y-16 my-4 md:my-7">
             {sections.map((section) => {
+                // La galería de ubicación se renderiza en la sección "Ubicación", no aquí.
+                if (section.type === "image_gallery") {
+                    return null;
+                }
+
                 // Filtro preventivo estructural de nodos vacíos
                 if (section.type !== "rich_text" && (!section.blocks || section.blocks.length === 0)) {
                     return null;

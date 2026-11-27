@@ -31,6 +31,7 @@ import { AdminCardWrapper } from "@/src/components/admin/layout/admin-card-wrapp
 
 import ClientCategoryAttributes from "./ClientCategoryAttributes";
 import ProductSwitches from "./ProductSwitches";
+import ProductWarrantyField from "./ProductWarrantyField";
 import SpecificationsSection from "./SpecificationsSection";
 import ProductDescriptionEditor from "./ProductDescriptionEditor";
 import BrandCombobox from "./BrandCombobox";
@@ -348,6 +349,14 @@ export default function ProductForm({
                         Visibilidad
                     </h3>
                     <ProductSwitches product={product} />
+                </AdminCardWrapper>
+
+                {/* Garantía */}
+                <AdminCardWrapper padding="default">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-700 pb-2.5 border-b border-zinc-100 mb-3">
+                        Garantía
+                    </h3>
+                    <ProductWarrantyField product={product} />
                 </AdminCardWrapper>
 
                 {/* Clasificación / Organización */}

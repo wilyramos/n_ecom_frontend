@@ -100,6 +100,8 @@ export async function createProduct(prevState: ActionStateType, formData: FormDa
         isActive: formData.get('isActive') === 'true',
         isFrontPage: formData.get('isFrontPage') === 'true',
         diasEnvio: formData.get('diasEnvio') ? Number(formData.get('diasEnvio')) : undefined,
+        mostrarGarantia: formData.has("mostrarGarantia") ? formData.get("mostrarGarantia") === "true" : undefined,
+        textoGarantia: formData.has("textoGarantia") ? String(formData.get("textoGarantia") ?? "").trim() : undefined,
         tags,
         weight: formData.get('weight') ? Number(formData.get('weight')) : undefined,
         dimensions,

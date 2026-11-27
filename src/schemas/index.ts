@@ -229,6 +229,8 @@ export const productBaseSchema = z.object({
     categoria: z.string().min(1, 'La categoría es obligatoria'),
     stock: z.number().min(0, 'El stock no puede ser negativo').optional(),
     diasEnvio: z.number().min(1, 'Los días de envío deben ser un número positivo').optional(),
+    mostrarGarantia: z.boolean().optional(),
+    textoGarantia: z.string().max(120, 'El texto de garantía no puede superar los 120 caracteres').optional(),
     sku: z.string().optional(),
     barcode: z.string().optional(),
     isActive: z.boolean().optional().default(true),

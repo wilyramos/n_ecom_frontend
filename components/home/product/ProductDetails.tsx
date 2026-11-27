@@ -355,11 +355,12 @@ export default function ProductDetails({ producto }: Props) {
 
           {/* Información y Confianza */}
           <div className="flex flex-col gap-2">
-            {/* Tarjeta de Garantía */}
+            {/* Tarjeta de Garantía (configurable por producto desde el admin) */}
+            {producto.mostrarGarantia !== false && (
             <div className="flex items-center justify-between p-3 rounded-xl border border-brand-silver-border bg-background">
               <div className="flex items-center gap-2.5 text-sm font-semibold text-brand-charcoal">
                 <ShieldCheck className="w-5 h-5 text-brand-action shrink-0" />
-                <span>1 año de garantía Apple</span>
+                <span>{producto.textoGarantia?.trim() || "1 año de garantía Apple"}</span>
               </div>
               <Link
                 href="/cambios-devoluciones"
@@ -370,6 +371,7 @@ export default function ProductDetails({ producto }: Props) {
                 Ver más detalles
               </Link>
             </div>
+            )}
 
             {/* Enlace de Consulta */}
             <a

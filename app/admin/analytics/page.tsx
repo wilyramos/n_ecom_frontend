@@ -166,15 +166,21 @@ function DailyBars({ points }: { points: DailyPoint[] }) {
     return (
         <div className="flex h-44 items-end gap-1" role="img" aria-label="Vistas por día">
             {points.map((p) => {
-                const height = Math.max((p.pageviews / max) * 100, 2);
-                const label = new Date(p.date).toLocaleDateString("es-PE", { day: "2-digit", month: "2-digit" });
+                // Los días sin visitas se quedan en 0; el resto tiene un mínimo para que se vea.
+                const height = p.pageviews > 0 ? Math.max((p.pageviews / max) * 100, 2) : 0;
+                // Vercel devuelve cada día como medianoche UTC: formatear en UTC evita desfases de un día.
+                const label = new Date(p.date).toLocaleDateString("es-PE", { day: "2-digit", month: "2-digit", timeZone: "UTC" });
                 return (
-                    <div key={p.date} className="group flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
-                        <div
-                            className="w-full rounded-t bg-indigo-500/80 transition group-hover:bg-indigo-600"
-                            style={{ height: `${height}%` }}
-                            title={`${label}: ${p.pageviews} vistas, ${p.visitors} visitantes`}
-                        />
+                    // h-full: sin altura definida en la columna, el height % de la barra se resuelve a 0.
+                    <div key={p.date} className="group flex h-full min-w-0 flex-1 flex-col items-center gap-1">
+                        <div className="relative w-full flex-1">
+                            <div
+                                className="absolute inset-x-0 bottom-0 rounded-t bg-indigo-500/80 transition group-hover:bg-indigo-600"
+                                style={{ height: `${height}%` }}
+                                title={`${label}: ${p.pageviews} vistas, ${p.visitors} visitantes`}
+                            />
+                            <div className="absolute inset-x-0 bottom-0 h-px bg-zinc-200" />
+                        </div>
                         <span className="text-[9px] text-zinc-400">{label}</span>
                     </div>
                 );

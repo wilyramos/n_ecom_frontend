@@ -45,15 +45,22 @@ export default async function AnalyticsMiniChart() {
                         <p className="w-full pb-8 text-center text-xs text-zinc-500">Sin visitas todavía.</p>
                     ) : (
                         daily.map((d) => {
-                            const height = Math.max((d.pageviews / max) * 100, 4);
-                            const label = new Date(d.date).toLocaleDateString("es-PE", { weekday: "short" });
+                            // Los días sin visitas se quedan en 0; el resto tiene un mínimo para que se vea.
+                            const height = d.pageviews > 0 ? Math.max((d.pageviews / max) * 100, 4) : 0;
+                            // Vercel devuelve cada día como medianoche UTC: formatear en UTC evita
+                            // que en hora de Perú (UTC-5) se muestre el día anterior.
+                            const label = new Date(d.date).toLocaleDateString("es-PE", { weekday: "short", timeZone: "UTC" });
                             return (
-                                <div key={d.date} className="group flex min-w-0 flex-1 flex-col items-center justify-end gap-1">
-                                    <div
-                                        className="w-full rounded-t bg-indigo-500/80 transition group-hover:bg-indigo-600"
-                                        style={{ height: `${height}%` }}
-                                        title={`${d.pageviews} vistas · ${d.visitors} visitantes`}
-                                    />
+                                // h-full: sin altura definida en la columna, el height % de la barra se resuelve a 0.
+                                <div key={d.date} className="group flex h-full min-w-0 flex-1 flex-col items-center gap-1">
+                                    <div className="relative w-full flex-1">
+                                        <div
+                                            className="absolute inset-x-0 bottom-0 rounded-t bg-indigo-500/80 transition group-hover:bg-indigo-600"
+                                            style={{ height: `${height}%` }}
+                                            title={`${d.pageviews} vistas · ${d.visitors} visitantes`}
+                                        />
+                                        <div className="absolute inset-x-0 bottom-0 h-px bg-zinc-200" />
+                                    </div>
                                     <span className="text-[9px] capitalize text-zinc-400">{label}</span>
                                 </div>
                             );
